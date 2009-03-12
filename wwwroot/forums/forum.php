@@ -8,34 +8,24 @@
 
 		protected $lstSearch;
 		protected $txtSearch;
-		protected $btnSearch;
-
+		protected $dtrForums;
+		
 		protected $objForum;
-		protected $dtrTopics;
+		protected $objTopic;
 
 		protected function Form_Create() {
 			parent::Form_Create();
-
-			// Load the Forum to View Topics In
+			
 			$this->objForum = Forum::Load(QApplication::PathInfo(0));
-			if (!$this->objForum)
-				QApplication::Redirect('/forums/');
+			if (!$this->objForum) QApplication::Redirect('/forums/');
 
-			// Update the Page Title
-			$this->strPageTitle .= ' - ' . $this->objForum->Name;
-
-			$this->dtrTopics = new QDataRepeater($this);
-			$this->dtrTopics->Template = 'dtrTopics.tpl.php';
-
-			$objPaginator = new QPaginator($this);
-
-			$this->dtrTopics->Paginator = $objPaginator;
-			$this->dtrTopics->UseAjax = true;
-			$this->dtrTopics->ItemsPerPage = 15;
-			$this->dtrTopics->SetDataBinder('dtrTopics_Bind');
-
-			if ($intForumPage = QApplication::PathInfo(1))
-				$this->dtrTopics->PageNumber = $intForumPage;
+			if ($this->objForum) {
+				$this->objTopic = Topic::Load(QApplication::PathInfo(1));
+				if ($this->objTopic) {
+					if ($this->objTopic->ForumId != $this->objForum->Id)
+						$this->objTopic = null;
+				}
+			}
 
 			$this->lstSearch = new QListBox($this);
 			$this->lstSearch->AddItem('- All Forums -', null);
@@ -45,22 +35,21 @@
 			$this->txtSearch = new QTextBox($this, 'txtSearch');
 			$this->txtSearch->AddAction(new QEnterKeyEvent(0, "qc.getControl('txtSearch').value != ''"), new QServerAction('btnSearch_Click'));
 			$this->txtSearch->AddAction(new QEnterKeyEvent(), new QTerminateAction());
+
+			$this->dtrForums = new QDataRepeater($this, 'dtrForums');
+			$this->dtrForums->Template = 'dtrForums.tpl.php';
+			$this->dtrForums->SetDataBinder('dtrForums_Bind');
 		}
 
-		protected function dtrTopics_Bind() {
-			$this->dtrTopics->TotalItemCount = Topic::CountByForumId($this->objForum->Id);
-			$this->dtrTopics->DataSource = Topic::LoadArrayByForumId($this->objForum->Id, QQ::Clause($this->dtrTopics->LimitClause));
+		protected function Form_PreRender() {
+			$this->dtrForums->DataSource = Forum::LoadAll(QQ::OrderBy(QQN::Forum()->OrderNumber));
 		}
 
 		protected function btnSearch_Click($strFormId, $strControlId, $strParameter) {
-//			if ($this->lstSearch->SelectedValue)
-	//			QApplication::Redirect(sprintf('/forums/search.php/1/%s/?strSearch=%s', $this->lstSearch->SelectedValue, urlencode($this->txtSearch->Text)));
-	//		else
-	//			QApplication::Redirect(sprintf('/forums/search.php/1/?strSearch=%s', urlencode($this->txtSearch->Text)));
-
-//			if (strlen(trim($this->txtSearch->Text)) > 0) {
-//				QApplication::Redirect(sprintf('/forums/search.php/1/%s/?strSearch=%s', $this->lstSearch->SelectedValue, urlencode(trim($this->txtSearch->Text))));
-//			}
+			if ($this->lstSearch->SelectedValue)
+				QApplication::Redirect(sprintf('/forums/search.php/1/%s/?strSearch=%s', $this->lstSearch->SelectedValue, urlencode($this->txtSearch->Text)));
+			else
+				QApplication::Redirect(sprintf('/forums/search.php/1/?strSearch=%s', urlencode($this->txtSearch->Text)));
 		}
 	}
 

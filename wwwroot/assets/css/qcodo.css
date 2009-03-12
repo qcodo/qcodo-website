@@ -21,9 +21,9 @@
 		div#subnav div.links img {border-left: 1px solid #161616;}
 		div#subnav div.line { float: right; width: 1px; overflow: hidden; background-color: #161616; height: 18px;}
 
-	div#middle { background-color: #1d1d1d; border-top: 1px solid #0e0e0e; border-bottom: 1px solid #161616; width: 100%; overflow: auto; min-width: 980px;}
+	div#middle { background-color: #fff; border-top: 1px solid #0e0e0e; border-bottom: 1px solid #161616; width: 100%; overflow: auto; min-width: 1020px;}
 	div#middle { position: absolute; bottom: 29px; top: 74px; _height: 5px; }
-		div#middle div#content { background-color: #eee; width: 900px; margin-left: auto; margin-right: auto; border-width: 0 2px 0 2px; border-color: #666; border-style: solid; padding: 20px; margin-top: auto; margin-bottom: auto; }
+		div#middle div#content { background-color: #fff; width: 990px; margin-left: auto; margin-right: auto; border-width: 0 2px 0 2px; border-color: #fff; border-style: solid; padding: 20px 5px 20px 5px; margin-top: auto; margin-bottom: auto; }
 	div#bottom { height: 28px; background-color: #333333; border-top: 1px solid #3f3f3f; position: absolute; bottom: 0; width: 100%; background: url(/images/gen/bottom.jpg) repeat;}
 		div#bottom a { color: #fff; text-decoration: none; }
 		div#bottom a:hover { text-decoration: underline; }
