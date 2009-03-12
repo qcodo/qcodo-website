@@ -1,0 +1,57 @@
+	body { margin: 0; padding: 0; min-width: 1000px; font: 14px verdana; color: #333; }
+	img { border: 0; }
+	p a { color: #740; text-decoration: none; font-weight: bold; }
+	p a:hover { text-decoration: underline; }
+
+	h1 { color: #474; font-size: 28px; }
+	h2 { color: #eee; background-color: #353; margin: 0; padding: 2px 5px 2px 5px; font-size: 20px;}
+	
+	div#navbar { height: 55px; background-color: #333333; border-bottom: 1px solid #161616;}
+		div#navbar div.line { float: right; width: 1px; overflow: hidden; }
+		div#navbar div.links { float: right; margin-bottom: -2px; }
+		div#navbar div.links img {border-left: 1px solid #161616;}
+		div#navbar div.title {float: none; font-size: 32px; padding-top: 12px; height: 55px; _height: 43px; background: url(/images/gen/logo.jpg) no-repeat #161616; overflow: hidden; }
+		div#navbar div.title a { text-decoration: none; display: block; height: 55px; _height: 43px;}
+
+	div#subnav { height: 18px; background-color: #2d2d2d; }
+		div#subnav div.left { float: none; height: 18px; background: url(/images/gen/subnav_background.jpg); overflow: hidden;}
+		div#subnav div.left a { color: #fff; font-weight: normal;}
+		div#subnav div.right { float: right; height: 18px; background: url(/images/gen/subnav_padding.jpg);}
+		div#subnav div.links { float: right; }
+		div#subnav div.links img {border-left: 1px solid #161616;}
+		div#subnav div.line { float: right; width: 1px; overflow: hidden; background-color: #161616; height: 18px;}
+
+	div#middle { background-color: #1d1d1d; border-top: 1px solid #0e0e0e; border-bottom: 1px solid #161616; width: 100%; overflow: auto; min-width: 980px;}
+	div#middle { position: absolute; bottom: 29px; top: 74px; _height: 5px; }
+		div#middle div#content { background-color: #eee; width: 900px; margin-left: auto; margin-right: auto; border-width: 0 2px 0 2px; border-color: #666; border-style: solid; padding: 20px; margin-top: auto; margin-bottom: auto; }
+	div#bottom { height: 28px; background-color: #333333; border-top: 1px solid #3f3f3f; position: absolute; bottom: 0; width: 100%; background: url(/images/gen/bottom.jpg) repeat;}
+		div#bottom a { color: #fff; text-decoration: none; }
+		div#bottom a:hover { text-decoration: underline; }
+		div#bottom div.left { background: url(/images/gen/bottom_copyright.jpg); height: 26px; width: 500px; }
+		div#bottom div.left div { display: none; margin-top: 2px; margin-left: 8px; overflow: hidden; }
+		div#bottom div.right { float: right; background: url(/images/gen/bottom_sdg.jpg); height: 28px; width: 200px; }
+		div#bottom div.right div { display: none; float: right; margin-top: 7px; margin-right: 8px; }
+		div#bottom div.hover { background-image: none; }
+		div#bottom div.hover div { font: 10px arial; color: #fff; display: block;}
+
+/* FORUMS */
+	div.toolbar { background: url(/images/gen/bottom.jpg) repeat; font-size: 10px; color: #fff; height: 22px; padding-top: 6px;}
+	h2 div.right {float: right; font-size: 10px; font-weight: normal; padding-top: 4px;}
+		h2 div.right input { font-size:10px; border: 1px solid #aaa; padding-left: 2px;}
+		h2 div.right select { font-size:10px; border: 1px solid #aaa; }
+
+	div#dtrForums { overflow: auto; _height: 100%; }
+	div.forum { margin: 10px 20px 10px 20px; float: left; width: 400px; border: 1px solid #485; background-color: #dfd; }
+		div.forum div.name { font-weight: bold; padding: 2px 0 2px 4px; font-size: 12px; background-color: #8b8; }
+		div.forum p.description { padding: 5px;  margin: 0; font-size: 12px; height: 36px; }
+		div.forum div.stats { padding: 1px 5px 2px 5px; font: 10px 'arial','helvetica'; color: #555; overflow: auto; border-top: 1px solid #485; }
+			div.forum div.left {float: left;}
+			div.forum div.right {float: right;}
+			div.forum div.stats span { margin-left: 20px; }
+			div.forum div.stats strong { color: #333; }
+		div.forum div a { color: #000; text-decoration: none; }
+	div.hover { cursor: pointer; background-color: #ddf; border-color: #337;}
+		div.hover div.name { background-color: #337; }
+		div.hover div a { color: #fff; }
+		div.hover div.stats { border-top: 1px solid #337; }
+		div.hover p.description { color: #337;}

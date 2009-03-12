@@ -1,0 +1,9 @@
+# WATCH OUT FOR
+ALTER TABLE `country` DROP INDEX `country_1`; # was UNIQUE (`code`)
+ALTER TABLE `country` ADD INDEX `code` (`code`);
+ALTER TABLE `person` DROP INDEX `IDX_person3`; # was INDEX (`username`)
+ALTER TABLE `person` ADD INDEX `person_username_idx` (`username`);
+ALTER TABLE `person` DROP INDEX `IDX_person2`; # was INDEX (`email`)
+ALTER TABLE `person` ADD INDEX `email` (`email`);
+ALTER TABLE `person_type` DROP INDEX `IDX_login_type1`; # was INDEX (`name`)
+ALTER TABLE `person_type` ADD INDEX `name` (`name`);

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<codegen>
+<!--
+	This XML file defines the settings used when running the Code Generator.
+	When running CodeGen, you must specify a CodeGenSettings XML file like
+	this one to use.  Feel free to copy, modify, etc.
+-->
+	<!-- General CodeGen Settings -->
+	<name application="Qcodo Website"/>
+	<templateEscape begin="&lt;%" end="%&gt;"/>
+
+	<!-- Define Data Sources (e.g. Databases, Services, etc.) -->
+	<dataSources>
+
+		<database index="1">
+			<!-- Append Prefixes/Suffixes to the Following Code Generated Items -->
+			<className prefix="" suffix=""/>
+			<associatedObjectName prefix="" suffix=""/>
+
+			<!-- Table Type Identifiers - Used to Classify Tables in your Data Model -->
+			<typeTableIdentifier suffix="_type"/>
+			<associationTableIdentifier suffix="_assn"/>
+
+			<!-- Other -->
+			<stripFromTableName prefix=""/>
+
+			<!-- Specific Tables to Exclude or Include in the CodeGen process -->
+			<!-- "include" is used to override any "exclude" patterns or lists -->
+			<!-- lists should be a  comma-separated list of table names -->
+			<excludeTables pattern="" list=""/>
+			<includeTables pattern="" list=""/>
+
+			<!-- Support for "Beta 2" version of Manual Queries and Hard Coded Column Names -->
+			<manualQuery support="false"/>
+
+			<relationships/>
+			<relationshipsScript filepath="/home/qcodo-website/database/create_current.sql" format="sql"/>
+		</database>
+	</dataSources>
+</codegen>
