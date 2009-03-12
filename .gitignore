@@ -3,4 +3,4 @@
 .cache
 .buildpath
 .DS_Store
-images/gen
+wwwroot/images/gen
