@@ -19,7 +19,7 @@
 			// Create/Build out the QueryBuilder object with <%= $objTable->ClassName %>-specific SELET and FROM fields
 			$objQueryBuilder = new QQueryBuilder($objDatabase, '<%= $objTable->Name %>');
 			<%= $objTable->ClassName %>::GetSelectFields($objQueryBuilder);
-			$objQueryBuilder->AddFromItem('<%= $strEscapeIdentifierBegin %><%= $objTable->Name %><%= $strEscapeIdentifierEnd %> AS <%= $strEscapeIdentifierBegin %><%= $objTable->Name %><%= $strEscapeIdentifierEnd %>');
+			$objQueryBuilder->AddFromItem('<%= $objTable->Name %>');
 
 			// Set "CountOnly" option (if applicable)
 			if ($blnCountOnly)
@@ -27,7 +27,12 @@
 
 			// Apply Any Conditions
 			if ($objConditions)
-				$objConditions->UpdateQueryBuilder($objQueryBuilder);
+				try {
+					$objConditions->UpdateQueryBuilder($objQueryBuilder);
+				} catch (QCallerException $objExc) {
+					$objExc->IncrementOffset();
+					throw $objExc;
+				}
 
 			// Iterate through all the Optional Clauses (if any) and perform accordingly
 			if ($objOptionalClauses) {
@@ -79,7 +84,7 @@
 
 			// Perform the Query, Get the First Row, and Instantiate a new <%= $objTable->ClassName %> object
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return <%= $objTable->ClassName %>::InstantiateDbRow($objDbResult->GetNextRow());
+			return <%= $objTable->ClassName %>::InstantiateDbRow($objDbResult->GetNextRow(), null, null, null, $objQueryBuilder->ColumnAliasArray);
 		}
 
 		/**
@@ -101,7 +106,7 @@
 
 			// Perform the Query and Instantiate the Array Result
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return <%= $objTable->ClassName %>::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNodes);
+			return <%= $objTable->ClassName %>::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNodes, $objQueryBuilder->ColumnAliasArray);
 		}
 
 		/**
@@ -194,14 +199,14 @@
 		 */
 		public static function GetSelectFields(QQueryBuilder $objBuilder, $strPrefix = null) {
 			if ($strPrefix) {
-				$strTableName = '<%= $strEscapeIdentifierBegin %>' . $strPrefix . '<%= $strEscapeIdentifierEnd %>';
-				$strAliasPrefix = '<%= $strEscapeIdentifierBegin %>' . $strPrefix . '__';
+				$strTableName = $strPrefix;
+				$strAliasPrefix = $strPrefix . '__';
 			} else {
-				$strTableName = '<%= $strEscapeIdentifierBegin %><%= $objTable->Name; %><%= $strEscapeIdentifierEnd %>';
-				$strAliasPrefix = '<%= $strEscapeIdentifierBegin %>';
+				$strTableName = '<%= $objTable->Name; %>';
+				$strAliasPrefix = '';
 			}
 
 <% foreach ($objTable->ColumnArray as $objColumn) { %>
-			$objBuilder->AddSelectItem($strTableName . '.<%= $strEscapeIdentifierBegin %><%= $objColumn->Name %><%= $strEscapeIdentifierEnd %> AS ' . $strAliasPrefix . '<%= $objColumn->Name %><%= $strEscapeIdentifierEnd %>');
+			$objBuilder->AddSelectItem($strTableName, '<%= $objColumn->Name %>', $strAliasPrefix . '<%= $objColumn->Name %>');
 <% } %>
 		}

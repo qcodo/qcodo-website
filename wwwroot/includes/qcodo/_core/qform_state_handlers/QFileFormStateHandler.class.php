@@ -84,12 +84,15 @@
 			// Go through all the files
 			$objDirectory = dir(self::$StatePath);
 			while (($strFile = $objDirectory->read()) !== false) {
-				$intPosition = strpos($strFile, self::$FileNamePrefix);
+				if (!count(self::$FileNamePrefix))
+					$intPosition = 0;
+				else
+					$intPosition = strpos($strFile, self::$FileNamePrefix);
 				if (($intPosition !== false) && ($intPosition == 0)) {
 					$strFile = sprintf('%s/%s', self::$StatePath, $strFile);
 					$intTimeInterval = time() - (60 * 60 * 24 * self::$GarbageCollectDaysOld);
 					$intModifiedTime = filemtime($strFile);
-					
+
 					if ($intModifiedTime < $intTimeInterval)
 						unlink($strFile);
 				}

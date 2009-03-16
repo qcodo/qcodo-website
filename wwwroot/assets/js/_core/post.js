@@ -58,19 +58,24 @@
 	qcodo.ajaxQueue = new Array();
 
 	qcodo.postAjax = function(strForm, strControl, strEvent, strParameter, strWaitIconControlId) {
-		// alert(strForm + " " + strControl + " " + strEvent + " " + strParameter);
+		// Only add if we're not unloaded
+		if (!qc.unloadFlag) {
+			if (qc.beforeUnloadFlag) {
+				qc.beforeUnloadFlag = false;
+			};
 
-		// Figure out if Queue is Empty
-		var blnQueueEmpty = false;
-		if (qcodo.ajaxQueue.length == 0)
-			blnQueueEmpty = true;
+			// Figure out if Queue is Empty
+			var blnQueueEmpty = false;
+			if (qcodo.ajaxQueue.length == 0)
+				blnQueueEmpty = true;
 
-		// Enqueue the AJAX Request
-		qcodo.ajaxQueue.push(new Array(strForm, strControl, strEvent, strParameter, strWaitIconControlId));
+			// Enqueue the AJAX Request
+			qcodo.ajaxQueue.push(new Array(strForm, strControl, strEvent, strParameter, strWaitIconControlId));
 
-		// If the Queue was originally empty, call the Dequeue
-		if (blnQueueEmpty)
-			qcodo.dequeueAjaxQueue();
+			// If the Queue was originally empty, call the Dequeue
+			if (blnQueueEmpty)
+				qcodo.dequeueAjaxQueue();
+		};
 	};
 	
 	qcodo.clearAjaxQueue = function() {
@@ -156,66 +161,68 @@
 				objRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
 				objRequest.onreadystatechange = function() {
-					if (!qcodo.unloadFlag && objRequest.readyState == 4) {
-						try {
-							var objXmlDoc = objRequest.responseXML;
+					if (objRequest.readyState == 4) {
+						if (!qcodo.beforeUnloadFlag) {
+							try {
+								var objXmlDoc = objRequest.responseXML;
 //								qcodo.logMessage(objRequest.responseText, true);
 //								alert('AJAX Response Received');
 
-							if (!objXmlDoc) {
-								alert("An error occurred during AJAX Response parsing.\r\n\r\nThe error response will appear in a new popup.");
+								if (!objXmlDoc) {
+									alert("An error occurred during AJAX Response parsing.\r\n\r\nThe error response will appear in a new popup.");
+									var objErrorWindow = window.open('about:blank', 'qcodo_error','menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes,width=1000,height=700,left=50,top=50');
+									objErrorWindow.focus();
+									objErrorWindow.document.write(objRequest.responseText);
+									return;
+								} else {
+									var intLength = 0;
+	
+									// Go through Controls
+									var objXmlControls = objXmlDoc.getElementsByTagName('control');
+									intLength = objXmlControls.length;
+	
+									for (var intIndex = 0; intIndex < intLength; intIndex++) {
+										var strControlId = objXmlControls[intIndex].attributes.getNamedItem('id').nodeValue;
+	
+										var strControlHtml = "";
+										if (objXmlControls[intIndex].textContent)
+											strControlHtml = objXmlControls[intIndex].textContent;
+										else if (objXmlControls[intIndex].firstChild)
+											strControlHtml = objXmlControls[intIndex].firstChild.nodeValue;
+	
+										// Perform Callback Responsibility
+										if (strControlId == "Qform__FormState") {
+											var objFormState = document.getElementById(strControlId);
+											objFormState.value = strControlHtml;							
+										} else {
+											var objSpan = document.getElementById(strControlId + "_ctl");
+											if (objSpan)
+												objSpan.innerHTML = strControlHtml;
+										};
+									};
+	
+									// Go through Commands
+									var objXmlCommands = objXmlDoc.getElementsByTagName('command');
+									intLength = objXmlCommands.length;
+	
+									for (var intIndex = 0; intIndex < intLength; intIndex++) {
+										if (objXmlCommands[intIndex] && objXmlCommands[intIndex].firstChild) {
+											var strCommand = "";
+											intChildLength = objXmlCommands[intIndex].childNodes.length;
+											for (var intChildIndex = 0; intChildIndex < intChildLength; intChildIndex++)
+												strCommand += objXmlCommands[intIndex].childNodes[intChildIndex].nodeValue;
+											eval(strCommand);
+										};
+									};
+								};
+							} catch (objExc) {
+								alert(objExc.message + "\r\non line number " + objExc.lineNumber + "\r\nin file " + objExc.fileName);
+								alert("An error occurred during AJAX Response handling.\r\n\r\nThe error response will appear in a new popup.");
 								var objErrorWindow = window.open('about:blank', 'qcodo_error','menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes,width=1000,height=700,left=50,top=50');
 								objErrorWindow.focus();
 								objErrorWindow.document.write(objRequest.responseText);
 								return;
-							} else {
-								var intLength = 0;
-
-								// Go through Controls
-								var objXmlControls = objXmlDoc.getElementsByTagName('control');
-								intLength = objXmlControls.length;
-
-								for (var intIndex = 0; intIndex < intLength; intIndex++) {
-									var strControlId = objXmlControls[intIndex].attributes.getNamedItem('id').nodeValue;
-
-									var strControlHtml = "";
-									if (objXmlControls[intIndex].textContent)
-										strControlHtml = objXmlControls[intIndex].textContent;
-									else if (objXmlControls[intIndex].firstChild)
-										strControlHtml = objXmlControls[intIndex].firstChild.nodeValue;
-
-									// Perform Callback Responsibility
-									if (strControlId == "Qform__FormState") {
-										var objFormState = document.getElementById(strControlId);
-										objFormState.value = strControlHtml;							
-									} else {
-										var objSpan = document.getElementById(strControlId + "_ctl");
-										if (objSpan)
-											objSpan.innerHTML = strControlHtml;
-									};
-								};
-
-								// Go through Commands
-								var objXmlCommands = objXmlDoc.getElementsByTagName('command');
-								intLength = objXmlCommands.length;
-
-								for (var intIndex = 0; intIndex < intLength; intIndex++) {
-									if (objXmlCommands[intIndex] && objXmlCommands[intIndex].firstChild) {
-										var strCommand = "";
-										intChildLength = objXmlCommands[intIndex].childNodes.length;
-										for (var intChildIndex = 0; intChildIndex < intChildLength; intChildIndex++)
-											strCommand += objXmlCommands[intIndex].childNodes[intChildIndex].nodeValue;
-										eval(strCommand);
-									};
-								};
 							};
-						} catch (objExc) {
-							alert(objExc.message + "\r\non line number " + objExc.lineNumber + "\r\nin file " + objExc.fileName);
-							alert("An error occurred during AJAX Response handling.\r\n\r\nThe error response will appear in a new popup.");
-							var objErrorWindow = window.open('about:blank', 'qcodo_error','menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes,width=1000,height=700,left=50,top=50');
-							objErrorWindow.focus();
-							objErrorWindow.document.write(objRequest.responseText);
-							return;
 						};
 
 						// Perform the Dequeue

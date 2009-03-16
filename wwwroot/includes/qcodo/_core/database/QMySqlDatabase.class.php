@@ -130,6 +130,10 @@
 		public function FetchRow() {
 			return mysql_fetch_row($this->objMySqlResult);
 		}
+		
+		public function MySqlFetchField() {
+			return mysql_fetch_field($this->objMySqlResult);
+		}
 
 		public function CountRows() {
 			return mysql_num_rows($this->objMySqlResult);

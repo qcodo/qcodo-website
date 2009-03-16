@@ -44,9 +44,9 @@
 			 */
 			public static function Autoload($strClassName) {
 				// First use the Qcodo Autoloader
-				parent::Autoload($strClassName);
-
-				// TODO: Run any custom autoloading functionality (if any) here...
+				if (!parent::Autoload($strClassName)) {
+					// TODO: Run any custom autoloading functionality (if any) here...
+				}
 			}
 
 			////////////////////////////

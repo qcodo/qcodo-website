@@ -469,9 +469,9 @@
 		}
 
 		protected function GetPaginatorRowHtml($objPaginator) {
-			$strToReturn = "  <div class=\"right\">";
+			$strToReturn = "  <span class=\"right\">";
 			$strToReturn .= $objPaginator->Render(false);
-			$strToReturn .= "</div>\r\n  <div class=\"left\">";
+			$strToReturn .= "</span>\r\n  <span class=\"left\">";
 			if ($this->TotalItemCount > 0) {
 				$intStart = (($this->PageNumber - 1) * $this->ItemsPerPage) + 1;
 				$intEnd = $intStart + count($this->DataSource) - 1;
@@ -490,7 +490,7 @@
 					$strToReturn .= sprintf($this->strLabelForMultipleFound, $intCount, $this->strNounPlural);
 			}
 
-			$strToReturn .= "</div>\r\n";
+			$strToReturn .= "</span>\r\n";
 			
 			return $strToReturn;
 		}
@@ -612,6 +612,10 @@
 			return $strToReturn;
 		}
 
+		protected function PersistPrepare() {
+			parent::PersistPrepare();
+			$this->RemoveAllColumns();
+		}
 
 		/////////////////////////
 		// Public Properties: GET

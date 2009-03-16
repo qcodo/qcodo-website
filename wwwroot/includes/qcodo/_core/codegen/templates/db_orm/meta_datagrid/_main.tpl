@@ -1,4 +1,4 @@
-<template OverwriteFlag="true" DocrootFlag="false" DirectorySuffix="" TargetDirectory="<%= __DATA_META_CONTROLS__ %>" TargetFileName="<%= $objTable->ClassName %>DataGrid.class.php"/>
+<template OverwriteFlag="true" DocrootFlag="false" DirectorySuffix="" TargetDirectory="<%= __DATAGEN_META_CONTROLS__ %>" TargetFileName="<%= $objTable->ClassName %>DataGridGen.class.php"/>
 <?php
 	/**
 	 * This is the "Meta" DataGrid class for the List functionality
@@ -17,7 +17,7 @@
 	 * @subpackage MetaControls
 	 * 
 	 */
-	class <%= $objTable->ClassName %>DataGrid extends QDataGrid {
+	class <%= $objTable->ClassName %>DataGridGen extends QDataGrid {
 		<%@ constructor('objTable'); %>
 
 

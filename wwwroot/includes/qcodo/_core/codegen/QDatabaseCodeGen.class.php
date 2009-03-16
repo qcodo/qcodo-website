@@ -630,12 +630,6 @@
 			// Ensure that there are only 2 fields, an integer PK field (can be named anything) and a unique varchar field
 			$objFieldArray = $this->objDb->GetFieldsForTable($strTableName);
 
-			if (count($objFieldArray) != 2) {
-				$this->strErrors .= sprintf("TypeTable %s does not have exactly 2 columns.\n",
-					$strTableName);
-				return;
-			}
-			
 			if (($objFieldArray[0]->Type != QDatabaseFieldType::Integer) ||
 				(!$objFieldArray[0]->PrimaryKey)) {
 				$this->strErrors .= sprintf("TypeTable %s's first column is not a PK integer.\n",
@@ -654,9 +648,19 @@
 			$objResult = $this->objDb->Query(sprintf('SELECT * FROM %s', $strTableName));
 			$strNameArray = array();
 			$strTokenArray = array();
+			$strExtraPropertyArray = array();
+			$strExtraFields = array();
 			while ($objRow = $objResult->FetchRow()) {
 				$strNameArray[$objRow[0]] = str_replace("'", "\\'", str_replace('\\', '\\\\', $objRow[1]));
 				$strTokenArray[$objRow[0]] = $this->TypeTokenFromTypeName($objRow[1]);
+				if (sizeof($objRow) > 2) { // there are extra columns to process
+					$strExtraPropertyArray[$objRow[0]] = array();
+					for ($i = 2; $i < sizeof($objRow); $i++) {
+						$strFieldName = QCodeGen::TypeNameFromColumnName($objFieldArray[$i]->Name);
+						$strExtraFields[$i - 2] = $strFieldName;
+						$strExtraPropertyArray[$objRow[0]][$strFieldName] = $objRow[$i];
+					}
+				}
 
 				foreach ($strReservedWords as $strReservedWord)
 					if (trim(strtolower($strTokenArray[$objRow[0]])) == $strReservedWord) {
@@ -676,8 +680,10 @@
 
 			$objTypeTable->NameArray = $strNameArray;
 			$objTypeTable->TokenArray = $strTokenArray;
+			$objTypeTable->ExtraFieldNamesArray = $strExtraFields;
+			$objTypeTable->ExtraPropertyArray = $strExtraPropertyArray;
 		}
-		
+
 		protected function AnalyzeTable(QTable $objTable) {
 			// Setup the Table Object
 			$strTableName = $objTable->Name;

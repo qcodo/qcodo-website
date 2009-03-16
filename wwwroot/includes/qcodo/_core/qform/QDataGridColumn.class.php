@@ -56,42 +56,41 @@
 
 		public function GetAttributes($blnIncludeCustom = true, $blnIncludeAction = true) {
 			$strToReturn = "";
+			$strStyle = "";			
 
 			if (!$this->blnWrap)
 				$strToReturn .= 'nowrap="nowrap" ';
 
 			switch ($this->strHorizontalAlign) {
 				case QHorizontalAlign::Left:
-					$strToReturn .= 'align="left" ';
+					$strStyle .= 'text-align:left;';
 					break;
 				case QHorizontalAlign::Right:
-					$strToReturn .= 'align="right" ';
+					$strStyle .= 'text-align:right;';
 					break;
 				case QHorizontalAlign::Center:
-					$strToReturn .= 'align="center" ';
+					$strStyle .= 'text-align:center;';
 					break;
 				case QHorizontalAlign::Justify:
-					$strToReturn .= 'align="justify" ';
+					$strStyle .= 'text-align:justify;';
 					break;
 			}
 
 			switch ($this->strVerticalAlign) {
 				case QVerticalAlign::Top:
-					$strToReturn .= 'valign="top" ';
+					$strStyle .= 'vertical-align:top;';
 					break;
 				case QVerticalAlign::Middle:
-					$strToReturn .= 'valign="middle" ';
+					$strStyle .= 'vertical-align:middle;';
 					break;
 				case QVerticalAlign::Bottom:
-					$strToReturn .= 'valign="bottom" ';
+					$strStyle .= 'vertical-align:bottom;';
 					break;
 			}
 
 			if ($this->strCssClass)
 				$strToReturn .= sprintf('class="%s" ', $this->strCssClass);
 
-			$strStyle = "";			
-			
 			if ($this->strWidth) {
 				if (is_numeric($this->strWidth))
 					$strStyle .= sprintf("width:%spx;", $this->strWidth);

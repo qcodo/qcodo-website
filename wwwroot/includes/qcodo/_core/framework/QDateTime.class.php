@@ -89,7 +89,10 @@
 			if ($mixValue instanceof QDateTime) {
 				if ($objTimeZone)
 					throw new QCallerException('QDateTime cloning cannot take in a DateTimeZone parameter');
-				parent::__construct($mixValue->format(DateTime::ISO8601));
+				if ($mixValue->GetTimeZone()->GetName() == date_default_timezone_get())
+					parent::__construct($mixValue->format('Y-m-d H:i:s'));
+				else
+					parent::__construct($mixValue->format(DateTime::ISO8601));
 				$this->blnDateNull = $mixValue->IsDateNull();
 				$this->blnTimeNull = $mixValue->IsTimeNull();
 
@@ -339,6 +342,13 @@
 		}
 
 		public function setTime($intHour, $intMinute, $intSecond) {
+			// If HOUR or MINUTE is NULL...
+			if (is_null($intHour) || is_null($intMinute)) {
+				parent::setTime($intHour, $intMinute, $intSecond);
+				$this->blnTimeNull = true;
+				return $this;
+			}
+
 			$intHour = QType::Cast($intHour, QType::Integer);
 			$intMinute = QType::Cast($intMinute, QType::Integer);
 			$intSecond = QType::Cast($intSecond, QType::Integer);

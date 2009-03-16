@@ -157,6 +157,7 @@
 		const Jpeg = 'jpg';
 		const Png = 'png';
 		const Gif = 'gif';
+		const AnimatedGif = 'AnimatedGif';
 	}
 
 	abstract class QFileAssetType {

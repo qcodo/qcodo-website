@@ -3,7 +3,7 @@
 <% foreach ($objTableArray as $objTable) { %>
 	// ClassPaths for the <%= $objTable->ClassName %> type class
 	<% if (__DATA_CLASSES__) { %>
-		QApplicationBase::$ClassFile['<%= $objTable->ClassName %>'] = __DATA_CLASSES__ . '/<%= $objTable->ClassName %>.class.php';
+		QApplicationBase::$ClassFile['<%= strtolower($objTable->ClassName) %>'] = __DATA_CLASSES__ . '/<%= $objTable->ClassName %>.class.php';
 	<% } %>
 <% } %>
 ?>

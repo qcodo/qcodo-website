@@ -139,7 +139,8 @@
 						$strMonthListbox .= sprintf('<option value="%s"%s>%s</option>',
 							$intMonth,
 							$strSelected,
-							date('M', mktime(0, 0, 0, $intMonth, 1, 2000)));
+//							date('M', mktime(0, 0, 0, $intMonth, 1, 2000)));
+							strftime("%b", mktime(0, 0, 0, $intMonth, 1, 2000)));
 					}
 					$strMonthListbox .= '</select>';
 
@@ -313,18 +314,18 @@
 
 				if ($blnIsNull) {
 					if ($this->strName)
-						$this->strValidationError = sprintf('%s is required', $this->strName);
+						$this->strValidationError = sprintf(QApplication::Translate('%s is required'), $this->strName);
 					else
-						$this->strValidationError = 'Required';
+						$this->strValidationError = QApplication::Translate('Required');
 					return false;
 				}
 			} else {
 				if ((($this->strDateTimePickerType == QDateTimePickerType::Date) ||
 					($this->strDateTimePickerType == QDateTimePickerType::DateTime) ||
 					($this->strDateTimePickerType == QDateTimePickerType::DateTimeSeconds )) &&
-					($this->dttDateTime->Month || $this->dttDateTime->Day || $this->dttDateTime->Year) &&
-					(!$this->dttDateTime->Month || !$this->dttDateTime->Day || !$this->dttDateTime->Year)) {
-					$this->strValidationError = 'Invalid Date';
+					($this->intSelectedDay || $this->intSelectedMonth || $this->intSelectedYear) &&
+					($this->dttDateTime->IsDateNull())) {
+					$this->strValidationError = QApplication::Translate('Invalid Date');
 					return false;
 				}
 			}

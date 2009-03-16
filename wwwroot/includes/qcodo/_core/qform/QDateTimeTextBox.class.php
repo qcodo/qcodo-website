@@ -9,6 +9,7 @@
 		protected $dttMaximum = null;
 		
 		protected $strLabelForInvalid = 'For example, "Mar 20, 4:30pm" or "Mar 20"';
+		protected $calLinkedControl;
 
 		//////////
 		// Methods

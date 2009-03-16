@@ -14,7 +14,9 @@
 		document.getElementById(document.getElementById("Qform__FormId").value).appendChild(objWrapper);
 
 		// Setup the DialogBoxBackground (DbBg) if applicable
+		objWrapper.dbBg = document.getElementById(objWrapper.id + "dbbg");
 		var objDbBg = objWrapper.dbBg;
+
 		if (!objDbBg) {
 			var objDbBg = document.createElement("div");
 			objDbBg.id = objWrapper.id + "dbbg";

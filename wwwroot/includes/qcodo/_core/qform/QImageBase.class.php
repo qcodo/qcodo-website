@@ -44,6 +44,9 @@
 					case QImageType::Gif:
 						$strImageFilename .= '.gif';
 						break;
+					case QImageType::AnimatedGif:
+						$strImageFilename .= '.gif';
+						break;
 					case QImageType::Jpeg:
 						$strImageFilename .= '.jpg';
 						break;
@@ -211,6 +214,10 @@
 						header('Content-Type: image/gif');
 						imagegif($objFinalImage);
 						break;
+					case QImageType::AnimatedGif:
+						header('Content-Type: image/gif');
+						imagegif($objFinalImage);
+						break;
 					case QImageType::Jpeg:
 						header('Content-Type: image/jpeg');
 						imagejpeg($objFinalImage, null, $this->intJpegQuality);
@@ -227,6 +234,9 @@
 				// Output to Disk
 				switch ($this->strImageType) {
 					case QImageType::Gif:
+						imagegif($objFinalImage, $strPath);
+						break;
+					case QImageType::AnimatedGif:
 						imagegif($objFinalImage, $strPath);
 						break;
 					case QImageType::Jpeg:
@@ -264,6 +274,11 @@
 						$objFinalImage->setImageFormat('gif');
 						header('Content-Type: image/gif');
 						break;
+					case QImageType::AnimatedGif:
+						$strPath .= '.gif';
+						$objFinalImage->setImageFormat('gif');
+						header('Content-Type: image/gif');
+						break;
 					case QImageType::Jpeg:
 						$strPath .= '.jpg';
 						$objFinalImage->setImageFormat('jpeg');
@@ -277,7 +292,10 @@
 						break;
 				}
 
-				$objFinalImage->writeImage($strPath);
+				if ($this->strImageType == QImageType::AnimatedGif)
+					file_put_contents($strPath, $objFinalImage->GetImagesBlob());
+				else
+					$objFinalImage->writeImage($strPath);
 
 				QApplication::$CacheControl = 'cache';
 				header('Expires: Wed, 20 Mar 2019 05:00:00 GMT');
@@ -293,6 +311,9 @@
 				// Output to Disk
 				switch ($this->strImageType) {
 					case QImageType::Gif:
+						$objFinalImage->setImageFormat('gif');
+						break;
+					case QImageType::AnimatedGif:
 						$objFinalImage->setImageFormat('gif');
 						break;
 					case QImageType::Jpeg:

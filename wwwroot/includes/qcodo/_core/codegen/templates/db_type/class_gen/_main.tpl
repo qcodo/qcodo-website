@@ -37,6 +37,22 @@
 			<%= $intKey %> => '<%= $strValue %>',
 <% } %><%--%><%}%>);
 
+<% if (count($objTypeTable->ExtraFieldNamesArray)) { %>
+		public static $ExtraColumnNamesArray = array(
+<% foreach ($objTypeTable->ExtraFieldNamesArray as $strColName) { %>
+			'<%= $strColName %>',
+<% } %><%--%>);
+
+		public static $ExtraColumnValuesArray = array(
+<% foreach ($objTypeTable->ExtraPropertyArray as $intKey=>$arrColumns) { %>
+			<%= $intKey %> => array (
+<% foreach ($arrColumns as $strColName=>$strColValue) { %>
+						'<%= $strColName %>' => '<%= str_replace("'", "\\'", $strColValue) %>',
+<% } %><%--%>),
+<% } %><%--%>);
+
+
+<%}%>
 		public static function ToString($int<%= $objTypeTable->ClassName %>Id) {
 			switch ($int<%= $objTypeTable->ClassName %>Id) {
 <% foreach ($objTypeTable->NameArray as $intKey=>$strValue) { %>
@@ -56,5 +72,15 @@
 					throw new QCallerException(sprintf('Invalid int<%= $objTypeTable->ClassName %>Id: %s', $int<%= $objTypeTable->ClassName %>Id));
 			}
 		}
+
+<% foreach ($objTypeTable->ExtraFieldNamesArray as $strColName) { %>
+		public static function To<%= $strColName %>($int<%= $objTypeTable->ClassName %>Id) {
+			if (array_key_exists($int<%= $objTypeTable->ClassName %>Id, <%= $objTypeTable->ClassName %>::$ExtraColumnValuesArray))
+				return <%= $objTypeTable->ClassName %>::$ExtraColumnValuesArray[$int<%= $objTypeTable->ClassName %>Id]['<%= $strColName %>'];
+			else
+				throw new QCallerException(sprintf('Invalid int<%= $objTypeTable->ClassName %>Id: %s', $int<%= $objTypeTable->ClassName %>Id));
+		}
+
+<% } %>
 	}
 ?>

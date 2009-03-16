@@ -6,6 +6,7 @@
 		protected $strFormId;
 		protected $intFormStatus;
 		protected $objControlArray;
+		protected $objPersistentControlArray = array();
 		protected $objGroupingArray;
 		protected $blnRenderedBodyTag = false;
 		protected $blnRenderedCheckableControlArray;
@@ -317,12 +318,12 @@
 			$objClass->Form_Exit();
 		}
 
-		public function CallDataBinder($strMethodName, $objParentControl = null) {
+		public function CallDataBinder($strMethodName, QPaginatedControl $objPaginatedControl, $objParentControl = null) {
 			try {
 				if ($objParentControl)
-					$objParentControl->$strMethodName();
+					$objParentControl->$strMethodName($objPaginatedControl);
 				else
-					$this->$strMethodName();
+					$this->$strMethodName($objPaginatedControl);
 			} catch (QCallerException $objExc) {
 				throw new QDataBindException($objExc);
 			}
@@ -432,6 +433,10 @@
 			// Set Up the Command Node
 			if (trim($strCommands))
 				$strCommands = '<command>' . QString::XmlEscape(trim($strCommands)) . '</command>';
+
+			// Persist Controls (if applicable)
+			foreach ($this->objPersistentControlArray as $objControl)
+				$objControl->Persist();
 
 			// Add in the form state
 			$strFormState = QForm::Serialize($this);
@@ -551,6 +556,10 @@
 
 				// Remove this control
 				unset($this->objControlArray[$strControlId]);
+				if (array_key_exists($strControlId, $this->objPersistentControlArray)) {
+					unset($this->objPersistentControlArray[$strControlId]);
+					$_SESSION[$this->strFormId . '_' . $strControlId] = null;
+				}
 
 				// Remove this control from any groups
 				foreach ($this->objGroupingArray as $strKey => $objGrouping)
@@ -560,6 +569,10 @@
 
 		public function GetAllControls() {
 			return $this->objControlArray;
+		}
+		
+		public function PersistControl($objControl) {
+			$this->objPersistentControlArray[$objControl->ControlId] = $objControl;
 		}
 		
 		public function AddGrouping(QControlGrouping $objGrouping) {
@@ -1127,6 +1140,10 @@
 
 			// Create Final EndScript Script
 			$strEndScript = sprintf('<script type="text/javascript">qc.registerForm(); %s</script>', $strEndScript);
+
+			// Persist Controls (if applicable)
+			foreach ($this->objPersistentControlArray as $objControl)
+				$objControl->Persist();
 
 			// Clone Myself
 			$objForm = clone($this);

@@ -14,7 +14,7 @@
 		protected $objPaginatedControl;
 		
 		// SETUP
-		protected $blnIsBlockElement = true;
+		protected $blnIsBlockElement = false;
 
 		//////////
 		// Methods

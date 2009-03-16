@@ -75,17 +75,17 @@
 
 			// Create Buttons and Actions on this Form
 			$this->btnSave = new QButton($this);
-			$this->btnSave->Text = 'Save';
+			$this->btnSave->Text = QApplication::Translate('Save');
 			$this->btnSave->AddAction(new QClickEvent(), new QAjaxControlAction($this, 'btnSave_Click'));
 			$this->btnSave->CausesValidation = $this;
 
 			$this->btnCancel = new QButton($this);
-			$this->btnCancel->Text = 'Cancel';
+			$this->btnCancel->Text = QApplication::Translate('Cancel');
 			$this->btnCancel->AddAction(new QClickEvent(), new QAjaxControlAction($this, 'btnCancel_Click'));
 
 			$this->btnDelete = new QButton($this);
-			$this->btnDelete->Text = 'Delete';
-			$this->btnDelete->AddAction(new QClickEvent(), new QConfirmAction('Are you SURE you want to DELETE this <%= $objTable->ClassName %>?'));
+			$this->btnDelete->Text = QApplication::Translate('Delete');
+			$this->btnDelete->AddAction(new QClickEvent(), new QConfirmAction(QApplication::Translate('Are you SURE you want to DELETE this') . ' ' . QApplication::Translate('<%= $objTable->ClassName %>') . '?'));
 			$this->btnDelete->AddAction(new QClickEvent(), new QAjaxControlAction($this, 'btnDelete_Click'));
 			$this->btnDelete->Visible = $this->mct<%= $objTable->ClassName %>->EditMode;
 		}

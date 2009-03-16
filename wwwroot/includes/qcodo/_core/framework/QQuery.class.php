@@ -115,7 +115,7 @@
 				return $this->strName;
 		}
 
-		public function GetColumnAlias(QQueryBuilder $objBuilder, $blnExpandSelection = false) {
+		public function GetColumnAlias(QQueryBuilder $objBuilder, $blnExpandSelection = false, QQCondition $objJoinCondition = null) {
 			// Make sure our Root Tables Match
 			if ($this->_RootTableName != $objBuilder->RootTableName)
 				throw new QCallerException('Cannot use QQNode for "' . $this->_RootTableName . '" when querying against the "' . $objBuilder->RootTableName . '" table', 3);
@@ -127,49 +127,51 @@
 			// If we are a standard QQNode at the top level column, simply return the column name
 			if ((get_class($this) == 'QQNode') && (is_null($this->objParentNode->_Type)))
 				return sprintf('%s%s%s.%s%s%s',
-					$strBegin, $this->objParentNode->_Name, $strEnd,
+					$strBegin, $objBuilder->GetTableAlias($this->objParentNode->_Name), $strEnd,
 					$strBegin, $this->strName, $strEnd);
 			else {
 				// Use the Helper to Iterate Through the Parent Chain and get the Parent Alias
-				$strParentAlias = $this->objParentNode->GetColumnAliasHelper($objBuilder, $strBegin, $strEnd, $blnExpandSelection);
+				try {
+					$strParentAlias = $this->objParentNode->GetColumnAliasHelper($objBuilder, $strBegin, $strEnd, $blnExpandSelection);
 
-				if ($this->strTableName) {
-					// Next, Join the Appropriate Table
-					$objBuilder->AddJoinItem(sprintf('LEFT JOIN %s%s%s AS %s%s__%s%s ON %s%s%s.%s%s%s = %s%s__%s%s.%s%s%s', 
-						$strBegin, $this->strTableName, $strEnd,
-						$strBegin, $strParentAlias, $this->strName, $strEnd,
-						$strBegin, $strParentAlias, $strEnd, $strBegin, $this->strName, $strEnd,
-						$strBegin, $strParentAlias, $this->strName, $strEnd,
-						$strBegin, $this->strPrimaryKey, $strEnd));
+					if ($this->strTableName) {
+						// Next, Join the Appropriate Table
+						$objBuilder->AddJoinItem($this->strTableName, $strParentAlias . '__' . $this->strName,
+							$strParentAlias, $this->strName, $this->strPrimaryKey, $objJoinCondition);
 
-					if ($blnExpandSelection)
-						call_user_func(array($this->strClassName, 'GetSelectFields'), $objBuilder, $strParentAlias . '__' . $this->strName);
+						if ($blnExpandSelection)
+							call_user_func(array($this->strClassName, 'GetSelectFields'), $objBuilder, $strParentAlias . '__' . $this->strName);
+					}
+				} catch (QCallerException $objExc) {
+					$objExc->IncrementOffset();
+					throw $objExc;
 				}
 
 				// Finally, return the final column alias name (Parent Prefix with Current Node Name)
 				return sprintf('%s%s%s.%s%s%s',
-					$strBegin, $strParentAlias, $strEnd,
+					$strBegin, $objBuilder->GetTableAlias($strParentAlias), $strEnd,
 					$strBegin, $this->strName, $strEnd);
 			}
 		}
 
-		public function GetColumnAliasHelper(QQueryBuilder $objBuilder, $strBegin, $strEnd, $blnExpandSelection) {
+		public function GetColumnAliasHelper(QQueryBuilder $objBuilder, $strBegin, $strEnd, $blnExpandSelection, QQCondition $objJoinCondition = null) {
 			// Are we at the Parent Node?
 			if (is_null($this->objParentNode))
 				// Yep -- Simply return the Parent Node Name
 				return $this->strName;
 			else {
-				// No -- First get the Parent Alias
-				$strParentAlias = $this->objParentNode->GetColumnAliasHelper($objBuilder, $strBegin, $strEnd, $blnExpandSelection);
+				try {
+					// No -- First get the Parent Alias
+					$strParentAlias = $this->objParentNode->GetColumnAliasHelper($objBuilder, $strBegin, $strEnd, $blnExpandSelection);
 
-				// Next, Join the Appropriate Table
-				$objBuilder->AddJoinItem(sprintf('LEFT JOIN %s%s%s AS %s%s__%s%s ON %s%s%s.%s%s%s = %s%s__%s%s.%s%s%s', 
-					$strBegin, $this->strTableName, $strEnd,
-					$strBegin, $strParentAlias, $this->strName, $strEnd,
-					$strBegin, $strParentAlias, $strEnd, $strBegin, $this->strName, $strEnd,
-					$strBegin, $strParentAlias, $this->strName, $strEnd,
-					$strBegin, $this->strPrimaryKey, $strEnd));
-				
+					// Next, Join the Appropriate Table
+					$objBuilder->AddJoinItem($this->strTableName, $strParentAlias . '__' . $this->strName,
+						$strParentAlias, $this->strName, $this->strPrimaryKey, $objJoinCondition);
+				} catch (QCallerException $objExc) {
+					$objExc->IncrementOffset();
+					throw $objExc;
+				}
+
 				// Next, Expand the Selection Fields for this Table (if applicable)
 				if ($blnExpandSelection) {
 					call_user_func(array($this->strClassName, 'GetSelectFields'), $objBuilder, $strParentAlias . '__' . $this->strName);
@@ -251,7 +253,7 @@
 			$this->strPropertyName = $strPropertyName;
 		}
 
-		public function GetColumnAlias(QQueryBuilder $objBuilder, $blnExpandSelection = false) {
+		public function GetColumnAlias(QQueryBuilder $objBuilder, $blnExpandSelection = false, QQCondition $objJoinCondition = null) {
 			// Make sure our Root Tables Match
 			if ($this->_RootTableName != $objBuilder->RootTableName)
 				throw new QCallerException('Cannot use QQNode for "' . $this->_RootTableName . '" when querying against the "' . $objBuilder->RootTableName . '" table', 3);
@@ -262,34 +264,31 @@
 
 			// If we are a standard QQNode at the top level column, simply return the column name
 			if ((get_class($this) == 'QQNode') && (is_null($this->objParentNode->_Type)))
-				return sprintf('%s%s%s.%s%s%s',
+/*				return sprintf('%s%s%s.%s%s%s',
 					$strBegin, $this->objParentNode->_Name, $strEnd,
-					$strBegin, $this->strName, $strEnd);
+					$strBegin, $this->strName, $strEnd);*/
+				return;
 			else {
 				// Use the Helper to Iterate Through the Parent Chain and get the Parent Alias
 				$strParentAlias = $this->objParentNode->GetColumnAliasHelper($objBuilder, $strBegin, $strEnd, $blnExpandSelection);
 
 				if ($this->strTableName) {
 					// Next, Join the Appropriate Table
-					$objBuilder->AddJoinItem(sprintf('LEFT JOIN %s%s%s AS %s%s__%s%s ON %s%s%s.%s%s%s = %s%s__%s%s.%s%s%s', 
-						$strBegin, $this->strTableName, $strEnd,
-						$strBegin, $strParentAlias, $this->strName, $strEnd,
-						$strBegin, $strParentAlias, $strEnd, $strBegin, $this->objParentNode->_PrimaryKey, $strEnd,
-						$strBegin, $strParentAlias, $this->strName, $strEnd,
-						$strBegin, $this->strForeignKey, $strEnd));
+					$objBuilder->AddJoinItem($this->strTableName, $strParentAlias . '__' . $this->strName, $strParentAlias, $this->objParentNode->_PrimaryKey, $this->strForeignKey, $objJoinCondition);
 
 					if ($blnExpandSelection)
 						call_user_func(array($this->strClassName, 'GetSelectFields'), $objBuilder, $strParentAlias . '__' . $this->strName);
 				}
 
 				// Finally, return the final column alias name (Parent Prefix with Current Node Name)
-				return sprintf('%s%s%s.%s%s%s',
+/*				return sprintf('%s%s%s.%s%s%s',
 					$strBegin, $strParentAlias, $strEnd,
-					$strBegin, $this->strName, $strEnd);
+					$strBegin, $this->strName, $strEnd);*/
+				return;
 			}
 		}
 
-		public function GetColumnAliasHelper(QQueryBuilder $objBuilder, $strBegin, $strEnd, $blnExpandSelection) {
+		public function GetColumnAliasHelper(QQueryBuilder $objBuilder, $strBegin, $strEnd, $blnExpandSelection, QQCondition $objJoinCondition = null) {
 			// Are we at the Parent Node?
 			if (is_null($this->objParentNode))
 				// Yep -- Simply return the Parent Node Name
@@ -299,19 +298,13 @@
 				$strParentAlias = $this->objParentNode->GetColumnAliasHelper($objBuilder, $strBegin, $strEnd, $blnExpandSelection);
 
 				// Next, Join the Appropriate Table
-				$objBuilder->AddJoinItem(sprintf('LEFT JOIN %s%s%s AS %s%s__%s%s ON %s%s%s.%s%s%s = %s%s__%s%s.%s%s%s', 
-					$strBegin, $this->strTableName, $strEnd,
-					$strBegin, $strParentAlias, $this->strName, $strEnd,
-					$strBegin, $strParentAlias, $strEnd,
-					$strBegin, $this->objParentNode->_PrimaryKey, $strEnd,
-					$strBegin, $strParentAlias, $this->strName, $strEnd,
-					$strBegin, $this->strForeignKey, $strEnd));
+				$objBuilder->AddJoinItem($this->strTableName, $strParentAlias . '__' . $this->strName, $strParentAlias, $this->objParentNode->_PrimaryKey, $this->strForeignKey, $objJoinCondition);
 				
 				// Next, Expand the Selection Fields for this Table (if applicable)
 				// TODO: If/when we add assn-based attributes, possibly add selectionfields addition here?
-//				if ($blnExpandSelection) {
-//					call_user_func(array($this->strClassName, 'GetSelectFields'), $objBuilder, $strParentAlias . '__' . $this->strName);
-//				}
+				if ($blnExpandSelection) {
+					call_user_func(array($this->strClassName, 'GetSelectFields'), $objBuilder, $strParentAlias . '__' . $this->strName);
+				}
 
 				// Return the Parent Alias
 				return $strParentAlias . '__' . $this->strName;
@@ -366,12 +359,8 @@
 
 				if ($this->strTableName) {
 					// Next, Join the Appropriate Table
-					$objBuilder->AddJoinItem(sprintf('LEFT JOIN %s%s%s AS %s%s__%s%s ON %s%s%s.%s%s%s = %s%s__%s%s.%s%s%s', 
-						$strBegin, $this->strTableName, $strEnd,
-						$strBegin, $strParentAlias, $this->strName, $strEnd,
-						$strBegin, $strParentAlias, $strEnd, $strBegin, $this->strName, $strEnd,
-						$strBegin, $strParentAlias, $this->strName, $strEnd,
-						$strBegin, $this->strPrimaryKey, $strEnd));
+					$objBuilder->AddJoinItem($this->strTableName, $strParentAlias . '__' . $this->strName,
+						$strParentAlias, $this->strName, $this->strPrimaryKey);
 
 					if ($blnExpandSelection)
 						call_user_func(array($this->strClassName, 'GetSelectFields'), $objBuilder, $strParentAlias . '__' . $this->strName);
@@ -394,14 +383,9 @@
 				$strParentAlias = $this->objParentNode->GetColumnAliasHelper($objBuilder, $strBegin, $strEnd, $blnExpandSelection);
 
 				// Next, Join the Appropriate Table
-				$objBuilder->AddJoinItem(sprintf('LEFT JOIN %s%s%s AS %s%s__%s%s ON %s%s%s.%s%s%s = %s%s__%s%s.%s%s%s', 
-					$strBegin, $this->strTableName, $strEnd,
-					$strBegin, $strParentAlias, $this->strName, $strEnd,
-					$strBegin, $strParentAlias, $strEnd,
-					$strBegin, $this->objParentNode->_PrimaryKey, $strEnd,
-					$strBegin, $strParentAlias, $this->strName, $strEnd,
-					$strBegin, $this->strPrimaryKey, $strEnd));
-				
+					$objBuilder->AddJoinItem($this->strTableName, $strParentAlias . '__' . $this->strName,
+						$strParentAlias, $this->objParentNode->_PrimaryKey, $this->strPrimaryKey);
+
 				// Next, Expand the Selection Fields for this Table (if applicable)
 				// TODO: If/when we add assn-based attributes, possibly add selectionfields addition here?
 //				if ($blnExpandSelection) {
@@ -447,6 +431,33 @@
 		abstract public function UpdateQueryBuilder(QQueryBuilder $objBuilder);
 		public function __toString() {
 			return 'QQCondition Object';
+		}
+
+		protected $blnProcessed;
+
+		/**
+		 * Used internally by Qcodo Query to get an individual where clause for a given condition
+		 * Mostly used for conditional joins.
+		 * 
+		 * @param QDatabaseBase $objDatabase
+		 * @param string $strRootTableName
+		 * @param boolean $blnProcessOnce
+		 */
+		public function GetWhereClause(QQueryBuilder $objBuilder, $blnProcessOnce = false) {
+			if ($blnProcessOnce && $this->blnProcessed)
+				return null;
+
+			$this->blnProcessed = true;
+
+			try {
+				$objConditionBuilder = new QPartialQueryBuilder($objBuilder);
+				$this->UpdateQueryBuilder($objConditionBuilder);
+				return $objConditionBuilder->GetWhereStatement();
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
 		}
 	}
 	class QQConditionAll extends QQCondition {
@@ -606,6 +617,8 @@
 
 			if ($mixValuesArray instanceof QQNamedValue)
 				$this->mixOperand = $mixValuesArray;
+			else if ($mixValuesArray instanceof QQSubQueryNode)
+				$this->mixOperand = $mixValuesArray;
 			else {
 				try {
 					$this->mixOperand = QType::Cast($mixValuesArray, QType::ArrayType);
@@ -619,6 +632,8 @@
 		public function UpdateQueryBuilder(QQueryBuilder $objBuilder) {
 			if ($this->mixOperand instanceof QQNamedValue)
 				$objBuilder->AddWhereItem($this->objQueryNode->GetColumnAlias($objBuilder) . ' IN (' . $this->mixOperand->Parameter() . ')');
+			else if ($this->mixOperand instanceof QQSubQueryNode)
+				$objBuilder->AddWhereItem($this->objQueryNode->GetColumnAlias($objBuilder) . ' IN ' . $this->mixOperand->GetColumnAlias($objBuilder));
 			else {
 				$strParameters = array();
 				foreach ($this->mixOperand as $mixParameter) {
@@ -640,6 +655,8 @@
 
 			if ($mixValuesArray instanceof QQNamedValue)
 				$this->mixOperand = $mixValuesArray;
+			else if ($mixValuesArray instanceof QQSubQueryNode)
+				$this->mixOperand = $mixValuesArray;
 			else {
 				try {
 					$this->mixOperand = QType::Cast($mixValuesArray, QType::ArrayType);
@@ -653,6 +670,8 @@
 		public function UpdateQueryBuilder(QQueryBuilder $objBuilder) {
 			if ($this->mixOperand instanceof QQNamedValue)
 				$objBuilder->AddWhereItem($this->objQueryNode->GetColumnAlias($objBuilder) . ' NOT IN (' . $this->mixOperand->Parameter() . ')');
+			else if ($this->mixOperand instanceof QQSubQueryNode)
+				$objBuilder->AddWhereItem($this->objQueryNode->GetColumnAlias($objBuilder) . ' NOT IN ' . $this->mixOperand->GetColumnAlias($objBuilder));
 			else {
 				$strParameters = array();
 				foreach ($this->mixOperand as $mixParameter) {
@@ -787,7 +806,7 @@
 	class QQConditionNotEqual extends QQConditionComparison {
 		protected $strOperator = ' != ';
 		public function UpdateQueryBuilder(QQueryBuilder $objBuilder) {
-			return $objBuilder->AddWhereItem($this->objQueryNode->GetColumnAlias($objBuilder) . ' ' .  $this->objQueryNode->GetValue($this->mixOperand, $objBuilder, false));
+			return $objBuilder->AddWhereItem($this->objQueryNode->GetColumnAlias($objBuilder) . ' ' . $this->objQueryNode->GetValue($this->mixOperand, $objBuilder, false));
 		}
 	}
 	class QQConditionGreaterThan extends QQConditionComparison {
@@ -852,10 +871,10 @@
 		static public function IsNotNull(QQNode $objQueryNode) {
 			return new QQConditionIsNotNull($objQueryNode);
 		}
-		static public function In(QQNode $objQueryNode, $mixValuesArray)  {
+		static public function In(QQNode $objQueryNode, $mixValuesArray) {
 			return new QQConditionIn($objQueryNode, $mixValuesArray);
 		}
-		static public function NotIn(QQNode $objQueryNode, $mixValuesArray)  {
+		static public function NotIn(QQNode $objQueryNode, $mixValuesArray) {
 			return new QQConditionNotIn($objQueryNode, $mixValuesArray);
 		}		
 		static public function Like(QQNode $objQueryNode, $strValue) {
@@ -901,8 +920,22 @@
 		}
 
 		/////////////////////////
+		// QQSubQuery Factories
+		/////////////////////////
+
+		static public function SubSql($strSql, $objParentQueryNodes = null) {
+			$objParentQueryNodeArray = func_get_args();
+			return new QQSubQuerySqlNode($strSql, $objParentQueryNodeArray);
+		}
+
+		static public function Virtual($strName, QQSubQueryNode $objSubQueryDefinition = null) {
+			return new QQVirtualNode($strName, $objSubQueryDefinition);
+		}
+
+		/////////////////////////
 		// QQClause Factories
 		/////////////////////////
+
 		static public function Clause(/* parameterized list of QQClause objects */) {
 			$objClauseArray = array();
 
@@ -945,10 +978,16 @@
 			return new QQAverage($objNode, $strAttributeName);
 		}
 
-		static public function Expand($objNode /*, QQCondition $objConditions = null */) {
-			return new QQExpand($objNode /*, $objConditions */);
+		static public function Expand($objNode, QQCondition $objJoinCondition = null) {
+//			if (gettype($objNode) == 'string')
+//				return new QQExpandVirtualNode(new QQVirtualNode($objNode));
+
+			if ($objNode instanceof QQVirtualNode)
+				return new QQExpandVirtualNode($objNode);
+			else
+				return new QQExpand($objNode, $objJoinCondition);
 		}
-		
+
 		static public function ExpandAsArray($objNode) {
 			return new QQExpandAsArray($objNode);
 		}
@@ -966,6 +1005,92 @@
 		/////////////////////////
 		static public function NamedValue($strName) {
 			return new QQNamedValue($strName);
+		}
+	}
+
+	abstract class QQSubQueryNode extends QQNode {
+/*
+		protected $strFunctionName;
+		protected $objNode;
+		protected $objCondition;
+
+		public function __construct(QQNode $objNode, QQCondition $objCondition = null) {
+			$this->objParentNode = $objNode->objParentNode;
+			$this->strName = 'NAMEFOO';
+			$this->strPropertyName = 'PROPERTYFOO';
+			$this->strType = 'integer';
+			if ($this->objParentNode) {
+				if (version_compare(PHP_VERSION, '5.1.0') == -1)
+					$this->strRootTableName = $objNode->objParentNode->__get('_RootTableName');
+				else
+					$this->strRootTableName = $objNode->objParentNode->_RootTableName;
+			} else
+				$this->strRootTableName = 'ROOTFOO';
+
+			$this->objNode = $objNode;
+			$this->objCondition = $objCondition;
+		}
+		public function GetColumnAlias($objBuilder) {
+			if ($this->objCondition) {
+				$strConditionClause = $this->objCondition->GetWhereClause($objBuilder->Database, $this->strRootTableName, true);
+				$strFromClause = $this->objCondition->GetFromClause($objBuilder->Database, $this->strRootTableName);
+				return sprintf('(SELECT %s(%s) FROM %s WHERE %s)',
+					$this->strFunctionName,
+					$this->objNode->GetColumnAlias($this->objCondition->GetPartialBuilder($objBuilder->Database, $this->strRootTableName)),
+					$strFromClause,
+					$strConditionClause);
+			} else {
+				return 'HERE';
+			}
+		}*/
+	}
+
+	class QQSubQueryCountNode extends QQSubQueryNode {
+		protected $strFunctionName = 'COUNT';
+	}
+
+	class QQSubQuerySqlNode extends QQSubQueryNode {
+		protected $strSql;
+		protected $objParentQueryNodes;
+		public function __construct($strSql, $objParentQueryNodes = null) {
+			$this->objParentNode = true;
+			$this->objParentQueryNodes = $objParentQueryNodes;
+			$this->strSql = $strSql;
+		}
+		public function GetColumnAlias($objBuilder) {
+			$strSql = $this->strSql;
+			for ($intIndex = 1; $intIndex < count($this->objParentQueryNodes); $intIndex++) {
+				if (!is_null($this->objParentQueryNodes[$intIndex]))
+					$strSql = str_replace('{' . $intIndex . '}', $this->objParentQueryNodes[$intIndex]->GetColumnAlias($objBuilder), $strSql);
+			}
+			return '(' . $strSql . ')';
+		}
+	}
+	
+	class QQVirtualNode extends QQNode {
+		protected $strName;
+		protected $objSubQueryDefinition;
+		public function __construct($strName, QQSubQueryNode $objSubQueryDefinition = null) {
+			$this->objParentNode = true;
+			$this->strName = trim(strtolower($strName));
+			$this->objSubQueryDefinition = $objSubQueryDefinition;
+		}
+		public function GetColumnAlias(QQueryBuilder $objBuilder) {
+			if ($this->objSubQueryDefinition) {
+				$objBuilder->SetVirtualNode($this->strName, $this->objSubQueryDefinition);
+				return $this->objSubQueryDefinition->GetColumnAlias($objBuilder);
+			} else {
+				try {
+					return $objBuilder->GetVirtualNode($this->strName)->GetColumnAlias($objBuilder);
+				} catch (QCallerException $objExc) {
+					$objExc->IncrementOffset();
+					$objExc->IncrementOffset();
+					throw $objExc;
+				}
+			}
+		}
+		public function GetAttributeName() {
+			return $this->strName;
 		}
 	}
 
@@ -1094,9 +1219,28 @@
 		}
 	}
 	
+	class QQExpandVirtualNode extends QQClause {
+		protected $objNode;
+		public function __construct(QQVirtualNode $objNode) {
+			$this->objNode = $objNode;
+		}
+		public function UpdateQueryBuilder(QQueryBuilder $objBuilder) {
+			try {
+				$objBuilder->AddSelectFunction(null, $this->objNode->GetColumnAlias($objBuilder), $this->objNode->GetAttributeName());
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+		}
+		public function __toString() {
+			return 'QQExpandVirtualNode Clause';
+		}
+	}
 	class QQExpand extends QQClause {
 		protected $objNode;
-		public function __construct($objNode /* , QQCondition $objConditions = null */) {
+		protected $objJoinCondition;
+
+		public function __construct($objNode, QQCondition $objJoinCondition = null) {
 			// Check against root and table QQNodes
 			if ($objNode instanceof QQAssociationNode)
 				throw new QCallerException('Expand clause parameter cannot be the association table\'s QQNode, itself', 2);
@@ -1106,11 +1250,10 @@
 				throw new QInvalidCastException('Unable to cast "' . $objNode->_Name . '" table to Column-based QQNode', 3);
 
 			$this->objNode = $objNode;
-
-			// TO DO: Handle JOIN Conditions?
+			$this->objJoinCondition = $objJoinCondition;
 		}
 		public function UpdateQueryBuilder(QQueryBuilder $objBuilder) {
-			$this->objNode->GetColumnAlias($objBuilder, true);
+			$this->objNode->GetColumnAlias($objBuilder, true, $this->objJoinCondition);
 		}
 		public function __toString() {
 			return 'QQExpand Clause';
@@ -1134,12 +1277,7 @@
 			$this->strAttributeName = $strAttributeName;
 		}
 		public function UpdateQueryBuilder(QQueryBuilder $objBuilder) {
-			// Pull the Begin and End Escape Identifiers from the Database Adapter
-			$strBegin = $objBuilder->Database->EscapeIdentifierBegin;
-			$strEnd = $objBuilder->Database->EscapeIdentifierEnd;
-
-			$objBuilder->AddSelectItem(sprintf('%s(%s) AS %s__%s%s',
-				$this->strFunctionName, $this->objNode->GetColumnAlias($objBuilder), $strBegin, $this->strAttributeName, $strEnd));
+			$objBuilder->AddSelectFunction($this->strFunctionName, $this->objNode->GetColumnAlias($objBuilder), $this->strAttributeName);
 		}
 	}
 	class QQCount extends QQAggregationClause {
@@ -1242,11 +1380,17 @@
 
 	class QQueryBuilder extends QBaseClass {
 		protected $strSelectArray;
+		protected $strColumnAliasArray;
+		protected $intColumnAliasCount = 0;
+		protected $strTableAliasArray;
+		protected $intTableAliasCount = 0;
 		protected $strFromArray;
 		protected $strJoinArray;
+		protected $strJoinConditionArray;
 		protected $strWhereArray;
 		protected $strOrderByArray;
 		protected $strGroupByArray;
+		protected $objVirtualNodeArray;
 		protected $strLimitInfo;
 		protected $blnDistinctFlag;
 		protected $strExpandAsArrayNodes;
@@ -1255,17 +1399,141 @@
 
 		protected $objDatabase;
 		protected $strRootTableName;
+		
+		protected $strEscapeIdentifierBegin;
+		protected $strEscapeIdentifierEnd;
 
-		public function AddSelectItem($strItem) {
-			$this->strSelectArray[$strItem] = $strItem;
+		public function AddSelectItem($strTableName, $strColumnName, $strFullAlias) {
+			$strTableAlias = $this->GetTableAlias($strTableName);
+
+			if (!array_key_exists($strFullAlias, $this->strColumnAliasArray)) {
+				$strColumnAlias = 'a' . $this->intColumnAliasCount++;
+				$this->strColumnAliasArray[$strFullAlias] = $strColumnAlias;
+			} else {
+				$strColumnAlias = $this->strColumnAliasArray[$strFullAlias];
+			}
+
+			$this->strSelectArray[$strFullAlias] = sprintf('%s%s%s.%s%s%s AS %s%s%s',
+				$this->strEscapeIdentifierBegin, $strTableAlias, $this->strEscapeIdentifierEnd,
+				$this->strEscapeIdentifierBegin, $strColumnName, $this->strEscapeIdentifierEnd,
+				$this->strEscapeIdentifierBegin, $strColumnAlias, $this->strEscapeIdentifierEnd);
+		}
+		
+		public function AddSelectFunction($strFunctionName, $strColumnName, $strFullAlias) {
+			$this->strSelectArray[$strFullAlias] = sprintf('%s(%s) AS %s__%s%s',
+				$strFunctionName, $strColumnName,
+				$this->strEscapeIdentifierBegin, $strFullAlias, $this->strEscapeIdentifierEnd);
 		}
 
-		public function AddFromItem($strItem) {
-			$this->strFromArray[$strItem] = $strItem;
+		public function AddFromItem($strTableName) {
+			$strTableAlias = $this->GetTableAlias($strTableName);
+
+			$this->strFromArray[$strTableName] = sprintf('%s%s%s AS %s%s%s',
+				$this->strEscapeIdentifierBegin, $strTableName, $this->strEscapeIdentifierEnd,
+				$this->strEscapeIdentifierBegin, $strTableAlias, $this->strEscapeIdentifierEnd);
 		}
 
-		public function AddJoinItem($strItem) {
-			$this->strJoinArray[$strItem] = $strItem;
+		public function GetTableAlias($strTableName) {
+			if (!array_key_exists($strTableName, $this->strTableAliasArray)) {
+				$strTableAlias = 't' . $this->intTableAliasCount++;
+				$this->strTableAliasArray[$strTableName] = $strTableAlias;
+				return $strTableAlias;
+			} else {
+				return $this->strTableAliasArray[$strTableName];
+			}
+		}
+
+		public function AddJoinItem($strJoinTableName, $strJoinTableAlias, $strTableName, $strColumnName, $strLinkedColumnName, QQCondition $objJoinCondition = null) {
+			$strJoinItem = sprintf('LEFT JOIN %s%s%s AS %s%s%s ON %s%s%s.%s%s%s = %s%s%s.%s%s%s',
+				$this->strEscapeIdentifierBegin, $strJoinTableName, $this->strEscapeIdentifierEnd,
+				$this->strEscapeIdentifierBegin, $this->GetTableAlias($strJoinTableAlias), $this->strEscapeIdentifierEnd,
+
+				$this->strEscapeIdentifierBegin, $this->GetTableAlias($strTableName), $this->strEscapeIdentifierEnd,
+				$this->strEscapeIdentifierBegin, $strColumnName, $this->strEscapeIdentifierEnd,
+
+				$this->strEscapeIdentifierBegin, $this->GetTableAlias($strJoinTableAlias), $this->strEscapeIdentifierEnd,
+				$this->strEscapeIdentifierBegin, $strLinkedColumnName, $this->strEscapeIdentifierEnd);
+
+				$strJoinIndex = $strJoinItem;
+			try {
+				$strConditionClause = null;
+				if ($objJoinCondition &&
+					($strConditionClause = $objJoinCondition->GetWhereClause($this, false)))
+					$strJoinItem .= ' AND ' . $strConditionClause;
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+
+			/* If this table has already been joined, then we need to check for the following:
+				1. Condition wasn't specified before and we aren't specifying one now
+					Do Nothing --b/c nothing was changed or updated
+				2. Condition wasn't specified before but we ARE specifying one now
+					Update the indexed item in the joinArray with the new JoinItem WITH Condition
+				3. Condition WAS specified before but we aren't specifying one now
+					Do Nothing -- we need to keep the old condition intact
+				4. Condition WAS specified before and we are specifying the SAME one now
+					Do Nothing --b/c nothing was changed or updated
+				5. Condition WAS specified before and we are specifying a DIFFERENT one now
+					Do Nothing -- we need to keep the old condition intact
+					TODO: throw an excpetion of mismatched conditions -- but this could be too
+					intensive from a code processing standpoint
+			*/
+			if (array_key_exists($strJoinIndex, $this->strJoinArray)) {
+				// Case 1 and 2
+				if (!array_key_exists($strJoinIndex, $this->strJoinConditionArray)) {
+					
+					// Case 1
+					if (!$strConditionClause) {
+						return;
+
+					// Case 2
+					} else {
+						$this->strJoinArray[$strJoinIndex] = $strJoinItem;
+						$this->strJoinConditionArray[$strJoinIndex] = $strConditionClause;
+						return;
+					}
+				}
+
+				// Case 3
+				if (!$strConditionClause)
+					return;
+
+				// Case 4
+				if ($strConditionClause == $this->strJoinConditionArray[$strJoinIndex])
+					return;
+
+				// Case 5
+				throw new QCallerException('You have two different Join Conditions on the same Expanded Table: ' . $strJoinIndex . "\r\n[" . $this->strJoinConditionArray[$strJoinIndex] . ']   vs.   [' . $strConditionClause . ']');
+			}
+
+			// Create the new JoinItem in teh JoinArray
+			$this->strJoinArray[$strJoinIndex] = $strJoinItem;
+
+			// If there is a condition, record that condition against this JoinIndex
+			if ($strConditionClause)
+				$this->strJoinConditionArray[$strJoinIndex] = $strConditionClause;
+		}
+
+		public function AddJoinCustomItem($strJoinTableName, $strJoinTableAlias, QQCondition $objJoinCondition) {
+			$strJoinItem = sprintf('LEFT JOIN %s%s%s AS %s%s%s ON ',
+				$this->strEscapeIdentifierBegin, $strJoinTableName, $this->strEscapeIdentifierEnd,
+				$this->strEscapeIdentifierBegin, $this->GetTableAlias($strJoinTableAlias), $this->strEscapeIdentifierEnd
+			);
+
+			try {
+				if (($strConditionClause = $objJoinCondition->GetWhereClause($this->objDatabase, $this->strRootTableName, true)))
+					$strJoinItem .= ' AND ' . $strConditionClause;
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+
+			$this->strJoinArray[$strJoinItem] = $strJoinItem;
+		}
+
+		public function AddJoinCustomSqlItem($strSql) {
+			$this->strJoinArray[$strSql] = $strSql;
 		}
 
 		public function AddWhereItem($strItem) {
@@ -1292,34 +1560,50 @@
 			$this->blnCountOnlyFlag = true;
 		}
 		
+		public function SetVirtualNode($strName, QQSubQueryNode $objNode) {
+			$this->objVirtualNodeArray[trim(strtolower($strName))] = $objNode;
+		}
+		
+		public function GetVirtualNode($strName) {
+			$strName = trim(strtolower($strName));
+			if (array_key_exists($strName, $this->objVirtualNodeArray))
+				return $this->objVirtualNodeArray[$strName];
+			else throw new QCallerException('Undefined Virtual Node: ' . $strName);
+		}
+
 		public function AddExpandAsArrayNode($objNode) {
 			$this->strExpandAsArrayNodes[$objNode->GetExpandArrayAlias()] = true;
 		}
 
 		public function __construct(QDatabaseBase $objDatabase, $strRootTableName) {
 			$this->objDatabase = $objDatabase;
+			$this->strEscapeIdentifierBegin = $objDatabase->EscapeIdentifierBegin;
+			$this->strEscapeIdentifierEnd = $objDatabase->EscapeIdentifierEnd;
 			$this->strRootTableName = $strRootTableName;
 
 			$this->strSelectArray = array();
+			$this->strColumnAliasArray = array();
+			$this->strTableAliasArray = array();
 			$this->strFromArray = array();
 			$this->strJoinArray = array();
+			$this->strJoinConditionArray = array();
 			$this->strWhereArray = array();
 			$this->strOrderByArray = array();
 			$this->strGroupByArray = array();
+			$this->objVirtualNodeArray = array();
 
 			$this->strExpandAsArrayNodes = array();
 		}
-
+		
 		public function GetStatement() {
 			// SELECT Clause
 			if ($this->blnCountOnlyFlag) {
-//				$strSql = "SELECT\r\n	COUNT(*) as row_count\r\n";
 				if ($this->blnDistinctFlag) {
-					$strSql = "SELECT\r\n    COUNT(*) AS row_count\r\n" .
+					$strSql = "SELECT\r\n    COUNT(*) AS q_row_count\r\n" .
 						"FROM    (SELECT DISTINCT ";
 					$strSql .= "    " . implode(",\r\n    ", $this->strSelectArray);
 				} else
-					$strSql = "SELECT\r\n    COUNT(*) as row_count\r\n";
+					$strSql = "SELECT\r\n    COUNT(*) AS q_row_count\r\n";
 			} else {
 				if ($this->blnDistinctFlag)
 					$strSql = "SELECT DISTINCT\r\n";
@@ -1327,26 +1611,26 @@
 					$strSql = "SELECT\r\n";
 				if ($this->strLimitInfo)
 					$strSql .= $this->objDatabase->SqlLimitVariablePrefix($this->strLimitInfo) . "\r\n";
-				$strSql .= "	" . implode(",\r\n	", $this->strSelectArray);
+				$strSql .= "    " . implode(",\r\n    ", $this->strSelectArray);
 			}
 
 			// FROM and JOIN Clauses
-			$strSql .= sprintf("\r\nFROM\r\n	%s\r\n	%s",
-				implode(",\r\n	", $this->strFromArray),
-				implode("\r\n	", $this->strJoinArray));
+			$strSql .= sprintf("\r\nFROM\r\n    %s\r\n    %s",
+				implode(",\r\n    ", $this->strFromArray),
+				implode("\r\n    ", $this->strJoinArray));
 
 			// WHERE Clause
 			if (count($this->strWhereArray)) {
-				$strWhere = implode("\r\n	", $this->strWhereArray);
+				$strWhere = implode("\r\n    ", $this->strWhereArray);
 				if (trim($strWhere) != '1=1')
-					$strSql .= "\r\nWHERE\r\n	" . $strWhere;
+					$strSql .= "\r\nWHERE\r\n    " . $strWhere;
 			}
 
 			// Additional Ordering/Grouping clauses
 			if (count($this->strGroupByArray))
-				$strSql .= "\r\nGROUP BY\r\n	" . implode(",\r\n	", $this->strGroupByArray);
+				$strSql .= "\r\nGROUP BY\r\n    " . implode(",\r\n    ", $this->strGroupByArray);
 			if (count($this->strOrderByArray))
-				$strSql .= "\r\nORDER BY\r\n	" . implode(",\r\n	", $this->strOrderByArray);
+				$strSql .= "\r\nORDER BY\r\n    " . implode(",\r\n    ", $this->strOrderByArray);
 
 			// Limit Suffix (if applicable)
 			if ($this->strLimitInfo)
@@ -1354,10 +1638,12 @@
 
 			// For Distinct Count Queries
 			if ($this->blnCountOnlyFlag && $this->blnDistinctFlag)
-				$strSql .= "\r\n) as count_table";
+				$strSql .= "\r\n) as q_count_table";
 
 			return $strSql;
 		}
+
+		
 
 		public function __get($strName) {
 			switch ($strName) {
@@ -1365,6 +1651,8 @@
 					return $this->objDatabase;
 				case 'RootTableName':
 					return $this->strRootTableName;
+				case 'ColumnAliasArray':
+					return $this->strColumnAliasArray;
 				case 'ExpandAsArrayNodes':
 					if (count($this->strExpandAsArrayNodes))
 						return $this->strExpandAsArrayNodes;
@@ -1378,6 +1666,27 @@
 						throw $objExc;
 					}
 			}
+		}
+	}
+
+	/**
+	 * 	Subclasses QQueryBuilder to handle the building of conditions for conditional expansions, subqueries, etc.
+	 * 	Since regular queries use WhereClauses for conditions, we just use the where clause portion, and
+	 * 	only build a condition clause appropriate for a conditional expansion.
+	 */	
+	class QPartialQueryBuilder extends QQueryBuilder {
+		protected $objParentBuilder;
+		public function __construct(QQueryBuilder $objBuilder) {
+			parent::__construct($objBuilder->objDatabase, $objBuilder->strRootTableName);
+			$this->objParentBuilder = $objBuilder;
+			$this->strColumnAliasArray = &$objBuilder->strColumnAliasArray;
+			$this->strTableAliasArray = &$objBuilder->strTableAliasArray;
+		}
+		public function GetWhereStatement() {
+			return implode(' ', $this->strWhereArray);
+		}
+		public function GetFromStatement() {
+			return implode(' ', $this->strFromArray) . ' ' . implode(' ', $this->strJoinArray);
 		}
 	}
 ?>

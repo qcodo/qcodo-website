@@ -9,7 +9,11 @@
 
 		public function SqlLimitVariablePrefix($strLimitInfo) {
 			// MySQL uses Limit by Suffixes (via a LIMIT clause)
-			// Prefix is not used, therefore, return null
+
+			// If requested, use SQL_CALC_FOUND_ROWS directive to utilize GetFoundRows() method
+			if (array_key_exists('usefoundrows', $this->objConfigArray) && $this->objConfigArray['usefoundrows'])
+				return 'SQL_CALC_FOUND_ROWS';
+
 			return null;
 		}
 
@@ -159,6 +163,15 @@
 			$this->NonQuery('SET AUTOCOMMIT=1;');
 		}
 
+		public function GetFoundRows() {
+			if (array_key_exists('usefoundrows', $this->objConfigArray) && $this->objConfigArray['usefoundrows']) {
+				$objResult = $this->Query('SELECT FOUND_ROWS();');
+				$strRow = $objResult->FetchArray();
+				return $strRow[0];
+			} else
+				throw new QCallerException('Cannot call GetFoundRows() on the database when "usefoundrows" configuration was not set to true.');
+		}
+
 		public function GetIndexesForTable($strTableName) {
 			// Figure out the Table Type (InnoDB, MyISAM, etc.) by parsing the Create Table description
 			$strCreateStatement = $this->GetCreateStatementForTable($strTableName);
@@ -172,6 +185,7 @@
 					return $this->ParseForIndexes($strCreateStatement);
 
 				case substr($strTableType, 0, 6) == 'MEMORY':
+				case substr($strTableType, 0, 4) == 'HEAP':
 					return $this->ParseForIndexes($strCreateStatement);
 
 				default:
@@ -190,6 +204,7 @@
 					break;
 
 				case substr($strTableType, 0, 6) == 'MEMORY':
+				case substr($strTableType, 0, 4) == 'HEAP':
 					$objForeignKeyArray = array();
 					break;
 
@@ -427,6 +442,10 @@
 			return $this->objMySqliResult->fetch_row();
 		}
 
+		public function MySqlFetchField() {
+			return $this->objMySqliResult->fetch_field();
+		}
+
 		public function CountRows() {
 			return $this->objMySqliResult->num_rows;
 		}
@@ -568,6 +587,7 @@
 				case MYSQLI_TYPE_INT24:
 					$this->strType = QDatabaseFieldType::Integer;
 					break;
+				case MYSQLI_TYPE_NEWDECIMAL:
 				case MYSQLI_TYPE_DECIMAL:
 				case MYSQLI_TYPE_FLOAT:
 					$this->strType = QDatabaseFieldType::Float;

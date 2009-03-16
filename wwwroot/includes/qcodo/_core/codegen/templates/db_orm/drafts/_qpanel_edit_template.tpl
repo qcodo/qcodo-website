@@ -23,7 +23,7 @@
 	</div>
 
 	<div id="formActions">
-		<div id="save"><?php $_CONTROL->btnSave->Render() ?></div>
-		<div id="cancel"><?php $_CONTROL->btnCancel->Render() ?></div>
-		<div id="delete"><?php $_CONTROL->btnDelete->Render() ?></div>
+		<div id="save"><?php $_CONTROL->btnSave->Render(); ?></div>
+		<div id="cancel"><?php $_CONTROL->btnCancel->Render(); ?></div>
+		<div id="delete"><?php $_CONTROL->btnDelete->Render(); ?></div>
 	</div>

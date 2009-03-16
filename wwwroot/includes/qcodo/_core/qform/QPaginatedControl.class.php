@@ -49,7 +49,7 @@
 			// Run the DataBinder (if applicable)
 			if (($this->objDataSource === null) && ($this->strDataBindMethod) && (!$this->blnRendered))
 				try {
-					$this->objForm->CallDataBinder($this->strDataBindMethod, $this->objDataBindControl);
+					$this->objForm->CallDataBinder($this->strDataBindMethod, $this, $this->objDataBindControl);
 				} catch (QCallerException $objExc) {
 					$objExc->IncrementOffset();
 					throw $objExc;
@@ -83,18 +83,20 @@
 				// MISC
 				case "DataSource": return $this->objDataSource;
 				case "LimitClause":
-					if ($this->objPaginator)
-						if ($this->objPaginator->TotalItemCount > 0) {
+					if ($this->objPaginator) {
+//						if ($this->objPaginator->TotalItemCount > 0) {
 							$intOffset = ($this->objPaginator->PageNumber - 1) * $this->objPaginator->ItemsPerPage;
 							return QQ::LimitInfo($this->objPaginator->ItemsPerPage, $intOffset);
-						}
+//						}
+					}
 					return null;
 				case "LimitInfo":
-					if ($this->objPaginator)
-						if ($this->objPaginator->TotalItemCount > 0) {
+					if ($this->objPaginator) {
+//						if ($this->objPaginator->TotalItemCount > 0) {
 							$intOffset = ($this->objPaginator->PageNumber - 1) * $this->objPaginator->ItemsPerPage;
 							return $intOffset . ',' . $this->objPaginator->ItemsPerPage;
-						}
+//						}
+					}
 					return null;
 				case "ItemCount": return count($this->objDataSource);
 
@@ -153,9 +155,11 @@
 				case "Paginator":
 					try {
 						$objToReturn = ($this->objPaginator = QType::Cast($mixValue, 'QPaginatorBase'));
-						if ($this->objPaginator->Form->FormId != $this->Form->FormId)
-							throw new QCallerException('The assigned paginator must belong to the same form that this control belongs to.');
-						$objToReturn->SetPaginatedControl($this);
+						if ($this->objPaginator) {
+							if ($this->objPaginator->Form->FormId != $this->Form->FormId)
+								throw new QCallerException('The assigned paginator must belong to the same form that this control belongs to.');
+							$objToReturn->SetPaginatedControl($this);
+						}
 						return $objToReturn;
 					} catch (QInvalidCastException $objExc) {
 						$objExc->IncrementOffset();
@@ -236,7 +240,7 @@
 							throw $objExc;
 						}
 					} else
-						throw new QCallerException('Setting TotalItemCount requires a Paginator to be set');
+						throw new QCallerException('Setting PageNumber requires a Paginator to be set');
 
 				default:
 					try {

@@ -139,9 +139,9 @@
 			if ($this->blnRequired) {
 				if (!$this->blnChecked) {
 					if ($this->strName)
-						$this->strValidationError = sprintf("%s is required", $this->strName);
+						$this->strValidationError = QApplication::Translate($this->strName) . ' ' . QApplication::Translate('is required');
 					else
-						$this->strValidationError = 'Required';
+						$this->strValidationError = QApplication::Translate('Required');
 					return false;
 				}
 			}

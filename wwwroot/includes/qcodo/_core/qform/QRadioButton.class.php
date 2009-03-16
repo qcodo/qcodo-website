@@ -167,7 +167,7 @@
 		public function Validate() {
 			if ($this->blnRequired) {
 				if (!$this->blnChecked) {
-					$this->strValidationError = sprintf("%s is required", $this->strName);
+					$this->strValidationError = sprintf(QApplication::Translate('%s is required'), $this->strName);
 					return false;
 				}
 			}

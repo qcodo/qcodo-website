@@ -186,6 +186,53 @@
 			}
 		}
 
+		public static function CreatePersistent($strClassName, $objParentObject, $strControlId) {
+			if ($objParentObject instanceof QForm) {
+				$objForm = $objParentObject;
+				$objParentControl = null;
+			} else if ($objParentObject instanceof QControl) {
+				$objForm = $objParentObject->Form;
+				$objParentControl = $objParentObject;
+			} else
+				throw new QCallerException('Parent Object must be a QForm or QControl');
+
+			if (array_key_exists($objForm->FormId . '_' . $strControlId, $_SESSION) && $_SESSION[$objForm->FormId . '_' . $strControlId]) {
+				$objToReturn = unserialize($_SESSION[$objForm->FormId . '_' . $strControlId]);
+				$objToReturn->objParentControl = $objParentControl;
+				$objToReturn->objForm = $objForm;
+				try {
+					$objToReturn->objForm->AddControl($objToReturn);
+					if ($objToReturn->objParentControl)
+						$objToReturn->objParentControl->AddChildControl($objToReturn);
+				} catch (QCallerException $objExc) {
+					$objExc->IncrementOffset();
+					throw $objExc;
+				}
+			} else {
+				$objToReturn = new $strClassName($objParentObject, $strControlId);
+			}
+
+			$objForm->PersistControl($objToReturn);
+			return $objToReturn;
+		}
+
+		protected function PersistPrepare() {
+			$this->objForm = null;
+			$this->objParentControl = null;
+			$this->objActionArray = array();
+			$this->objChildControlArray = array();
+			$this->blnRendered = null;
+			$this->blnRendering = null;
+			$this->blnOnPage = null;
+			$this->blnModified = null;
+			$this->mixCausesValidation = null;
+		}
+		public function Persist() {
+			$objControl = clone($this);
+			$objControl->PersistPrepare();
+			$_SESSION[$this->objForm->FormId . '_' . $this->strControlId] = serialize($objControl);
+		}
+
 		public function AddChildControl(QControl $objControl) {
 			$this->blnModified = true;
 			$this->objChildControlArray[$objControl->ControlId] = $objControl;
@@ -736,7 +783,7 @@
 //					if ($strScript)
 //						QApplication::ExecuteJavaScript($strScript);
 						
-						if ($this->blnWrapperModified)
+						if (($this->blnWrapperModified) && ($this->blnVisible))
 //							QApplication::ExecuteJavaScript(sprintf('qcodo.getWrapper("%s").style.cssText = "%s"; ', $this->strControlId, $strStyle));
 							QApplication::ExecuteJavaScript(sprintf('qc.getW("%s").style.cssText = "%stext-decoration:inherit;"; ', $this->strControlId, $strStyle));
 					}

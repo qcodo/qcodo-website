@@ -46,4 +46,8 @@
 		date_default_timezone_set('America/Los_Angeles');
 
 	define('ERROR_PAGE_PATH', __PHP_ASSETS__ . '/_core/error_page.php');
+//	define('ERROR_LOG_PATH', __INCLUDES__ . '/error_log');
+
+//	define('ERROR_FRIENDLY_PAGE_PATH', __PHP_ASSETS__ . '/friendly_error_page.php');
+//	define('ERROR_FRIENDLY_AJAX_MESSAGE', 'Oops!  An error has occurred.\r\n\r\nThe error was logged, and we will take a look into this right away.');
 ?>

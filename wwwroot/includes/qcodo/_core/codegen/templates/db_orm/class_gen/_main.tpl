@@ -16,7 +16,7 @@
 	 * 
 	 * @package <%= QCodeGen::$ApplicationName; %>
 	 * @subpackage GeneratedDataObjects
-	 * 
+<%@ property_comments('objTable'); %>
 	 */
 	class <%= $objTable->ClassName %>Gen extends QBaseClass {
 

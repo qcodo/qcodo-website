@@ -729,6 +729,10 @@
 		protected function PropertyNameFromColumn(QColumn $objColumn) {
 			return QConvertNotation::CamelCaseFromUnderscore($objColumn->Name);
 		}
+
+		protected function TypeNameFromColumnName($strName) {
+			return QConvertNotation::CamelCaseFromUnderscore($strName);
+		}
 		
 		protected function ReferenceColumnNameFromColumn(QColumn $objColumn) {
 			$strColumnName = $objColumn->Name;
@@ -836,6 +840,29 @@
 					return sprintf('cal%s', $objColumn->PropertyName);
 				default:
 					return sprintf('txt%s', $objColumn->PropertyName);
+			}
+		}
+		protected function FormControlClassForColumn(QColumn $objColumn) {
+			if ($objColumn->Identity)
+				return 'QLabel';
+				
+			if ($objColumn->Timestamp)
+				return 'QLabel';
+
+			if ($objColumn->Reference)
+				return 'QListBox';
+
+			switch ($objColumn->VariableType) {
+				case QType::Boolean:
+					return 'QCheckBox';
+				case QType::DateTime:
+					return 'QDateTimePicker';
+				case QType::Integer:
+					return 'QIntegerTextBox';
+				case QType::Float:
+					return 'QFloatTextBox';
+				default:
+					return 'QTextBox';
 			}
 		}
 

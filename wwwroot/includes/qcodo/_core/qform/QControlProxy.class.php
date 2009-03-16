@@ -1,7 +1,7 @@
 <?php
 	class QControlProxy extends QControl {
 		public function GetControlHtml() {
-			throw new QCallerException('QControlProxies cannot be rendered.  Use RenderJavaScriptActions() or RenderHrefAction().');
+			throw new QCallerException('QControlProxies cannot be rendered.  Use RenderAsEvents() within an HTML tag.');
 		}
 
 		public function RenderAsEvents($strActionParameter = null, $blnDisplayOutput = true) {

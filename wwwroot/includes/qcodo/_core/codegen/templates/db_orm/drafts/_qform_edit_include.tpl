@@ -35,9 +35,9 @@
 	</div>
 
 	<div id="formActions">
-		<div id="save"><?php $this->btnSave->Render() ?></div>
-		<div id="cancel"><?php $this->btnCancel->Render() ?></div>
-		<div id="delete"><?php $this->btnDelete->Render() ?></div>
+		<div id="save"><?php $this->btnSave->Render(); ?></div>
+		<div id="cancel"><?php $this->btnCancel->Render(); ?></div>
+		<div id="delete"><?php $this->btnDelete->Render(); ?></div>
 	</div>
 
 	<?php $this->RenderEnd() ?>	

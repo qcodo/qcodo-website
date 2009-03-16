@@ -63,7 +63,7 @@
 				if (strlen($this->strFileName) > 0)
 					return true;
 				else {
-					$this->strValidationError = sprintf("%s is required", $this->strName);
+					$this->strValidationError = QApplication::Translate($this->strName) . ' ' . QApplication::Translate('is required');
 					return false;
 				}
 			} else

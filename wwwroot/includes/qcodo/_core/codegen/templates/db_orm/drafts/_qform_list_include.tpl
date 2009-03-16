@@ -18,7 +18,7 @@
 		<h1><?php _t('<%= $objTable->ClassNamePlural %>'); ?></h1>
 	</div>
 
-	<?php $this->dtg<%= $objTable->ClassNamePlural %>->Render() ?>
+	<?php $this->dtg<%= $objTable->ClassNamePlural %>->Render(); ?>
 
 	<p class="create">
 		<a href="<?php _p(__VIRTUAL_DIRECTORY__ . __FORM_DRAFTS__) ?>/<%= QConvertNotation::UnderscoreFromCamelCase($objTable->ClassName) %>_edit.php"><?php _t('Create a New'); ?> <?php _t('<%= $objTable->ClassName %>');?></a>

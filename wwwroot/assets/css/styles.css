@@ -44,8 +44,8 @@
 	/* QDataGrid */
 	table.datagrid { border: 1px solid #aaf; }
 		table.datagrid caption, table.datagrid tfoot { padding-bottom: 4px; overflow: auto; }
-			table.datagrid div.left { float: left; font-size: 10px; }
-			table.datagrid div.right { float: right; font-size: 10px; }
+			table.datagrid span.left { float: left; font-size: 10px; display: block; }
+			table.datagrid span.right { float: right; font-size: 10px; display: block; }
 		table.datagrid tr { background-color: #fff; }
 			table.datagrid tr.alternate { background-color: #eef; }
 		table.datagrid th { background-color: #aaf; padding: 3px 5px 3px 5px; text-align: left; }
@@ -57,17 +57,37 @@
 		table.datagrid tfoot { border-top: 1px solid #aaf;} 
 
 	/* QPaginator */
-	ul.paginator { margin: 0; padding: 0; }
-		ul.paginator li { list-style-type:none; display: inline; padding: 0; margin: 0; }
-			ul.paginator li.page a { text-decoration: none; color: #000000; padding: 0 3px 0 3px; margin: 0 2px 0 2px;}
-			ul.paginator li.page a:hover { background-color: #ccf; }
-			ul.paginator li.arrow { font-weight: bold; color: #ccc; margin: 0; padding: 0 3px 0 3px; }
-			ul.paginator li.arrow a { font-weight: bold; color: #000; text-decoration: none; }
-			ul.paginator li.selected { font-weight: bold; background-color: #ccf; padding: 0 3px 0 3px; margin: 0 2px 0 2px; border: 1px; border-style: solid; }
-			ul.paginator li.break { color: #666; margin: 0 5px 0 5px; }
-			ul.paginator li.ellipsis { color: #666; }
+	span.paginator { margin: 0; padding: 0; }
+		span.paginator span { list-style-type:none; display: inline; padding: 0; margin: 0; }
+			span.paginator span.page a { text-decoration: none; color: #000000; padding: 0 3px 0 3px; margin: 0 2px 0 2px;}
+			span.paginator span.page a:hover { background-color: #ccf; }
+			span.paginator span.arrow { font-weight: bold; color: #ccc; margin: 0; padding: 0 3px 0 3px; }
+			span.paginator span.arrow a { font-weight: bold; color: #000; text-decoration: none; }
+			span.paginator span.selected { font-weight: bold; background-color: #ccf; padding: 0 3px 0 3px; margin: 0 2px 0 2px; border: 1px; border-style: solid; }
+			span.paginator span.break { color: #666; margin: 0 5px 0 5px; }
+			span.paginator span.ellipsis { color: #666; }
 
-
+	/* QCalendar */
+	div.calendar { width: 200px; border: 1px solid #337; background-color: #ccf; }
+		div.calendar div.navigator { background-color: #337; overflow: auto; _height: 100%; color: #fff; padding: 2px 6px 2px 6px; }
+		div.calendar div.navigator div.left { float: left; }
+		div.calendar div.navigator div.month { float: left; width: 80px; text-align: center; font-weight: bold; font-size: 11px; }
+		div.calendar div.navigator div.year { float: right; }
+		div.calendar div.navigator div.year span { font-size: 11px; font-weight: bold; margin-left: 6px; margin-right: 6px; }
+			div.calendar div.navigator a { color: #fff; text-decoration: none; }
+			div.calendar div.navigator a:hover { text-decoration: underline; }
+		div.calendar table { border: 0; margin-left: auto; margin-right: auto;}
+			div.calendar th { text-align: center; border: 0; padding: 4px 2px 4px 2px; font-weight: bold; font-size: 10px;}
+			div.calendar td { text-align: center; border-width: 0 0 1px 0; border-style: solid; border-color: black; padding: 0;}
+				div.calendar td.lastRow { border-width: 0;}
+				div.calendar td a { text-decoration: none; color: #000; display: block; padding: 2px 6px 2px 6px; }
+				div.calendar td.today { background-color: #bbd; }
+				div.calendar td.nonMonth a { color: #aaf; }
+				div.calendar td.selected { background-color: #c9a; font-weight: bold; }
+				div.calendar td a:hover { background-color: #eef; color: #000; }
+		div.calendar div.options { text-align: center; background-color: #337; }
+			div.calendar div.options a { color: #fff; font-size: 10px; text-decoration: none;}
+			div.calendar div.options a:hover { text-decoration: underline; }
 
 	/**
 	 * Styles for Custom Render Functions as defined in QControl.class.php

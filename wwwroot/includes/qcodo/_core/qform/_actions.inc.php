@@ -362,6 +362,21 @@
 		}
 	}
 
+	class QBlurControlAction extends QAction {
+		protected $strControlId = null;
+
+		public function __construct($objControl) {
+			if (!($objControl instanceof QControl))
+    			throw new QCallerException('First parameter of constructor is expecting an object of type QControl');
+
+			$this->strControlId = $objControl->ControlId;
+		}
+
+		public function RenderScript(QControl $objControl) {
+			return sprintf("qc.getW('%s').blur();", $this->strControlId);
+		}
+	}
+
 	class QSelectControlAction extends QAction {
 		protected $strControlId = null;
 
@@ -401,6 +416,34 @@
 					return sprintf("qc.getC('%s').className = '%s';", $objControl->ControlId, $this->strTemporaryCssClass);
 				}
 			}
+		}
+	}
+
+	class QShowCalendarAction extends QAction {
+		protected $strControlId = null;
+
+		public function __construct($calControl) {
+			if (!($calControl instanceof QCalendar))
+    			throw new QCallerException('First parameter of constructor is expecting an object of type QCalendar');
+			$this->strControlId = $calControl->ControlId;
+		}
+
+		public function RenderScript(QControl $objControl) {
+			return sprintf("qc.getC('%s').showCalendar();", $this->strControlId);
+		}
+	}
+
+	class QHideCalendarAction extends QAction {
+		protected $strControlId = null;
+
+		public function __construct($calControl) {
+			if (!($calControl instanceof QCalendar))
+    			throw new QCallerException('First parameter of constructor is expecting an object of type QCalendar');
+			$this->strControlId = $calControl->ControlId;
+		}
+
+		public function RenderScript(QControl $objControl) {
+			return sprintf("qc.getC('%s').hideCalendar();", $this->strControlId);
 		}
 	}
 ?>

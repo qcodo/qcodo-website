@@ -48,6 +48,7 @@
 		protected $strIgnoreJavaScriptFileArray = array();
 		/* protected $strIgnoreJavaScriptFileArray = array(
 			'_core/calendar.js',
+			'_core/calendar_popup.js',
 			'_core/control.js',
 			'_core/control_dialog.js',
 			'_core/control_handle.js',
@@ -61,8 +62,6 @@
 			'_core/post.js',
 			'_core/qcodo.js',
 			'_core/treenav.js'); */
-
-		
 
 		/**
 		 * This should be very rarely used.

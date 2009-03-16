@@ -103,6 +103,8 @@
 			};
 
 			this.loadStyleSheetFile = function(strStyleSheetFile, strMediaType) {
+				strStyleSheetFile = qc.cssAssets + "/" + strStyleSheetFile;
+
 				// IE does things differently...
 				if (qc.isBrowser(qcodo.IE)) {
 					var objNewScriptInclude = document.createStyleSheet(strStyleSheetFile);
@@ -240,10 +242,16 @@
 		////////////////////////////////////
 
 			this.unloadFlag = false;
-			this.handleBeforeUnload = function() {
+			this.handleUnload = function() {
 				qcodo.unloadFlag = true;
 			};
-			window.onbeforeunload = this.handleBeforeUnload;
+			window.onunload= this.handleUnload;
+
+			this.beforeUnloadFlag = false;
+			this.handleBeforeUnload = function() {
+				qcodo.beforeUnloadFlag = true;
+			};
+			window.onbeforeunload= this.handleBeforeUnload;
 
 
 

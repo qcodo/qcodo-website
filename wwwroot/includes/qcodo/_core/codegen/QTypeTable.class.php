@@ -29,6 +29,19 @@
 		 */
 		protected $strNameArray;
 
+        /**
+         * Column names for extra properties (beyond the 2 basic ones), if any.
+         */
+        protected $strExtraFieldNamesArray;
+
+        /**
+         * Array of extra properties. This is a double-array - array of arrays. Example:
+         *      1 => ['col1' => 'valueA', 'col2 => 'valueB'],
+         *      2 => ['col1' => 'valueC', 'col2 => 'valueD'],
+         *      3 => ['col1' => 'valueC', 'col2 => 'valueD']
+         */
+        protected $arrExtraPropertyArray;
+
 		/**
 		 * Array of Type Names converted into Tokens (can be used as PHP Constants)
 		 * This is indexed by integer which represents the ID in the database, starting with 1
@@ -75,6 +88,10 @@
 					return $this->strNameArray;
 				case 'TokenArray':
 					return $this->strTokenArray;
+				case 'ExtraPropertyArray':
+					return $this->arrExtraPropertyArray;
+				case 'ExtraFieldNamesArray':
+					return $this->strExtraFieldNamesArray;
 				default:
 					try {
 						return parent::__get($strName);
@@ -104,6 +121,10 @@
 						return $this->strNameArray = QType::Cast($mixValue, QType::ArrayType);
 					case 'TokenArray':
 						return $this->strTokenArray = QType::Cast($mixValue, QType::ArrayType);
+					case 'ExtraPropertyArray':
+						return $this->arrExtraPropertyArray = QType::Cast($mixValue, QType::ArrayType);
+					case 'ExtraFieldNamesArray':
+						return $this->strExtraFieldNamesArray = QType::Cast($mixValue, QType::ArrayType);
 					default:
 						return parent::__set($strName, $mixValue);
 				}

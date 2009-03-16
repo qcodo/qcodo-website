@@ -25,27 +25,27 @@
 			if ($strStyle)
 				$strStyle = sprintf(' style="%s"', $strStyle);
 
-			$strToReturn = sprintf('<ul id="%s"%s%s>', $this->strControlId, $strStyle, $this->GetAttributes(true, false));
+			$strToReturn = sprintf('<span id="%s" %s%s>', $this->strControlId, $strStyle, $this->GetAttributes(true, false));
 
 			if ($this->intPageNumber <= 1)
-				$strToReturn .= sprintf('<li class="arrow">%s</li>', $this->strLabelForPrevious);
+				$strToReturn .= sprintf('<span class="arrow">%s</span>', $this->strLabelForPrevious);
 			else {
 				$this->strActionParameter = $this->intPageNumber - 1;
-				$strToReturn .= sprintf('<li class="arrow"><a href="" %s>%s</a></li>',
+				$strToReturn .= sprintf('<span class="arrow"><a href="" %s>%s</a></span>',
 					$this->GetActionAttributes(), $this->strLabelForPrevious);
 			}
 
-			$strToReturn .= '<li class="break">|</li>';
+			$strToReturn .= '<span class="break">|</span>';
 			
 			if ($this->PageCount <= $this->intIndexCount) {
 				// We have less pages than total indexcount -- so let's go ahead
 				// and just display all page indexes
 				for ($intIndex = 1; $intIndex <= $this->PageCount; $intIndex++) {
 					if ($this->intPageNumber == $intIndex) {
-						$strToReturn .= sprintf('<li class="selected">%s</li>', $intIndex);
+						$strToReturn .= sprintf('<span class="selected">%s</span>', $intIndex);
 					} else {
 						$this->strActionParameter = $intIndex;
-						$strToReturn .= sprintf('<li class="page"><a href="" %s>%s</a></li>',
+						$strToReturn .= sprintf('<span class="page"><a href="" %s>%s</a></span>',
 							$this->GetActionAttributes(), $intIndex);
 					}
 				}
@@ -117,9 +117,9 @@
 					$intPageStart = min($intMaximumStartOfBunch, $this->intPageNumber - $intLeftOfBunchCount);
 
 					$this->strActionParameter = 1;
-					$strStartEllipsis = sprintf('<li class="page"><a href="" %s>%s</a></li>',
+					$strStartEllipsis = sprintf('<span class="page"><a href="" %s>%s</a></span>',
 						$this->GetActionAttributes(), 1);
-					$strStartEllipsis .= '<li class="ellipsis">...</li>';
+					$strStartEllipsis .= '<span class="ellipsis">...</span>';
 				}
 				
 				if ($this->intPageNumber > $intRightBunchTrigger) {
@@ -127,20 +127,20 @@
 					$strEndEllipsis = "";
 				} else {
 					$intPageEnd = max($intMinimumEndOfBunch, $this->intPageNumber + $intRightOfBunchCount);
-					$strEndEllipsis = '<li class="ellipsis">...</li>';
+					$strEndEllipsis = '<span class="ellipsis">...</span>';
 
 					$this->strActionParameter = $this->PageCount;
-					$strEndEllipsis .= sprintf('<li class="page"><a href="" %s>%s</a></li>',
+					$strEndEllipsis .= sprintf('<span class="page"><a href="" %s>%s</a></span>',
 						$this->GetActionAttributes(), $this->PageCount);
 				}
 
 				$strToReturn .= $strStartEllipsis;
 				for ($intIndex = $intPageStart; $intIndex <= $intPageEnd; $intIndex++) {
 					if ($this->intPageNumber == $intIndex) {
-						$strToReturn .= sprintf('<li class="selected">%s</li>', $intIndex);
+						$strToReturn .= sprintf('<span class="selected">%s</span>', $intIndex);
 					} else {
 						$this->strActionParameter = $intIndex;
-						$strToReturn .= sprintf('<li class="page"><a href="" %s>%s</a></li>',
+						$strToReturn .= sprintf('<span class="page"><a href="" %s>%s</a></span>',
 							$this->GetActionAttributes(), $intIndex);
 					}
 				}
@@ -148,17 +148,17 @@
 			}
 				
 	
-			$strToReturn .= '<li class="break">|</li>';
+			$strToReturn .= '<span class="break">|</span>';
 	
 			if ($this->intPageNumber >= $this->PageCount)
-				$strToReturn .= sprintf('<li class="arrow">%s</li>', $this->strLabelForNext);
+				$strToReturn .= sprintf('<span class="arrow">%s</span>', $this->strLabelForNext);
 			else {
 				$this->strActionParameter = $this->intPageNumber + 1;
-				$strToReturn .= sprintf('<li class="arrow"><a href="" %s>%s</a>',
+				$strToReturn .= sprintf('<span class="arrow"><a href="" %s>%s</a></span>',
 					$this->GetActionAttributes(), $this->strLabelForNext);
 			}
 
-			$strToReturn .= '</ul>';
+			$strToReturn .= '</span>';
 
 			return $strToReturn;
 		}

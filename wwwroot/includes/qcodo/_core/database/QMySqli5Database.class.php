@@ -70,7 +70,7 @@
 			// Perform the Query
 			$this->objMySqli->multi_query($strQuery);
 			if ($this->objMySqli->error)
-				throw new QMySqliDatabaseException($this->objMySqli->error, $this->objMySqli->errno, $strNonQuery);
+				throw new QMySqliDatabaseException($this->objMySqli->error, $this->objMySqli->errno, $strQuery);
 
 			$objResultSets = array();
 			do {

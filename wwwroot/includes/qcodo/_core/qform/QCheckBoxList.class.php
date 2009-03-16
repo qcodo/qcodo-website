@@ -201,7 +201,7 @@
 		public function Validate() {
 			if ($this->blnRequired) {
 				if ($this->SelectedIndex == -1) {
-					$this->strValidationError = sprintf("%s is required", $this->strName);
+					$this->strValidationError = QApplication::Translate($this->strName) . ' ' . QApplication::Translate('is required');
 					return false;
 				}
 			}

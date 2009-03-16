@@ -357,22 +357,21 @@
 		/**
 		 * This is called by the PHP5 Autoloader.  This static method can be overridden.
 		 *
-		 * @return void
+		 * @return boolean whether or not a class was found / included
 		 */
 		public static function Autoload($strClassName) {
-			if (array_key_exists($strClassName, QApplication::$ClassFile)) {
-				require(QApplication::$ClassFile[$strClassName]);
-//			} else if (file_exists($strFilePath = sprintf('%s/%s.class.php', __DATA_CLASSES__, $strClassName))) {
-//				require($strFilePath);
+			if (array_key_exists(strtolower($strClassName), QApplication::$ClassFile)) {
+				require(QApplication::$ClassFile[strtolower($strClassName)]);
+				return true;
 			} else if (file_exists($strFilePath = sprintf('%s/%s.class.php', __INCLUDES__, $strClassName))) {
 				require($strFilePath);
+				return true;
 			} else if (file_exists($strFilePath = sprintf('%s/qform/%s.class.php', __QCODO__, $strClassName))) {
 				require($strFilePath);
+				return true;
 			}
-//			} else if ((substr($strClassName, 0, 6) == 'QQNode') && file_exists($strFilePath = sprintf('%s/%s.class.php', __DATA_CLASSES__, substr($strClassName, 6)))) {
-//				require($strFilePath);
-//			} else if ((substr($strClassName, 0, 22) == 'QQReverseReferenceNode') && file_exists($strFilePath = sprintf('%s/%s.class.php', __DATA_CLASSES__, substr($strClassName, 22)))) {
-//				require($strFilePath);
+
+			return false;
 		}
 
 		/**
@@ -454,7 +453,9 @@
 			// Clear the output buffer (if any)
 			ob_clean();
 
-			if (QApplication::$RequestMode == QRequestMode::Ajax) {
+			if ((QApplication::$RequestMode == QRequestMode::Ajax) ||
+				(array_key_exists('Qform__FormCallType', $_POST) &&
+				($_POST['Qform__FormCallType'] == QCallType::Ajax))) {
 				// AJAX-based Response
 
 				// Response is in XML Format

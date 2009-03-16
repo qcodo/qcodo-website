@@ -31,7 +31,7 @@
 	 */
 
 	// Versioning Information
-	define('QCODO_VERSION', '0.3.37 (Qcodo Beta 3)');
+	define('QCODO_VERSION', '0.3.43 (Qcodo Beta 3)');
 
 	// Preload Required Framework Classes
 	require(__QCODO_CORE__ . '/framework/QBaseClass.class.php');
@@ -67,106 +67,109 @@
 
 	// Define Classes to be Preloaded on QApplication::Initialize()
 	QApplicationBase::$PreloadedClassFile['_enumerations'] = __QCODO_CORE__ . '/qform/_enumerations.inc.php';
-	QApplicationBase::$PreloadedClassFile['QControlBase'] = __QCODO_CORE__ . '/qform/QControlBase.class.php';
-	QApplicationBase::$PreloadedClassFile['QControl'] = __QCODO__ . '/qform/QControl.class.php';
-	QApplicationBase::$PreloadedClassFile['QFormBase'] = __QCODO_CORE__ . '/qform/QFormBase.class.php';
-	QApplicationBase::$PreloadedClassFile['QForm'] = __QCODO__ . '/qform/QForm.class.php';
+	QApplicationBase::$PreloadedClassFile['qcontrolbase'] = __QCODO_CORE__ . '/qform/QControlBase.class.php';
+	QApplicationBase::$PreloadedClassFile['qcontrol'] = __QCODO__ . '/qform/QControl.class.php';
+	QApplicationBase::$PreloadedClassFile['qformbase'] = __QCODO_CORE__ . '/qform/QFormBase.class.php';
+	QApplicationBase::$PreloadedClassFile['qform'] = __QCODO__ . '/qform/QForm.class.php';
 	QApplicationBase::$PreloadedClassFile['_actions'] = __QCODO_CORE__ . '/qform/_actions.inc.php';
 	QApplicationBase::$PreloadedClassFile['_events'] = __QCODO_CORE__ . '/qform/_events.inc.php';
-	QApplicationBase::$PreloadedClassFile['QQ'] = __QCODO_CORE__ . '/framework/QQuery.class.php';
+	QApplicationBase::$PreloadedClassFile['qq'] = __QCODO_CORE__ . '/framework/QQuery.class.php';
 
 	// Define ClassFile Locations for FormState Handlers
-	QApplicationBase::$ClassFile['QFormStateHandler'] = __QCODO_CORE__ . '/qform_state_handlers/QFormStateHandler.class.php';
-	QApplicationBase::$ClassFile['QSessionFormStateHandler'] = __QCODO_CORE__ . '/qform_state_handlers/QSessionFormStateHandler.class.php';
-	QApplicationBase::$ClassFile['QFileFormStateHandler'] = __QCODO_CORE__ . '/qform_state_handlers/QFileFormStateHandler.class.php';
+	QApplicationBase::$ClassFile['qformstatehandler'] = __QCODO_CORE__ . '/qform_state_handlers/QFormStateHandler.class.php';
+	QApplicationBase::$ClassFile['qsessionformstatehandler'] = __QCODO_CORE__ . '/qform_state_handlers/QSessionFormStateHandler.class.php';
+	QApplicationBase::$ClassFile['qfileformstatehandler'] = __QCODO_CORE__ . '/qform_state_handlers/QFileFormStateHandler.class.php';
 
 	// Define ClassFile Locations for Framework Classes
-	QApplicationBase::$ClassFile['QRssFeed'] = __QCODO_CORE__ . '/framework/QRssFeed.class.php';
-	QApplicationBase::$ClassFile['QRssImage'] = __QCODO_CORE__ . '/framework/QRssFeed.class.php';
-	QApplicationBase::$ClassFile['QRssCategory'] = __QCODO_CORE__ . '/framework/QRssFeed.class.php';
-	QApplicationBase::$ClassFile['QRssItem'] = __QCODO_CORE__ . '/framework/QRssFeed.class.php';
-	QApplicationBase::$ClassFile['QEmailServer'] = __QCODO_CORE__ . '/framework/QEmailServer.class.php';
-	QApplicationBase::$ClassFile['QEmailMessage'] = __QCODO_CORE__ . '/framework/QEmailServer.class.php';
-	QApplicationBase::$ClassFile['QMimeType'] = __QCODO_CORE__ . '/framework/QMimeType.class.php';
-	QApplicationBase::$ClassFile['QDateTime'] = __QCODO_CORE__ . '/framework/QDateTime.class.php';
-	QApplicationBase::$ClassFile['QString'] = __QCODO_CORE__ . '/framework/QString.class.php';
-	QApplicationBase::$ClassFile['QStack'] = __QCODO_CORE__ . '/framework/QStack.class.php';
-	QApplicationBase::$ClassFile['QCryptography'] = __QCODO_CORE__ . '/framework/QCryptography.class.php';
-	QApplicationBase::$ClassFile['QSoapService'] = __QCODO_CORE__ . '/framework/QSoapService.class.php';
-	QApplicationBase::$ClassFile['QI18n'] = __QCODO_CORE__ . '/framework/QI18n.class.php';
-	QApplicationBase::$ClassFile['QQN'] = __DATAGEN_CLASSES__ . '/QQN.class.php';
-	QApplicationBase::$ClassFile['QQueryExpansion'] = __QCODO_CORE__ . '/framework/QQueryExpansion.class.php';
-	QApplicationBase::$ClassFile['QConvertNotation'] = __QCODO__ . '/codegen/QConvertNotation.class.php';
+	QApplicationBase::$ClassFile['qrssfeed'] = __QCODO_CORE__ . '/framework/QRssFeed.class.php';
+	QApplicationBase::$ClassFile['qrssimage'] = __QCODO_CORE__ . '/framework/QRssFeed.class.php';
+	QApplicationBase::$ClassFile['qrsscategory'] = __QCODO_CORE__ . '/framework/QRssFeed.class.php';
+	QApplicationBase::$ClassFile['qrssitem'] = __QCODO_CORE__ . '/framework/QRssFeed.class.php';
+	QApplicationBase::$ClassFile['qemailserver'] = __QCODO_CORE__ . '/framework/QEmailServer.class.php';
+	QApplicationBase::$ClassFile['qemailmessage'] = __QCODO_CORE__ . '/framework/QEmailServer.class.php';
+	QApplicationBase::$ClassFile['qmimetype'] = __QCODO_CORE__ . '/framework/QMimeType.class.php';
+	QApplicationBase::$ClassFile['qdatetime'] = __QCODO_CORE__ . '/framework/QDateTime.class.php';
+	QApplicationBase::$ClassFile['qstring'] = __QCODO_CORE__ . '/framework/QString.class.php';
+	QApplicationBase::$ClassFile['qstack'] = __QCODO_CORE__ . '/framework/QStack.class.php';
+	QApplicationBase::$ClassFile['qcryptography'] = __QCODO_CORE__ . '/framework/QCryptography.class.php';
+	QApplicationBase::$ClassFile['qsoapservice'] = __QCODO_CORE__ . '/framework/QSoapService.class.php';
+	QApplicationBase::$ClassFile['qi18n'] = __QCODO_CORE__ . '/framework/QI18n.class.php';
+	QApplicationBase::$ClassFile['qqn'] = __DATAGEN_CLASSES__ . '/QQN.class.php';
+	QApplicationBase::$ClassFile['qqueryexpansion'] = __QCODO_CORE__ . '/framework/QQueryExpansion.class.php';
+	QApplicationBase::$ClassFile['qconvertnotation'] = __QCODO__ . '/codegen/QConvertNotation.class.php';
+	QApplicationBase::$ClassFile['qlexer'] = __QCODO_CORE__ . '/framework/QLexer.class.php';
+	QApplicationBase::$ClassFile['qregex'] = __QCODO_CORE__ . '/framework/QRegex.class.php';
 
-	QApplicationBase::$ClassFile['QCache'] = __QCODO_CORE__ . '/framework/QCache.class.php';
-	QApplicationBase::$ClassFile['QDateTimeSpan'] = __QCODO_CORE__ . '/framework/QDateTimeSpan.class.php';
+	QApplicationBase::$ClassFile['qcache'] = __QCODO_CORE__ . '/framework/QCache.class.php';
+	QApplicationBase::$ClassFile['qdatetimespan'] = __QCODO_CORE__ . '/framework/QDateTimeSpan.class.php';
 
 	// Define ClassFile Locations for Qform Classes
-	QApplicationBase::$ClassFile['QFontFamily'] = __QCODO_CORE__ . '/qform/QFontFamily.class.php';
+	QApplicationBase::$ClassFile['qfontfamily'] = __QCODO_CORE__ . '/qform/QFontFamily.class.php';
 
-	QApplicationBase::$ClassFile['QCalendar'] = __QCODO_CORE__ . '/qform/QCalendar.class.php';
-	QApplicationBase::$ClassFile['QDateTimePicker'] = __QCODO_CORE__ . '/qform/QDateTimePicker.class.php';
-	QApplicationBase::$ClassFile['QDateTimeTextBox'] = __QCODO_CORE__ . '/qform/QDateTimeTextBox.class.php';
+	QApplicationBase::$ClassFile['qcalendar'] = __QCODO_CORE__ . '/qform/QCalendar.class.php';
+	QApplicationBase::$ClassFile['qcalendarpopup'] = __QCODO_CORE__ . '/qform/QCalendarPopup.class.php';
+	QApplicationBase::$ClassFile['qdatetimepicker'] = __QCODO_CORE__ . '/qform/QDateTimePicker.class.php';
+	QApplicationBase::$ClassFile['qdatetimetextbox'] = __QCODO_CORE__ . '/qform/QDateTimeTextBox.class.php';
 
-	QApplicationBase::$ClassFile['QCheckBox'] = __QCODO_CORE__ . '/qform/QCheckBox.class.php';
-	QApplicationBase::$ClassFile['QFileControl'] = __QCODO_CORE__ . '/qform/QFileControl.class.php';
-	QApplicationBase::$ClassFile['QRadioButton'] = __QCODO_CORE__ . '/qform/QRadioButton.class.php';
+	QApplicationBase::$ClassFile['qcheckbox'] = __QCODO_CORE__ . '/qform/QCheckBox.class.php';
+	QApplicationBase::$ClassFile['qfilecontrol'] = __QCODO_CORE__ . '/qform/QFileControl.class.php';
+	QApplicationBase::$ClassFile['qradiobutton'] = __QCODO_CORE__ . '/qform/QRadioButton.class.php';
 
-	QApplicationBase::$ClassFile['QBlockControl'] = __QCODO_CORE__ . '/qform/QBlockControl.class.php';
-	QApplicationBase::$ClassFile['QLabel'] = __QCODO_CORE__ . '/qform/QLabel.class.php';
-	QApplicationBase::$ClassFile['QPanel'] = __QCODO_CORE__ . '/qform/QPanel.class.php';
-	QApplicationBase::$ClassFile['QControlProxy'] = __QCODO_CORE__ . '/qform/QControlProxy.class.php';
-	QApplicationBase::$ClassFile['QDialogBox'] = __QCODO_CORE__ . '/qform/QDialogBox.class.php';
+	QApplicationBase::$ClassFile['qblockcontrol'] = __QCODO_CORE__ . '/qform/QBlockControl.class.php';
+	QApplicationBase::$ClassFile['qlabel'] = __QCODO_CORE__ . '/qform/QLabel.class.php';
+	QApplicationBase::$ClassFile['qpanel'] = __QCODO_CORE__ . '/qform/QPanel.class.php';
+	QApplicationBase::$ClassFile['qcontrolproxy'] = __QCODO_CORE__ . '/qform/QControlProxy.class.php';
+	QApplicationBase::$ClassFile['qdialogbox'] = __QCODO_CORE__ . '/qform/QDialogBox.class.php';
 
-	QApplicationBase::$ClassFile['QImageBase'] = __QCODO_CORE__ . '/qform/QImageBase.class.php';
-	QApplicationBase::$ClassFile['QImageLabelBase'] = __QCODO_CORE__ . '/qform/QImageLabelBase.class.php';
-	QApplicationBase::$ClassFile['QImageLabel'] = __QCODO__ . '/qform/QImageLabel.class.php';
-	QApplicationBase::$ClassFile['QImageControlBase'] = __QCODO_CORE__ . '/qform/QImageControlBase.class.php';
-	QApplicationBase::$ClassFile['QImageControl'] = __QCODO__ . '/qform/QImageControl.class.php';
-	QApplicationBase::$ClassFile['QImageRollover'] = __QCODO_CORE__ . '/qform/QImageRollover.class.php';
+	QApplicationBase::$ClassFile['qimagebase'] = __QCODO_CORE__ . '/qform/QImageBase.class.php';
+	QApplicationBase::$ClassFile['qimagelabelbase'] = __QCODO_CORE__ . '/qform/QImageLabelBase.class.php';
+	QApplicationBase::$ClassFile['qimagelabel'] = __QCODO__ . '/qform/QImageLabel.class.php';
+	QApplicationBase::$ClassFile['qimagecontrolbase'] = __QCODO_CORE__ . '/qform/QImageControlBase.class.php';
+	QApplicationBase::$ClassFile['qimagecontrol'] = __QCODO__ . '/qform/QImageControl.class.php';
+	QApplicationBase::$ClassFile['qimagerollover'] = __QCODO_CORE__ . '/qform/QImageRollover.class.php';
 
-	QApplicationBase::$ClassFile['QFileAsset'] = __QCODO__ . '/qform/QFileAsset.class.php';
-	QApplicationBase::$ClassFile['QFileAssetBase'] = __QCODO_CORE__ . '/qform/QFileAssetBase.class.php';
-	QApplicationBase::$ClassFile['QFileAssetDialog'] = __QCODO_CORE__ . '/qform/QFileAssetDialog.class.php';
+	QApplicationBase::$ClassFile['qfileasset'] = __QCODO__ . '/qform/QFileAsset.class.php';
+	QApplicationBase::$ClassFile['qfileassetbase'] = __QCODO_CORE__ . '/qform/QFileAssetBase.class.php';
+	QApplicationBase::$ClassFile['qfileassetdialog'] = __QCODO_CORE__ . '/qform/QFileAssetDialog.class.php';
 
-	QApplicationBase::$ClassFile['QControlLabel'] = __QCODO_CORE__ . '/qform/QControlLabel.class.php';
+	QApplicationBase::$ClassFile['qcontrollabel'] = __QCODO_CORE__ . '/qform/QControlLabel.class.php';
 
-	QApplicationBase::$ClassFile['QActionControl'] = __QCODO_CORE__ . '/qform/QActionControl.class.php';
-	QApplicationBase::$ClassFile['QButtonBase'] = __QCODO_CORE__ . '/qform/QButtonBase.class.php';
-	QApplicationBase::$ClassFile['QButton'] = __QCODO__ . '/qform/QButton.class.php';
-	QApplicationBase::$ClassFile['QImageButton'] = __QCODO_CORE__ . '/qform/QImageButton.class.php';
-	QApplicationBase::$ClassFile['QLinkButton'] = __QCODO_CORE__ . '/qform/QLinkButton.class.php';
+	QApplicationBase::$ClassFile['qactioncontrol'] = __QCODO_CORE__ . '/qform/QActionControl.class.php';
+	QApplicationBase::$ClassFile['qbuttonbase'] = __QCODO_CORE__ . '/qform/QButtonBase.class.php';
+	QApplicationBase::$ClassFile['qbutton'] = __QCODO__ . '/qform/QButton.class.php';
+	QApplicationBase::$ClassFile['qimagebutton'] = __QCODO_CORE__ . '/qform/QImageButton.class.php';
+	QApplicationBase::$ClassFile['qlinkbutton'] = __QCODO_CORE__ . '/qform/QLinkButton.class.php';
 
-	QApplicationBase::$ClassFile['QListControl'] = __QCODO_CORE__ . '/qform/QListControl.class.php';
-	QApplicationBase::$ClassFile['QListItem'] = __QCODO_CORE__ . '/qform/QListItem.class.php';
-	QApplicationBase::$ClassFile['QListBoxBase'] = __QCODO_CORE__ . '/qform/QListBoxBase.class.php';
-	QApplicationBase::$ClassFile['QListBox'] = __QCODO__ . '/qform/QListBox.class.php';
-	QApplicationBase::$ClassFile['QListItemStyle'] = __QCODO_CORE__ . '/qform/QListItemStyle.class.php';
-	QApplicationBase::$ClassFile['QCheckBoxList'] = __QCODO_CORE__ . '/qform/QCheckBoxList.class.php';
-	QApplicationBase::$ClassFile['QRadioButtonList'] = __QCODO_CORE__ . '/qform/QRadioButtonList.class.php';
-	QApplicationBase::$ClassFile['QTreeNav'] = __QCODO_CORE__ . '/qform/QTreeNav.class.php';
-	QApplicationBase::$ClassFile['QTreeNavItem'] = __QCODO_CORE__ . '/qform/QTreeNavItem.class.php';
+	QApplicationBase::$ClassFile['qlistcontrol'] = __QCODO_CORE__ . '/qform/QListControl.class.php';
+	QApplicationBase::$ClassFile['qlistitem'] = __QCODO_CORE__ . '/qform/QListItem.class.php';
+	QApplicationBase::$ClassFile['qlistboxbase'] = __QCODO_CORE__ . '/qform/QListBoxBase.class.php';
+	QApplicationBase::$ClassFile['qlistbox'] = __QCODO__ . '/qform/QListBox.class.php';
+	QApplicationBase::$ClassFile['qlistitemstyle'] = __QCODO_CORE__ . '/qform/QListItemStyle.class.php';
+	QApplicationBase::$ClassFile['qcheckboxlist'] = __QCODO_CORE__ . '/qform/QCheckBoxList.class.php';
+	QApplicationBase::$ClassFile['qradiobuttonlist'] = __QCODO_CORE__ . '/qform/QRadioButtonList.class.php';
+	QApplicationBase::$ClassFile['qtreenav'] = __QCODO_CORE__ . '/qform/QTreeNav.class.php';
+	QApplicationBase::$ClassFile['qtreenavitem'] = __QCODO_CORE__ . '/qform/QTreeNavItem.class.php';
 
-	QApplicationBase::$ClassFile['QTextBoxBase'] = __QCODO_CORE__ . '/qform/QTextBoxBase.class.php';
-	QApplicationBase::$ClassFile['QTextBox'] = __QCODO__ . '/qform/QTextBox.class.php';
-	QApplicationBase::$ClassFile['QFloatTextBox'] = __QCODO_CORE__ . '/qform/QFloatTextBox.class.php';
-	QApplicationBase::$ClassFile['QIntegerTextBox'] = __QCODO_CORE__ . '/qform/QIntegerTextBox.class.php';
-	QApplicationBase::$ClassFile['QWriteBox'] = __QCODO_CORE__ . '/qform/QWriteBox.class.php';
+	QApplicationBase::$ClassFile['qtextboxbase'] = __QCODO_CORE__ . '/qform/QTextBoxBase.class.php';
+	QApplicationBase::$ClassFile['qtextbox'] = __QCODO__ . '/qform/QTextBox.class.php';
+	QApplicationBase::$ClassFile['qfloattextbox'] = __QCODO_CORE__ . '/qform/QFloatTextBox.class.php';
+	QApplicationBase::$ClassFile['qintegertextbox'] = __QCODO_CORE__ . '/qform/QIntegerTextBox.class.php';
+	QApplicationBase::$ClassFile['qwritebox'] = __QCODO_CORE__ . '/qform/QWriteBox.class.php';
 
-	QApplicationBase::$ClassFile['QPaginatedControl'] = __QCODO_CORE__ . '/qform/QPaginatedControl.class.php';
-	QApplicationBase::$ClassFile['QPaginatorBase'] = __QCODO_CORE__ . '/qform/QPaginatorBase.class.php';
-	QApplicationBase::$ClassFile['QPaginator'] = __QCODO__ . '/qform/QPaginator.class.php';
+	QApplicationBase::$ClassFile['qpaginatedcontrol'] = __QCODO_CORE__ . '/qform/QPaginatedControl.class.php';
+	QApplicationBase::$ClassFile['qpaginatorbase'] = __QCODO_CORE__ . '/qform/QPaginatorBase.class.php';
+	QApplicationBase::$ClassFile['qpaginator'] = __QCODO__ . '/qform/QPaginator.class.php';
 
-	QApplicationBase::$ClassFile['QDataGridBase'] = __QCODO_CORE__ . '/qform/QDataGridBase.class.php';
-	QApplicationBase::$ClassFile['QDataGridColumn'] = __QCODO_CORE__ . '/qform/QDataGridColumn.class.php';
-	QApplicationBase::$ClassFile['QDataGridRowStyle'] = __QCODO_CORE__ . '/qform/QDataGridRowStyle.class.php';
-	QApplicationBase::$ClassFile['QDataGrid'] = __QCODO__ . '/qform/QDataGrid.class.php';
+	QApplicationBase::$ClassFile['qdatagridbase'] = __QCODO_CORE__ . '/qform/QDataGridBase.class.php';
+	QApplicationBase::$ClassFile['qdatagridcolumn'] = __QCODO_CORE__ . '/qform/QDataGridColumn.class.php';
+	QApplicationBase::$ClassFile['qdatagridrowstyle'] = __QCODO_CORE__ . '/qform/QDataGridRowStyle.class.php';
+	QApplicationBase::$ClassFile['qdatagrid'] = __QCODO__ . '/qform/QDataGrid.class.php';
 
-	QApplicationBase::$ClassFile['QDataRepeater'] = __QCODO_CORE__ . '/qform/QDataRepeater.class.php';
+	QApplicationBase::$ClassFile['qdatarepeater'] = __QCODO_CORE__ . '/qform/QDataRepeater.class.php';
 
-	QApplicationBase::$ClassFile['QWaitIcon'] = __QCODO_CORE__ . '/qform/QWaitIcon.class.php';
-	QApplicationBase::$ClassFile['QControlGrouping'] = __QCODO_CORE__ . '/qform/QControlGrouping.class.php';
-	QApplicationBase::$ClassFile['QDropZoneGrouping'] = __QCODO_CORE__ . '/qform/QDropZoneGrouping.class.php';
+	QApplicationBase::$ClassFile['qwaiticon'] = __QCODO_CORE__ . '/qform/QWaitIcon.class.php';
+	QApplicationBase::$ClassFile['qcontrolgrouping'] = __QCODO_CORE__ . '/qform/QControlGrouping.class.php';
+	QApplicationBase::$ClassFile['qdropzonegrouping'] = __QCODO_CORE__ . '/qform/QDropZoneGrouping.class.php';
 
 	if (__DATAGEN_CLASSES__) {
 		@include(__DATAGEN_CLASSES__ . '/_class_paths.inc.php');
