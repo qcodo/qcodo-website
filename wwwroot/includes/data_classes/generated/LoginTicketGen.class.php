@@ -15,7 +15,10 @@
 	 * 
 	 * @package Qcodo Website
 	 * @subpackage GeneratedDataObjects
-	 * 
+	 * @property-read integer $Id the value for intId (Read-Only PK)
+	 * @property integer $PersonId the value for intPersonId (Not Null)
+	 * @property Person $Person the value for the Person object referenced by intPersonId (Not Null)
+	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
 	class LoginTicketGen extends QBaseClass {
 
@@ -147,7 +150,7 @@
 			// Create/Build out the QueryBuilder object with LoginTicket-specific SELET and FROM fields
 			$objQueryBuilder = new QQueryBuilder($objDatabase, 'login_ticket');
 			LoginTicket::GetSelectFields($objQueryBuilder);
-			$objQueryBuilder->AddFromItem('`login_ticket` AS `login_ticket`');
+			$objQueryBuilder->AddFromItem('login_ticket');
 
 			// Set "CountOnly" option (if applicable)
 			if ($blnCountOnly)
@@ -155,7 +158,12 @@
 
 			// Apply Any Conditions
 			if ($objConditions)
-				$objConditions->UpdateQueryBuilder($objQueryBuilder);
+				try {
+					$objConditions->UpdateQueryBuilder($objQueryBuilder);
+				} catch (QCallerException $objExc) {
+					$objExc->IncrementOffset();
+					throw $objExc;
+				}
 
 			// Iterate through all the Optional Clauses (if any) and perform accordingly
 			if ($objOptionalClauses) {
@@ -207,7 +215,7 @@
 
 			// Perform the Query, Get the First Row, and Instantiate a new LoginTicket object
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return LoginTicket::InstantiateDbRow($objDbResult->GetNextRow());
+			return LoginTicket::InstantiateDbRow($objDbResult->GetNextRow(), null, null, null, $objQueryBuilder->ColumnAliasArray);
 		}
 
 		/**
@@ -229,7 +237,7 @@
 
 			// Perform the Query and Instantiate the Array Result
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return LoginTicket::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNodes);
+			return LoginTicket::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNodes, $objQueryBuilder->ColumnAliasArray);
 		}
 
 		/**
@@ -322,15 +330,15 @@
 		 */
 		public static function GetSelectFields(QQueryBuilder $objBuilder, $strPrefix = null) {
 			if ($strPrefix) {
-				$strTableName = '`' . $strPrefix . '`';
-				$strAliasPrefix = '`' . $strPrefix . '__';
+				$strTableName = $strPrefix;
+				$strAliasPrefix = $strPrefix . '__';
 			} else {
-				$strTableName = '`login_ticket`';
-				$strAliasPrefix = '`';
+				$strTableName = 'login_ticket';
+				$strAliasPrefix = '';
 			}
 
-			$objBuilder->AddSelectItem($strTableName . '.`id` AS ' . $strAliasPrefix . 'id`');
-			$objBuilder->AddSelectItem($strTableName . '.`person_id` AS ' . $strAliasPrefix . 'person_id`');
+			$objBuilder->AddSelectItem($strTableName, 'id', $strAliasPrefix . 'id');
+			$objBuilder->AddSelectItem($strTableName, 'person_id', $strAliasPrefix . 'person_id');
 		}
 
 
@@ -347,9 +355,12 @@
 		 * early binding on referenced objects.
 		 * @param DatabaseRowBase $objDbRow
 		 * @param string $strAliasPrefix
+		 * @param string $strExpandAsArrayNodes
+		 * @param QBaseClass $objPreviousItem
+		 * @param string[] $strColumnAliasArray
 		 * @return LoginTicket
 		*/
-		public static function InstantiateDbRow($objDbRow, $strAliasPrefix = null, $strExpandAsArrayNodes = null, $objPreviousItem = null) {
+		public static function InstantiateDbRow($objDbRow, $strAliasPrefix = null, $strExpandAsArrayNodes = null, $objPreviousItem = null, $strColumnAliasArray = array()) {
 			// If blank row, return null
 			if (!$objDbRow)
 				return null;
@@ -359,8 +370,10 @@
 			$objToReturn = new LoginTicket();
 			$objToReturn->__blnRestored = true;
 
-			$objToReturn->intId = $objDbRow->GetColumn($strAliasPrefix . 'id', 'Integer');
-			$objToReturn->intPersonId = $objDbRow->GetColumn($strAliasPrefix . 'person_id', 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'id'] : $strAliasPrefix . 'id';
+			$objToReturn->intId = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'person_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'person_id'] : $strAliasPrefix . 'person_id';
+			$objToReturn->intPersonId = $objDbRow->GetColumn($strAliasName, 'Integer');
 
 			// Instantiate Virtual Attributes
 			foreach ($objDbRow->GetColumnNameArray() as $strColumnName => $mixValue) {
@@ -375,8 +388,10 @@
 				$strAliasPrefix = 'login_ticket__';
 
 			// Check for Person Early Binding
-			if (!is_null($objDbRow->GetColumn($strAliasPrefix . 'person_id__id')))
-				$objToReturn->objPerson = Person::InstantiateDbRow($objDbRow, $strAliasPrefix . 'person_id__', $strExpandAsArrayNodes);
+			$strAlias = $strAliasPrefix . 'person_id__id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+			if (!is_null($objDbRow->GetColumn($strAliasName)))
+				$objToReturn->objPerson = Person::InstantiateDbRow($objDbRow, $strAliasPrefix . 'person_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 
 
 
@@ -387,10 +402,15 @@
 		/**
 		 * Instantiate an array of LoginTickets from a Database Result
 		 * @param DatabaseResultBase $objDbResult
+		 * @param string $strExpandAsArrayNodes
+		 * @param string[] $strColumnAliasArray
 		 * @return LoginTicket[]
 		 */
-		public static function InstantiateDbResult(QDatabaseResultBase $objDbResult, $strExpandAsArrayNodes = null) {
+		public static function InstantiateDbResult(QDatabaseResultBase $objDbResult, $strExpandAsArrayNodes = null, $strColumnAliasArray = null) {
 			$objToReturn = array();
+			
+			if (!$strColumnAliasArray)
+				$strColumnAliasArray = array();
 
 			// If blank resultset, then return empty array
 			if (!$objDbResult)
@@ -400,15 +420,15 @@
 			if ($strExpandAsArrayNodes) {
 				$objLastRowItem = null;
 				while ($objDbRow = $objDbResult->GetNextRow()) {
-					$objItem = LoginTicket::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, $objLastRowItem);
+					$objItem = LoginTicket::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, $objLastRowItem, $strColumnAliasArray);
 					if ($objItem) {
-						array_push($objToReturn, $objItem);
+						$objToReturn[] = $objItem;
 						$objLastRowItem = $objItem;
 					}
 				}
 			} else {
 				while ($objDbRow = $objDbResult->GetNextRow())
-					array_push($objToReturn, LoginTicket::InstantiateDbRow($objDbRow));
+					$objToReturn[] = LoginTicket::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
 			}
 
 			return $objToReturn;

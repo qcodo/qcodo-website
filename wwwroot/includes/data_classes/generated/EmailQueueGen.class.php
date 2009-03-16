@@ -15,7 +15,13 @@
 	 * 
 	 * @package Qcodo Website
 	 * @subpackage GeneratedDataObjects
-	 * 
+	 * @property-read integer $Id the value for intId (Read-Only PK)
+	 * @property string $ToAddress the value for strToAddress 
+	 * @property string $FromAddress the value for strFromAddress 
+	 * @property string $Subject the value for strSubject 
+	 * @property string $Body the value for strBody 
+	 * @property string $Html the value for strHtml 
+	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
 	class EmailQueueGen extends QBaseClass {
 
@@ -171,7 +177,7 @@
 			// Create/Build out the QueryBuilder object with EmailQueue-specific SELET and FROM fields
 			$objQueryBuilder = new QQueryBuilder($objDatabase, 'email_queue');
 			EmailQueue::GetSelectFields($objQueryBuilder);
-			$objQueryBuilder->AddFromItem('`email_queue` AS `email_queue`');
+			$objQueryBuilder->AddFromItem('email_queue');
 
 			// Set "CountOnly" option (if applicable)
 			if ($blnCountOnly)
@@ -179,7 +185,12 @@
 
 			// Apply Any Conditions
 			if ($objConditions)
-				$objConditions->UpdateQueryBuilder($objQueryBuilder);
+				try {
+					$objConditions->UpdateQueryBuilder($objQueryBuilder);
+				} catch (QCallerException $objExc) {
+					$objExc->IncrementOffset();
+					throw $objExc;
+				}
 
 			// Iterate through all the Optional Clauses (if any) and perform accordingly
 			if ($objOptionalClauses) {
@@ -231,7 +242,7 @@
 
 			// Perform the Query, Get the First Row, and Instantiate a new EmailQueue object
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return EmailQueue::InstantiateDbRow($objDbResult->GetNextRow());
+			return EmailQueue::InstantiateDbRow($objDbResult->GetNextRow(), null, null, null, $objQueryBuilder->ColumnAliasArray);
 		}
 
 		/**
@@ -253,7 +264,7 @@
 
 			// Perform the Query and Instantiate the Array Result
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return EmailQueue::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNodes);
+			return EmailQueue::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNodes, $objQueryBuilder->ColumnAliasArray);
 		}
 
 		/**
@@ -346,19 +357,19 @@
 		 */
 		public static function GetSelectFields(QQueryBuilder $objBuilder, $strPrefix = null) {
 			if ($strPrefix) {
-				$strTableName = '`' . $strPrefix . '`';
-				$strAliasPrefix = '`' . $strPrefix . '__';
+				$strTableName = $strPrefix;
+				$strAliasPrefix = $strPrefix . '__';
 			} else {
-				$strTableName = '`email_queue`';
-				$strAliasPrefix = '`';
+				$strTableName = 'email_queue';
+				$strAliasPrefix = '';
 			}
 
-			$objBuilder->AddSelectItem($strTableName . '.`id` AS ' . $strAliasPrefix . 'id`');
-			$objBuilder->AddSelectItem($strTableName . '.`to_address` AS ' . $strAliasPrefix . 'to_address`');
-			$objBuilder->AddSelectItem($strTableName . '.`from_address` AS ' . $strAliasPrefix . 'from_address`');
-			$objBuilder->AddSelectItem($strTableName . '.`subject` AS ' . $strAliasPrefix . 'subject`');
-			$objBuilder->AddSelectItem($strTableName . '.`body` AS ' . $strAliasPrefix . 'body`');
-			$objBuilder->AddSelectItem($strTableName . '.`html` AS ' . $strAliasPrefix . 'html`');
+			$objBuilder->AddSelectItem($strTableName, 'id', $strAliasPrefix . 'id');
+			$objBuilder->AddSelectItem($strTableName, 'to_address', $strAliasPrefix . 'to_address');
+			$objBuilder->AddSelectItem($strTableName, 'from_address', $strAliasPrefix . 'from_address');
+			$objBuilder->AddSelectItem($strTableName, 'subject', $strAliasPrefix . 'subject');
+			$objBuilder->AddSelectItem($strTableName, 'body', $strAliasPrefix . 'body');
+			$objBuilder->AddSelectItem($strTableName, 'html', $strAliasPrefix . 'html');
 		}
 
 
@@ -375,9 +386,12 @@
 		 * early binding on referenced objects.
 		 * @param DatabaseRowBase $objDbRow
 		 * @param string $strAliasPrefix
+		 * @param string $strExpandAsArrayNodes
+		 * @param QBaseClass $objPreviousItem
+		 * @param string[] $strColumnAliasArray
 		 * @return EmailQueue
 		*/
-		public static function InstantiateDbRow($objDbRow, $strAliasPrefix = null, $strExpandAsArrayNodes = null, $objPreviousItem = null) {
+		public static function InstantiateDbRow($objDbRow, $strAliasPrefix = null, $strExpandAsArrayNodes = null, $objPreviousItem = null, $strColumnAliasArray = array()) {
 			// If blank row, return null
 			if (!$objDbRow)
 				return null;
@@ -387,12 +401,18 @@
 			$objToReturn = new EmailQueue();
 			$objToReturn->__blnRestored = true;
 
-			$objToReturn->intId = $objDbRow->GetColumn($strAliasPrefix . 'id', 'Integer');
-			$objToReturn->strToAddress = $objDbRow->GetColumn($strAliasPrefix . 'to_address', 'VarChar');
-			$objToReturn->strFromAddress = $objDbRow->GetColumn($strAliasPrefix . 'from_address', 'VarChar');
-			$objToReturn->strSubject = $objDbRow->GetColumn($strAliasPrefix . 'subject', 'Blob');
-			$objToReturn->strBody = $objDbRow->GetColumn($strAliasPrefix . 'body', 'Blob');
-			$objToReturn->strHtml = $objDbRow->GetColumn($strAliasPrefix . 'html', 'Blob');
+			$strAliasName = array_key_exists($strAliasPrefix . 'id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'id'] : $strAliasPrefix . 'id';
+			$objToReturn->intId = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'to_address', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'to_address'] : $strAliasPrefix . 'to_address';
+			$objToReturn->strToAddress = $objDbRow->GetColumn($strAliasName, 'VarChar');
+			$strAliasName = array_key_exists($strAliasPrefix . 'from_address', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'from_address'] : $strAliasPrefix . 'from_address';
+			$objToReturn->strFromAddress = $objDbRow->GetColumn($strAliasName, 'VarChar');
+			$strAliasName = array_key_exists($strAliasPrefix . 'subject', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'subject'] : $strAliasPrefix . 'subject';
+			$objToReturn->strSubject = $objDbRow->GetColumn($strAliasName, 'Blob');
+			$strAliasName = array_key_exists($strAliasPrefix . 'body', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'body'] : $strAliasPrefix . 'body';
+			$objToReturn->strBody = $objDbRow->GetColumn($strAliasName, 'Blob');
+			$strAliasName = array_key_exists($strAliasPrefix . 'html', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'html'] : $strAliasPrefix . 'html';
+			$objToReturn->strHtml = $objDbRow->GetColumn($strAliasName, 'Blob');
 
 			// Instantiate Virtual Attributes
 			foreach ($objDbRow->GetColumnNameArray() as $strColumnName => $mixValue) {
@@ -415,10 +435,15 @@
 		/**
 		 * Instantiate an array of EmailQueues from a Database Result
 		 * @param DatabaseResultBase $objDbResult
+		 * @param string $strExpandAsArrayNodes
+		 * @param string[] $strColumnAliasArray
 		 * @return EmailQueue[]
 		 */
-		public static function InstantiateDbResult(QDatabaseResultBase $objDbResult, $strExpandAsArrayNodes = null) {
+		public static function InstantiateDbResult(QDatabaseResultBase $objDbResult, $strExpandAsArrayNodes = null, $strColumnAliasArray = null) {
 			$objToReturn = array();
+			
+			if (!$strColumnAliasArray)
+				$strColumnAliasArray = array();
 
 			// If blank resultset, then return empty array
 			if (!$objDbResult)
@@ -428,15 +453,15 @@
 			if ($strExpandAsArrayNodes) {
 				$objLastRowItem = null;
 				while ($objDbRow = $objDbResult->GetNextRow()) {
-					$objItem = EmailQueue::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, $objLastRowItem);
+					$objItem = EmailQueue::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, $objLastRowItem, $strColumnAliasArray);
 					if ($objItem) {
-						array_push($objToReturn, $objItem);
+						$objToReturn[] = $objItem;
 						$objLastRowItem = $objItem;
 					}
 				}
 			} else {
 				while ($objDbRow = $objDbResult->GetNextRow())
-					array_push($objToReturn, EmailQueue::InstantiateDbRow($objDbRow));
+					$objToReturn[] = EmailQueue::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
 			}
 
 			return $objToReturn;

@@ -15,7 +15,11 @@
 	 * 
 	 * @package Qcodo Website
 	 * @subpackage GeneratedDataObjects
-	 * 
+	 * @property-read integer $Id the value for intId (Read-Only PK)
+	 * @property string $Name the value for strName 
+	 * @property-read Article $_Article the value for the private _objArticle (Read-Only) if set due to an expansion on the article.article_section_id reverse relationship
+	 * @property-read Article[] $_ArticleArray the value for the private _objArticleArray (Read-Only) if set due to an ExpandAsArray on the article.article_section_id reverse relationship
+	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
 	class ArticleSectionGen extends QBaseClass {
 
@@ -154,7 +158,7 @@
 			// Create/Build out the QueryBuilder object with ArticleSection-specific SELET and FROM fields
 			$objQueryBuilder = new QQueryBuilder($objDatabase, 'article_section');
 			ArticleSection::GetSelectFields($objQueryBuilder);
-			$objQueryBuilder->AddFromItem('`article_section` AS `article_section`');
+			$objQueryBuilder->AddFromItem('article_section');
 
 			// Set "CountOnly" option (if applicable)
 			if ($blnCountOnly)
@@ -162,7 +166,12 @@
 
 			// Apply Any Conditions
 			if ($objConditions)
-				$objConditions->UpdateQueryBuilder($objQueryBuilder);
+				try {
+					$objConditions->UpdateQueryBuilder($objQueryBuilder);
+				} catch (QCallerException $objExc) {
+					$objExc->IncrementOffset();
+					throw $objExc;
+				}
 
 			// Iterate through all the Optional Clauses (if any) and perform accordingly
 			if ($objOptionalClauses) {
@@ -214,7 +223,7 @@
 
 			// Perform the Query, Get the First Row, and Instantiate a new ArticleSection object
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return ArticleSection::InstantiateDbRow($objDbResult->GetNextRow());
+			return ArticleSection::InstantiateDbRow($objDbResult->GetNextRow(), null, null, null, $objQueryBuilder->ColumnAliasArray);
 		}
 
 		/**
@@ -236,7 +245,7 @@
 
 			// Perform the Query and Instantiate the Array Result
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return ArticleSection::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNodes);
+			return ArticleSection::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNodes, $objQueryBuilder->ColumnAliasArray);
 		}
 
 		/**
@@ -329,15 +338,15 @@
 		 */
 		public static function GetSelectFields(QQueryBuilder $objBuilder, $strPrefix = null) {
 			if ($strPrefix) {
-				$strTableName = '`' . $strPrefix . '`';
-				$strAliasPrefix = '`' . $strPrefix . '__';
+				$strTableName = $strPrefix;
+				$strAliasPrefix = $strPrefix . '__';
 			} else {
-				$strTableName = '`article_section`';
-				$strAliasPrefix = '`';
+				$strTableName = 'article_section';
+				$strAliasPrefix = '';
 			}
 
-			$objBuilder->AddSelectItem($strTableName . '.`id` AS ' . $strAliasPrefix . 'id`');
-			$objBuilder->AddSelectItem($strTableName . '.`name` AS ' . $strAliasPrefix . 'name`');
+			$objBuilder->AddSelectItem($strTableName, 'id', $strAliasPrefix . 'id');
+			$objBuilder->AddSelectItem($strTableName, 'name', $strAliasPrefix . 'name');
 		}
 
 
@@ -354,16 +363,21 @@
 		 * early binding on referenced objects.
 		 * @param DatabaseRowBase $objDbRow
 		 * @param string $strAliasPrefix
+		 * @param string $strExpandAsArrayNodes
+		 * @param QBaseClass $objPreviousItem
+		 * @param string[] $strColumnAliasArray
 		 * @return ArticleSection
 		*/
-		public static function InstantiateDbRow($objDbRow, $strAliasPrefix = null, $strExpandAsArrayNodes = null, $objPreviousItem = null) {
+		public static function InstantiateDbRow($objDbRow, $strAliasPrefix = null, $strExpandAsArrayNodes = null, $objPreviousItem = null, $strColumnAliasArray = array()) {
 			// If blank row, return null
 			if (!$objDbRow)
 				return null;
 
 			// See if we're doing an array expansion on the previous item
+			$strAlias = $strAliasPrefix . 'id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
 			if (($strExpandAsArrayNodes) && ($objPreviousItem) &&
-				($objPreviousItem->intId == $objDbRow->GetColumn($strAliasPrefix . 'id', 'Integer'))) {
+				($objPreviousItem->intId == $objDbRow->GetColumn($strAliasName, 'Integer'))) {
 
 				// We are.  Now, prepare to check for ExpandAsArray clauses
 				$blnExpandedViaArray = false;
@@ -371,15 +385,17 @@
 					$strAliasPrefix = 'article_section__';
 
 
-				if ((array_key_exists($strAliasPrefix . 'article__id', $strExpandAsArrayNodes)) &&
-					(!is_null($objDbRow->GetColumn($strAliasPrefix . 'article__id')))) {
+				$strAlias = $strAliasPrefix . 'article__id';
+				$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+				if ((array_key_exists($strAlias, $strExpandAsArrayNodes)) &&
+					(!is_null($objDbRow->GetColumn($strAliasName)))) {
 					if ($intPreviousChildItemCount = count($objPreviousItem->_objArticleArray)) {
 						$objPreviousChildItem = $objPreviousItem->_objArticleArray[$intPreviousChildItemCount - 1];
-						$objChildItem = Article::InstantiateDbRow($objDbRow, $strAliasPrefix . 'article__', $strExpandAsArrayNodes, $objPreviousChildItem);
+						$objChildItem = Article::InstantiateDbRow($objDbRow, $strAliasPrefix . 'article__', $strExpandAsArrayNodes, $objPreviousChildItem, $strColumnAliasArray);
 						if ($objChildItem)
-							array_push($objPreviousItem->_objArticleArray, $objChildItem);
+							$objPreviousItem->_objArticleArray[] = $objChildItem;
 					} else
-						array_push($objPreviousItem->_objArticleArray, Article::InstantiateDbRow($objDbRow, $strAliasPrefix . 'article__', $strExpandAsArrayNodes));
+						$objPreviousItem->_objArticleArray[] = Article::InstantiateDbRow($objDbRow, $strAliasPrefix . 'article__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 					$blnExpandedViaArray = true;
 				}
 
@@ -394,8 +410,10 @@
 			$objToReturn = new ArticleSection();
 			$objToReturn->__blnRestored = true;
 
-			$objToReturn->intId = $objDbRow->GetColumn($strAliasPrefix . 'id', 'Integer');
-			$objToReturn->strName = $objDbRow->GetColumn($strAliasPrefix . 'name', 'VarChar');
+			$strAliasName = array_key_exists($strAliasPrefix . 'id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'id'] : $strAliasPrefix . 'id';
+			$objToReturn->intId = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'name', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'name'] : $strAliasPrefix . 'name';
+			$objToReturn->strName = $objDbRow->GetColumn($strAliasName, 'VarChar');
 
 			// Instantiate Virtual Attributes
 			foreach ($objDbRow->GetColumnNameArray() as $strColumnName => $mixValue) {
@@ -413,11 +431,13 @@
 
 
 			// Check for Article Virtual Binding
-			if (!is_null($objDbRow->GetColumn($strAliasPrefix . 'article__id'))) {
-				if (($strExpandAsArrayNodes) && (array_key_exists($strAliasPrefix . 'article__id', $strExpandAsArrayNodes)))
-					array_push($objToReturn->_objArticleArray, Article::InstantiateDbRow($objDbRow, $strAliasPrefix . 'article__', $strExpandAsArrayNodes));
+			$strAlias = $strAliasPrefix . 'article__id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+			if (!is_null($objDbRow->GetColumn($strAliasName))) {
+				if (($strExpandAsArrayNodes) && (array_key_exists($strAlias, $strExpandAsArrayNodes)))
+					$objToReturn->_objArticleArray[] = Article::InstantiateDbRow($objDbRow, $strAliasPrefix . 'article__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 				else
-					$objToReturn->_objArticle = Article::InstantiateDbRow($objDbRow, $strAliasPrefix . 'article__', $strExpandAsArrayNodes);
+					$objToReturn->_objArticle = Article::InstantiateDbRow($objDbRow, $strAliasPrefix . 'article__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 			}
 
 			return $objToReturn;
@@ -426,10 +446,15 @@
 		/**
 		 * Instantiate an array of ArticleSections from a Database Result
 		 * @param DatabaseResultBase $objDbResult
+		 * @param string $strExpandAsArrayNodes
+		 * @param string[] $strColumnAliasArray
 		 * @return ArticleSection[]
 		 */
-		public static function InstantiateDbResult(QDatabaseResultBase $objDbResult, $strExpandAsArrayNodes = null) {
+		public static function InstantiateDbResult(QDatabaseResultBase $objDbResult, $strExpandAsArrayNodes = null, $strColumnAliasArray = null) {
 			$objToReturn = array();
+			
+			if (!$strColumnAliasArray)
+				$strColumnAliasArray = array();
 
 			// If blank resultset, then return empty array
 			if (!$objDbResult)
@@ -439,15 +464,15 @@
 			if ($strExpandAsArrayNodes) {
 				$objLastRowItem = null;
 				while ($objDbRow = $objDbResult->GetNextRow()) {
-					$objItem = ArticleSection::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, $objLastRowItem);
+					$objItem = ArticleSection::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, $objLastRowItem, $strColumnAliasArray);
 					if ($objItem) {
-						array_push($objToReturn, $objItem);
+						$objToReturn[] = $objItem;
 						$objLastRowItem = $objItem;
 					}
 				}
 			} else {
 				while ($objDbRow = $objDbResult->GetNextRow())
-					array_push($objToReturn, ArticleSection::InstantiateDbRow($objDbRow));
+					$objToReturn[] = ArticleSection::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
 			}
 
 			return $objToReturn;

@@ -15,7 +15,17 @@
 	 * 
 	 * @package Qcodo Website
 	 * @subpackage GeneratedDataObjects
-	 * 
+	 * @property-read integer $Id the value for intId (Read-Only PK)
+	 * @property integer $OrderNumber the value for intOrderNumber 
+	 * @property string $Name the value for strName (Not Null)
+	 * @property boolean $AnnounceOnlyFlag the value for blnAnnounceOnlyFlag 
+	 * @property string $Description the value for strDescription 
+	 * @property QDateTime $LastPostDate the value for dttLastPostDate 
+	 * @property-read Message $_Message the value for the private _objMessage (Read-Only) if set due to an expansion on the message.forum_id reverse relationship
+	 * @property-read Message[] $_MessageArray the value for the private _objMessageArray (Read-Only) if set due to an ExpandAsArray on the message.forum_id reverse relationship
+	 * @property-read Topic $_Topic the value for the private _objTopic (Read-Only) if set due to an expansion on the topic.forum_id reverse relationship
+	 * @property-read Topic[] $_TopicArray the value for the private _objTopicArray (Read-Only) if set due to an ExpandAsArray on the topic.forum_id reverse relationship
+	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
 	class ForumGen extends QBaseClass {
 
@@ -203,7 +213,7 @@
 			// Create/Build out the QueryBuilder object with Forum-specific SELET and FROM fields
 			$objQueryBuilder = new QQueryBuilder($objDatabase, 'forum');
 			Forum::GetSelectFields($objQueryBuilder);
-			$objQueryBuilder->AddFromItem('`forum` AS `forum`');
+			$objQueryBuilder->AddFromItem('forum');
 
 			// Set "CountOnly" option (if applicable)
 			if ($blnCountOnly)
@@ -211,7 +221,12 @@
 
 			// Apply Any Conditions
 			if ($objConditions)
-				$objConditions->UpdateQueryBuilder($objQueryBuilder);
+				try {
+					$objConditions->UpdateQueryBuilder($objQueryBuilder);
+				} catch (QCallerException $objExc) {
+					$objExc->IncrementOffset();
+					throw $objExc;
+				}
 
 			// Iterate through all the Optional Clauses (if any) and perform accordingly
 			if ($objOptionalClauses) {
@@ -263,7 +278,7 @@
 
 			// Perform the Query, Get the First Row, and Instantiate a new Forum object
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return Forum::InstantiateDbRow($objDbResult->GetNextRow());
+			return Forum::InstantiateDbRow($objDbResult->GetNextRow(), null, null, null, $objQueryBuilder->ColumnAliasArray);
 		}
 
 		/**
@@ -285,7 +300,7 @@
 
 			// Perform the Query and Instantiate the Array Result
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return Forum::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNodes);
+			return Forum::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNodes, $objQueryBuilder->ColumnAliasArray);
 		}
 
 		/**
@@ -378,19 +393,19 @@
 		 */
 		public static function GetSelectFields(QQueryBuilder $objBuilder, $strPrefix = null) {
 			if ($strPrefix) {
-				$strTableName = '`' . $strPrefix . '`';
-				$strAliasPrefix = '`' . $strPrefix . '__';
+				$strTableName = $strPrefix;
+				$strAliasPrefix = $strPrefix . '__';
 			} else {
-				$strTableName = '`forum`';
-				$strAliasPrefix = '`';
+				$strTableName = 'forum';
+				$strAliasPrefix = '';
 			}
 
-			$objBuilder->AddSelectItem($strTableName . '.`id` AS ' . $strAliasPrefix . 'id`');
-			$objBuilder->AddSelectItem($strTableName . '.`order_number` AS ' . $strAliasPrefix . 'order_number`');
-			$objBuilder->AddSelectItem($strTableName . '.`name` AS ' . $strAliasPrefix . 'name`');
-			$objBuilder->AddSelectItem($strTableName . '.`announce_only_flag` AS ' . $strAliasPrefix . 'announce_only_flag`');
-			$objBuilder->AddSelectItem($strTableName . '.`description` AS ' . $strAliasPrefix . 'description`');
-			$objBuilder->AddSelectItem($strTableName . '.`last_post_date` AS ' . $strAliasPrefix . 'last_post_date`');
+			$objBuilder->AddSelectItem($strTableName, 'id', $strAliasPrefix . 'id');
+			$objBuilder->AddSelectItem($strTableName, 'order_number', $strAliasPrefix . 'order_number');
+			$objBuilder->AddSelectItem($strTableName, 'name', $strAliasPrefix . 'name');
+			$objBuilder->AddSelectItem($strTableName, 'announce_only_flag', $strAliasPrefix . 'announce_only_flag');
+			$objBuilder->AddSelectItem($strTableName, 'description', $strAliasPrefix . 'description');
+			$objBuilder->AddSelectItem($strTableName, 'last_post_date', $strAliasPrefix . 'last_post_date');
 		}
 
 
@@ -407,16 +422,21 @@
 		 * early binding on referenced objects.
 		 * @param DatabaseRowBase $objDbRow
 		 * @param string $strAliasPrefix
+		 * @param string $strExpandAsArrayNodes
+		 * @param QBaseClass $objPreviousItem
+		 * @param string[] $strColumnAliasArray
 		 * @return Forum
 		*/
-		public static function InstantiateDbRow($objDbRow, $strAliasPrefix = null, $strExpandAsArrayNodes = null, $objPreviousItem = null) {
+		public static function InstantiateDbRow($objDbRow, $strAliasPrefix = null, $strExpandAsArrayNodes = null, $objPreviousItem = null, $strColumnAliasArray = array()) {
 			// If blank row, return null
 			if (!$objDbRow)
 				return null;
 
 			// See if we're doing an array expansion on the previous item
+			$strAlias = $strAliasPrefix . 'id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
 			if (($strExpandAsArrayNodes) && ($objPreviousItem) &&
-				($objPreviousItem->intId == $objDbRow->GetColumn($strAliasPrefix . 'id', 'Integer'))) {
+				($objPreviousItem->intId == $objDbRow->GetColumn($strAliasName, 'Integer'))) {
 
 				// We are.  Now, prepare to check for ExpandAsArray clauses
 				$blnExpandedViaArray = false;
@@ -424,27 +444,31 @@
 					$strAliasPrefix = 'forum__';
 
 
-				if ((array_key_exists($strAliasPrefix . 'message__id', $strExpandAsArrayNodes)) &&
-					(!is_null($objDbRow->GetColumn($strAliasPrefix . 'message__id')))) {
+				$strAlias = $strAliasPrefix . 'message__id';
+				$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+				if ((array_key_exists($strAlias, $strExpandAsArrayNodes)) &&
+					(!is_null($objDbRow->GetColumn($strAliasName)))) {
 					if ($intPreviousChildItemCount = count($objPreviousItem->_objMessageArray)) {
 						$objPreviousChildItem = $objPreviousItem->_objMessageArray[$intPreviousChildItemCount - 1];
-						$objChildItem = Message::InstantiateDbRow($objDbRow, $strAliasPrefix . 'message__', $strExpandAsArrayNodes, $objPreviousChildItem);
+						$objChildItem = Message::InstantiateDbRow($objDbRow, $strAliasPrefix . 'message__', $strExpandAsArrayNodes, $objPreviousChildItem, $strColumnAliasArray);
 						if ($objChildItem)
-							array_push($objPreviousItem->_objMessageArray, $objChildItem);
+							$objPreviousItem->_objMessageArray[] = $objChildItem;
 					} else
-						array_push($objPreviousItem->_objMessageArray, Message::InstantiateDbRow($objDbRow, $strAliasPrefix . 'message__', $strExpandAsArrayNodes));
+						$objPreviousItem->_objMessageArray[] = Message::InstantiateDbRow($objDbRow, $strAliasPrefix . 'message__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 					$blnExpandedViaArray = true;
 				}
 
-				if ((array_key_exists($strAliasPrefix . 'topic__id', $strExpandAsArrayNodes)) &&
-					(!is_null($objDbRow->GetColumn($strAliasPrefix . 'topic__id')))) {
+				$strAlias = $strAliasPrefix . 'topic__id';
+				$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+				if ((array_key_exists($strAlias, $strExpandAsArrayNodes)) &&
+					(!is_null($objDbRow->GetColumn($strAliasName)))) {
 					if ($intPreviousChildItemCount = count($objPreviousItem->_objTopicArray)) {
 						$objPreviousChildItem = $objPreviousItem->_objTopicArray[$intPreviousChildItemCount - 1];
-						$objChildItem = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topic__', $strExpandAsArrayNodes, $objPreviousChildItem);
+						$objChildItem = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topic__', $strExpandAsArrayNodes, $objPreviousChildItem, $strColumnAliasArray);
 						if ($objChildItem)
-							array_push($objPreviousItem->_objTopicArray, $objChildItem);
+							$objPreviousItem->_objTopicArray[] = $objChildItem;
 					} else
-						array_push($objPreviousItem->_objTopicArray, Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topic__', $strExpandAsArrayNodes));
+						$objPreviousItem->_objTopicArray[] = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topic__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 					$blnExpandedViaArray = true;
 				}
 
@@ -459,12 +483,18 @@
 			$objToReturn = new Forum();
 			$objToReturn->__blnRestored = true;
 
-			$objToReturn->intId = $objDbRow->GetColumn($strAliasPrefix . 'id', 'Integer');
-			$objToReturn->intOrderNumber = $objDbRow->GetColumn($strAliasPrefix . 'order_number', 'Integer');
-			$objToReturn->strName = $objDbRow->GetColumn($strAliasPrefix . 'name', 'VarChar');
-			$objToReturn->blnAnnounceOnlyFlag = $objDbRow->GetColumn($strAliasPrefix . 'announce_only_flag', 'Bit');
-			$objToReturn->strDescription = $objDbRow->GetColumn($strAliasPrefix . 'description', 'VarChar');
-			$objToReturn->dttLastPostDate = $objDbRow->GetColumn($strAliasPrefix . 'last_post_date', 'DateTime');
+			$strAliasName = array_key_exists($strAliasPrefix . 'id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'id'] : $strAliasPrefix . 'id';
+			$objToReturn->intId = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'order_number', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'order_number'] : $strAliasPrefix . 'order_number';
+			$objToReturn->intOrderNumber = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'name', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'name'] : $strAliasPrefix . 'name';
+			$objToReturn->strName = $objDbRow->GetColumn($strAliasName, 'VarChar');
+			$strAliasName = array_key_exists($strAliasPrefix . 'announce_only_flag', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'announce_only_flag'] : $strAliasPrefix . 'announce_only_flag';
+			$objToReturn->blnAnnounceOnlyFlag = $objDbRow->GetColumn($strAliasName, 'Bit');
+			$strAliasName = array_key_exists($strAliasPrefix . 'description', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'description'] : $strAliasPrefix . 'description';
+			$objToReturn->strDescription = $objDbRow->GetColumn($strAliasName, 'VarChar');
+			$strAliasName = array_key_exists($strAliasPrefix . 'last_post_date', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'last_post_date'] : $strAliasPrefix . 'last_post_date';
+			$objToReturn->dttLastPostDate = $objDbRow->GetColumn($strAliasName, 'DateTime');
 
 			// Instantiate Virtual Attributes
 			foreach ($objDbRow->GetColumnNameArray() as $strColumnName => $mixValue) {
@@ -482,19 +512,23 @@
 
 
 			// Check for Message Virtual Binding
-			if (!is_null($objDbRow->GetColumn($strAliasPrefix . 'message__id'))) {
-				if (($strExpandAsArrayNodes) && (array_key_exists($strAliasPrefix . 'message__id', $strExpandAsArrayNodes)))
-					array_push($objToReturn->_objMessageArray, Message::InstantiateDbRow($objDbRow, $strAliasPrefix . 'message__', $strExpandAsArrayNodes));
+			$strAlias = $strAliasPrefix . 'message__id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+			if (!is_null($objDbRow->GetColumn($strAliasName))) {
+				if (($strExpandAsArrayNodes) && (array_key_exists($strAlias, $strExpandAsArrayNodes)))
+					$objToReturn->_objMessageArray[] = Message::InstantiateDbRow($objDbRow, $strAliasPrefix . 'message__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 				else
-					$objToReturn->_objMessage = Message::InstantiateDbRow($objDbRow, $strAliasPrefix . 'message__', $strExpandAsArrayNodes);
+					$objToReturn->_objMessage = Message::InstantiateDbRow($objDbRow, $strAliasPrefix . 'message__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 			}
 
 			// Check for Topic Virtual Binding
-			if (!is_null($objDbRow->GetColumn($strAliasPrefix . 'topic__id'))) {
-				if (($strExpandAsArrayNodes) && (array_key_exists($strAliasPrefix . 'topic__id', $strExpandAsArrayNodes)))
-					array_push($objToReturn->_objTopicArray, Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topic__', $strExpandAsArrayNodes));
+			$strAlias = $strAliasPrefix . 'topic__id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+			if (!is_null($objDbRow->GetColumn($strAliasName))) {
+				if (($strExpandAsArrayNodes) && (array_key_exists($strAlias, $strExpandAsArrayNodes)))
+					$objToReturn->_objTopicArray[] = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topic__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 				else
-					$objToReturn->_objTopic = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topic__', $strExpandAsArrayNodes);
+					$objToReturn->_objTopic = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topic__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 			}
 
 			return $objToReturn;
@@ -503,10 +537,15 @@
 		/**
 		 * Instantiate an array of Forums from a Database Result
 		 * @param DatabaseResultBase $objDbResult
+		 * @param string $strExpandAsArrayNodes
+		 * @param string[] $strColumnAliasArray
 		 * @return Forum[]
 		 */
-		public static function InstantiateDbResult(QDatabaseResultBase $objDbResult, $strExpandAsArrayNodes = null) {
+		public static function InstantiateDbResult(QDatabaseResultBase $objDbResult, $strExpandAsArrayNodes = null, $strColumnAliasArray = null) {
 			$objToReturn = array();
+			
+			if (!$strColumnAliasArray)
+				$strColumnAliasArray = array();
 
 			// If blank resultset, then return empty array
 			if (!$objDbResult)
@@ -516,15 +555,15 @@
 			if ($strExpandAsArrayNodes) {
 				$objLastRowItem = null;
 				while ($objDbRow = $objDbResult->GetNextRow()) {
-					$objItem = Forum::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, $objLastRowItem);
+					$objItem = Forum::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, $objLastRowItem, $strColumnAliasArray);
 					if ($objItem) {
-						array_push($objToReturn, $objItem);
+						$objToReturn[] = $objItem;
 						$objLastRowItem = $objItem;
 					}
 				}
 			} else {
 				while ($objDbRow = $objDbResult->GetNextRow())
-					array_push($objToReturn, Forum::InstantiateDbRow($objDbRow));
+					$objToReturn[] = Forum::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
 			}
 
 			return $objToReturn;

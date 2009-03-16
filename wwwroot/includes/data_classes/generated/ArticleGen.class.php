@@ -15,7 +15,16 @@
 	 * 
 	 * @package Qcodo Website
 	 * @subpackage GeneratedDataObjects
-	 * 
+	 * @property-read integer $Id the value for intId (Read-Only PK)
+	 * @property integer $ArticleSectionId the value for intArticleSectionId (Not Null)
+	 * @property string $Title the value for strTitle (Not Null)
+	 * @property string $Description the value for strDescription 
+	 * @property string $Byline the value for strByline 
+	 * @property string $Article the value for strArticle 
+	 * @property QDateTime $PostDate the value for dttPostDate 
+	 * @property-read string $LastUpdatedDate the value for strLastUpdatedDate (Read-Only Timestamp)
+	 * @property ArticleSection $ArticleSection the value for the ArticleSection object referenced by intArticleSectionId (Not Null)
+	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
 	class ArticleGen extends QBaseClass {
 
@@ -83,9 +92,9 @@
 
 		/**
 		 * Protected member variable that maps to the database column article.last_updated_date
-		 * @var QDateTime dttLastUpdatedDate
+		 * @var string strLastUpdatedDate
 		 */
-		protected $dttLastUpdatedDate;
+		protected $strLastUpdatedDate;
 		const LastUpdatedDateDefault = null;
 
 
@@ -197,7 +206,7 @@
 			// Create/Build out the QueryBuilder object with Article-specific SELET and FROM fields
 			$objQueryBuilder = new QQueryBuilder($objDatabase, 'article');
 			Article::GetSelectFields($objQueryBuilder);
-			$objQueryBuilder->AddFromItem('`article` AS `article`');
+			$objQueryBuilder->AddFromItem('article');
 
 			// Set "CountOnly" option (if applicable)
 			if ($blnCountOnly)
@@ -205,7 +214,12 @@
 
 			// Apply Any Conditions
 			if ($objConditions)
-				$objConditions->UpdateQueryBuilder($objQueryBuilder);
+				try {
+					$objConditions->UpdateQueryBuilder($objQueryBuilder);
+				} catch (QCallerException $objExc) {
+					$objExc->IncrementOffset();
+					throw $objExc;
+				}
 
 			// Iterate through all the Optional Clauses (if any) and perform accordingly
 			if ($objOptionalClauses) {
@@ -257,7 +271,7 @@
 
 			// Perform the Query, Get the First Row, and Instantiate a new Article object
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return Article::InstantiateDbRow($objDbResult->GetNextRow());
+			return Article::InstantiateDbRow($objDbResult->GetNextRow(), null, null, null, $objQueryBuilder->ColumnAliasArray);
 		}
 
 		/**
@@ -279,7 +293,7 @@
 
 			// Perform the Query and Instantiate the Array Result
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return Article::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNodes);
+			return Article::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNodes, $objQueryBuilder->ColumnAliasArray);
 		}
 
 		/**
@@ -372,21 +386,21 @@
 		 */
 		public static function GetSelectFields(QQueryBuilder $objBuilder, $strPrefix = null) {
 			if ($strPrefix) {
-				$strTableName = '`' . $strPrefix . '`';
-				$strAliasPrefix = '`' . $strPrefix . '__';
+				$strTableName = $strPrefix;
+				$strAliasPrefix = $strPrefix . '__';
 			} else {
-				$strTableName = '`article`';
-				$strAliasPrefix = '`';
+				$strTableName = 'article';
+				$strAliasPrefix = '';
 			}
 
-			$objBuilder->AddSelectItem($strTableName . '.`id` AS ' . $strAliasPrefix . 'id`');
-			$objBuilder->AddSelectItem($strTableName . '.`article_section_id` AS ' . $strAliasPrefix . 'article_section_id`');
-			$objBuilder->AddSelectItem($strTableName . '.`title` AS ' . $strAliasPrefix . 'title`');
-			$objBuilder->AddSelectItem($strTableName . '.`description` AS ' . $strAliasPrefix . 'description`');
-			$objBuilder->AddSelectItem($strTableName . '.`byline` AS ' . $strAliasPrefix . 'byline`');
-			$objBuilder->AddSelectItem($strTableName . '.`article` AS ' . $strAliasPrefix . 'article`');
-			$objBuilder->AddSelectItem($strTableName . '.`post_date` AS ' . $strAliasPrefix . 'post_date`');
-			$objBuilder->AddSelectItem($strTableName . '.`last_updated_date` AS ' . $strAliasPrefix . 'last_updated_date`');
+			$objBuilder->AddSelectItem($strTableName, 'id', $strAliasPrefix . 'id');
+			$objBuilder->AddSelectItem($strTableName, 'article_section_id', $strAliasPrefix . 'article_section_id');
+			$objBuilder->AddSelectItem($strTableName, 'title', $strAliasPrefix . 'title');
+			$objBuilder->AddSelectItem($strTableName, 'description', $strAliasPrefix . 'description');
+			$objBuilder->AddSelectItem($strTableName, 'byline', $strAliasPrefix . 'byline');
+			$objBuilder->AddSelectItem($strTableName, 'article', $strAliasPrefix . 'article');
+			$objBuilder->AddSelectItem($strTableName, 'post_date', $strAliasPrefix . 'post_date');
+			$objBuilder->AddSelectItem($strTableName, 'last_updated_date', $strAliasPrefix . 'last_updated_date');
 		}
 
 
@@ -403,9 +417,12 @@
 		 * early binding on referenced objects.
 		 * @param DatabaseRowBase $objDbRow
 		 * @param string $strAliasPrefix
+		 * @param string $strExpandAsArrayNodes
+		 * @param QBaseClass $objPreviousItem
+		 * @param string[] $strColumnAliasArray
 		 * @return Article
 		*/
-		public static function InstantiateDbRow($objDbRow, $strAliasPrefix = null, $strExpandAsArrayNodes = null, $objPreviousItem = null) {
+		public static function InstantiateDbRow($objDbRow, $strAliasPrefix = null, $strExpandAsArrayNodes = null, $objPreviousItem = null, $strColumnAliasArray = array()) {
 			// If blank row, return null
 			if (!$objDbRow)
 				return null;
@@ -415,14 +432,22 @@
 			$objToReturn = new Article();
 			$objToReturn->__blnRestored = true;
 
-			$objToReturn->intId = $objDbRow->GetColumn($strAliasPrefix . 'id', 'Integer');
-			$objToReturn->intArticleSectionId = $objDbRow->GetColumn($strAliasPrefix . 'article_section_id', 'Integer');
-			$objToReturn->strTitle = $objDbRow->GetColumn($strAliasPrefix . 'title', 'VarChar');
-			$objToReturn->strDescription = $objDbRow->GetColumn($strAliasPrefix . 'description', 'Blob');
-			$objToReturn->strByline = $objDbRow->GetColumn($strAliasPrefix . 'byline', 'VarChar');
-			$objToReturn->strArticle = $objDbRow->GetColumn($strAliasPrefix . 'article', 'Blob');
-			$objToReturn->dttPostDate = $objDbRow->GetColumn($strAliasPrefix . 'post_date', 'DateTime');
-			$objToReturn->dttLastUpdatedDate = $objDbRow->GetColumn($strAliasPrefix . 'last_updated_date', 'DateTime');
+			$strAliasName = array_key_exists($strAliasPrefix . 'id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'id'] : $strAliasPrefix . 'id';
+			$objToReturn->intId = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'article_section_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'article_section_id'] : $strAliasPrefix . 'article_section_id';
+			$objToReturn->intArticleSectionId = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'title', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'title'] : $strAliasPrefix . 'title';
+			$objToReturn->strTitle = $objDbRow->GetColumn($strAliasName, 'VarChar');
+			$strAliasName = array_key_exists($strAliasPrefix . 'description', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'description'] : $strAliasPrefix . 'description';
+			$objToReturn->strDescription = $objDbRow->GetColumn($strAliasName, 'Blob');
+			$strAliasName = array_key_exists($strAliasPrefix . 'byline', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'byline'] : $strAliasPrefix . 'byline';
+			$objToReturn->strByline = $objDbRow->GetColumn($strAliasName, 'VarChar');
+			$strAliasName = array_key_exists($strAliasPrefix . 'article', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'article'] : $strAliasPrefix . 'article';
+			$objToReturn->strArticle = $objDbRow->GetColumn($strAliasName, 'Blob');
+			$strAliasName = array_key_exists($strAliasPrefix . 'post_date', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'post_date'] : $strAliasPrefix . 'post_date';
+			$objToReturn->dttPostDate = $objDbRow->GetColumn($strAliasName, 'DateTime');
+			$strAliasName = array_key_exists($strAliasPrefix . 'last_updated_date', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'last_updated_date'] : $strAliasPrefix . 'last_updated_date';
+			$objToReturn->strLastUpdatedDate = $objDbRow->GetColumn($strAliasName, 'VarChar');
 
 			// Instantiate Virtual Attributes
 			foreach ($objDbRow->GetColumnNameArray() as $strColumnName => $mixValue) {
@@ -437,8 +462,10 @@
 				$strAliasPrefix = 'article__';
 
 			// Check for ArticleSection Early Binding
-			if (!is_null($objDbRow->GetColumn($strAliasPrefix . 'article_section_id__id')))
-				$objToReturn->objArticleSection = ArticleSection::InstantiateDbRow($objDbRow, $strAliasPrefix . 'article_section_id__', $strExpandAsArrayNodes);
+			$strAlias = $strAliasPrefix . 'article_section_id__id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+			if (!is_null($objDbRow->GetColumn($strAliasName)))
+				$objToReturn->objArticleSection = ArticleSection::InstantiateDbRow($objDbRow, $strAliasPrefix . 'article_section_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 
 
 
@@ -449,10 +476,15 @@
 		/**
 		 * Instantiate an array of Articles from a Database Result
 		 * @param DatabaseResultBase $objDbResult
+		 * @param string $strExpandAsArrayNodes
+		 * @param string[] $strColumnAliasArray
 		 * @return Article[]
 		 */
-		public static function InstantiateDbResult(QDatabaseResultBase $objDbResult, $strExpandAsArrayNodes = null) {
+		public static function InstantiateDbResult(QDatabaseResultBase $objDbResult, $strExpandAsArrayNodes = null, $strColumnAliasArray = null) {
 			$objToReturn = array();
+			
+			if (!$strColumnAliasArray)
+				$strColumnAliasArray = array();
 
 			// If blank resultset, then return empty array
 			if (!$objDbResult)
@@ -462,15 +494,15 @@
 			if ($strExpandAsArrayNodes) {
 				$objLastRowItem = null;
 				while ($objDbRow = $objDbResult->GetNextRow()) {
-					$objItem = Article::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, $objLastRowItem);
+					$objItem = Article::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, $objLastRowItem, $strColumnAliasArray);
 					if ($objItem) {
-						array_push($objToReturn, $objItem);
+						$objToReturn[] = $objItem;
 						$objLastRowItem = $objItem;
 					}
 				}
 			} else {
 				while ($objDbRow = $objDbResult->GetNextRow())
-					array_push($objToReturn, Article::InstantiateDbRow($objDbRow));
+					$objToReturn[] = Article::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
 			}
 
 			return $objToReturn;
@@ -562,16 +594,14 @@
 							`description`,
 							`byline`,
 							`article`,
-							`post_date`,
-							`last_updated_date`
+							`post_date`
 						) VALUES (
 							' . $objDatabase->SqlVariable($this->intArticleSectionId) . ',
 							' . $objDatabase->SqlVariable($this->strTitle) . ',
 							' . $objDatabase->SqlVariable($this->strDescription) . ',
 							' . $objDatabase->SqlVariable($this->strByline) . ',
 							' . $objDatabase->SqlVariable($this->strArticle) . ',
-							' . $objDatabase->SqlVariable($this->dttPostDate) . ',
-							' . $objDatabase->SqlVariable($this->dttLastUpdatedDate) . '
+							' . $objDatabase->SqlVariable($this->dttPostDate) . '
 						)
 					');
 
@@ -581,6 +611,21 @@
 					// Perform an UPDATE query
 
 					// First checking for Optimistic Locking constraints (if applicable)
+					if (!$blnForceUpdate) {
+						// Perform the Optimistic Locking check
+						$objResult = $objDatabase->Query('
+							SELECT
+								`last_updated_date`
+							FROM
+								`article`
+							WHERE
+								`id` = ' . $objDatabase->SqlVariable($this->intId) . '
+						');
+						
+						$objRow = $objResult->FetchArray();
+						if ($objRow[0] != $this->strLastUpdatedDate)
+							throw new QOptimisticLockingException('Article');
+					}
 
 					// Perform the UPDATE query
 					$objDatabase->NonQuery('
@@ -592,8 +637,7 @@
 							`description` = ' . $objDatabase->SqlVariable($this->strDescription) . ',
 							`byline` = ' . $objDatabase->SqlVariable($this->strByline) . ',
 							`article` = ' . $objDatabase->SqlVariable($this->strArticle) . ',
-							`post_date` = ' . $objDatabase->SqlVariable($this->dttPostDate) . ',
-							`last_updated_date` = ' . $objDatabase->SqlVariable($this->dttLastUpdatedDate) . '
+							`post_date` = ' . $objDatabase->SqlVariable($this->dttPostDate) . '
 						WHERE
 							`id` = ' . $objDatabase->SqlVariable($this->intId) . '
 					');
@@ -607,6 +651,18 @@
 			// Update __blnRestored and any Non-Identity PK Columns (if applicable)
 			$this->__blnRestored = true;
 
+			// Update Local Timestamp
+			$objResult = $objDatabase->Query('
+				SELECT
+					`last_updated_date`
+				FROM
+					`article`
+				WHERE
+					`id` = ' . $objDatabase->SqlVariable($this->intId) . '
+			');
+						
+			$objRow = $objResult->FetchArray();
+			$this->strLastUpdatedDate = $objRow[0];
 
 			// Return 
 			return $mixToReturn;
@@ -678,7 +734,7 @@
 			$this->strByline = $objReloaded->strByline;
 			$this->strArticle = $objReloaded->strArticle;
 			$this->dttPostDate = $objReloaded->dttPostDate;
-			$this->dttLastUpdatedDate = $objReloaded->dttLastUpdatedDate;
+			$this->strLastUpdatedDate = $objReloaded->strLastUpdatedDate;
 		}
 
 
@@ -750,10 +806,10 @@
 
 				case 'LastUpdatedDate':
 					/**
-					 * Gets the value for dttLastUpdatedDate 
-					 * @return QDateTime
+					 * Gets the value for strLastUpdatedDate (Read-Only Timestamp)
+					 * @return string
 					 */
-					return $this->dttLastUpdatedDate;
+					return $this->strLastUpdatedDate;
 
 
 				///////////////////
@@ -885,19 +941,6 @@
 						throw $objExc;
 					}
 
-				case 'LastUpdatedDate':
-					/**
-					 * Sets the value for dttLastUpdatedDate 
-					 * @param QDateTime $mixValue
-					 * @return QDateTime
-					 */
-					try {
-						return ($this->dttLastUpdatedDate = QType::Cast($mixValue, QType::DateTime));
-					} catch (QCallerException $objExc) {
-						$objExc->IncrementOffset();
-						throw $objExc;
-					}
-
 
 				///////////////////
 				// Member Objects
@@ -978,7 +1021,7 @@
 			$strToReturn .= '<element name="Byline" type="xsd:string"/>';
 			$strToReturn .= '<element name="Article" type="xsd:string"/>';
 			$strToReturn .= '<element name="PostDate" type="xsd:dateTime"/>';
-			$strToReturn .= '<element name="LastUpdatedDate" type="xsd:dateTime"/>';
+			$strToReturn .= '<element name="LastUpdatedDate" type="xsd:string"/>';
 			$strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
 			$strToReturn .= '</sequence></complexType>';
 			return $strToReturn;
@@ -1018,7 +1061,7 @@
 			if (property_exists($objSoapObject, 'PostDate'))
 				$objToReturn->dttPostDate = new QDateTime($objSoapObject->PostDate);
 			if (property_exists($objSoapObject, 'LastUpdatedDate'))
-				$objToReturn->dttLastUpdatedDate = new QDateTime($objSoapObject->LastUpdatedDate);
+				$objToReturn->strLastUpdatedDate = $objSoapObject->LastUpdatedDate;
 			if (property_exists($objSoapObject, '__blnRestored'))
 				$objToReturn->__blnRestored = $objSoapObject->__blnRestored;
 			return $objToReturn;
@@ -1043,8 +1086,6 @@
 				$objObject->intArticleSectionId = null;
 			if ($objObject->dttPostDate)
 				$objObject->dttPostDate = $objObject->dttPostDate->__toString(QDateTime::FormatSoap);
-			if ($objObject->dttLastUpdatedDate)
-				$objObject->dttLastUpdatedDate = $objObject->dttLastUpdatedDate->__toString(QDateTime::FormatSoap);
 			return $objObject;
 		}
 
@@ -1082,7 +1123,7 @@
 				case 'PostDate':
 					return new QQNode('post_date', 'PostDate', 'QDateTime', $this);
 				case 'LastUpdatedDate':
-					return new QQNode('last_updated_date', 'LastUpdatedDate', 'QDateTime', $this);
+					return new QQNode('last_updated_date', 'LastUpdatedDate', 'string', $this);
 
 				case '_PrimaryKeyNode':
 					return new QQNode('id', 'Id', 'integer', $this);
@@ -1120,7 +1161,7 @@
 				case 'PostDate':
 					return new QQNode('post_date', 'PostDate', 'QDateTime', $this);
 				case 'LastUpdatedDate':
-					return new QQNode('last_updated_date', 'LastUpdatedDate', 'QDateTime', $this);
+					return new QQNode('last_updated_date', 'LastUpdatedDate', 'string', $this);
 
 				case '_PrimaryKeyNode':
 					return new QQNode('id', 'Id', 'integer', $this);

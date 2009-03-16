@@ -15,7 +15,11 @@
 	 * 
 	 * @package Qcodo Website
 	 * @subpackage GeneratedDataObjects
-	 * 
+	 * @property-read integer $Id the value for intId (Read-Only PK)
+	 * @property string $Filename the value for strFilename 
+	 * @property string $Token the value for strToken (Unique)
+	 * @property integer $Counter the value for intCounter 
+	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
 	class CounterGen extends QBaseClass {
 
@@ -155,7 +159,7 @@
 			// Create/Build out the QueryBuilder object with Counter-specific SELET and FROM fields
 			$objQueryBuilder = new QQueryBuilder($objDatabase, 'counter');
 			Counter::GetSelectFields($objQueryBuilder);
-			$objQueryBuilder->AddFromItem('`counter` AS `counter`');
+			$objQueryBuilder->AddFromItem('counter');
 
 			// Set "CountOnly" option (if applicable)
 			if ($blnCountOnly)
@@ -163,7 +167,12 @@
 
 			// Apply Any Conditions
 			if ($objConditions)
-				$objConditions->UpdateQueryBuilder($objQueryBuilder);
+				try {
+					$objConditions->UpdateQueryBuilder($objQueryBuilder);
+				} catch (QCallerException $objExc) {
+					$objExc->IncrementOffset();
+					throw $objExc;
+				}
 
 			// Iterate through all the Optional Clauses (if any) and perform accordingly
 			if ($objOptionalClauses) {
@@ -215,7 +224,7 @@
 
 			// Perform the Query, Get the First Row, and Instantiate a new Counter object
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return Counter::InstantiateDbRow($objDbResult->GetNextRow());
+			return Counter::InstantiateDbRow($objDbResult->GetNextRow(), null, null, null, $objQueryBuilder->ColumnAliasArray);
 		}
 
 		/**
@@ -237,7 +246,7 @@
 
 			// Perform the Query and Instantiate the Array Result
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return Counter::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNodes);
+			return Counter::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNodes, $objQueryBuilder->ColumnAliasArray);
 		}
 
 		/**
@@ -330,17 +339,17 @@
 		 */
 		public static function GetSelectFields(QQueryBuilder $objBuilder, $strPrefix = null) {
 			if ($strPrefix) {
-				$strTableName = '`' . $strPrefix . '`';
-				$strAliasPrefix = '`' . $strPrefix . '__';
+				$strTableName = $strPrefix;
+				$strAliasPrefix = $strPrefix . '__';
 			} else {
-				$strTableName = '`counter`';
-				$strAliasPrefix = '`';
+				$strTableName = 'counter';
+				$strAliasPrefix = '';
 			}
 
-			$objBuilder->AddSelectItem($strTableName . '.`id` AS ' . $strAliasPrefix . 'id`');
-			$objBuilder->AddSelectItem($strTableName . '.`filename` AS ' . $strAliasPrefix . 'filename`');
-			$objBuilder->AddSelectItem($strTableName . '.`token` AS ' . $strAliasPrefix . 'token`');
-			$objBuilder->AddSelectItem($strTableName . '.`counter` AS ' . $strAliasPrefix . 'counter`');
+			$objBuilder->AddSelectItem($strTableName, 'id', $strAliasPrefix . 'id');
+			$objBuilder->AddSelectItem($strTableName, 'filename', $strAliasPrefix . 'filename');
+			$objBuilder->AddSelectItem($strTableName, 'token', $strAliasPrefix . 'token');
+			$objBuilder->AddSelectItem($strTableName, 'counter', $strAliasPrefix . 'counter');
 		}
 
 
@@ -357,9 +366,12 @@
 		 * early binding on referenced objects.
 		 * @param DatabaseRowBase $objDbRow
 		 * @param string $strAliasPrefix
+		 * @param string $strExpandAsArrayNodes
+		 * @param QBaseClass $objPreviousItem
+		 * @param string[] $strColumnAliasArray
 		 * @return Counter
 		*/
-		public static function InstantiateDbRow($objDbRow, $strAliasPrefix = null, $strExpandAsArrayNodes = null, $objPreviousItem = null) {
+		public static function InstantiateDbRow($objDbRow, $strAliasPrefix = null, $strExpandAsArrayNodes = null, $objPreviousItem = null, $strColumnAliasArray = array()) {
 			// If blank row, return null
 			if (!$objDbRow)
 				return null;
@@ -369,10 +381,14 @@
 			$objToReturn = new Counter();
 			$objToReturn->__blnRestored = true;
 
-			$objToReturn->intId = $objDbRow->GetColumn($strAliasPrefix . 'id', 'Integer');
-			$objToReturn->strFilename = $objDbRow->GetColumn($strAliasPrefix . 'filename', 'VarChar');
-			$objToReturn->strToken = $objDbRow->GetColumn($strAliasPrefix . 'token', 'VarChar');
-			$objToReturn->intCounter = $objDbRow->GetColumn($strAliasPrefix . 'counter', 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'id'] : $strAliasPrefix . 'id';
+			$objToReturn->intId = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'filename', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'filename'] : $strAliasPrefix . 'filename';
+			$objToReturn->strFilename = $objDbRow->GetColumn($strAliasName, 'VarChar');
+			$strAliasName = array_key_exists($strAliasPrefix . 'token', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'token'] : $strAliasPrefix . 'token';
+			$objToReturn->strToken = $objDbRow->GetColumn($strAliasName, 'VarChar');
+			$strAliasName = array_key_exists($strAliasPrefix . 'counter', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'counter'] : $strAliasPrefix . 'counter';
+			$objToReturn->intCounter = $objDbRow->GetColumn($strAliasName, 'Integer');
 
 			// Instantiate Virtual Attributes
 			foreach ($objDbRow->GetColumnNameArray() as $strColumnName => $mixValue) {
@@ -395,10 +411,15 @@
 		/**
 		 * Instantiate an array of Counters from a Database Result
 		 * @param DatabaseResultBase $objDbResult
+		 * @param string $strExpandAsArrayNodes
+		 * @param string[] $strColumnAliasArray
 		 * @return Counter[]
 		 */
-		public static function InstantiateDbResult(QDatabaseResultBase $objDbResult, $strExpandAsArrayNodes = null) {
+		public static function InstantiateDbResult(QDatabaseResultBase $objDbResult, $strExpandAsArrayNodes = null, $strColumnAliasArray = null) {
 			$objToReturn = array();
+			
+			if (!$strColumnAliasArray)
+				$strColumnAliasArray = array();
 
 			// If blank resultset, then return empty array
 			if (!$objDbResult)
@@ -408,15 +429,15 @@
 			if ($strExpandAsArrayNodes) {
 				$objLastRowItem = null;
 				while ($objDbRow = $objDbResult->GetNextRow()) {
-					$objItem = Counter::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, $objLastRowItem);
+					$objItem = Counter::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, $objLastRowItem, $strColumnAliasArray);
 					if ($objItem) {
-						array_push($objToReturn, $objItem);
+						$objToReturn[] = $objItem;
 						$objLastRowItem = $objItem;
 					}
 				}
 			} else {
 				while ($objDbRow = $objDbResult->GetNextRow())
-					array_push($objToReturn, Counter::InstantiateDbRow($objDbRow));
+					$objToReturn[] = Counter::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
 			}
 
 			return $objToReturn;

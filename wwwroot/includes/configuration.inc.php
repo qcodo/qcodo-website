@@ -31,6 +31,7 @@
 	define ('__DATA_CLASSES__', __INCLUDES__ . '/data_classes');
 	define ('__DATAGEN_CLASSES__', __INCLUDES__ . '/data_classes/generated');
 	define ('__DATA_META_CONTROLS__', __INCLUDES__ . '/data_meta_controls');
+	define ('__DATAGEN_META_CONTROLS__', __INCLUDES__ . '/data_meta_controls/generated');
 
 	define ('__DEVTOOLS__', null);
 	define ('__FORM_DRAFTS__', null);

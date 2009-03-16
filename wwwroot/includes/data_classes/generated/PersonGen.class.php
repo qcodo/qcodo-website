@@ -15,7 +15,36 @@
 	 * 
 	 * @package Qcodo Website
 	 * @subpackage GeneratedDataObjects
-	 * 
+	 * @property-read integer $Id the value for intId (Read-Only PK)
+	 * @property integer $PersonTypeId the value for intPersonTypeId (Not Null)
+	 * @property string $Username the value for strUsername (Unique)
+	 * @property string $Password the value for strPassword 
+	 * @property string $FirstName the value for strFirstName (Not Null)
+	 * @property string $LastName the value for strLastName (Not Null)
+	 * @property string $Email the value for strEmail (Unique)
+	 * @property boolean $DisplayRealNameFlag the value for blnDisplayRealNameFlag 
+	 * @property boolean $DisplayEmailFlag the value for blnDisplayEmailFlag 
+	 * @property boolean $OptInFlag the value for blnOptInFlag 
+	 * @property boolean $DonatedFlag the value for blnDonatedFlag 
+	 * @property string $Location the value for strLocation 
+	 * @property integer $CountryId the value for intCountryId 
+	 * @property string $Url the value for strUrl 
+	 * @property QDateTime $RegistrationDate the value for dttRegistrationDate 
+	 * @property-read Topic $_TopicAsEmail the value for the private _objTopicAsEmail (Read-Only) if set due to an expansion on the email_topic_person_assn association table
+	 * @property-read Topic[] $_TopicAsEmailArray the value for the private _objTopicAsEmailArray (Read-Only) if set due to an ExpandAsArray on the email_topic_person_assn association table
+	 * @property-read Topic $_TopicAsReadOnce the value for the private _objTopicAsReadOnce (Read-Only) if set due to an expansion on the read_once_topic_person_assn association table
+	 * @property-read Topic[] $_TopicAsReadOnceArray the value for the private _objTopicAsReadOnceArray (Read-Only) if set due to an ExpandAsArray on the read_once_topic_person_assn association table
+	 * @property-read Topic $_TopicAsRead the value for the private _objTopicAsRead (Read-Only) if set due to an expansion on the read_topic_person_assn association table
+	 * @property-read Topic[] $_TopicAsReadArray the value for the private _objTopicAsReadArray (Read-Only) if set due to an ExpandAsArray on the read_topic_person_assn association table
+	 * @property-read Download $_Download the value for the private _objDownload (Read-Only) if set due to an expansion on the download.person_id reverse relationship
+	 * @property-read Download[] $_DownloadArray the value for the private _objDownloadArray (Read-Only) if set due to an ExpandAsArray on the download.person_id reverse relationship
+	 * @property-read LoginTicket $_LoginTicket the value for the private _objLoginTicket (Read-Only) if set due to an expansion on the login_ticket.person_id reverse relationship
+	 * @property-read LoginTicket[] $_LoginTicketArray the value for the private _objLoginTicketArray (Read-Only) if set due to an ExpandAsArray on the login_ticket.person_id reverse relationship
+	 * @property-read Message $_Message the value for the private _objMessage (Read-Only) if set due to an expansion on the message.person_id reverse relationship
+	 * @property-read Message[] $_MessageArray the value for the private _objMessageArray (Read-Only) if set due to an ExpandAsArray on the message.person_id reverse relationship
+	 * @property-read Topic $_Topic the value for the private _objTopic (Read-Only) if set due to an expansion on the topic.person_id reverse relationship
+	 * @property-read Topic[] $_TopicArray the value for the private _objTopicArray (Read-Only) if set due to an ExpandAsArray on the topic.person_id reverse relationship
+	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
 	class PersonGen extends QBaseClass {
 
@@ -53,7 +82,7 @@
 		 * @var string strPassword
 		 */
 		protected $strPassword;
-		const PasswordMaxLength = 100;
+		const PasswordMaxLength = 20;
 		const PasswordDefault = null;
 
 
@@ -90,6 +119,14 @@
 		 */
 		protected $blnDisplayRealNameFlag;
 		const DisplayRealNameFlagDefault = null;
+
+
+		/**
+		 * Protected member variable that maps to the database column person.display_email_flag
+		 * @var boolean blnDisplayEmailFlag
+		 */
+		protected $blnDisplayEmailFlag;
+		const DisplayEmailFlagDefault = null;
 
 
 		/**
@@ -352,7 +389,7 @@
 			// Create/Build out the QueryBuilder object with Person-specific SELET and FROM fields
 			$objQueryBuilder = new QQueryBuilder($objDatabase, 'person');
 			Person::GetSelectFields($objQueryBuilder);
-			$objQueryBuilder->AddFromItem('`person` AS `person`');
+			$objQueryBuilder->AddFromItem('person');
 
 			// Set "CountOnly" option (if applicable)
 			if ($blnCountOnly)
@@ -360,7 +397,12 @@
 
 			// Apply Any Conditions
 			if ($objConditions)
-				$objConditions->UpdateQueryBuilder($objQueryBuilder);
+				try {
+					$objConditions->UpdateQueryBuilder($objQueryBuilder);
+				} catch (QCallerException $objExc) {
+					$objExc->IncrementOffset();
+					throw $objExc;
+				}
 
 			// Iterate through all the Optional Clauses (if any) and perform accordingly
 			if ($objOptionalClauses) {
@@ -412,7 +454,7 @@
 
 			// Perform the Query, Get the First Row, and Instantiate a new Person object
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return Person::InstantiateDbRow($objDbResult->GetNextRow());
+			return Person::InstantiateDbRow($objDbResult->GetNextRow(), null, null, null, $objQueryBuilder->ColumnAliasArray);
 		}
 
 		/**
@@ -434,7 +476,7 @@
 
 			// Perform the Query and Instantiate the Array Result
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return Person::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNodes);
+			return Person::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNodes, $objQueryBuilder->ColumnAliasArray);
 		}
 
 		/**
@@ -527,27 +569,28 @@
 		 */
 		public static function GetSelectFields(QQueryBuilder $objBuilder, $strPrefix = null) {
 			if ($strPrefix) {
-				$strTableName = '`' . $strPrefix . '`';
-				$strAliasPrefix = '`' . $strPrefix . '__';
+				$strTableName = $strPrefix;
+				$strAliasPrefix = $strPrefix . '__';
 			} else {
-				$strTableName = '`person`';
-				$strAliasPrefix = '`';
+				$strTableName = 'person';
+				$strAliasPrefix = '';
 			}
 
-			$objBuilder->AddSelectItem($strTableName . '.`id` AS ' . $strAliasPrefix . 'id`');
-			$objBuilder->AddSelectItem($strTableName . '.`person_type_id` AS ' . $strAliasPrefix . 'person_type_id`');
-			$objBuilder->AddSelectItem($strTableName . '.`username` AS ' . $strAliasPrefix . 'username`');
-			$objBuilder->AddSelectItem($strTableName . '.`password` AS ' . $strAliasPrefix . 'password`');
-			$objBuilder->AddSelectItem($strTableName . '.`first_name` AS ' . $strAliasPrefix . 'first_name`');
-			$objBuilder->AddSelectItem($strTableName . '.`last_name` AS ' . $strAliasPrefix . 'last_name`');
-			$objBuilder->AddSelectItem($strTableName . '.`email` AS ' . $strAliasPrefix . 'email`');
-			$objBuilder->AddSelectItem($strTableName . '.`display_real_name_flag` AS ' . $strAliasPrefix . 'display_real_name_flag`');
-			$objBuilder->AddSelectItem($strTableName . '.`opt_in_flag` AS ' . $strAliasPrefix . 'opt_in_flag`');
-			$objBuilder->AddSelectItem($strTableName . '.`donated_flag` AS ' . $strAliasPrefix . 'donated_flag`');
-			$objBuilder->AddSelectItem($strTableName . '.`location` AS ' . $strAliasPrefix . 'location`');
-			$objBuilder->AddSelectItem($strTableName . '.`country_id` AS ' . $strAliasPrefix . 'country_id`');
-			$objBuilder->AddSelectItem($strTableName . '.`url` AS ' . $strAliasPrefix . 'url`');
-			$objBuilder->AddSelectItem($strTableName . '.`registration_date` AS ' . $strAliasPrefix . 'registration_date`');
+			$objBuilder->AddSelectItem($strTableName, 'id', $strAliasPrefix . 'id');
+			$objBuilder->AddSelectItem($strTableName, 'person_type_id', $strAliasPrefix . 'person_type_id');
+			$objBuilder->AddSelectItem($strTableName, 'username', $strAliasPrefix . 'username');
+			$objBuilder->AddSelectItem($strTableName, 'password', $strAliasPrefix . 'password');
+			$objBuilder->AddSelectItem($strTableName, 'first_name', $strAliasPrefix . 'first_name');
+			$objBuilder->AddSelectItem($strTableName, 'last_name', $strAliasPrefix . 'last_name');
+			$objBuilder->AddSelectItem($strTableName, 'email', $strAliasPrefix . 'email');
+			$objBuilder->AddSelectItem($strTableName, 'display_real_name_flag', $strAliasPrefix . 'display_real_name_flag');
+			$objBuilder->AddSelectItem($strTableName, 'display_email_flag', $strAliasPrefix . 'display_email_flag');
+			$objBuilder->AddSelectItem($strTableName, 'opt_in_flag', $strAliasPrefix . 'opt_in_flag');
+			$objBuilder->AddSelectItem($strTableName, 'donated_flag', $strAliasPrefix . 'donated_flag');
+			$objBuilder->AddSelectItem($strTableName, 'location', $strAliasPrefix . 'location');
+			$objBuilder->AddSelectItem($strTableName, 'country_id', $strAliasPrefix . 'country_id');
+			$objBuilder->AddSelectItem($strTableName, 'url', $strAliasPrefix . 'url');
+			$objBuilder->AddSelectItem($strTableName, 'registration_date', $strAliasPrefix . 'registration_date');
 		}
 
 
@@ -564,104 +607,123 @@
 		 * early binding on referenced objects.
 		 * @param DatabaseRowBase $objDbRow
 		 * @param string $strAliasPrefix
+		 * @param string $strExpandAsArrayNodes
+		 * @param QBaseClass $objPreviousItem
+		 * @param string[] $strColumnAliasArray
 		 * @return Person
 		*/
-		public static function InstantiateDbRow($objDbRow, $strAliasPrefix = null, $strExpandAsArrayNodes = null, $objPreviousItem = null) {
+		public static function InstantiateDbRow($objDbRow, $strAliasPrefix = null, $strExpandAsArrayNodes = null, $objPreviousItem = null, $strColumnAliasArray = array()) {
 			// If blank row, return null
 			if (!$objDbRow)
 				return null;
 
 			// See if we're doing an array expansion on the previous item
+			$strAlias = $strAliasPrefix . 'id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
 			if (($strExpandAsArrayNodes) && ($objPreviousItem) &&
-				($objPreviousItem->intId == $objDbRow->GetColumn($strAliasPrefix . 'id', 'Integer'))) {
+				($objPreviousItem->intId == $objDbRow->GetColumn($strAliasName, 'Integer'))) {
 
 				// We are.  Now, prepare to check for ExpandAsArray clauses
 				$blnExpandedViaArray = false;
 				if (!$strAliasPrefix)
 					$strAliasPrefix = 'person__';
 
-				if ((array_key_exists($strAliasPrefix . 'topicasemail__topic_id__id', $strExpandAsArrayNodes)) &&
-					(!is_null($objDbRow->GetColumn($strAliasPrefix . 'topicasemail__topic_id__id')))) {
+				$strAlias = $strAliasPrefix . 'topicasemail__topic_id__id';
+				$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+				if ((array_key_exists($strAlias, $strExpandAsArrayNodes)) &&
+					(!is_null($objDbRow->GetColumn($strAliasName)))) {
 					if ($intPreviousChildItemCount = count($objPreviousItem->_objTopicAsEmailArray)) {
 						$objPreviousChildItem = $objPreviousItem->_objTopicAsEmailArray[$intPreviousChildItemCount - 1];
-						$objChildItem = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topicasemail__topic_id__', $strExpandAsArrayNodes, $objPreviousChildItem);
+						$objChildItem = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topicasemail__topic_id__', $strExpandAsArrayNodes, $objPreviousChildItem, $strColumnAliasArray);
 						if ($objChildItem)
-							array_push($objPreviousItem->_objTopicAsEmailArray, $objChildItem);
+							$objPreviousItem->_objTopicAsEmailArray[] = $objChildItem;
 					} else
-						array_push($objPreviousItem->_objTopicAsEmailArray, Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topicasemail__topic_id__', $strExpandAsArrayNodes));
+						$objPreviousItem->_objTopicAsEmailArray[] = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topicasemail__topic_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 					$blnExpandedViaArray = true;
 				}
 
-				if ((array_key_exists($strAliasPrefix . 'topicasreadonce__topic_id__id', $strExpandAsArrayNodes)) &&
-					(!is_null($objDbRow->GetColumn($strAliasPrefix . 'topicasreadonce__topic_id__id')))) {
+				$strAlias = $strAliasPrefix . 'topicasreadonce__topic_id__id';
+				$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+				if ((array_key_exists($strAlias, $strExpandAsArrayNodes)) &&
+					(!is_null($objDbRow->GetColumn($strAliasName)))) {
 					if ($intPreviousChildItemCount = count($objPreviousItem->_objTopicAsReadOnceArray)) {
 						$objPreviousChildItem = $objPreviousItem->_objTopicAsReadOnceArray[$intPreviousChildItemCount - 1];
-						$objChildItem = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topicasreadonce__topic_id__', $strExpandAsArrayNodes, $objPreviousChildItem);
+						$objChildItem = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topicasreadonce__topic_id__', $strExpandAsArrayNodes, $objPreviousChildItem, $strColumnAliasArray);
 						if ($objChildItem)
-							array_push($objPreviousItem->_objTopicAsReadOnceArray, $objChildItem);
+							$objPreviousItem->_objTopicAsReadOnceArray[] = $objChildItem;
 					} else
-						array_push($objPreviousItem->_objTopicAsReadOnceArray, Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topicasreadonce__topic_id__', $strExpandAsArrayNodes));
+						$objPreviousItem->_objTopicAsReadOnceArray[] = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topicasreadonce__topic_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 					$blnExpandedViaArray = true;
 				}
 
-				if ((array_key_exists($strAliasPrefix . 'topicasread__topic_id__id', $strExpandAsArrayNodes)) &&
-					(!is_null($objDbRow->GetColumn($strAliasPrefix . 'topicasread__topic_id__id')))) {
+				$strAlias = $strAliasPrefix . 'topicasread__topic_id__id';
+				$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+				if ((array_key_exists($strAlias, $strExpandAsArrayNodes)) &&
+					(!is_null($objDbRow->GetColumn($strAliasName)))) {
 					if ($intPreviousChildItemCount = count($objPreviousItem->_objTopicAsReadArray)) {
 						$objPreviousChildItem = $objPreviousItem->_objTopicAsReadArray[$intPreviousChildItemCount - 1];
-						$objChildItem = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topicasread__topic_id__', $strExpandAsArrayNodes, $objPreviousChildItem);
+						$objChildItem = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topicasread__topic_id__', $strExpandAsArrayNodes, $objPreviousChildItem, $strColumnAliasArray);
 						if ($objChildItem)
-							array_push($objPreviousItem->_objTopicAsReadArray, $objChildItem);
+							$objPreviousItem->_objTopicAsReadArray[] = $objChildItem;
 					} else
-						array_push($objPreviousItem->_objTopicAsReadArray, Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topicasread__topic_id__', $strExpandAsArrayNodes));
+						$objPreviousItem->_objTopicAsReadArray[] = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topicasread__topic_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 					$blnExpandedViaArray = true;
 				}
 
 
-				if ((array_key_exists($strAliasPrefix . 'download__id', $strExpandAsArrayNodes)) &&
-					(!is_null($objDbRow->GetColumn($strAliasPrefix . 'download__id')))) {
+				$strAlias = $strAliasPrefix . 'download__id';
+				$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+				if ((array_key_exists($strAlias, $strExpandAsArrayNodes)) &&
+					(!is_null($objDbRow->GetColumn($strAliasName)))) {
 					if ($intPreviousChildItemCount = count($objPreviousItem->_objDownloadArray)) {
 						$objPreviousChildItem = $objPreviousItem->_objDownloadArray[$intPreviousChildItemCount - 1];
-						$objChildItem = Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'download__', $strExpandAsArrayNodes, $objPreviousChildItem);
+						$objChildItem = Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'download__', $strExpandAsArrayNodes, $objPreviousChildItem, $strColumnAliasArray);
 						if ($objChildItem)
-							array_push($objPreviousItem->_objDownloadArray, $objChildItem);
+							$objPreviousItem->_objDownloadArray[] = $objChildItem;
 					} else
-						array_push($objPreviousItem->_objDownloadArray, Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'download__', $strExpandAsArrayNodes));
+						$objPreviousItem->_objDownloadArray[] = Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'download__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 					$blnExpandedViaArray = true;
 				}
 
-				if ((array_key_exists($strAliasPrefix . 'loginticket__id', $strExpandAsArrayNodes)) &&
-					(!is_null($objDbRow->GetColumn($strAliasPrefix . 'loginticket__id')))) {
+				$strAlias = $strAliasPrefix . 'loginticket__id';
+				$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+				if ((array_key_exists($strAlias, $strExpandAsArrayNodes)) &&
+					(!is_null($objDbRow->GetColumn($strAliasName)))) {
 					if ($intPreviousChildItemCount = count($objPreviousItem->_objLoginTicketArray)) {
 						$objPreviousChildItem = $objPreviousItem->_objLoginTicketArray[$intPreviousChildItemCount - 1];
-						$objChildItem = LoginTicket::InstantiateDbRow($objDbRow, $strAliasPrefix . 'loginticket__', $strExpandAsArrayNodes, $objPreviousChildItem);
+						$objChildItem = LoginTicket::InstantiateDbRow($objDbRow, $strAliasPrefix . 'loginticket__', $strExpandAsArrayNodes, $objPreviousChildItem, $strColumnAliasArray);
 						if ($objChildItem)
-							array_push($objPreviousItem->_objLoginTicketArray, $objChildItem);
+							$objPreviousItem->_objLoginTicketArray[] = $objChildItem;
 					} else
-						array_push($objPreviousItem->_objLoginTicketArray, LoginTicket::InstantiateDbRow($objDbRow, $strAliasPrefix . 'loginticket__', $strExpandAsArrayNodes));
+						$objPreviousItem->_objLoginTicketArray[] = LoginTicket::InstantiateDbRow($objDbRow, $strAliasPrefix . 'loginticket__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 					$blnExpandedViaArray = true;
 				}
 
-				if ((array_key_exists($strAliasPrefix . 'message__id', $strExpandAsArrayNodes)) &&
-					(!is_null($objDbRow->GetColumn($strAliasPrefix . 'message__id')))) {
+				$strAlias = $strAliasPrefix . 'message__id';
+				$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+				if ((array_key_exists($strAlias, $strExpandAsArrayNodes)) &&
+					(!is_null($objDbRow->GetColumn($strAliasName)))) {
 					if ($intPreviousChildItemCount = count($objPreviousItem->_objMessageArray)) {
 						$objPreviousChildItem = $objPreviousItem->_objMessageArray[$intPreviousChildItemCount - 1];
-						$objChildItem = Message::InstantiateDbRow($objDbRow, $strAliasPrefix . 'message__', $strExpandAsArrayNodes, $objPreviousChildItem);
+						$objChildItem = Message::InstantiateDbRow($objDbRow, $strAliasPrefix . 'message__', $strExpandAsArrayNodes, $objPreviousChildItem, $strColumnAliasArray);
 						if ($objChildItem)
-							array_push($objPreviousItem->_objMessageArray, $objChildItem);
+							$objPreviousItem->_objMessageArray[] = $objChildItem;
 					} else
-						array_push($objPreviousItem->_objMessageArray, Message::InstantiateDbRow($objDbRow, $strAliasPrefix . 'message__', $strExpandAsArrayNodes));
+						$objPreviousItem->_objMessageArray[] = Message::InstantiateDbRow($objDbRow, $strAliasPrefix . 'message__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 					$blnExpandedViaArray = true;
 				}
 
-				if ((array_key_exists($strAliasPrefix . 'topic__id', $strExpandAsArrayNodes)) &&
-					(!is_null($objDbRow->GetColumn($strAliasPrefix . 'topic__id')))) {
+				$strAlias = $strAliasPrefix . 'topic__id';
+				$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+				if ((array_key_exists($strAlias, $strExpandAsArrayNodes)) &&
+					(!is_null($objDbRow->GetColumn($strAliasName)))) {
 					if ($intPreviousChildItemCount = count($objPreviousItem->_objTopicArray)) {
 						$objPreviousChildItem = $objPreviousItem->_objTopicArray[$intPreviousChildItemCount - 1];
-						$objChildItem = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topic__', $strExpandAsArrayNodes, $objPreviousChildItem);
+						$objChildItem = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topic__', $strExpandAsArrayNodes, $objPreviousChildItem, $strColumnAliasArray);
 						if ($objChildItem)
-							array_push($objPreviousItem->_objTopicArray, $objChildItem);
+							$objPreviousItem->_objTopicArray[] = $objChildItem;
 					} else
-						array_push($objPreviousItem->_objTopicArray, Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topic__', $strExpandAsArrayNodes));
+						$objPreviousItem->_objTopicArray[] = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topic__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 					$blnExpandedViaArray = true;
 				}
 
@@ -676,20 +738,36 @@
 			$objToReturn = new Person();
 			$objToReturn->__blnRestored = true;
 
-			$objToReturn->intId = $objDbRow->GetColumn($strAliasPrefix . 'id', 'Integer');
-			$objToReturn->intPersonTypeId = $objDbRow->GetColumn($strAliasPrefix . 'person_type_id', 'Integer');
-			$objToReturn->strUsername = $objDbRow->GetColumn($strAliasPrefix . 'username', 'VarChar');
-			$objToReturn->strPassword = $objDbRow->GetColumn($strAliasPrefix . 'password', 'VarChar');
-			$objToReturn->strFirstName = $objDbRow->GetColumn($strAliasPrefix . 'first_name', 'VarChar');
-			$objToReturn->strLastName = $objDbRow->GetColumn($strAliasPrefix . 'last_name', 'VarChar');
-			$objToReturn->strEmail = $objDbRow->GetColumn($strAliasPrefix . 'email', 'VarChar');
-			$objToReturn->blnDisplayRealNameFlag = $objDbRow->GetColumn($strAliasPrefix . 'display_real_name_flag', 'Bit');
-			$objToReturn->blnOptInFlag = $objDbRow->GetColumn($strAliasPrefix . 'opt_in_flag', 'Bit');
-			$objToReturn->blnDonatedFlag = $objDbRow->GetColumn($strAliasPrefix . 'donated_flag', 'Bit');
-			$objToReturn->strLocation = $objDbRow->GetColumn($strAliasPrefix . 'location', 'VarChar');
-			$objToReturn->intCountryId = $objDbRow->GetColumn($strAliasPrefix . 'country_id', 'Integer');
-			$objToReturn->strUrl = $objDbRow->GetColumn($strAliasPrefix . 'url', 'VarChar');
-			$objToReturn->dttRegistrationDate = $objDbRow->GetColumn($strAliasPrefix . 'registration_date', 'DateTime');
+			$strAliasName = array_key_exists($strAliasPrefix . 'id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'id'] : $strAliasPrefix . 'id';
+			$objToReturn->intId = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'person_type_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'person_type_id'] : $strAliasPrefix . 'person_type_id';
+			$objToReturn->intPersonTypeId = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'username', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'username'] : $strAliasPrefix . 'username';
+			$objToReturn->strUsername = $objDbRow->GetColumn($strAliasName, 'VarChar');
+			$strAliasName = array_key_exists($strAliasPrefix . 'password', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'password'] : $strAliasPrefix . 'password';
+			$objToReturn->strPassword = $objDbRow->GetColumn($strAliasName, 'VarChar');
+			$strAliasName = array_key_exists($strAliasPrefix . 'first_name', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'first_name'] : $strAliasPrefix . 'first_name';
+			$objToReturn->strFirstName = $objDbRow->GetColumn($strAliasName, 'VarChar');
+			$strAliasName = array_key_exists($strAliasPrefix . 'last_name', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'last_name'] : $strAliasPrefix . 'last_name';
+			$objToReturn->strLastName = $objDbRow->GetColumn($strAliasName, 'VarChar');
+			$strAliasName = array_key_exists($strAliasPrefix . 'email', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'email'] : $strAliasPrefix . 'email';
+			$objToReturn->strEmail = $objDbRow->GetColumn($strAliasName, 'VarChar');
+			$strAliasName = array_key_exists($strAliasPrefix . 'display_real_name_flag', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'display_real_name_flag'] : $strAliasPrefix . 'display_real_name_flag';
+			$objToReturn->blnDisplayRealNameFlag = $objDbRow->GetColumn($strAliasName, 'Bit');
+			$strAliasName = array_key_exists($strAliasPrefix . 'display_email_flag', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'display_email_flag'] : $strAliasPrefix . 'display_email_flag';
+			$objToReturn->blnDisplayEmailFlag = $objDbRow->GetColumn($strAliasName, 'Bit');
+			$strAliasName = array_key_exists($strAliasPrefix . 'opt_in_flag', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'opt_in_flag'] : $strAliasPrefix . 'opt_in_flag';
+			$objToReturn->blnOptInFlag = $objDbRow->GetColumn($strAliasName, 'Bit');
+			$strAliasName = array_key_exists($strAliasPrefix . 'donated_flag', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'donated_flag'] : $strAliasPrefix . 'donated_flag';
+			$objToReturn->blnDonatedFlag = $objDbRow->GetColumn($strAliasName, 'Bit');
+			$strAliasName = array_key_exists($strAliasPrefix . 'location', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'location'] : $strAliasPrefix . 'location';
+			$objToReturn->strLocation = $objDbRow->GetColumn($strAliasName, 'VarChar');
+			$strAliasName = array_key_exists($strAliasPrefix . 'country_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'country_id'] : $strAliasPrefix . 'country_id';
+			$objToReturn->intCountryId = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'url', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'url'] : $strAliasPrefix . 'url';
+			$objToReturn->strUrl = $objDbRow->GetColumn($strAliasName, 'VarChar');
+			$strAliasName = array_key_exists($strAliasPrefix . 'registration_date', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'registration_date'] : $strAliasPrefix . 'registration_date';
+			$objToReturn->dttRegistrationDate = $objDbRow->GetColumn($strAliasName, 'DateTime');
 
 			// Instantiate Virtual Attributes
 			foreach ($objDbRow->GetColumnNameArray() as $strColumnName => $mixValue) {
@@ -706,60 +784,74 @@
 
 
 			// Check for TopicAsEmail Virtual Binding
-			if (!is_null($objDbRow->GetColumn($strAliasPrefix . 'topicasemail__topic_id__id'))) {
-				if (($strExpandAsArrayNodes) && (array_key_exists($strAliasPrefix . 'topicasemail__topic_id__id', $strExpandAsArrayNodes)))
-					array_push($objToReturn->_objTopicAsEmailArray, Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topicasemail__topic_id__', $strExpandAsArrayNodes));
+			$strAlias = $strAliasPrefix . 'topicasemail__topic_id__id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+			if (!is_null($objDbRow->GetColumn($strAliasName))) {
+				if (($strExpandAsArrayNodes) && (array_key_exists($strAlias, $strExpandAsArrayNodes)))
+					$objToReturn->_objTopicAsEmailArray[] = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topicasemail__topic_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 				else
-					$objToReturn->_objTopicAsEmail = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topicasemail__topic_id__', $strExpandAsArrayNodes);
+					$objToReturn->_objTopicAsEmail = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topicasemail__topic_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 			}
 
 			// Check for TopicAsReadOnce Virtual Binding
-			if (!is_null($objDbRow->GetColumn($strAliasPrefix . 'topicasreadonce__topic_id__id'))) {
-				if (($strExpandAsArrayNodes) && (array_key_exists($strAliasPrefix . 'topicasreadonce__topic_id__id', $strExpandAsArrayNodes)))
-					array_push($objToReturn->_objTopicAsReadOnceArray, Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topicasreadonce__topic_id__', $strExpandAsArrayNodes));
+			$strAlias = $strAliasPrefix . 'topicasreadonce__topic_id__id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+			if (!is_null($objDbRow->GetColumn($strAliasName))) {
+				if (($strExpandAsArrayNodes) && (array_key_exists($strAlias, $strExpandAsArrayNodes)))
+					$objToReturn->_objTopicAsReadOnceArray[] = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topicasreadonce__topic_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 				else
-					$objToReturn->_objTopicAsReadOnce = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topicasreadonce__topic_id__', $strExpandAsArrayNodes);
+					$objToReturn->_objTopicAsReadOnce = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topicasreadonce__topic_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 			}
 
 			// Check for TopicAsRead Virtual Binding
-			if (!is_null($objDbRow->GetColumn($strAliasPrefix . 'topicasread__topic_id__id'))) {
-				if (($strExpandAsArrayNodes) && (array_key_exists($strAliasPrefix . 'topicasread__topic_id__id', $strExpandAsArrayNodes)))
-					array_push($objToReturn->_objTopicAsReadArray, Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topicasread__topic_id__', $strExpandAsArrayNodes));
+			$strAlias = $strAliasPrefix . 'topicasread__topic_id__id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+			if (!is_null($objDbRow->GetColumn($strAliasName))) {
+				if (($strExpandAsArrayNodes) && (array_key_exists($strAlias, $strExpandAsArrayNodes)))
+					$objToReturn->_objTopicAsReadArray[] = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topicasread__topic_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 				else
-					$objToReturn->_objTopicAsRead = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topicasread__topic_id__', $strExpandAsArrayNodes);
+					$objToReturn->_objTopicAsRead = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topicasread__topic_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 			}
 
 
 			// Check for Download Virtual Binding
-			if (!is_null($objDbRow->GetColumn($strAliasPrefix . 'download__id'))) {
-				if (($strExpandAsArrayNodes) && (array_key_exists($strAliasPrefix . 'download__id', $strExpandAsArrayNodes)))
-					array_push($objToReturn->_objDownloadArray, Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'download__', $strExpandAsArrayNodes));
+			$strAlias = $strAliasPrefix . 'download__id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+			if (!is_null($objDbRow->GetColumn($strAliasName))) {
+				if (($strExpandAsArrayNodes) && (array_key_exists($strAlias, $strExpandAsArrayNodes)))
+					$objToReturn->_objDownloadArray[] = Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'download__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 				else
-					$objToReturn->_objDownload = Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'download__', $strExpandAsArrayNodes);
+					$objToReturn->_objDownload = Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'download__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 			}
 
 			// Check for LoginTicket Virtual Binding
-			if (!is_null($objDbRow->GetColumn($strAliasPrefix . 'loginticket__id'))) {
-				if (($strExpandAsArrayNodes) && (array_key_exists($strAliasPrefix . 'loginticket__id', $strExpandAsArrayNodes)))
-					array_push($objToReturn->_objLoginTicketArray, LoginTicket::InstantiateDbRow($objDbRow, $strAliasPrefix . 'loginticket__', $strExpandAsArrayNodes));
+			$strAlias = $strAliasPrefix . 'loginticket__id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+			if (!is_null($objDbRow->GetColumn($strAliasName))) {
+				if (($strExpandAsArrayNodes) && (array_key_exists($strAlias, $strExpandAsArrayNodes)))
+					$objToReturn->_objLoginTicketArray[] = LoginTicket::InstantiateDbRow($objDbRow, $strAliasPrefix . 'loginticket__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 				else
-					$objToReturn->_objLoginTicket = LoginTicket::InstantiateDbRow($objDbRow, $strAliasPrefix . 'loginticket__', $strExpandAsArrayNodes);
+					$objToReturn->_objLoginTicket = LoginTicket::InstantiateDbRow($objDbRow, $strAliasPrefix . 'loginticket__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 			}
 
 			// Check for Message Virtual Binding
-			if (!is_null($objDbRow->GetColumn($strAliasPrefix . 'message__id'))) {
-				if (($strExpandAsArrayNodes) && (array_key_exists($strAliasPrefix . 'message__id', $strExpandAsArrayNodes)))
-					array_push($objToReturn->_objMessageArray, Message::InstantiateDbRow($objDbRow, $strAliasPrefix . 'message__', $strExpandAsArrayNodes));
+			$strAlias = $strAliasPrefix . 'message__id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+			if (!is_null($objDbRow->GetColumn($strAliasName))) {
+				if (($strExpandAsArrayNodes) && (array_key_exists($strAlias, $strExpandAsArrayNodes)))
+					$objToReturn->_objMessageArray[] = Message::InstantiateDbRow($objDbRow, $strAliasPrefix . 'message__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 				else
-					$objToReturn->_objMessage = Message::InstantiateDbRow($objDbRow, $strAliasPrefix . 'message__', $strExpandAsArrayNodes);
+					$objToReturn->_objMessage = Message::InstantiateDbRow($objDbRow, $strAliasPrefix . 'message__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 			}
 
 			// Check for Topic Virtual Binding
-			if (!is_null($objDbRow->GetColumn($strAliasPrefix . 'topic__id'))) {
-				if (($strExpandAsArrayNodes) && (array_key_exists($strAliasPrefix . 'topic__id', $strExpandAsArrayNodes)))
-					array_push($objToReturn->_objTopicArray, Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topic__', $strExpandAsArrayNodes));
+			$strAlias = $strAliasPrefix . 'topic__id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+			if (!is_null($objDbRow->GetColumn($strAliasName))) {
+				if (($strExpandAsArrayNodes) && (array_key_exists($strAlias, $strExpandAsArrayNodes)))
+					$objToReturn->_objTopicArray[] = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topic__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 				else
-					$objToReturn->_objTopic = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topic__', $strExpandAsArrayNodes);
+					$objToReturn->_objTopic = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topic__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 			}
 
 			return $objToReturn;
@@ -768,10 +860,15 @@
 		/**
 		 * Instantiate an array of People from a Database Result
 		 * @param DatabaseResultBase $objDbResult
+		 * @param string $strExpandAsArrayNodes
+		 * @param string[] $strColumnAliasArray
 		 * @return Person[]
 		 */
-		public static function InstantiateDbResult(QDatabaseResultBase $objDbResult, $strExpandAsArrayNodes = null) {
+		public static function InstantiateDbResult(QDatabaseResultBase $objDbResult, $strExpandAsArrayNodes = null, $strColumnAliasArray = null) {
 			$objToReturn = array();
+			
+			if (!$strColumnAliasArray)
+				$strColumnAliasArray = array();
 
 			// If blank resultset, then return empty array
 			if (!$objDbResult)
@@ -781,15 +878,15 @@
 			if ($strExpandAsArrayNodes) {
 				$objLastRowItem = null;
 				while ($objDbRow = $objDbResult->GetNextRow()) {
-					$objItem = Person::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, $objLastRowItem);
+					$objItem = Person::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, $objLastRowItem, $strColumnAliasArray);
 					if ($objItem) {
-						array_push($objToReturn, $objItem);
+						$objToReturn[] = $objItem;
 						$objLastRowItem = $objItem;
 					}
 				}
 			} else {
 				while ($objDbRow = $objDbResult->GetNextRow())
-					array_push($objToReturn, Person::InstantiateDbRow($objDbRow));
+					$objToReturn[] = Person::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
 			}
 
 			return $objToReturn;
@@ -840,38 +937,6 @@
 			
 		/**
 		 * Load an array of Person objects,
-		 * by CountryId Index(es)
-		 * @param integer $intCountryId
-		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
-		 * @return Person[]
-		*/
-		public static function LoadArrayByCountryId($intCountryId, $objOptionalClauses = null) {
-			// Call Person::QueryArray to perform the LoadArrayByCountryId query
-			try {
-				return Person::QueryArray(
-					QQ::Equal(QQN::Person()->CountryId, $intCountryId),
-					$objOptionalClauses);
-			} catch (QCallerException $objExc) {
-				$objExc->IncrementOffset();
-				throw $objExc;
-			}
-		}
-
-		/**
-		 * Count People
-		 * by CountryId Index(es)
-		 * @param integer $intCountryId
-		 * @return int
-		*/
-		public static function CountByCountryId($intCountryId) {
-			// Call Person::QueryCount to perform the CountByCountryId query
-			return Person::QueryCount(
-				QQ::Equal(QQN::Person()->CountryId, $intCountryId)
-			);
-		}
-			
-		/**
-		 * Load an array of Person objects,
 		 * by PersonTypeId Index(es)
 		 * @param integer $intPersonTypeId
 		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
@@ -899,6 +964,38 @@
 			// Call Person::QueryCount to perform the CountByPersonTypeId query
 			return Person::QueryCount(
 				QQ::Equal(QQN::Person()->PersonTypeId, $intPersonTypeId)
+			);
+		}
+			
+		/**
+		 * Load an array of Person objects,
+		 * by CountryId Index(es)
+		 * @param integer $intCountryId
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @return Person[]
+		*/
+		public static function LoadArrayByCountryId($intCountryId, $objOptionalClauses = null) {
+			// Call Person::QueryArray to perform the LoadArrayByCountryId query
+			try {
+				return Person::QueryArray(
+					QQ::Equal(QQN::Person()->CountryId, $intCountryId),
+					$objOptionalClauses);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+		}
+
+		/**
+		 * Count People
+		 * by CountryId Index(es)
+		 * @param integer $intCountryId
+		 * @return int
+		*/
+		public static function CountByCountryId($intCountryId) {
+			// Call Person::QueryCount to perform the CountByCountryId query
+			return Person::QueryCount(
+				QQ::Equal(QQN::Person()->CountryId, $intCountryId)
 			);
 		}
 
@@ -1032,6 +1129,7 @@
 							`last_name`,
 							`email`,
 							`display_real_name_flag`,
+							`display_email_flag`,
 							`opt_in_flag`,
 							`donated_flag`,
 							`location`,
@@ -1046,6 +1144,7 @@
 							' . $objDatabase->SqlVariable($this->strLastName) . ',
 							' . $objDatabase->SqlVariable($this->strEmail) . ',
 							' . $objDatabase->SqlVariable($this->blnDisplayRealNameFlag) . ',
+							' . $objDatabase->SqlVariable($this->blnDisplayEmailFlag) . ',
 							' . $objDatabase->SqlVariable($this->blnOptInFlag) . ',
 							' . $objDatabase->SqlVariable($this->blnDonatedFlag) . ',
 							' . $objDatabase->SqlVariable($this->strLocation) . ',
@@ -1074,6 +1173,7 @@
 							`last_name` = ' . $objDatabase->SqlVariable($this->strLastName) . ',
 							`email` = ' . $objDatabase->SqlVariable($this->strEmail) . ',
 							`display_real_name_flag` = ' . $objDatabase->SqlVariable($this->blnDisplayRealNameFlag) . ',
+							`display_email_flag` = ' . $objDatabase->SqlVariable($this->blnDisplayEmailFlag) . ',
 							`opt_in_flag` = ' . $objDatabase->SqlVariable($this->blnOptInFlag) . ',
 							`donated_flag` = ' . $objDatabase->SqlVariable($this->blnDonatedFlag) . ',
 							`location` = ' . $objDatabase->SqlVariable($this->strLocation) . ',
@@ -1165,6 +1265,7 @@
 			$this->strLastName = $objReloaded->strLastName;
 			$this->strEmail = $objReloaded->strEmail;
 			$this->blnDisplayRealNameFlag = $objReloaded->blnDisplayRealNameFlag;
+			$this->blnDisplayEmailFlag = $objReloaded->blnDisplayEmailFlag;
 			$this->blnOptInFlag = $objReloaded->blnOptInFlag;
 			$this->blnDonatedFlag = $objReloaded->blnDonatedFlag;
 			$this->strLocation = $objReloaded->strLocation;
@@ -1246,6 +1347,13 @@
 					 * @return boolean
 					 */
 					return $this->blnDisplayRealNameFlag;
+
+				case 'DisplayEmailFlag':
+					/**
+					 * Gets the value for blnDisplayEmailFlag 
+					 * @return boolean
+					 */
+					return $this->blnDisplayEmailFlag;
 
 				case 'OptInFlag':
 					/**
@@ -1524,6 +1632,19 @@
 					 */
 					try {
 						return ($this->blnDisplayRealNameFlag = QType::Cast($mixValue, QType::Boolean));
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
+				case 'DisplayEmailFlag':
+					/**
+					 * Sets the value for blnDisplayEmailFlag 
+					 * @param boolean $mixValue
+					 * @return boolean
+					 */
+					try {
+						return ($this->blnDisplayEmailFlag = QType::Cast($mixValue, QType::Boolean));
 					} catch (QCallerException $objExc) {
 						$objExc->IncrementOffset();
 						throw $objExc;
@@ -2622,6 +2743,7 @@
 			$strToReturn .= '<element name="LastName" type="xsd:string"/>';
 			$strToReturn .= '<element name="Email" type="xsd:string"/>';
 			$strToReturn .= '<element name="DisplayRealNameFlag" type="xsd:boolean"/>';
+			$strToReturn .= '<element name="DisplayEmailFlag" type="xsd:boolean"/>';
 			$strToReturn .= '<element name="OptInFlag" type="xsd:boolean"/>';
 			$strToReturn .= '<element name="DonatedFlag" type="xsd:boolean"/>';
 			$strToReturn .= '<element name="Location" type="xsd:string"/>';
@@ -2666,6 +2788,8 @@
 				$objToReturn->strEmail = $objSoapObject->Email;
 			if (property_exists($objSoapObject, 'DisplayRealNameFlag'))
 				$objToReturn->blnDisplayRealNameFlag = $objSoapObject->DisplayRealNameFlag;
+			if (property_exists($objSoapObject, 'DisplayEmailFlag'))
+				$objToReturn->blnDisplayEmailFlag = $objSoapObject->DisplayEmailFlag;
 			if (property_exists($objSoapObject, 'OptInFlag'))
 				$objToReturn->blnOptInFlag = $objSoapObject->OptInFlag;
 			if (property_exists($objSoapObject, 'DonatedFlag'))
@@ -2815,6 +2939,8 @@
 					return new QQNode('email', 'Email', 'string', $this);
 				case 'DisplayRealNameFlag':
 					return new QQNode('display_real_name_flag', 'DisplayRealNameFlag', 'boolean', $this);
+				case 'DisplayEmailFlag':
+					return new QQNode('display_email_flag', 'DisplayEmailFlag', 'boolean', $this);
 				case 'OptInFlag':
 					return new QQNode('opt_in_flag', 'OptInFlag', 'boolean', $this);
 				case 'DonatedFlag':
@@ -2877,6 +3003,8 @@
 					return new QQNode('email', 'Email', 'string', $this);
 				case 'DisplayRealNameFlag':
 					return new QQNode('display_real_name_flag', 'DisplayRealNameFlag', 'boolean', $this);
+				case 'DisplayEmailFlag':
+					return new QQNode('display_email_flag', 'DisplayEmailFlag', 'boolean', $this);
 				case 'OptInFlag':
 					return new QQNode('opt_in_flag', 'OptInFlag', 'boolean', $this);
 				case 'DonatedFlag':

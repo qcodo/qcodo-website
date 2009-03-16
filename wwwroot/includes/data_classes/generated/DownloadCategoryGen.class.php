@@ -15,7 +15,16 @@
 	 * 
 	 * @package Qcodo Website
 	 * @subpackage GeneratedDataObjects
-	 * 
+	 * @property-read integer $Id the value for intId (Read-Only PK)
+	 * @property integer $OrderNumber the value for intOrderNumber 
+	 * @property string $Name the value for strName (Not Null)
+	 * @property boolean $AnnounceOnlyFlag the value for blnAnnounceOnlyFlag 
+	 * @property string $Description the value for strDescription 
+	 * @property string $Note the value for strNote 
+	 * @property QDateTime $LastPostDate the value for dttLastPostDate 
+	 * @property-read Download $_Download the value for the private _objDownload (Read-Only) if set due to an expansion on the download.download_category_id reverse relationship
+	 * @property-read Download[] $_DownloadArray the value for the private _objDownloadArray (Read-Only) if set due to an ExpandAsArray on the download.download_category_id reverse relationship
+	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
 	class DownloadCategoryGen extends QBaseClass {
 
@@ -196,7 +205,7 @@
 			// Create/Build out the QueryBuilder object with DownloadCategory-specific SELET and FROM fields
 			$objQueryBuilder = new QQueryBuilder($objDatabase, 'download_category');
 			DownloadCategory::GetSelectFields($objQueryBuilder);
-			$objQueryBuilder->AddFromItem('`download_category` AS `download_category`');
+			$objQueryBuilder->AddFromItem('download_category');
 
 			// Set "CountOnly" option (if applicable)
 			if ($blnCountOnly)
@@ -204,7 +213,12 @@
 
 			// Apply Any Conditions
 			if ($objConditions)
-				$objConditions->UpdateQueryBuilder($objQueryBuilder);
+				try {
+					$objConditions->UpdateQueryBuilder($objQueryBuilder);
+				} catch (QCallerException $objExc) {
+					$objExc->IncrementOffset();
+					throw $objExc;
+				}
 
 			// Iterate through all the Optional Clauses (if any) and perform accordingly
 			if ($objOptionalClauses) {
@@ -256,7 +270,7 @@
 
 			// Perform the Query, Get the First Row, and Instantiate a new DownloadCategory object
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return DownloadCategory::InstantiateDbRow($objDbResult->GetNextRow());
+			return DownloadCategory::InstantiateDbRow($objDbResult->GetNextRow(), null, null, null, $objQueryBuilder->ColumnAliasArray);
 		}
 
 		/**
@@ -278,7 +292,7 @@
 
 			// Perform the Query and Instantiate the Array Result
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return DownloadCategory::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNodes);
+			return DownloadCategory::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNodes, $objQueryBuilder->ColumnAliasArray);
 		}
 
 		/**
@@ -371,20 +385,20 @@
 		 */
 		public static function GetSelectFields(QQueryBuilder $objBuilder, $strPrefix = null) {
 			if ($strPrefix) {
-				$strTableName = '`' . $strPrefix . '`';
-				$strAliasPrefix = '`' . $strPrefix . '__';
+				$strTableName = $strPrefix;
+				$strAliasPrefix = $strPrefix . '__';
 			} else {
-				$strTableName = '`download_category`';
-				$strAliasPrefix = '`';
+				$strTableName = 'download_category';
+				$strAliasPrefix = '';
 			}
 
-			$objBuilder->AddSelectItem($strTableName . '.`id` AS ' . $strAliasPrefix . 'id`');
-			$objBuilder->AddSelectItem($strTableName . '.`order_number` AS ' . $strAliasPrefix . 'order_number`');
-			$objBuilder->AddSelectItem($strTableName . '.`name` AS ' . $strAliasPrefix . 'name`');
-			$objBuilder->AddSelectItem($strTableName . '.`announce_only_flag` AS ' . $strAliasPrefix . 'announce_only_flag`');
-			$objBuilder->AddSelectItem($strTableName . '.`description` AS ' . $strAliasPrefix . 'description`');
-			$objBuilder->AddSelectItem($strTableName . '.`note` AS ' . $strAliasPrefix . 'note`');
-			$objBuilder->AddSelectItem($strTableName . '.`last_post_date` AS ' . $strAliasPrefix . 'last_post_date`');
+			$objBuilder->AddSelectItem($strTableName, 'id', $strAliasPrefix . 'id');
+			$objBuilder->AddSelectItem($strTableName, 'order_number', $strAliasPrefix . 'order_number');
+			$objBuilder->AddSelectItem($strTableName, 'name', $strAliasPrefix . 'name');
+			$objBuilder->AddSelectItem($strTableName, 'announce_only_flag', $strAliasPrefix . 'announce_only_flag');
+			$objBuilder->AddSelectItem($strTableName, 'description', $strAliasPrefix . 'description');
+			$objBuilder->AddSelectItem($strTableName, 'note', $strAliasPrefix . 'note');
+			$objBuilder->AddSelectItem($strTableName, 'last_post_date', $strAliasPrefix . 'last_post_date');
 		}
 
 
@@ -401,16 +415,21 @@
 		 * early binding on referenced objects.
 		 * @param DatabaseRowBase $objDbRow
 		 * @param string $strAliasPrefix
+		 * @param string $strExpandAsArrayNodes
+		 * @param QBaseClass $objPreviousItem
+		 * @param string[] $strColumnAliasArray
 		 * @return DownloadCategory
 		*/
-		public static function InstantiateDbRow($objDbRow, $strAliasPrefix = null, $strExpandAsArrayNodes = null, $objPreviousItem = null) {
+		public static function InstantiateDbRow($objDbRow, $strAliasPrefix = null, $strExpandAsArrayNodes = null, $objPreviousItem = null, $strColumnAliasArray = array()) {
 			// If blank row, return null
 			if (!$objDbRow)
 				return null;
 
 			// See if we're doing an array expansion on the previous item
+			$strAlias = $strAliasPrefix . 'id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
 			if (($strExpandAsArrayNodes) && ($objPreviousItem) &&
-				($objPreviousItem->intId == $objDbRow->GetColumn($strAliasPrefix . 'id', 'Integer'))) {
+				($objPreviousItem->intId == $objDbRow->GetColumn($strAliasName, 'Integer'))) {
 
 				// We are.  Now, prepare to check for ExpandAsArray clauses
 				$blnExpandedViaArray = false;
@@ -418,15 +437,17 @@
 					$strAliasPrefix = 'download_category__';
 
 
-				if ((array_key_exists($strAliasPrefix . 'download__id', $strExpandAsArrayNodes)) &&
-					(!is_null($objDbRow->GetColumn($strAliasPrefix . 'download__id')))) {
+				$strAlias = $strAliasPrefix . 'download__id';
+				$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+				if ((array_key_exists($strAlias, $strExpandAsArrayNodes)) &&
+					(!is_null($objDbRow->GetColumn($strAliasName)))) {
 					if ($intPreviousChildItemCount = count($objPreviousItem->_objDownloadArray)) {
 						$objPreviousChildItem = $objPreviousItem->_objDownloadArray[$intPreviousChildItemCount - 1];
-						$objChildItem = Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'download__', $strExpandAsArrayNodes, $objPreviousChildItem);
+						$objChildItem = Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'download__', $strExpandAsArrayNodes, $objPreviousChildItem, $strColumnAliasArray);
 						if ($objChildItem)
-							array_push($objPreviousItem->_objDownloadArray, $objChildItem);
+							$objPreviousItem->_objDownloadArray[] = $objChildItem;
 					} else
-						array_push($objPreviousItem->_objDownloadArray, Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'download__', $strExpandAsArrayNodes));
+						$objPreviousItem->_objDownloadArray[] = Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'download__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 					$blnExpandedViaArray = true;
 				}
 
@@ -441,13 +462,20 @@
 			$objToReturn = new DownloadCategory();
 			$objToReturn->__blnRestored = true;
 
-			$objToReturn->intId = $objDbRow->GetColumn($strAliasPrefix . 'id', 'Integer');
-			$objToReturn->intOrderNumber = $objDbRow->GetColumn($strAliasPrefix . 'order_number', 'Integer');
-			$objToReturn->strName = $objDbRow->GetColumn($strAliasPrefix . 'name', 'VarChar');
-			$objToReturn->blnAnnounceOnlyFlag = $objDbRow->GetColumn($strAliasPrefix . 'announce_only_flag', 'Bit');
-			$objToReturn->strDescription = $objDbRow->GetColumn($strAliasPrefix . 'description', 'VarChar');
-			$objToReturn->strNote = $objDbRow->GetColumn($strAliasPrefix . 'note', 'VarChar');
-			$objToReturn->dttLastPostDate = $objDbRow->GetColumn($strAliasPrefix . 'last_post_date', 'DateTime');
+			$strAliasName = array_key_exists($strAliasPrefix . 'id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'id'] : $strAliasPrefix . 'id';
+			$objToReturn->intId = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'order_number', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'order_number'] : $strAliasPrefix . 'order_number';
+			$objToReturn->intOrderNumber = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'name', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'name'] : $strAliasPrefix . 'name';
+			$objToReturn->strName = $objDbRow->GetColumn($strAliasName, 'VarChar');
+			$strAliasName = array_key_exists($strAliasPrefix . 'announce_only_flag', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'announce_only_flag'] : $strAliasPrefix . 'announce_only_flag';
+			$objToReturn->blnAnnounceOnlyFlag = $objDbRow->GetColumn($strAliasName, 'Bit');
+			$strAliasName = array_key_exists($strAliasPrefix . 'description', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'description'] : $strAliasPrefix . 'description';
+			$objToReturn->strDescription = $objDbRow->GetColumn($strAliasName, 'VarChar');
+			$strAliasName = array_key_exists($strAliasPrefix . 'note', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'note'] : $strAliasPrefix . 'note';
+			$objToReturn->strNote = $objDbRow->GetColumn($strAliasName, 'VarChar');
+			$strAliasName = array_key_exists($strAliasPrefix . 'last_post_date', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'last_post_date'] : $strAliasPrefix . 'last_post_date';
+			$objToReturn->dttLastPostDate = $objDbRow->GetColumn($strAliasName, 'DateTime');
 
 			// Instantiate Virtual Attributes
 			foreach ($objDbRow->GetColumnNameArray() as $strColumnName => $mixValue) {
@@ -465,11 +493,13 @@
 
 
 			// Check for Download Virtual Binding
-			if (!is_null($objDbRow->GetColumn($strAliasPrefix . 'download__id'))) {
-				if (($strExpandAsArrayNodes) && (array_key_exists($strAliasPrefix . 'download__id', $strExpandAsArrayNodes)))
-					array_push($objToReturn->_objDownloadArray, Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'download__', $strExpandAsArrayNodes));
+			$strAlias = $strAliasPrefix . 'download__id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+			if (!is_null($objDbRow->GetColumn($strAliasName))) {
+				if (($strExpandAsArrayNodes) && (array_key_exists($strAlias, $strExpandAsArrayNodes)))
+					$objToReturn->_objDownloadArray[] = Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'download__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 				else
-					$objToReturn->_objDownload = Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'download__', $strExpandAsArrayNodes);
+					$objToReturn->_objDownload = Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'download__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 			}
 
 			return $objToReturn;
@@ -478,10 +508,15 @@
 		/**
 		 * Instantiate an array of DownloadCategories from a Database Result
 		 * @param DatabaseResultBase $objDbResult
+		 * @param string $strExpandAsArrayNodes
+		 * @param string[] $strColumnAliasArray
 		 * @return DownloadCategory[]
 		 */
-		public static function InstantiateDbResult(QDatabaseResultBase $objDbResult, $strExpandAsArrayNodes = null) {
+		public static function InstantiateDbResult(QDatabaseResultBase $objDbResult, $strExpandAsArrayNodes = null, $strColumnAliasArray = null) {
 			$objToReturn = array();
+			
+			if (!$strColumnAliasArray)
+				$strColumnAliasArray = array();
 
 			// If blank resultset, then return empty array
 			if (!$objDbResult)
@@ -491,15 +526,15 @@
 			if ($strExpandAsArrayNodes) {
 				$objLastRowItem = null;
 				while ($objDbRow = $objDbResult->GetNextRow()) {
-					$objItem = DownloadCategory::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, $objLastRowItem);
+					$objItem = DownloadCategory::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, $objLastRowItem, $strColumnAliasArray);
 					if ($objItem) {
-						array_push($objToReturn, $objItem);
+						$objToReturn[] = $objItem;
 						$objLastRowItem = $objItem;
 					}
 				}
 			} else {
 				while ($objDbRow = $objDbResult->GetNextRow())
-					array_push($objToReturn, DownloadCategory::InstantiateDbRow($objDbRow));
+					$objToReturn[] = DownloadCategory::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
 			}
 
 			return $objToReturn;

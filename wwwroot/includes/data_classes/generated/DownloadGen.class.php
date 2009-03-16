@@ -15,7 +15,22 @@
 	 * 
 	 * @package Qcodo Website
 	 * @subpackage GeneratedDataObjects
-	 * 
+	 * @property-read integer $Id the value for intId (Read-Only PK)
+	 * @property integer $ParentDownloadId the value for intParentDownloadId 
+	 * @property integer $DownloadCategoryId the value for intDownloadCategoryId (Not Null)
+	 * @property integer $PersonId the value for intPersonId (Not Null)
+	 * @property string $Name the value for strName (Not Null)
+	 * @property string $Version the value for strVersion 
+	 * @property string $Description the value for strDescription 
+	 * @property string $Filename the value for strFilename 
+	 * @property integer $DownloadCount the value for intDownloadCount 
+	 * @property QDateTime $PostDate the value for dttPostDate (Not Null)
+	 * @property Download $ParentDownload the value for the Download object referenced by intParentDownloadId 
+	 * @property DownloadCategory $DownloadCategory the value for the DownloadCategory object referenced by intDownloadCategoryId (Not Null)
+	 * @property Person $Person the value for the Person object referenced by intPersonId (Not Null)
+	 * @property-read Download $_ChildDownload the value for the private _objChildDownload (Read-Only) if set due to an expansion on the download.parent_download_id reverse relationship
+	 * @property-read Download[] $_ChildDownloadArray the value for the private _objChildDownloadArray (Read-Only) if set due to an ExpandAsArray on the download.parent_download_id reverse relationship
+	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
 	class DownloadGen extends QBaseClass {
 
@@ -250,7 +265,7 @@
 			// Create/Build out the QueryBuilder object with Download-specific SELET and FROM fields
 			$objQueryBuilder = new QQueryBuilder($objDatabase, 'download');
 			Download::GetSelectFields($objQueryBuilder);
-			$objQueryBuilder->AddFromItem('`download` AS `download`');
+			$objQueryBuilder->AddFromItem('download');
 
 			// Set "CountOnly" option (if applicable)
 			if ($blnCountOnly)
@@ -258,7 +273,12 @@
 
 			// Apply Any Conditions
 			if ($objConditions)
-				$objConditions->UpdateQueryBuilder($objQueryBuilder);
+				try {
+					$objConditions->UpdateQueryBuilder($objQueryBuilder);
+				} catch (QCallerException $objExc) {
+					$objExc->IncrementOffset();
+					throw $objExc;
+				}
 
 			// Iterate through all the Optional Clauses (if any) and perform accordingly
 			if ($objOptionalClauses) {
@@ -310,7 +330,7 @@
 
 			// Perform the Query, Get the First Row, and Instantiate a new Download object
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return Download::InstantiateDbRow($objDbResult->GetNextRow());
+			return Download::InstantiateDbRow($objDbResult->GetNextRow(), null, null, null, $objQueryBuilder->ColumnAliasArray);
 		}
 
 		/**
@@ -332,7 +352,7 @@
 
 			// Perform the Query and Instantiate the Array Result
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return Download::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNodes);
+			return Download::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNodes, $objQueryBuilder->ColumnAliasArray);
 		}
 
 		/**
@@ -425,23 +445,23 @@
 		 */
 		public static function GetSelectFields(QQueryBuilder $objBuilder, $strPrefix = null) {
 			if ($strPrefix) {
-				$strTableName = '`' . $strPrefix . '`';
-				$strAliasPrefix = '`' . $strPrefix . '__';
+				$strTableName = $strPrefix;
+				$strAliasPrefix = $strPrefix . '__';
 			} else {
-				$strTableName = '`download`';
-				$strAliasPrefix = '`';
+				$strTableName = 'download';
+				$strAliasPrefix = '';
 			}
 
-			$objBuilder->AddSelectItem($strTableName . '.`id` AS ' . $strAliasPrefix . 'id`');
-			$objBuilder->AddSelectItem($strTableName . '.`parent_download_id` AS ' . $strAliasPrefix . 'parent_download_id`');
-			$objBuilder->AddSelectItem($strTableName . '.`download_category_id` AS ' . $strAliasPrefix . 'download_category_id`');
-			$objBuilder->AddSelectItem($strTableName . '.`person_id` AS ' . $strAliasPrefix . 'person_id`');
-			$objBuilder->AddSelectItem($strTableName . '.`name` AS ' . $strAliasPrefix . 'name`');
-			$objBuilder->AddSelectItem($strTableName . '.`version` AS ' . $strAliasPrefix . 'version`');
-			$objBuilder->AddSelectItem($strTableName . '.`description` AS ' . $strAliasPrefix . 'description`');
-			$objBuilder->AddSelectItem($strTableName . '.`filename` AS ' . $strAliasPrefix . 'filename`');
-			$objBuilder->AddSelectItem($strTableName . '.`download_count` AS ' . $strAliasPrefix . 'download_count`');
-			$objBuilder->AddSelectItem($strTableName . '.`post_date` AS ' . $strAliasPrefix . 'post_date`');
+			$objBuilder->AddSelectItem($strTableName, 'id', $strAliasPrefix . 'id');
+			$objBuilder->AddSelectItem($strTableName, 'parent_download_id', $strAliasPrefix . 'parent_download_id');
+			$objBuilder->AddSelectItem($strTableName, 'download_category_id', $strAliasPrefix . 'download_category_id');
+			$objBuilder->AddSelectItem($strTableName, 'person_id', $strAliasPrefix . 'person_id');
+			$objBuilder->AddSelectItem($strTableName, 'name', $strAliasPrefix . 'name');
+			$objBuilder->AddSelectItem($strTableName, 'version', $strAliasPrefix . 'version');
+			$objBuilder->AddSelectItem($strTableName, 'description', $strAliasPrefix . 'description');
+			$objBuilder->AddSelectItem($strTableName, 'filename', $strAliasPrefix . 'filename');
+			$objBuilder->AddSelectItem($strTableName, 'download_count', $strAliasPrefix . 'download_count');
+			$objBuilder->AddSelectItem($strTableName, 'post_date', $strAliasPrefix . 'post_date');
 		}
 
 
@@ -458,16 +478,21 @@
 		 * early binding on referenced objects.
 		 * @param DatabaseRowBase $objDbRow
 		 * @param string $strAliasPrefix
+		 * @param string $strExpandAsArrayNodes
+		 * @param QBaseClass $objPreviousItem
+		 * @param string[] $strColumnAliasArray
 		 * @return Download
 		*/
-		public static function InstantiateDbRow($objDbRow, $strAliasPrefix = null, $strExpandAsArrayNodes = null, $objPreviousItem = null) {
+		public static function InstantiateDbRow($objDbRow, $strAliasPrefix = null, $strExpandAsArrayNodes = null, $objPreviousItem = null, $strColumnAliasArray = array()) {
 			// If blank row, return null
 			if (!$objDbRow)
 				return null;
 
 			// See if we're doing an array expansion on the previous item
+			$strAlias = $strAliasPrefix . 'id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
 			if (($strExpandAsArrayNodes) && ($objPreviousItem) &&
-				($objPreviousItem->intId == $objDbRow->GetColumn($strAliasPrefix . 'id', 'Integer'))) {
+				($objPreviousItem->intId == $objDbRow->GetColumn($strAliasName, 'Integer'))) {
 
 				// We are.  Now, prepare to check for ExpandAsArray clauses
 				$blnExpandedViaArray = false;
@@ -475,15 +500,17 @@
 					$strAliasPrefix = 'download__';
 
 
-				if ((array_key_exists($strAliasPrefix . 'childdownload__id', $strExpandAsArrayNodes)) &&
-					(!is_null($objDbRow->GetColumn($strAliasPrefix . 'childdownload__id')))) {
+				$strAlias = $strAliasPrefix . 'childdownload__id';
+				$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+				if ((array_key_exists($strAlias, $strExpandAsArrayNodes)) &&
+					(!is_null($objDbRow->GetColumn($strAliasName)))) {
 					if ($intPreviousChildItemCount = count($objPreviousItem->_objChildDownloadArray)) {
 						$objPreviousChildItem = $objPreviousItem->_objChildDownloadArray[$intPreviousChildItemCount - 1];
-						$objChildItem = Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'childdownload__', $strExpandAsArrayNodes, $objPreviousChildItem);
+						$objChildItem = Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'childdownload__', $strExpandAsArrayNodes, $objPreviousChildItem, $strColumnAliasArray);
 						if ($objChildItem)
-							array_push($objPreviousItem->_objChildDownloadArray, $objChildItem);
+							$objPreviousItem->_objChildDownloadArray[] = $objChildItem;
 					} else
-						array_push($objPreviousItem->_objChildDownloadArray, Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'childdownload__', $strExpandAsArrayNodes));
+						$objPreviousItem->_objChildDownloadArray[] = Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'childdownload__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 					$blnExpandedViaArray = true;
 				}
 
@@ -498,16 +525,26 @@
 			$objToReturn = new Download();
 			$objToReturn->__blnRestored = true;
 
-			$objToReturn->intId = $objDbRow->GetColumn($strAliasPrefix . 'id', 'Integer');
-			$objToReturn->intParentDownloadId = $objDbRow->GetColumn($strAliasPrefix . 'parent_download_id', 'Integer');
-			$objToReturn->intDownloadCategoryId = $objDbRow->GetColumn($strAliasPrefix . 'download_category_id', 'Integer');
-			$objToReturn->intPersonId = $objDbRow->GetColumn($strAliasPrefix . 'person_id', 'Integer');
-			$objToReturn->strName = $objDbRow->GetColumn($strAliasPrefix . 'name', 'VarChar');
-			$objToReturn->strVersion = $objDbRow->GetColumn($strAliasPrefix . 'version', 'VarChar');
-			$objToReturn->strDescription = $objDbRow->GetColumn($strAliasPrefix . 'description', 'Blob');
-			$objToReturn->strFilename = $objDbRow->GetColumn($strAliasPrefix . 'filename', 'VarChar');
-			$objToReturn->intDownloadCount = $objDbRow->GetColumn($strAliasPrefix . 'download_count', 'Integer');
-			$objToReturn->dttPostDate = $objDbRow->GetColumn($strAliasPrefix . 'post_date', 'DateTime');
+			$strAliasName = array_key_exists($strAliasPrefix . 'id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'id'] : $strAliasPrefix . 'id';
+			$objToReturn->intId = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'parent_download_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'parent_download_id'] : $strAliasPrefix . 'parent_download_id';
+			$objToReturn->intParentDownloadId = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'download_category_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'download_category_id'] : $strAliasPrefix . 'download_category_id';
+			$objToReturn->intDownloadCategoryId = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'person_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'person_id'] : $strAliasPrefix . 'person_id';
+			$objToReturn->intPersonId = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'name', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'name'] : $strAliasPrefix . 'name';
+			$objToReturn->strName = $objDbRow->GetColumn($strAliasName, 'VarChar');
+			$strAliasName = array_key_exists($strAliasPrefix . 'version', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'version'] : $strAliasPrefix . 'version';
+			$objToReturn->strVersion = $objDbRow->GetColumn($strAliasName, 'VarChar');
+			$strAliasName = array_key_exists($strAliasPrefix . 'description', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'description'] : $strAliasPrefix . 'description';
+			$objToReturn->strDescription = $objDbRow->GetColumn($strAliasName, 'Blob');
+			$strAliasName = array_key_exists($strAliasPrefix . 'filename', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'filename'] : $strAliasPrefix . 'filename';
+			$objToReturn->strFilename = $objDbRow->GetColumn($strAliasName, 'VarChar');
+			$strAliasName = array_key_exists($strAliasPrefix . 'download_count', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'download_count'] : $strAliasPrefix . 'download_count';
+			$objToReturn->intDownloadCount = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'post_date', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'post_date'] : $strAliasPrefix . 'post_date';
+			$objToReturn->dttPostDate = $objDbRow->GetColumn($strAliasName, 'DateTime');
 
 			// Instantiate Virtual Attributes
 			foreach ($objDbRow->GetColumnNameArray() as $strColumnName => $mixValue) {
@@ -522,26 +559,34 @@
 				$strAliasPrefix = 'download__';
 
 			// Check for ParentDownload Early Binding
-			if (!is_null($objDbRow->GetColumn($strAliasPrefix . 'parent_download_id__id')))
-				$objToReturn->objParentDownload = Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'parent_download_id__', $strExpandAsArrayNodes);
+			$strAlias = $strAliasPrefix . 'parent_download_id__id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+			if (!is_null($objDbRow->GetColumn($strAliasName)))
+				$objToReturn->objParentDownload = Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'parent_download_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 
 			// Check for DownloadCategory Early Binding
-			if (!is_null($objDbRow->GetColumn($strAliasPrefix . 'download_category_id__id')))
-				$objToReturn->objDownloadCategory = DownloadCategory::InstantiateDbRow($objDbRow, $strAliasPrefix . 'download_category_id__', $strExpandAsArrayNodes);
+			$strAlias = $strAliasPrefix . 'download_category_id__id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+			if (!is_null($objDbRow->GetColumn($strAliasName)))
+				$objToReturn->objDownloadCategory = DownloadCategory::InstantiateDbRow($objDbRow, $strAliasPrefix . 'download_category_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 
 			// Check for Person Early Binding
-			if (!is_null($objDbRow->GetColumn($strAliasPrefix . 'person_id__id')))
-				$objToReturn->objPerson = Person::InstantiateDbRow($objDbRow, $strAliasPrefix . 'person_id__', $strExpandAsArrayNodes);
+			$strAlias = $strAliasPrefix . 'person_id__id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+			if (!is_null($objDbRow->GetColumn($strAliasName)))
+				$objToReturn->objPerson = Person::InstantiateDbRow($objDbRow, $strAliasPrefix . 'person_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 
 
 
 
 			// Check for ChildDownload Virtual Binding
-			if (!is_null($objDbRow->GetColumn($strAliasPrefix . 'childdownload__id'))) {
-				if (($strExpandAsArrayNodes) && (array_key_exists($strAliasPrefix . 'childdownload__id', $strExpandAsArrayNodes)))
-					array_push($objToReturn->_objChildDownloadArray, Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'childdownload__', $strExpandAsArrayNodes));
+			$strAlias = $strAliasPrefix . 'childdownload__id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+			if (!is_null($objDbRow->GetColumn($strAliasName))) {
+				if (($strExpandAsArrayNodes) && (array_key_exists($strAlias, $strExpandAsArrayNodes)))
+					$objToReturn->_objChildDownloadArray[] = Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'childdownload__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 				else
-					$objToReturn->_objChildDownload = Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'childdownload__', $strExpandAsArrayNodes);
+					$objToReturn->_objChildDownload = Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'childdownload__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 			}
 
 			return $objToReturn;
@@ -550,10 +595,15 @@
 		/**
 		 * Instantiate an array of Downloads from a Database Result
 		 * @param DatabaseResultBase $objDbResult
+		 * @param string $strExpandAsArrayNodes
+		 * @param string[] $strColumnAliasArray
 		 * @return Download[]
 		 */
-		public static function InstantiateDbResult(QDatabaseResultBase $objDbResult, $strExpandAsArrayNodes = null) {
+		public static function InstantiateDbResult(QDatabaseResultBase $objDbResult, $strExpandAsArrayNodes = null, $strColumnAliasArray = null) {
 			$objToReturn = array();
+			
+			if (!$strColumnAliasArray)
+				$strColumnAliasArray = array();
 
 			// If blank resultset, then return empty array
 			if (!$objDbResult)
@@ -563,15 +613,15 @@
 			if ($strExpandAsArrayNodes) {
 				$objLastRowItem = null;
 				while ($objDbRow = $objDbResult->GetNextRow()) {
-					$objItem = Download::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, $objLastRowItem);
+					$objItem = Download::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, $objLastRowItem, $strColumnAliasArray);
 					if ($objItem) {
-						array_push($objToReturn, $objItem);
+						$objToReturn[] = $objItem;
 						$objLastRowItem = $objItem;
 					}
 				}
 			} else {
 				while ($objDbRow = $objDbResult->GetNextRow())
-					array_push($objToReturn, Download::InstantiateDbRow($objDbRow));
+					$objToReturn[] = Download::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
 			}
 
 			return $objToReturn;
@@ -598,16 +648,16 @@
 			
 		/**
 		 * Load an array of Download objects,
-		 * by ParentDownloadId Index(es)
-		 * @param integer $intParentDownloadId
+		 * by DownloadCategoryId Index(es)
+		 * @param integer $intDownloadCategoryId
 		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @return Download[]
 		*/
-		public static function LoadArrayByParentDownloadId($intParentDownloadId, $objOptionalClauses = null) {
-			// Call Download::QueryArray to perform the LoadArrayByParentDownloadId query
+		public static function LoadArrayByDownloadCategoryId($intDownloadCategoryId, $objOptionalClauses = null) {
+			// Call Download::QueryArray to perform the LoadArrayByDownloadCategoryId query
 			try {
 				return Download::QueryArray(
-					QQ::Equal(QQN::Download()->ParentDownloadId, $intParentDownloadId),
+					QQ::Equal(QQN::Download()->DownloadCategoryId, $intDownloadCategoryId),
 					$objOptionalClauses);
 			} catch (QCallerException $objExc) {
 				$objExc->IncrementOffset();
@@ -617,14 +667,14 @@
 
 		/**
 		 * Count Downloads
-		 * by ParentDownloadId Index(es)
-		 * @param integer $intParentDownloadId
+		 * by DownloadCategoryId Index(es)
+		 * @param integer $intDownloadCategoryId
 		 * @return int
 		*/
-		public static function CountByParentDownloadId($intParentDownloadId) {
-			// Call Download::QueryCount to perform the CountByParentDownloadId query
+		public static function CountByDownloadCategoryId($intDownloadCategoryId) {
+			// Call Download::QueryCount to perform the CountByDownloadCategoryId query
 			return Download::QueryCount(
-				QQ::Equal(QQN::Download()->ParentDownloadId, $intParentDownloadId)
+				QQ::Equal(QQN::Download()->DownloadCategoryId, $intDownloadCategoryId)
 			);
 		}
 			
@@ -662,16 +712,16 @@
 			
 		/**
 		 * Load an array of Download objects,
-		 * by DownloadCategoryId Index(es)
-		 * @param integer $intDownloadCategoryId
+		 * by ParentDownloadId Index(es)
+		 * @param integer $intParentDownloadId
 		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @return Download[]
 		*/
-		public static function LoadArrayByDownloadCategoryId($intDownloadCategoryId, $objOptionalClauses = null) {
-			// Call Download::QueryArray to perform the LoadArrayByDownloadCategoryId query
+		public static function LoadArrayByParentDownloadId($intParentDownloadId, $objOptionalClauses = null) {
+			// Call Download::QueryArray to perform the LoadArrayByParentDownloadId query
 			try {
 				return Download::QueryArray(
-					QQ::Equal(QQN::Download()->DownloadCategoryId, $intDownloadCategoryId),
+					QQ::Equal(QQN::Download()->ParentDownloadId, $intParentDownloadId),
 					$objOptionalClauses);
 			} catch (QCallerException $objExc) {
 				$objExc->IncrementOffset();
@@ -681,14 +731,14 @@
 
 		/**
 		 * Count Downloads
-		 * by DownloadCategoryId Index(es)
-		 * @param integer $intDownloadCategoryId
+		 * by ParentDownloadId Index(es)
+		 * @param integer $intParentDownloadId
 		 * @return int
 		*/
-		public static function CountByDownloadCategoryId($intDownloadCategoryId) {
-			// Call Download::QueryCount to perform the CountByDownloadCategoryId query
+		public static function CountByParentDownloadId($intParentDownloadId) {
+			// Call Download::QueryCount to perform the CountByParentDownloadId query
 			return Download::QueryCount(
-				QQ::Equal(QQN::Download()->DownloadCategoryId, $intDownloadCategoryId)
+				QQ::Equal(QQN::Download()->ParentDownloadId, $intParentDownloadId)
 			);
 		}
 
