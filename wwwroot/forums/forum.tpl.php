@@ -7,8 +7,18 @@
 		
 		div.forumtest a { display: block; color: #000; text-decoration: none; padding: 3px 10px 3px 10px; height: 14px;}
 		div.forumtest a:hover { background-color: #aba; color: #335;}
+
+		div.forumTopicsSelected a { background-color: #335; color: #fff; }
 		
-		div.selected a { background-color: #335; color: #fff; }
+		div.forumTopic { float: left; margin-left: 25px; width: 735px;}
+			div.forumTopic h1 { color: #333; margin: 0; padding: 0; }
+			div.forumTopic h3 { color: #666; padding: 0; margin: 0; font-size: 10px; font-weight: normal; }
+
+		div#dtrMessages { }
+		
+		div#dtrMessages div.message {margin-bottom: 15px; }
+
+
 	</style>
 
 	<div style="width: 220px; border: 5px solid #aba; font: 12px Verdana, Arial, Helvetica; float: left; ">
@@ -20,20 +30,32 @@
 	 		<?php _p($this->objForum->Description); ?>
 		</div>
 		<?php 
-		$objTopicArray = Topic::LoadArrayByForumId($this->objForum->Id, QQ::Clause(QQ::LimitInfo(20)));
+		$objTopicArray = Topic::LoadArrayByForumId($this->objForum->Id, QQ::Clause(QQ::OrderBy(QQN::Topic()->LastPostDate, false), QQ::LimitInfo(20)));
 		
 		foreach ($objTopicArray as $objTopic) { ?>
-			<div class="forumtest <?php if ($this->objTopic && ($objTopic->Id == $this->objTopic->Id)) _p('selected'); ?>"><a href="/forums/forum.php/<?php _p($objTopic->ForumId);?>/<?php _p($objTopic->Id);?>" title="<?php _p($objTopic->Name); ?> (<?php _p($objTopic->LastPostDate->__toString('MMM D YYYY')); ?>)">
+			<div class="forumtest <?php if ($this->objTopic && ($objTopic->Id == $this->objTopic->Id)) _p('forumTopicsSelected'); ?>"><a href="/forums/forum.php/<?php _p($objTopic->ForumId);?>/<?php _p($objTopic->Id);?>" title="<?php _p($objTopic->SidenavTitle); ?>">
 				<div style="float: left; width: 180px; height: 14px; overflow: hidden;"><?php _p(QString::Truncate($objTopic->Name, 36)); ?></div>
 				<div style="float: right; width: 20px; text-align: right; height: 14px; overflow: hidden; font-family: arial, helvetica; font-size: 10px; font-style: italic; font-weight: bold; color: #999;"><?php _p($objTopic->CountMessages() - 1);?></div>
 			</a></div>
 		<?php } ?>
 	</div>
 	
-	<div style="float: left; margin-left: 25px;">
+	<div class="forumTopic">
 <?php
 	if ($this->objTopic) {
-		print ($this->objTopic->Name);
+?>
+		<h1><?php _p($this->objTopic->Name); ?></h1>
+		<h3>
+			thread:
+			<strong><?php _p($this->objTopic->ReplyCount); ?></strong>
+			&nbsp;|&nbsp;
+			last: <strong><?php _p(QDateTime::Now()->Difference($this->objTopic->LastPostDate)->SimpleDisplay()); ?> ago</strong>
+			&nbsp;|&nbsp;
+			started: <strong><?php _p(strtolower($this->objFirstMessage->PostDate->__toString('DDDD, MMMM D, YYYY, h:mm z')))?></strong>
+		</h3>
+		<?php $this->dtrMessages->Render(); ?>
+		
+<?php
 	}
 ?>
 	</div>

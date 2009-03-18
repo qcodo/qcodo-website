@@ -28,6 +28,26 @@
 		}
 
 
+		public function __get($strName) {
+			switch ($strName) {
+				case 'ReplyCount': 
+					$intMessageCount = $this->CountMessages() - 1;
+					if ($intMessageCount == 0) return 'no replies';
+					else if ($intMessageCount == 1) return '1 reply';
+					else return $intMessageCount . ' replies';
+				case 'SidenavTitle':
+					return sprintf('[%s] %s', $this->dttLastPostDate->__toString('YYYY-MM-DD'), $this->strName);
+
+				default:
+					try {
+						return parent::__get($strName);
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+			}
+		}
+		
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...
 		// but feel free to use these as a starting point)

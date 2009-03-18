@@ -12,10 +12,13 @@
 		
 		protected $objForum;
 		protected $objTopic;
+		protected $objFirstMessage;
 
+		protected $dtrMessages;
+		
 		protected function Form_Create() {
 			parent::Form_Create();
-			
+
 			$this->objForum = Forum::Load(QApplication::PathInfo(0));
 			if (!$this->objForum) QApplication::Redirect('/forums/');
 
@@ -24,6 +27,12 @@
 				if ($this->objTopic) {
 					if ($this->objTopic->ForumId != $this->objForum->Id)
 						$this->objTopic = null;
+					else {
+						$this->objFirstMessage = Message::QuerySingle(
+							QQ::Equal(QQN::Message()->TopicId, $this->objTopic->Id),
+							QQ::OrderBy(QQN::Message()->Id)
+						);
+					}
 				}
 			}
 
@@ -36,9 +45,20 @@
 			$this->txtSearch->AddAction(new QEnterKeyEvent(0, "qc.getControl('txtSearch').value != ''"), new QServerAction('btnSearch_Click'));
 			$this->txtSearch->AddAction(new QEnterKeyEvent(), new QTerminateAction());
 
+			$this->dtrMessages = new QDataRepeater($this, 'dtrMessages');
+			$this->dtrMessages->Template = 'dtrMessages.tpl.php';
+			$this->dtrMessages->SetDataBinder('dtrMessages_Bind');
+
 			$this->dtrForums = new QDataRepeater($this, 'dtrForums');
 			$this->dtrForums->Template = 'dtrForums.tpl.php';
 			$this->dtrForums->SetDataBinder('dtrForums_Bind');
+		}
+		
+		public function dtrMessages_Bind() {
+			if ($this->objTopic) {
+				$objDataSource = $this->objTopic->GetMessageArray(QQ::OrderBy(QQN::Message()->PostDate));
+				$this->dtrMessages->DataSource = $objDataSource;
+			}
 		}
 
 		protected function Form_PreRender() {

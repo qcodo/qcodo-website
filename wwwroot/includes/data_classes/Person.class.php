@@ -30,7 +30,47 @@
 				return $this->strUsername;
 		}
 
-
+		public function __get($strName) {
+			switch ($strName) {
+				case 'DisplayForForums':
+							if ($this->blnDisplayRealNameFlag)
+								$strToReturn = htmlentities($this->strFirstName, ENT_COMPAT, QApplication::$EncodingType) . ' ' . htmlentities($this->strLastName, ENT_COMPAT, QApplication::$EncodingType);
+							else
+								$strToReturn = $this->strUsername;
+							
+							if ($this->strLocation)
+								$strToReturn .= ' (' . htmlentities($this->strLocation, ENT_COMPAT, QApplication::$EncodingType) . ')';
+		
+							// Display the Flag (if applicable)
+							if ($this->Country) {
+								$strCode = strtolower($this->Country->Code);
+								$strImageFile = sprintf('/images/flags/%s.png', $strCode);
+								if (file_exists(QApplication::$DocumentRoot . $strImageFile))
+									$strToReturn .= sprintf(' <img src="%s" title="%s" alt="%s" width="16" height="11"/>',
+										$strImageFile, $this->Country->Name, $this->Country->Name);
+							}
+		
+							// Display the Star (if applicable)
+							$strStarIcon = ' <img src="/images/star_icon.png" style="vertical-align: bottom;" title="%s" alt="%s" width="16" height="16"/>';
+							if ($this->intPersonTypeId == PersonType::Administrator)
+								$strToReturn .= sprintf($strStarIcon, 'Qcodo Administrator', 'Qcodo Administrator');
+							else if ($this->intPersonTypeId == PersonType::Contributor)
+								$strToReturn .= sprintf($strStarIcon, 'Qcodo Core Contributor', 'Qcodo Core Contributor');
+							else if ($this->blnDonatedFlag)
+								$strToReturn .= sprintf($strStarIcon, 'Financial Contributor', 'Financial Contributor');
+								
+							return $strToReturn;
+				
+				default:
+					try {
+						return parent::__get($strName);
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+			}
+		}
+		
 
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...
