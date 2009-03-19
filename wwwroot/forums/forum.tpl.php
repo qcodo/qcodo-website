@@ -15,9 +15,18 @@
 			div.forumTopic h3 { color: #666; padding: 0; margin: 0; font-size: 10px; font-weight: normal; }
 
 		div#dtrMessages { }
-		
-		div#dtrMessages div.message {margin-bottom: 15px; }
+		div#dtrMessages div.messageBarRound div { height: 1px; background-color: #408050; border-color: #ddffbb; border-style: solid; border-width: 0 1px 0 1px; }
+		div#dtrMessages div.messageBarRound div.a { width: 725px; margin-left: 4px; }
+		div#dtrMessages div.messageBarRound div.b { width: 729px; margin-left: 2px; }
+		div#dtrMessages div.messageBarRound div.c { width: 731px; margin-left: 1px; }
+		div#dtrMessages div.messageBarRound div.d { width: 733px; margin-left: 1px; border-width: 0; }
+		div#dtrMessages div.messageBarRound div.e { width: 733px; margin-left: 0; }
 
+		div#dtrMessages div.messageBar { background-color: #408050; height: 13px; padding: 0 5px 0 5px; }
+		div#dtrMessages div.messageBar div.name { float: left; font-size: 11px; font-weight: bold; color: #fff; line-height: 8px;}
+		div#dtrMessages div.messageBar div.date { float: right; font-size: 10px; font-weight: bold; font-family: arial, helvetica; color: #ddffbb; }
+
+		div#dtrMessages div.message {margin-bottom: 15px; }
 
 	</style>
 
