@@ -286,6 +286,7 @@
 				case 'DonatedFlag': return QQN::Person()->DonatedFlag;
 				case 'Location': return QQN::Person()->Location;
 				case 'CountryId': return QQN::Person()->CountryId;
+				case 'Country': return QQN::Person()->Country;
 				case 'Url': return QQN::Person()->Url;
 				case 'RegistrationDate': return QQN::Person()->RegistrationDate;
 				default: throw new QCallerException('Simple Property not found in PersonDataGrid content: ' . $mixContent);

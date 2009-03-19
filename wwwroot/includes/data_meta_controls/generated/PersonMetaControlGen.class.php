@@ -40,7 +40,7 @@
 	 * property-read QLabel $DonatedFlagLabel
 	 * property QTextBox $LocationControl
 	 * property-read QLabel $LocationLabel
-	 * property QIntegerTextBox $CountryIdControl
+	 * property QListBox $CountryIdControl
 	 * property-read QLabel $CountryIdLabel
 	 * property QTextBox $UrlControl
 	 * property-read QLabel $UrlLabel
@@ -76,7 +76,7 @@
 		protected $chkOptInFlag;
 		protected $chkDonatedFlag;
 		protected $txtLocation;
-		protected $txtCountryId;
+		protected $lstCountry;
 		protected $txtUrl;
 		protected $calRegistrationDate;
 
@@ -496,28 +496,33 @@
 		}
 
 		/**
-		 * Create and setup QIntegerTextBox txtCountryId
+		 * Create and setup QListBox lstCountry
 		 * @param string $strControlId optional ControlId to use
-		 * @return QIntegerTextBox
+		 * @return QListBox
 		 */
-		public function txtCountryId_Create($strControlId = null) {
-			$this->txtCountryId = new QIntegerTextBox($this->objParentObject, $strControlId);
-			$this->txtCountryId->Name = QApplication::Translate('Country Id');
-			$this->txtCountryId->Text = $this->objPerson->CountryId;
-			return $this->txtCountryId;
+		public function lstCountry_Create($strControlId = null) {
+			$this->lstCountry = new QListBox($this->objParentObject, $strControlId);
+			$this->lstCountry->Name = QApplication::Translate('Country');
+			$this->lstCountry->AddItem(QApplication::Translate('- Select One -'), null);
+			$objCountryArray = Country::LoadAll();
+			if ($objCountryArray) foreach ($objCountryArray as $objCountry) {
+				$objListItem = new QListItem($objCountry->__toString(), $objCountry->Id);
+				if (($this->objPerson->Country) && ($this->objPerson->Country->Id == $objCountry->Id))
+					$objListItem->Selected = true;
+				$this->lstCountry->AddItem($objListItem);
+			}
+			return $this->lstCountry;
 		}
 
 		/**
 		 * Create and setup QLabel lblCountryId
 		 * @param string $strControlId optional ControlId to use
-		 * @param string $strFormat optional sprintf format to use
 		 * @return QLabel
 		 */
-		public function lblCountryId_Create($strControlId = null, $strFormat = null) {
+		public function lblCountryId_Create($strControlId = null) {
 			$this->lblCountryId = new QLabel($this->objParentObject, $strControlId);
-			$this->lblCountryId->Name = QApplication::Translate('Country Id');
-			$this->lblCountryId->Text = $this->objPerson->CountryId;
-			$this->lblCountryId->Format = $strFormat;
+			$this->lblCountryId->Name = QApplication::Translate('Country');
+			$this->lblCountryId->Text = ($this->objPerson->Country) ? $this->objPerson->Country->__toString() : null;
 			return $this->lblCountryId;
 		}
 
@@ -741,8 +746,18 @@
 			if ($this->txtLocation) $this->txtLocation->Text = $this->objPerson->Location;
 			if ($this->lblLocation) $this->lblLocation->Text = $this->objPerson->Location;
 
-			if ($this->txtCountryId) $this->txtCountryId->Text = $this->objPerson->CountryId;
-			if ($this->lblCountryId) $this->lblCountryId->Text = $this->objPerson->CountryId;
+			if ($this->lstCountry) {
+					$this->lstCountry->RemoveAllItems();
+				$this->lstCountry->AddItem(QApplication::Translate('- Select One -'), null);
+				$objCountryArray = Country::LoadAll();
+				if ($objCountryArray) foreach ($objCountryArray as $objCountry) {
+					$objListItem = new QListItem($objCountry->__toString(), $objCountry->Id);
+					if (($this->objPerson->Country) && ($this->objPerson->Country->Id == $objCountry->Id))
+						$objListItem->Selected = true;
+					$this->lstCountry->AddItem($objListItem);
+				}
+			}
+			if ($this->lblCountryId) $this->lblCountryId->Text = ($this->objPerson->Country) ? $this->objPerson->Country->__toString() : null;
 
 			if ($this->txtUrl) $this->txtUrl->Text = $this->objPerson->Url;
 			if ($this->lblUrl) $this->lblUrl->Text = $this->objPerson->Url;
@@ -877,7 +892,7 @@
 				if ($this->chkOptInFlag) $this->objPerson->OptInFlag = $this->chkOptInFlag->Checked;
 				if ($this->chkDonatedFlag) $this->objPerson->DonatedFlag = $this->chkDonatedFlag->Checked;
 				if ($this->txtLocation) $this->objPerson->Location = $this->txtLocation->Text;
-				if ($this->txtCountryId) $this->objPerson->CountryId = $this->txtCountryId->Text;
+				if ($this->lstCountry) $this->objPerson->CountryId = $this->lstCountry->SelectedValue;
 				if ($this->txtUrl) $this->objPerson->Url = $this->txtUrl->Text;
 				if ($this->calRegistrationDate) $this->objPerson->RegistrationDate = $this->calRegistrationDate->DateTime;
 
@@ -1001,8 +1016,8 @@
 					if (!$this->lblLocation) return $this->lblLocation_Create();
 					return $this->lblLocation;
 				case 'CountryIdControl':
-					if (!$this->txtCountryId) return $this->txtCountryId_Create();
-					return $this->txtCountryId;
+					if (!$this->lstCountry) return $this->lstCountry_Create();
+					return $this->lstCountry;
 				case 'CountryIdLabel':
 					if (!$this->lblCountryId) return $this->lblCountryId_Create();
 					return $this->lblCountryId;
@@ -1083,7 +1098,7 @@
 					case 'LocationControl':
 						return ($this->txtLocation = QType::Cast($mixValue, 'QControl'));
 					case 'CountryIdControl':
-						return ($this->txtCountryId = QType::Cast($mixValue, 'QControl'));
+						return ($this->lstCountry = QType::Cast($mixValue, 'QControl'));
 					case 'UrlControl':
 						return ($this->txtUrl = QType::Cast($mixValue, 'QControl'));
 					case 'RegistrationDateControl':

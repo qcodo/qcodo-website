@@ -30,6 +30,7 @@
 	 * @property integer $CountryId the value for intCountryId 
 	 * @property string $Url the value for strUrl 
 	 * @property QDateTime $RegistrationDate the value for dttRegistrationDate 
+	 * @property Country $Country the value for the Country object referenced by intCountryId 
 	 * @property-read Topic $_TopicAsEmail the value for the private _objTopicAsEmail (Read-Only) if set due to an expansion on the email_topic_person_assn association table
 	 * @property-read Topic[] $_TopicAsEmailArray the value for the private _objTopicAsEmailArray (Read-Only) if set due to an ExpandAsArray on the email_topic_person_assn association table
 	 * @property-read Topic $_TopicAsReadOnce the value for the private _objTopicAsReadOnce (Read-Only) if set due to an expansion on the read_once_topic_person_assn association table
@@ -312,6 +313,16 @@
 		///////////////////////////////
 		// PROTECTED MEMBER OBJECTS
 		///////////////////////////////
+
+		/**
+		 * Protected member variable that contains the object pointed by the reference
+		 * in the database column person.country_id.
+		 *
+		 * NOTE: Always use the Country property getter to correctly retrieve this Country object.
+		 * (Because this class implements late binding, this variable reference MAY be null.)
+		 * @var Country objCountry
+		 */
+		protected $objCountry;
 
 
 
@@ -780,6 +791,12 @@
 			// Prepare to Check for Early/Virtual Binding
 			if (!$strAliasPrefix)
 				$strAliasPrefix = 'person__';
+
+			// Check for Country Early Binding
+			$strAlias = $strAliasPrefix . 'country_id__id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+			if (!is_null($objDbRow->GetColumn($strAliasName)))
+				$objToReturn->objCountry = Country::InstantiateDbRow($objDbRow, $strAliasPrefix . 'country_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 
 
 
@@ -1269,7 +1286,7 @@
 			$this->blnOptInFlag = $objReloaded->blnOptInFlag;
 			$this->blnDonatedFlag = $objReloaded->blnDonatedFlag;
 			$this->strLocation = $objReloaded->strLocation;
-			$this->intCountryId = $objReloaded->intCountryId;
+			$this->CountryId = $objReloaded->CountryId;
 			$this->strUrl = $objReloaded->strUrl;
 			$this->dttRegistrationDate = $objReloaded->dttRegistrationDate;
 		}
@@ -1401,6 +1418,20 @@
 				///////////////////
 				// Member Objects
 				///////////////////
+				case 'Country':
+					/**
+					 * Gets the value for the Country object referenced by intCountryId 
+					 * @return Country
+					 */
+					try {
+						if ((!$this->objCountry) && (!is_null($this->intCountryId)))
+							$this->objCountry = Country::Load($this->intCountryId);
+						return $this->objCountry;
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
 
 				////////////////////////////
 				// Virtual Object References (Many to Many and Reverse References)
@@ -1696,6 +1727,7 @@
 					 * @return integer
 					 */
 					try {
+						$this->objCountry = null;
 						return ($this->intCountryId = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {
 						$objExc->IncrementOffset();
@@ -1732,6 +1764,38 @@
 				///////////////////
 				// Member Objects
 				///////////////////
+				case 'Country':
+					/**
+					 * Sets the value for the Country object referenced by intCountryId 
+					 * @param Country $mixValue
+					 * @return Country
+					 */
+					if (is_null($mixValue)) {
+						$this->intCountryId = null;
+						$this->objCountry = null;
+						return null;
+					} else {
+						// Make sure $mixValue actually is a Country object
+						try {
+							$mixValue = QType::Cast($mixValue, 'Country');
+						} catch (QInvalidCastException $objExc) {
+							$objExc->IncrementOffset();
+							throw $objExc;
+						} 
+
+						// Make sure $mixValue is a SAVED Country object
+						if (is_null($mixValue->Id))
+							throw new QCallerException('Unable to set an unsaved Country for this Person');
+
+						// Update Local Member Variables
+						$this->objCountry = $mixValue;
+						$this->intCountryId = $mixValue->Id;
+
+						// Return $mixValue
+						return $mixValue;
+					}
+					break;
+
 				default:
 					try {
 						return parent::__set($strName, $mixValue);
@@ -2747,7 +2811,7 @@
 			$strToReturn .= '<element name="OptInFlag" type="xsd:boolean"/>';
 			$strToReturn .= '<element name="DonatedFlag" type="xsd:boolean"/>';
 			$strToReturn .= '<element name="Location" type="xsd:string"/>';
-			$strToReturn .= '<element name="CountryId" type="xsd:int"/>';
+			$strToReturn .= '<element name="Country" type="xsd1:Country"/>';
 			$strToReturn .= '<element name="Url" type="xsd:string"/>';
 			$strToReturn .= '<element name="RegistrationDate" type="xsd:dateTime"/>';
 			$strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
@@ -2758,6 +2822,7 @@
 		public static function AlterSoapComplexTypeArray(&$strComplexTypeArray) {
 			if (!array_key_exists('Person', $strComplexTypeArray)) {
 				$strComplexTypeArray['Person'] = Person::GetSoapComplexTypeXml();
+				Country::AlterSoapComplexTypeArray($strComplexTypeArray);
 			}
 		}
 
@@ -2796,8 +2861,9 @@
 				$objToReturn->blnDonatedFlag = $objSoapObject->DonatedFlag;
 			if (property_exists($objSoapObject, 'Location'))
 				$objToReturn->strLocation = $objSoapObject->Location;
-			if (property_exists($objSoapObject, 'CountryId'))
-				$objToReturn->intCountryId = $objSoapObject->CountryId;
+			if ((property_exists($objSoapObject, 'Country')) &&
+				($objSoapObject->Country))
+				$objToReturn->Country = Country::GetObjectFromSoapObject($objSoapObject->Country);
 			if (property_exists($objSoapObject, 'Url'))
 				$objToReturn->strUrl = $objSoapObject->Url;
 			if (property_exists($objSoapObject, 'RegistrationDate'))
@@ -2820,6 +2886,10 @@
 		}
 
 		public static function GetSoapObjectFromObject($objObject, $blnBindRelatedObjects) {
+			if ($objObject->objCountry)
+				$objObject->objCountry = Country::GetSoapObjectFromObject($objObject->objCountry, false);
+			else if (!$blnBindRelatedObjects)
+				$objObject->intCountryId = null;
 			if ($objObject->dttRegistrationDate)
 				$objObject->dttRegistrationDate = $objObject->dttRegistrationDate->__toString(QDateTime::FormatSoap);
 			return $objObject;
@@ -2949,6 +3019,8 @@
 					return new QQNode('location', 'Location', 'string', $this);
 				case 'CountryId':
 					return new QQNode('country_id', 'CountryId', 'integer', $this);
+				case 'Country':
+					return new QQNodeCountry('country_id', 'Country', 'integer', $this);
 				case 'Url':
 					return new QQNode('url', 'Url', 'string', $this);
 				case 'RegistrationDate':
@@ -3013,6 +3085,8 @@
 					return new QQNode('location', 'Location', 'string', $this);
 				case 'CountryId':
 					return new QQNode('country_id', 'CountryId', 'integer', $this);
+				case 'Country':
+					return new QQNodeCountry('country_id', 'Country', 'integer', $this);
 				case 'Url':
 					return new QQNode('url', 'Url', 'string', $this);
 				case 'RegistrationDate':

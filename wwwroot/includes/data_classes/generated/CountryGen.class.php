@@ -18,6 +18,8 @@
 	 * @property-read integer $Id the value for intId (Read-Only PK)
 	 * @property string $Name the value for strName 
 	 * @property string $Code the value for strCode (Unique)
+	 * @property-read Person $_Person the value for the private _objPerson (Read-Only) if set due to an expansion on the person.country_id reverse relationship
+	 * @property-read Person[] $_PersonArray the value for the private _objPersonArray (Read-Only) if set due to an ExpandAsArray on the person.country_id reverse relationship
 	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
 	class CountryGen extends QBaseClass {
@@ -51,6 +53,22 @@
 		const CodeMaxLength = 2;
 		const CodeDefault = null;
 
+
+		/**
+		 * Private member variable that stores a reference to a single Person object
+		 * (of type Person), if this Country object was restored with
+		 * an expansion on the person association table.
+		 * @var Person _objPerson;
+		 */
+		private $_objPerson;
+
+		/**
+		 * Private member variable that stores a reference to an array of Person objects
+		 * (of type Person[]), if this Country object was restored with
+		 * an ExpandAsArray on the person association table.
+		 * @var Person[] _objPersonArray;
+		 */
+		private $_objPersonArray = array();
 
 		/**
 		 * Protected array of virtual attributes for this object (e.g. extra/other calculated and/or non-object bound
@@ -366,6 +384,38 @@
 			if (!$objDbRow)
 				return null;
 
+			// See if we're doing an array expansion on the previous item
+			$strAlias = $strAliasPrefix . 'id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+			if (($strExpandAsArrayNodes) && ($objPreviousItem) &&
+				($objPreviousItem->intId == $objDbRow->GetColumn($strAliasName, 'Integer'))) {
+
+				// We are.  Now, prepare to check for ExpandAsArray clauses
+				$blnExpandedViaArray = false;
+				if (!$strAliasPrefix)
+					$strAliasPrefix = 'country__';
+
+
+				$strAlias = $strAliasPrefix . 'person__id';
+				$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+				if ((array_key_exists($strAlias, $strExpandAsArrayNodes)) &&
+					(!is_null($objDbRow->GetColumn($strAliasName)))) {
+					if ($intPreviousChildItemCount = count($objPreviousItem->_objPersonArray)) {
+						$objPreviousChildItem = $objPreviousItem->_objPersonArray[$intPreviousChildItemCount - 1];
+						$objChildItem = Person::InstantiateDbRow($objDbRow, $strAliasPrefix . 'person__', $strExpandAsArrayNodes, $objPreviousChildItem, $strColumnAliasArray);
+						if ($objChildItem)
+							$objPreviousItem->_objPersonArray[] = $objChildItem;
+					} else
+						$objPreviousItem->_objPersonArray[] = Person::InstantiateDbRow($objDbRow, $strAliasPrefix . 'person__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+					$blnExpandedViaArray = true;
+				}
+
+				// Either return false to signal array expansion, or check-to-reset the Alias prefix and move on
+				if ($blnExpandedViaArray)
+					return false;
+				else if ($strAliasPrefix == 'country__')
+					$strAliasPrefix = null;
+			}
 
 			// Create a new instance of the Country object
 			$objToReturn = new Country();
@@ -392,6 +442,16 @@
 
 
 
+
+			// Check for Person Virtual Binding
+			$strAlias = $strAliasPrefix . 'person__id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+			if (!is_null($objDbRow->GetColumn($strAliasName))) {
+				if (($strExpandAsArrayNodes) && (array_key_exists($strAlias, $strExpandAsArrayNodes)))
+					$objToReturn->_objPersonArray[] = Person::InstantiateDbRow($objDbRow, $strAliasPrefix . 'person__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+				else
+					$objToReturn->_objPerson = Person::InstantiateDbRow($objDbRow, $strAliasPrefix . 'person__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+			}
 
 			return $objToReturn;
 		}
@@ -645,6 +705,22 @@
 				// (If restored via a "Many-to" expansion)
 				////////////////////////////
 
+				case '_Person':
+					/**
+					 * Gets the value for the private _objPerson (Read-Only)
+					 * if set due to an expansion on the person.country_id reverse relationship
+					 * @return Person
+					 */
+					return $this->_objPerson;
+
+				case '_PersonArray':
+					/**
+					 * Gets the value for the private _objPersonArray (Read-Only)
+					 * if set due to an ExpandAsArray on the person.country_id reverse relationship
+					 * @return Person[]
+					 */
+					return (array) $this->_objPersonArray;
+
 
 				case '__Restored':
 					return $this->__blnRestored;
@@ -728,6 +804,156 @@
 		///////////////////////////////
 		// ASSOCIATED OBJECTS' METHODS
 		///////////////////////////////
+
+			
+		
+		// Related Objects' Methods for Person
+		//-------------------------------------------------------------------
+
+		/**
+		 * Gets all associated People as an array of Person objects
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @return Person[]
+		*/ 
+		public function GetPersonArray($objOptionalClauses = null) {
+			if ((is_null($this->intId)))
+				return array();
+
+			try {
+				return Person::LoadArrayByCountryId($this->intId, $objOptionalClauses);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+		}
+
+		/**
+		 * Counts all associated People
+		 * @return int
+		*/ 
+		public function CountPeople() {
+			if ((is_null($this->intId)))
+				return 0;
+
+			return Person::CountByCountryId($this->intId);
+		}
+
+		/**
+		 * Associates a Person
+		 * @param Person $objPerson
+		 * @return void
+		*/ 
+		public function AssociatePerson(Person $objPerson) {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call AssociatePerson on this unsaved Country.');
+			if ((is_null($objPerson->Id)))
+				throw new QUndefinedPrimaryKeyException('Unable to call AssociatePerson on this Country with an unsaved Person.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Country::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				UPDATE
+					`person`
+				SET
+					`country_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+				WHERE
+					`id` = ' . $objDatabase->SqlVariable($objPerson->Id) . '
+			');
+		}
+
+		/**
+		 * Unassociates a Person
+		 * @param Person $objPerson
+		 * @return void
+		*/ 
+		public function UnassociatePerson(Person $objPerson) {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociatePerson on this unsaved Country.');
+			if ((is_null($objPerson->Id)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociatePerson on this Country with an unsaved Person.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Country::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				UPDATE
+					`person`
+				SET
+					`country_id` = null
+				WHERE
+					`id` = ' . $objDatabase->SqlVariable($objPerson->Id) . ' AND
+					`country_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+			');
+		}
+
+		/**
+		 * Unassociates all People
+		 * @return void
+		*/ 
+		public function UnassociateAllPeople() {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociatePerson on this unsaved Country.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Country::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				UPDATE
+					`person`
+				SET
+					`country_id` = null
+				WHERE
+					`country_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+			');
+		}
+
+		/**
+		 * Deletes an associated Person
+		 * @param Person $objPerson
+		 * @return void
+		*/ 
+		public function DeleteAssociatedPerson(Person $objPerson) {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociatePerson on this unsaved Country.');
+			if ((is_null($objPerson->Id)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociatePerson on this Country with an unsaved Person.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Country::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				DELETE FROM
+					`person`
+				WHERE
+					`id` = ' . $objDatabase->SqlVariable($objPerson->Id) . ' AND
+					`country_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+			');
+		}
+
+		/**
+		 * Deletes all associated People
+		 * @return void
+		*/ 
+		public function DeleteAllPeople() {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociatePerson on this unsaved Country.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Country::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				DELETE FROM
+					`person`
+				WHERE
+					`country_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+			');
+		}
 
 
 
@@ -814,6 +1040,8 @@
 					return new QQNode('name', 'Name', 'string', $this);
 				case 'Code':
 					return new QQNode('code', 'Code', 'string', $this);
+				case 'Person':
+					return new QQReverseReferenceNodePerson($this, 'person', 'reverse_reference', 'country_id');
 
 				case '_PrimaryKeyNode':
 					return new QQNode('id', 'Id', 'integer', $this);
@@ -840,6 +1068,8 @@
 					return new QQNode('name', 'Name', 'string', $this);
 				case 'Code':
 					return new QQNode('code', 'Code', 'string', $this);
+				case 'Person':
+					return new QQReverseReferenceNodePerson($this, 'person', 'reverse_reference', 'country_id');
 
 				case '_PrimaryKeyNode':
 					return new QQNode('id', 'Id', 'integer', $this);
