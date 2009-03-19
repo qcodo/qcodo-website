@@ -1048,7 +1048,6 @@
 
 		protected function GetForeignKeyForSqlRelationshipDefinition($strTableName, $strLine) {
 			$strMatches = array();
-// ALTER TABLE `email_topic_person_assn` ADD FOREIGN KEY person_id_idxfk(`person_id`) REFERENCES `person`(`id`);
 
 			// Start
 			$strPattern = '/alter[\s]+table[\s]+';
