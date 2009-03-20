@@ -18,26 +18,24 @@
 
 		div#dtrMessages { }
 		div#dtrMessages div.messageBarRound { margin-top: 15px; }
-		div#dtrMessages div.messageBarRound div { height: 1px; background-color: #408050; border-color: #ddffbb; border-style: solid; border-width: 0 1px 0 1px; }
+		div#dtrMessages div.messageBarRound div { height: 1px; background-color: #aba; border-color: #dfd; border-style: solid; border-width: 0 1px 0 1px; }
 		div#dtrMessages div.messageBarRound div.a { width: 725px; margin-left: 4px; }
 		div#dtrMessages div.messageBarRound div.b { width: 729px; margin-left: 2px; }
 		div#dtrMessages div.messageBarRound div.c { width: 731px; margin-left: 1px; }
 		div#dtrMessages div.messageBarRound div.d { width: 733px; margin-left: 1px; border-width: 0; }
 		div#dtrMessages div.messageBarRound div.e { width: 733px; margin-left: 0; }
 
-		div#dtrMessages div.messageBar { background-color: #408050; height: 13px; padding: 0 5px 0 5px; }
-		div#dtrMessages div.messageBar div.name { float: left; font-size: 11px; font-weight: bold; color: #fff; position: relative; top: -4px; height: 13px;}
-		div#dtrMessages div.messageBar div.date { float: right; font-size: 10px; font-weight: bold; font-family: arial, helvetica; color: #ddffdd; position: relative; top: -2px; }
+		div#dtrMessages div.messageBar { background-color: #aba; height: 13px; padding: 0 10px 0 10px; }
+		div#dtrMessages div.messageBar div.name { float: left; font-size: 11px; font-weight: bold; color: #343; position: relative; top: -3px; height: 13px;}
+		div#dtrMessages div.messageBar div.date { float: right; font-size: 10px; font-weight: bold; font-family: arial, helvetica; color: #343; position: relative; top: -2px; }
 
-		div#dtrMessages div.messageBody { background-color: #408050; width: 735px; }
-		div#dtrMessages div.messageBody div.side { color: #fff; float: left; font-size: 10px; font-weight: bold; font-family: arial, helvetica; padding-left: 5px; padding-top: 5px;}
-		div#dtrMessages div.messageBody div.message { background-color: #ddffdd; padding: 10px; font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; overflow: auto; float: right; width: 600px; }
+		div#dtrMessages div.messageBody { background-color: #efe; width: 713px; padding: 10px; font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; overflow: auto; border: 1px solid #aba; }
 		
-		div#dtrMessages div.messageBarRoundAlternate div { background-color: #605030; }
-		div#dtrMessages div.messageBarAlternate { background-color: #605030; }
-		div#dtrMessages div.messageBarAlternate div.date { color: #ffeedd; }
-		div#dtrMessages div.messageBodyAlternate { background-color: #605030; }
-		div#dtrMessages div.messageBodyAlternate div.message { background-color: #ffeedd; }
+		div#dtrMessages div.messageBarRoundAlternate div { background-color: #ba8; border-color: #fec;}
+		div#dtrMessages div.messageBarAlternate { background-color: #ba8; }
+		div#dtrMessages div.messageBarAlternate div.name { color: #484030; }
+		div#dtrMessages div.messageBarAlternate div.date { color: #484030; }
+		div#dtrMessages div.messageBodyAlternate { background-color: #ffe; border-color: #ba8;}
 	</style>
 
 	<div style="width: 220px; border: 5px solid #aba; font: 12px Verdana, Arial, Helvetica; float: left; ">

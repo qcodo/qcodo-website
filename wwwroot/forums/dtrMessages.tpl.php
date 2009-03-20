@@ -8,15 +8,5 @@
 	</div>
 </div>
 <div class="messageBody <?php if ($_CONTROL->CurrentItemIndex % 2) print 'messageBodyAlternate'; ?>">
-	<div class="side">
-<?php 
-	if ($_ITEM->Person->Url) {
-		print "Website Link";
-	}
-?>
-	</div>
-	<div class="message">
 		<?php _p(QWriteBox::DisplayHtml($_ITEM->Message, 'forum_code'), false); ?>
-	</div>
-	<br clear="all"/>
 </div>
