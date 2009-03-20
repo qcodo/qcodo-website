@@ -14,7 +14,10 @@
 			div.forumTopic h1 { color: #333; margin: 0; padding: 0; }
 			div.forumTopic h3 { color: #666; padding: 0; margin: 0; font-size: 10px; font-weight: normal; }
 
+		.forum_code { background-color: #ddddff; padding: 10px; margin-left: 20px; font-family: 'Lucida Console' 'Courier New' 'Courier' 'monospaced'; font-size: 11px; line-height: 13px; overflow: auto; width: auto;}
+
 		div#dtrMessages { }
+		div#dtrMessages div.messageBarRound { margin-top: 15px; }
 		div#dtrMessages div.messageBarRound div { height: 1px; background-color: #408050; border-color: #ddffbb; border-style: solid; border-width: 0 1px 0 1px; }
 		div#dtrMessages div.messageBarRound div.a { width: 725px; margin-left: 4px; }
 		div#dtrMessages div.messageBarRound div.b { width: 729px; margin-left: 2px; }
@@ -23,11 +26,18 @@
 		div#dtrMessages div.messageBarRound div.e { width: 733px; margin-left: 0; }
 
 		div#dtrMessages div.messageBar { background-color: #408050; height: 13px; padding: 0 5px 0 5px; }
-		div#dtrMessages div.messageBar div.name { float: left; font-size: 11px; font-weight: bold; color: #fff; line-height: 8px;}
-		div#dtrMessages div.messageBar div.date { float: right; font-size: 10px; font-weight: bold; font-family: arial, helvetica; color: #ddffbb; }
+		div#dtrMessages div.messageBar div.name { float: left; font-size: 11px; font-weight: bold; color: #fff; position: relative; top: -4px; height: 13px;}
+		div#dtrMessages div.messageBar div.date { float: right; font-size: 10px; font-weight: bold; font-family: arial, helvetica; color: #ddffdd; position: relative; top: -2px; }
 
-		div#dtrMessages div.message {margin-bottom: 15px; }
-
+		div#dtrMessages div.messageBody { background-color: #408050; width: 735px; }
+		div#dtrMessages div.messageBody div.side { color: #fff; float: left; font-size: 10px; font-weight: bold; font-family: arial, helvetica; padding-left: 5px; padding-top: 5px;}
+		div#dtrMessages div.messageBody div.message { background-color: #ddffdd; padding: 10px; font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; overflow: auto; float: right; width: 600px; }
+		
+		div#dtrMessages div.messageBarRoundAlternate div { background-color: #605030; }
+		div#dtrMessages div.messageBarAlternate { background-color: #605030; }
+		div#dtrMessages div.messageBarAlternate div.date { color: #ffeedd; }
+		div#dtrMessages div.messageBodyAlternate { background-color: #605030; }
+		div#dtrMessages div.messageBodyAlternate div.message { background-color: #ffeedd; }
 	</style>
 
 	<div style="width: 220px; border: 5px solid #aba; font: 12px Verdana, Arial, Helvetica; float: left; ">
@@ -68,19 +78,7 @@
 	}
 ?>
 	</div>
+
 	<br clear="all"/>
-
-	<h2>
-		<div class="right">
-			Search in
-			<?php $this->lstSearch->Render() ?>
-			<?php $this->txtSearch->Render('MaxLength=200'); ?>
-		</div>
-		Discussion Forums
-	</h2>
-	<p>The Qcodo Discussion Forums provide a community to post, discuss, ask, and converse about the current state of the framework,
-	as well as giving an opportunity for members to discuss the future direction of Qcodo.</p>
-
-	<?php $this->dtrForums->Render(); ?>
 
 <?php require(__INCLUDES__ . '/footer.inc.php'); ?>
