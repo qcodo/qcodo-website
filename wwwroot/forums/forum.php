@@ -48,7 +48,9 @@
 			$this->dtrMessages->Template = 'dtrMessages.tpl.php';
 			$this->dtrMessages->SetDataBinder('dtrMessages_Bind');
 			$this->dtrMessages->Paginator = new QPaginator($this);
+			$this->dtrMessages->PaginatorAlternate = new QPaginator($this);
 			$this->dtrMessages->Paginator->Visible = false;
+			$this->dtrMessages->PaginatorAlternate->Visible = false;
 			$this->dtrMessages->ItemsPerPage = 5;
 			$this->dtrMessages->UseAjax = true;
 		}
@@ -61,6 +63,7 @@
 				$this->dtrMessages->DataSource = $objDataSource;
 				
 				$this->dtrMessages->Paginator->Visible = ($this->dtrMessages->PageCount > 1);
+				$this->dtrMessages->PaginatorAlternate->Visible = ($this->dtrMessages->PageCount > 1);
 			}
 		}
 

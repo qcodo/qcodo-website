@@ -55,3 +55,85 @@
 		div.hover div a { color: #fff; }
 		div.hover div.stats { border-top: 1px solid #337; }
 		div.hover p.description { color: #337;}
+
+/* FORUM TOPICS */
+
+		div.topicsShell { float: left; }
+
+		div.topicsBorder { width: 230px; }
+			div.topicsBorder div { height: 1px; background-color: #aba; border-color: #dfd; border-style: solid; border-width: 0 1px 0 1px; }
+			div.topicsBorder div.a { width: 220px; margin-left: 4px; }
+			div.topicsBorder div.b { width: 224px; margin-left: 2px; }
+			div.topicsBorder div.c { width: 226px; margin-left: 1px; }
+			div.topicsBorder div.d { width: 228px; margin-left: 1px; border-width: 0; }
+			div.topicsBorder div.e { width: 228px; margin-left: 0; }
+
+		div.topics { width: 220px; border: 5px solid #aba; font: 12px Verdana, Arial, Helvetica; }
+			div.topics div.name { background-color: #aba; font-size: 12px; font-weight: bold; padding: 0 10px 0 10px; color: #343; position: relative; top: -5px; height: 20px;}
+			div.topics div.description { padding: 5px 10px 5px 10px; font: 11px arial; font-style: italic; color: #666; }
+			div.topics div.item { border-top: 1px dotted #bbb; font-size: 10px; height: 20px; font-family: verdana; }
+				div.topics div.item a { display: block; color: #000; text-decoration: none; padding: 3px 10px 3px 10px; height: 14px;}
+				div.topics div.item a:hover { background-color: #aba; color: #335;}
+				div.topics div.selected a { background-color: #335; color: #fff; font-weight: bold; }
+					div.topics div.item a div.title { float: left; width: 180px; height: 14px; overflow: hidden; }
+					div.topics div.item a div.count { float: right; width: 20px; text-align: right; height: 14px; overflow: hidden; font-family: arial, helvetica; font-size: 10px; font-style: italic; font-weight: bold; color: #999; }
+
+		div.topic { float: left; margin-left: 25px; width: 735px;}
+			div.topic h1 { color: #333; margin: 0; padding: 0; }
+			div.topic h2 { color: #666; margin: 0; font-size: 16px; padding: 15px; background-color: inherit; text-align: center; border: 1px solid #999; background-color: #ddd; }
+			div.topic h3 { color: #666; padding: 0; margin: 0; font-size: 10px; font-weight: normal; }
+
+			span.paginator { margin: 0; padding: 0; }
+				span.paginator span { list-style-type:none; display: inline; padding: 0; margin: 0; }
+					span.paginator span.page a { text-decoration: none; color: #444; padding: 0 3px 0 3px; margin: 0 2px 0 2px;}
+					span.paginator span.page a:hover { text-decoration: underline; color: #000; }
+					span.paginator span.arrow { font-weight: bold; color: #ccc; margin: 0; padding: 0 3px 0 3px; }
+					span.paginator span.arrow a { font-weight: bold; color: #444; text-decoration: none; }
+					span.paginator span.arrow a:hover { text-decoration: underline; color: #000; }
+					span.paginator span.selected { font-weight: bold; background-color: #ccf; padding: 0 3px 0 3px; margin: 0 2px 0 2px; border: 1px; border-style: solid; }
+					span.paginator span.break { color: #666; margin: 0 5px 0 5px; }
+					span.paginator span.ellipsis { color: #666; }
+
+			div.topic div.controlBar { font: 10px arial, helvetica; margin-top: 15px; height: 15px; }
+			div.topic div.controlBar div.controls { float: left; width: 330px; }
+				div.topic div.controlBar div.controls a.action { display: block; text-decoration: none;}
+					div.topic div.controlBar div.controls a.action div {float: left; background-color: #d3d3d3; color: #9090a0; font-weight: bold; border-color: #e0e0e0; border-style: solid; border-width: 0;}
+					div.topic div.controlBar div.controls a.action div.a { width: 1px; height: 7px; position: relative; top: 3px; border-width: 1px 0; }
+					div.topic div.controlBar div.controls a.action div.b { width: 1px; height: 9px; position: relative; top: 2px; border-width: 1px 0; }
+					div.topic div.controlBar div.controls a.action div.c { width: 1px; height: 11px;position: relative; top: 1px; border-width: 1px 0; }
+					div.topic div.controlBar div.controls a.action div.d { width: 1px; height: 13px;position: relative; top: 1px;}
+					div.topic div.controlBar div.controls a.action div.e { width: 1px; height: 13px;position: relative; top: 0px; border-width: 1px 0; border-color: #ddd;}
+					div.topic div.controlBar div.controls a.action div.f { height: 15px; padding: 0 2px; font-size: 10px; font-family: Verdana, Arial, Helvetica; }
+	
+					div.topic div.controlBar div.controls a.actionActive div { background-color: #335; border-color: #99c; color: #fff; }
+					div.topic div.controlBar div.controls a.actionActive div.e { border-color: #66a; }
+					div.topic div.controlBar div.controls a.action:hover div { background-color: #aba; border-color: #dfd; color: #335; }
+					div.topic div.controlBar div.controls a.action:hover div.e { border-color: #cec; }
+					
+					div.topic div.controlBar div.controls div.spacer { float: left; margin-left: 8px; width: 0px; }				
+
+			div.topic div.controlBar div.paginator { float: right; margin-top: 1px; }
+
+
+		.forum_code { background-color: #ddddff; padding: 10px; margin-left: 20px; font-family: 'Lucida Console' 'Courier New' 'Courier' 'monospaced'; font-size: 11px; line-height: 13px; overflow: auto; width: auto;}
+
+		div#dtrMessages { }
+		div#dtrMessages div.messageBarRound { margin-top: 15px; }
+		div#dtrMessages div.messageBarRound div { height: 1px; background-color: #aba; border-color: #dfd; border-style: solid; border-width: 0 1px 0 1px; }
+		div#dtrMessages div.messageBarRound div.a { width: 725px; margin-left: 4px; }
+		div#dtrMessages div.messageBarRound div.b { width: 729px; margin-left: 2px; }
+		div#dtrMessages div.messageBarRound div.c { width: 731px; margin-left: 1px; }
+		div#dtrMessages div.messageBarRound div.d { width: 733px; margin-left: 1px; border-width: 0; }
+		div#dtrMessages div.messageBarRound div.e { width: 733px; margin-left: 0; }
+
+		div#dtrMessages div.messageBar { background-color: #aba; height: 14px; padding: 0 10px 0 10px; }
+		div#dtrMessages div.messageBar div.name { float: left; font-size: 11px; font-weight: bold; color: #343; height: 11px; position: relative; top: -3px; }
+		div#dtrMessages div.messageBar div.date { float: right; font-size: 10px; font-weight: bold; font-family: arial, helvetica; color: #343; position: relative; top: -1px; }
+
+		div#dtrMessages div.messageBody { background-color: #efe; width: 713px; padding: 10px; font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; overflow: auto; border: 1px solid #aba; }
+		
+		div#dtrMessages div.messageBarRoundAlternate div { background-color: #ba8; border-color: #fec;}
+		div#dtrMessages div.messageBarAlternate { background-color: #ba8; }
+		div#dtrMessages div.messageBarAlternate div.name { color: #484030; }
+		div#dtrMessages div.messageBarAlternate div.date { color: #484030; }
+		div#dtrMessages div.messageBodyAlternate { background-color: #ffe; border-color: #ba8;}
