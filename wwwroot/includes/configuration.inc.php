@@ -14,6 +14,7 @@
 				'database' => 'qcodo_website',
 				'username' => 'root',
 				'password' => '',
+				'encoding' => 'utf8',
 				'profiling' => false)));
 			break;
 

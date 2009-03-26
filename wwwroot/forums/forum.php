@@ -8,7 +8,6 @@
 
 		protected $lstSearch;
 		protected $txtSearch;
-		protected $dtrForums;
 		
 		protected $objForum;
 		protected $objTopic;
@@ -48,21 +47,21 @@
 			$this->dtrMessages = new QDataRepeater($this, 'dtrMessages');
 			$this->dtrMessages->Template = 'dtrMessages.tpl.php';
 			$this->dtrMessages->SetDataBinder('dtrMessages_Bind');
-
-			$this->dtrForums = new QDataRepeater($this, 'dtrForums');
-			$this->dtrForums->Template = 'dtrForums.tpl.php';
-			$this->dtrForums->SetDataBinder('dtrForums_Bind');
+			$this->dtrMessages->Paginator = new QPaginator($this);
+			$this->dtrMessages->Paginator->Visible = false;
+			$this->dtrMessages->ItemsPerPage = 5;
+			$this->dtrMessages->UseAjax = true;
 		}
 		
 		public function dtrMessages_Bind() {
 			if ($this->objTopic) {
-				$objDataSource = $this->objTopic->GetMessageArray(QQ::OrderBy(QQN::Message()->PostDate));
-				$this->dtrMessages->DataSource = $objDataSource;
-			}
-		}
+				$this->dtrMessages->TotalItemCount = $this->objTopic->CountMessages();
 
-		protected function Form_PreRender() {
-			$this->dtrForums->DataSource = Forum::LoadAll(QQ::OrderBy(QQN::Forum()->OrderNumber));
+				$objDataSource = $this->objTopic->GetMessageArray(QQ::Clause(QQ::OrderBy(QQN::Message()->PostDate), $this->dtrMessages->LimitClause));
+				$this->dtrMessages->DataSource = $objDataSource;
+				
+				$this->dtrMessages->Paginator->Visible = ($this->dtrMessages->PageCount > 1);
+			}
 		}
 
 		protected function btnSearch_Click($strFormId, $strControlId, $strParameter) {
