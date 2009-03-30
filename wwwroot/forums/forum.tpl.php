@@ -5,15 +5,8 @@
 	<div class="topics">
 		<div class="name"><?php _p($this->objForum->Name); ?></div>
 	 	<div class="description"><?php _p($this->objForum->Description); ?></div>
-		<?php 
-		$objTopicArray = Topic::LoadArrayByForumId($this->objForum->Id, QQ::Clause(QQ::OrderBy(QQN::Topic()->LastPostDate, false), QQ::LimitInfo(20)));
-		
-		foreach ($objTopicArray as $objTopic) { ?>
-			<div class="item <?php if ($this->objTopic && ($objTopic->Id == $this->objTopic->Id)) _p('selected'); ?>"><a href="/forums/forum.php/<?php _p($objTopic->ForumId);?>/<?php _p($objTopic->Id);?>" title="<?php _p($objTopic->SidenavTitle); ?>">
-				<div class="title"><?php _p(QString::Truncate($objTopic->Name, 36)); ?></div>
-				<div class="count"><?php _p($objTopic->CountMessages() - 1);?></div>
-			</a></div>
-		<?php } ?>
+	 	<div class="paginator"><?php $this->dtrTopics->Paginator->Render(); ?></div>
+		<?php $this->dtrTopics->Render(); ?>
 	</div>
 	</div>
 
@@ -53,7 +46,7 @@
 		</div>
 		<div class="paginator"><?php $this->dtrMessages->Paginator->Render(); ?></div>
 	</div>
-	
+
 	<br clear="all"/>
 	<?php $this->dtrMessages->Render(); ?>
 	<br clear="all"/>
@@ -80,7 +73,7 @@
 		</div>
 		<div class="paginator"><?php $this->dtrMessages->PaginatorAlternate->Render(); ?></div>
 	</div>
-<?php } ?>
+<?php } /* if (!$this->objTopic) */ ?>
 	</div>
 
 	<br clear="all"/>

@@ -71,6 +71,9 @@
 		div.topics { width: 220px; border: 5px solid #aba; font: 12px Verdana, Arial, Helvetica; }
 			div.topics div.name { background-color: #aba; font-size: 12px; font-weight: bold; padding: 0 10px 0 10px; color: #343; position: relative; top: -5px; height: 20px;}
 			div.topics div.description { padding: 5px 10px 5px 10px; font: 11px arial; font-style: italic; color: #666; }
+			div.topics div.paginator { font-size: 10px; font-family: arial; background-color: #eee; padding: 2px 0 2px 8px;}
+			span.paginatorThin { margin: 0; padding: 0; }
+
 			div.topics div.item { border-top: 1px dotted #bbb; font-size: 10px; height: 20px; font-family: verdana; }
 				div.topics div.item a { display: block; color: #000; text-decoration: none; padding: 3px 10px 3px 10px; height: 14px;}
 				div.topics div.item a:hover { background-color: #aba; color: #335;}
@@ -93,6 +96,17 @@
 					span.paginator span.selected { font-weight: bold; background-color: #ccf; padding: 0 3px 0 3px; margin: 0 2px 0 2px; border: 1px; border-style: solid; }
 					span.paginator span.break { color: #666; margin: 0 5px 0 5px; }
 					span.paginator span.ellipsis { color: #666; }
+
+			span.paginatorTextbox { margin: 0; padding: 0; }
+				span.paginatorTextbox span { list-style-type:none; display: inline; padding: 0; margin: 0; }
+					span.paginatorTextbox span.page a { text-decoration: none; color: #444; padding: 0 3px 0 3px; margin: 0 2px 0 2px;}
+					span.paginatorTextbox span.page a:hover { text-decoration: underline; color: #000; }
+					span.paginatorTextbox span.arrow { font-weight: bold; color: #ccc; margin: 0; padding: 0 3px 0 3px; }
+					span.paginatorTextbox span.arrow a { font-weight: bold; color: #444; text-decoration: none; }
+					span.paginatorTextbox span.arrow a:hover { text-decoration: underline; color: #000; }
+					span.paginatorTextbox span.selected { font-weight: bold; background-color: #ccf; padding: 0 3px 0 3px; margin: 0 2px 0 2px; border: 1px; border-style: solid; }
+					span.paginatorTextbox span.break { color: #666; margin: 0 5px 0 5px; }
+					span.paginatorTextbox span.ellipsis { color: #666; }
 
 			div.topic div.controlBar { font: 10px arial, helvetica; margin-top: 15px; height: 15px; }
 			div.topic div.controlBar div.controls { float: left; width: 330px; }

@@ -47,7 +47,21 @@
 					}
 			}
 		}
-		
+
+		public static function GetPageNumber(Topic $objTopic, $intItemsPerPage) {
+			$objResult = Topic::GetDatabase()->Query('SELECT id FROM topic WHERE forum_id=' . $objTopic->ForumId . ' ORDER BY last_post_date DESC');
+			$intRecordNumber = 0;
+			while ($objRow = $objResult->GetNextRow()) {
+				$intRecordNumber++;
+				if ($objRow->GetColumn('id') == $objTopic->Id)
+					break;
+			}
+			
+			$intPageNumber = floor($intRecordNumber / $intItemsPerPage);
+			if ($intRecordNumber % $intItemsPerPage) $intPageNumber++;
+			return $intPageNumber;
+		}
+
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...
 		// but feel free to use these as a starting point)

@@ -10,10 +10,11 @@
 		protected $txtSearch;
 		
 		protected $objForum;
-		protected $objTopic;
+		public $objTopic;
 		protected $objFirstMessage;
 
 		protected $dtrMessages;
+		protected $dtrTopics;
 		
 		protected function Form_Create() {
 			parent::Form_Create();
@@ -53,8 +54,22 @@
 			$this->dtrMessages->PaginatorAlternate->Visible = false;
 			$this->dtrMessages->ItemsPerPage = 5;
 			$this->dtrMessages->UseAjax = true;
+			
+			$this->dtrTopics = new QDataRepeater($this, 'dtrTopics');
+			$this->dtrTopics->Template = 'dtrTopics.tpl.php';
+			$this->dtrTopics->SetDataBinder('dtrTopics_Bind');
+			$this->dtrTopics->Paginator = new PaginatorTextbox($this);
+			
+			$this->dtrTopics->ItemsPerPage = 20;
+			if ($this->objTopic) $this->dtrTopics->PageNumber = Topic::GetPageNumber($this->objTopic, 20);
+			$this->dtrTopics->UseAjax = true;
 		}
-		
+
+		public function dtrTopics_Bind() {
+			$this->dtrTopics->TotalItemCount = $this->objForum->CountTopics();
+			$this->dtrTopics->DataSource = Topic::LoadArrayByForumId($this->objForum->Id, QQ::Clause(QQ::OrderBy(QQN::Topic()->LastPostDate, false), $this->dtrTopics->LimitClause));
+		}
+
 		public function dtrMessages_Bind() {
 			if ($this->objTopic) {
 				$this->dtrMessages->TotalItemCount = $this->objTopic->CountMessages();
