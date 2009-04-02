@@ -1,19 +1,39 @@
-	body { margin: 0; padding: 0; min-width: 1000px; font: 14px verdana; color: #333; }
+	body { margin: 0; padding: 0; min-width: 1000px; font: 12px arial, helvetica, sans-serif; color: #333; }
 	img { border: 0; }
 	p a { color: #740; text-decoration: none; font-weight: bold; }
 	p a:hover { text-decoration: underline; }
 
-	h1 { color: #474; font-size: 28px; }
+	h1 { font-weight: normal; font-size: 36px; font-family: Arial, Helvetica, sans-serif; color: #666; margin: 0; padding: 0; }
+
+	p.instructions { font-style: italic; color: #666; }
+
+	div.form { }
+		div.form h1 { margin-left: 180px; }
+		div.form div.mainForm { margin-left: 180px; float: left; width: 500px; border: 0 solid #ccc; padding: 0 16px 0 0; border-width: 0 4px 0 0;}
+		div.form div.sidebar { margin-left: 30px; float: left; }
+
+	div.renderWithName { padding: 4px 0 4px 0; overflow: auto; height: 100%; }
+		div.renderWithName div.left { float: left; width: 100px; margin-right: 25px; padding-top: 2px; }
+		div.renderWithName div.required { font-weight: bold; }
+
+		div.renderWithName div.right { }
+		div.renderWithName div.right span.error { margin-left: 15px; font: 10px 'Arial', 'Helvetica'; color: #966; font-style: italic; }
+		
+		div.renderWithName input { padding: 0; margin: 0; }
+		div.renderWithName span.instructions { font: 10px 'Verdana', 'Arial', 'Helvetica'; color: #666; font-style: italic; text-transform: none;}
+		div.renderWithName span.forCheckbox { position: relative; top: -2px; font-style: normal; }
+
+
 	h2 { color: #eee; background-color: #353; margin: 0; padding: 2px 5px 2px 5px; font-size: 20px;}
 	
-	div#navbar { height: 55px; background-color: #333333; border-bottom: 1px solid #161616;}
+	div#navbar { height: 55px; background-color: #333333; border-bottom: 1px solid #161616; font: 12px verdana, arial, helvetica, sans-serif; }
 		div#navbar div.line { float: right; width: 1px; overflow: hidden; }
 		div#navbar div.links { float: right; margin-bottom: -2px; }
 		div#navbar div.links img {border-left: 1px solid #161616;}
 		div#navbar div.title {float: none; font-size: 32px; padding-top: 12px; height: 55px; _height: 43px; background: url(/images/gen/logo.jpg) no-repeat #161616; overflow: hidden; }
 		div#navbar div.title a { text-decoration: none; display: block; height: 55px; _height: 43px;}
 
-	div#subnav { height: 18px; background-color: #2d2d2d; }
+	div#subnav { height: 18px; background-color: #2d2d2d; font: 12px verdana, arial, helvetica, sans-serif;}
 		div#subnav div.left { float: none; height: 18px; background: url(/images/gen/subnav_background.jpg); overflow: hidden;}
 		div#subnav div.left a { color: #fff; font-weight: normal;}
 		div#subnav div.right { float: right; height: 18px; background: url(/images/gen/subnav_padding.jpg);}
@@ -71,7 +91,7 @@
 		div.topics { width: 220px; border: 5px solid #aba; font: 12px Verdana, Arial, Helvetica; }
 			div.topics div.name { background-color: #aba; font-size: 12px; font-weight: bold; padding: 0 10px 0 10px; color: #343; position: relative; top: -5px; height: 20px;}
 			div.topics div.description { padding: 5px 10px 5px 10px; font: 11px arial; font-style: italic; color: #666; }
-			div.topics div.paginator { font-size: 10px; font-family: arial; background-color: #eee; padding: 2px 0 2px 8px;}
+			div.topics div.paginator { font-size: 10px; font-family: arial; background-color: #eee; padding: 2px 0 2px 8px; border-top: 1px solid #ccc; margin-top: 4px; }
 			span.paginatorThin { margin: 0; padding: 0; }
 
 			div.topics div.item { border-top: 1px dotted #bbb; font-size: 10px; height: 20px; font-family: verdana; }
@@ -82,9 +102,9 @@
 					div.topics div.item a div.count { float: right; width: 20px; text-align: right; height: 14px; overflow: hidden; font-family: arial, helvetica; font-size: 10px; font-style: italic; font-weight: bold; color: #999; }
 
 		div.topic { float: left; margin-left: 25px; width: 735px;}
-			div.topic h1 { color: #333; margin: 0; padding: 0; }
+			div.topic h1 { color: #333; }
 			div.topic h2 { color: #666; margin: 0; font-size: 16px; padding: 15px; background-color: inherit; text-align: center; border: 1px solid #999; background-color: #ddd; }
-			div.topic h3 { color: #666; padding: 0; margin: 0; font-size: 10px; font-weight: normal; }
+			div.topic h3 { color: #666; padding: 0; margin: 0; font-size: 10px; font-weight: normal; font-family: verdana, arial, helvetica, sans-serif; }
 
 			span.paginator { margin: 0; padding: 0; }
 				span.paginator span { list-style-type:none; display: inline; padding: 0; margin: 0; }

@@ -14,6 +14,8 @@
 	 * 
 	 */
 	class Person extends PersonGen {
+		const PasswordMaxLength = 12;
+
 		/**
 		 * Default "to string" handler
 		 * Allows pages to _p()/echo()/print() this object, and to define the default
@@ -71,6 +73,15 @@
 			}
 		}
 		
+		/**
+		 * Returns whether or not the passed-in password is valid
+		 * @param $strPassword string
+		 * @return boolean
+		 */
+		public function IsPasswordValid($strPassword) {
+			$strPassword = trim(strtolower($strPassword));
+			return ($this->strPassword == $strPassword);
+		}
 
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...

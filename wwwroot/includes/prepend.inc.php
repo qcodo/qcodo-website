@@ -108,9 +108,52 @@
 			const NavDevelopmentDonate = 3;
 
 			// Login and Authorization/Authentication
-			public static $Login;
 
-			// TODO: Define any other custom global WebApplication functions (if any) here...
+			/**
+			 * @var Person
+			 */
+			public static $Person;
+
+			/**
+			 * This shouuld be called on the top of any page that requires authentication.
+			 * This checks to make sure a person is actually logged in on order to view the page.
+			 * This will redirect to the login page if the user is NOT logged in.
+			 * @param $intMinimumPersonTypeId
+			 * @return void
+			 */
+			public static function Authenticate($intMinimumPersonTypeId = null) {
+				return QApplication::$Person;
+			}
+
+			/**
+			 * Called within prepend.inc.php to hidrate the $Person object into QApplication
+			 * if the person_id is stored in session (e.g. if a Person is logged in)
+			 * @return void
+			 */
+			public static function InitializePerson() {
+				if (array_key_exists('intPersonId', $_SESSION))
+					QApplication::$Person = Person::Load($_SESSION['intPersonId']);
+			}
+
+			/**
+			 * Logs in a Person/User
+			 * @param Person $objPerson
+			 * @return void
+			 */
+			public static function LoginPerson(Person $objPerson) {
+				$_SESSION['intPersonId'] = $objPerson->Id;
+				QApplication::$Person = $objPerson;
+			}
+
+			/**
+			 * Logs out the Person (if currently logged in)
+			 * @return void
+			 */
+			public static function LogoutPerson() {
+				$_SESSION['intPersonId'] = null;
+				unset($_SESSION['intPersonId']);
+			}
+			
 		}
 
 
@@ -154,6 +197,7 @@
 		// Start Session Handler (if required)
 		/////////////////////////////
 		session_start();
+		QApplication::InitializePerson();
 
 
 		//////////////////////////////////////////////

@@ -78,7 +78,10 @@
 
 			// Other Stuff
 			$this->ctlWelcomeImage = new SubNavIdentityImage($this);
-			$this->ctlWelcomeImage->Text = 'Welcome Mike!';
+			if (QApplication::$Person)
+				$this->ctlWelcomeImage->Text = 'Welcome back, ' . QApplication::$Person->FirstName . '!';
+			else
+				$this->ctlWelcomeImage->Text = 'Welcome to Qcodo!';
 			$this->ctlWelcomeImage->Width = 249;
 
 			$this->ctlLoginOut = new QImageRollover($this);
