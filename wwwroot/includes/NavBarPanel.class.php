@@ -78,23 +78,35 @@
 
 			// Other Stuff
 			$this->ctlWelcomeImage = new SubNavIdentityImage($this);
-			if (QApplication::$Person)
-				$this->ctlWelcomeImage->Text = 'Welcome back, ' . QApplication::$Person->FirstName . '!';
-			else
-				$this->ctlWelcomeImage->Text = 'Welcome to Qcodo!';
 			$this->ctlWelcomeImage->Width = 249;
-
 			$this->ctlLoginOut = new QImageRollover($this);
-			$this->ctlLoginOut->ToolTip = 'Log Out';
-			$this->ctlLoginOut->LinkUrl = '/logout/';
-			$this->ctlLoginOut->ImageStandard = '/images/gen/logout.jpg';
-			$this->ctlLoginOut->ImageHover = '/images/gen/logout_hov.jpg';
-
 			$this->ctlRegisterProfile = new QImageRollover($this);
-			$this->ctlRegisterProfile->ToolTip = 'My Profile';
-			$this->ctlRegisterProfile->LinkUrl = '/profile/';
-			$this->ctlRegisterProfile->ImageStandard = '/images/gen/profile.jpg';
-			$this->ctlRegisterProfile->ImageHover = '/images/gen/profile_hov.jpg';
+
+			if (QApplication::$Person) {
+				$this->ctlWelcomeImage->Text = 'Welcome back, ' . QApplication::$Person->FirstName . '!';
+
+				$this->ctlLoginOut->ToolTip = 'Log Out';
+				$this->ctlLoginOut->LinkUrl = '/logout/';
+				$this->ctlLoginOut->ImageStandard = '/images/gen/logout.jpg';
+				$this->ctlLoginOut->ImageHover = '/images/gen/logout_hov.jpg';
+
+				$this->ctlRegisterProfile->ToolTip = 'My Profile';
+				$this->ctlRegisterProfile->LinkUrl = '/profile/';
+				$this->ctlRegisterProfile->ImageStandard = '/images/gen/profile.jpg';
+				$this->ctlRegisterProfile->ImageHover = '/images/gen/profile_hov.jpg';
+			} else {
+				$this->ctlWelcomeImage->Text = 'Welcome to Qcodo!';
+
+				$this->ctlLoginOut->ToolTip = 'Log In';
+				$this->ctlLoginOut->LinkUrl = '/login/';
+				$this->ctlLoginOut->ImageStandard = '/images/gen/login.jpg';
+				$this->ctlLoginOut->ImageHover = '/images/gen/login_hov.jpg';
+
+				$this->ctlRegisterProfile->ToolTip = 'Register';
+				$this->ctlRegisterProfile->LinkUrl = '/register/';
+				$this->ctlRegisterProfile->ImageStandard = '/images/gen/register.jpg';
+				$this->ctlRegisterProfile->ImageHover = '/images/gen/register_hov.jpg';
+			}
 		}
 	}
 ?>

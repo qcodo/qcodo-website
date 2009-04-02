@@ -128,11 +128,20 @@
 			/**
 			 * Called within prepend.inc.php to hidrate the $Person object into QApplication
 			 * if the person_id is stored in session (e.g. if a Person is logged in)
+			 * OR if a LoginTicket exists in the cookie
 			 * @return void
 			 */
 			public static function InitializePerson() {
 				if (array_key_exists('intPersonId', $_SESSION))
 					QApplication::$Person = Person::Load($_SESSION['intPersonId']);
+				else if ($objTicket = QApplication::GetLoginTicketFromCookie()) {
+					$objPerson = $objTicket->Person;
+					QApplication::LoginPerson($objPerson);
+
+					// Delete and Create New Ticket (to prevent ticket stealing)
+					$objTicket->Delete();
+					QApplication::SetLoginTicketToCookie($objPerson);
+				}
 			}
 
 			/**
@@ -150,10 +159,67 @@
 			 * @return void
 			 */
 			public static function LogoutPerson() {
+				// Log out the person
 				$_SESSION['intPersonId'] = null;
 				unset($_SESSION['intPersonId']);
+				QApplication::$Person = null;
+
+				// Clear any login cookies (if applicable)
+				QApplication::ClearLoginTicketFromCookie();
 			}
-			
+
+			/**
+			 * Create and store in the user's cookie a login ticket so that they
+			 * can stay logged in across browser sessions
+			 * @param $objPerson Person
+			 * @return void
+			 */
+			public static function SetLoginTicketToCookie(Person $objPerson) {
+				// Create a new ticket for this user
+				$objTicket = new LoginTicket();
+				$objTicket->Person = $objPerson;
+				$objTicket->Save();
+
+				$objCrypto = new QCryptography();
+				$strTicket = $objCrypto->Encrypt($objTicket->Id . '_' . $objPerson->Id);
+
+				setcookie('strTicket', $strTicket, time() + 60*60*24*365, '/', /* '.qcodo.com' */ null);
+			}
+
+			/**
+			 * Return a LoginTicket based on cookie information, if applicable
+			 * @return LoginTicket
+			 */
+			public static function GetLoginTicketFromCookie() {
+				if (array_key_exists('strTicket', $_COOKIE) && $_COOKIE['strTicket']) {
+					$objCrypto = new QCryptography();
+					$strTicket = $objCrypto->Decrypt($_COOKIE['strTicket']);
+
+					$strTicketArray = explode('_', $strTicket);
+					$intTicketId = $strTicketArray[0];
+					$intPersonId = $strTicketArray[1];
+
+					$objTicket = LoginTicket::Load($intTicketId);
+					if (($objTicket) && ($objTicket->PersonId == $intPersonId))
+						return $objTicket;
+				}
+
+				// If we're here, no valid login ticket existed in the cookie
+				return null;
+			}
+
+			/**
+			 * Clears any LoginTicket information from the cookie and the database, if applicable
+			 * @return void
+			 */
+			public static function ClearLoginTicketFromCookie() {
+				// First, Delete the Ticket Record from the DB (if applicable)
+				if ($objTicket = QApplication::GetLoginTicketFromCookie())
+					$objTicket->Delete();
+
+				// Next, Clear the Ticket from the Cookie, itself
+				setcookie('strTicket', '', time() - 60*60*24*365, '/', /* '.qcodo.com' */ null);
+			}
 		}
 
 

@@ -1,5 +1,6 @@
 <?php
 	require('../includes/prepend.inc.php');
+	QApplication::LogoutPerson();
 
 	class QcodoForm extends QcodoWebsiteForm {
 		protected $strPageTitle = 'Log In';
@@ -50,12 +51,18 @@
 			$objPerson = Person::LoadByUsername(trim(strtolower($this->txtUsername->Text)));
 			if ($objPerson && $objPerson->IsPasswordValid($this->txtPassword->Text)) {
 				QApplication::LoginPerson($objPerson);
+				
+				if ($this->chkRemember->Checked)
+					QApplication::SetLoginTicketToCookie($objPerson);
+
 				QApplication::Redirect('/');
 			}
 
 			// If we're here, either the username and/or password is not valid
 			$this->txtUsername->Warning = 'Invalid username or password';
 			$this->txtPassword->Text = null;
+			
+			// Call Form_Validate() to do that blinking thing
 			$this->Form_Validate();
 		}
 	}
