@@ -9,7 +9,12 @@
 		protected $lstSearch;
 		protected $txtSearch;
 		
-		protected $btnRespond;
+		protected $btnRespond1;
+		protected $btnRespond2;
+		protected $btnNotify1;
+		protected $btnNotify2;
+		protected $btnMarkAsRead1;
+		protected $btnMarkAsRead2;
 		
 		protected $objForum;
 		public $objTopic;
@@ -65,9 +70,25 @@
 			$this->dtrTopics->ItemsPerPage = 20;
 			if ($this->objTopic) $this->dtrTopics->PageNumber = Topic::GetPageNumber($this->objTopic, 20);
 			$this->dtrTopics->UseAjax = true;
+
+			$this->btnRespond1 = new RoundedLinkButton($this);
+			$this->btnRespond1->Text = 'Respond';
+			$this->btnRespond1->AddCssClass('roundedLinkGray');
+			$this->btnRespond2 = new RoundedLinkButton($this);
+			$this->btnRespond2->Text = 'Respond';
+			$this->btnRespond2->AddCssClass('roundedLinkGray');
 			
-			$this->btnRespond = new RoundedLinkButton($this);
-			$this->btnRespond->Text = 'Respond';
+			$this->btnNotify1 = new RoundedLinkButton($this);
+			$this->btnNotify1->Text = 'Email Notification';
+			$this->btnNotify2 = new RoundedLinkButton($this);
+			$this->btnNotify2->Text = 'Email Notification';
+			
+			$this->btnMarkAsRead1 = new RoundedLinkButton($this);
+			$this->btnMarkAsRead1->Text = 'Mark as Read';
+			$this->btnMarkAsRead1->AddCssClass('roundedLinkGray');
+			$this->btnMarkAsRead2 = new RoundedLinkButton($this);
+			$this->btnMarkAsRead2->Text = 'Mark as Read';
+			$this->btnMarkAsRead2->AddCssClass('roundedLinkGray');
 		}
 
 		public function dtrTopics_Bind() {

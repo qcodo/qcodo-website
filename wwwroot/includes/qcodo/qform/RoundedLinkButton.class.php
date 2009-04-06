@@ -30,7 +30,7 @@
 			if ($strStyle = $this->GetStyleAttributes())
 				$strStyle = 'style="' . $strStyle . '"';
 
-			$strToReturn = sprintf('<a href="%s" id="%s" %s%s><div class="a">&nbsp;</div><div class="b">&nbsp;</div><div class="c">&nbsp;</div><div class="d">&nbsp;</div><div class="e">&nbsp;</div><div class="f">%s</div><div class="e">&nbsp;</div><div class="d">&nbsp;</div><div class="c">&nbsp;</div><div class="b">&nbsp;</div><div class="a">&nbsp;</div></a>',
+			$strToReturn = sprintf('<a href="%s" id="%s" %s%s><div class="a">.</div><div class="b">.</div><div class="c">.</div><div class="d">.</div><div class="e">.</div><div class="f">%s</div><div class="e">.</div><div class="d">.</div><div class="c">.</div><div class="b">.</div><div class="a">.</div></a>',
 				$this->strLinkUrl,
 				$this->strControlId,
 				$strAttributes,

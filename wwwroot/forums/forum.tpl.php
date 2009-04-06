@@ -26,24 +26,11 @@
 
 	<div class="controlBar">
 		<div class="controls">
-			<?php $this->btnRespond->Render(); ?>
-			<a href="#" class="action" onclick="return false;">
-				<div class="a">&nbsp;</div><div class="b">&nbsp;</div><div class="c">&nbsp;</div><div class="d">&nbsp;</div><div class="e">&nbsp;</div>
-				<div class="f">Respond</div>
-				<div class="e">&nbsp;</div><div class="d">&nbsp;</div><div class="c">&nbsp;</div><div class="b">&nbsp;</div><div class="a">&nbsp;</div>
-			</a>
+			<?php $this->btnRespond1->Render(); ?>
 			<div class="spacer">&nbsp;</div>
-			<a href="#" class="action actionActive" onclick="return false;">
-				<div class="a">&nbsp;</div><div class="b">&nbsp;</div><div class="c">&nbsp;</div><div class="d">&nbsp;</div><div class="e">&nbsp;</div>
-				<div class="f">Email Notification</div>
-				<div class="e">&nbsp;</div><div class="d">&nbsp;</div><div class="c">&nbsp;</div><div class="b">&nbsp;</div><div class="a">&nbsp;</div>
-			</a>
+			<?php $this->btnNotify1->Render(); ?>
 			<div class="spacer">&nbsp;</div>
-			<a href="#" class="action" onclick="return false;">
-				<div class="a">&nbsp;</div><div class="b">&nbsp;</div><div class="c">&nbsp;</div><div class="d">&nbsp;</div><div class="e">&nbsp;</div>
-				<div class="f">Marked as Read</div>
-				<div class="e">&nbsp;</div><div class="d">&nbsp;</div><div class="c">&nbsp;</div><div class="b">&nbsp;</div><div class="a">&nbsp;</div>
-			</a>
+			<?php $this->btnMarkAsRead1->Render(); ?>
 		</div>
 		<div class="paginator"><?php $this->dtrMessages->Paginator->Render(); ?></div>
 	</div>
@@ -54,23 +41,11 @@
 
 	<div class="controlBar">
 		<div class="controls">
-			<a href="#" class="action" onclick="return false;">
-				<div class="a">&nbsp;</div><div class="b">&nbsp;</div><div class="c">&nbsp;</div><div class="d">&nbsp;</div><div class="e">&nbsp;</div>
-				<div class="f">Respond</div>
-				<div class="e">&nbsp;</div><div class="d">&nbsp;</div><div class="c">&nbsp;</div><div class="b">&nbsp;</div><div class="a">&nbsp;</div>
-			</a>
+			<?php $this->btnRespond2->Render(); ?>
 			<div class="spacer">&nbsp;</div>
-			<a href="#" class="action actionActive" onclick="return false;">
-				<div class="a">&nbsp;</div><div class="b">&nbsp;</div><div class="c">&nbsp;</div><div class="d">&nbsp;</div><div class="e">&nbsp;</div>
-				<div class="f">Email Notification</div>
-				<div class="e">&nbsp;</div><div class="d">&nbsp;</div><div class="c">&nbsp;</div><div class="b">&nbsp;</div><div class="a">&nbsp;</div>
-			</a>
+			<?php $this->btnNotify2->Render(); ?>
 			<div class="spacer">&nbsp;</div>
-			<a href="#" class="action" onclick="return false;">
-				<div class="a">&nbsp;</div><div class="b">&nbsp;</div><div class="c">&nbsp;</div><div class="d">&nbsp;</div><div class="e">&nbsp;</div>
-				<div class="f">Marked as Read</div>
-				<div class="e">&nbsp;</div><div class="d">&nbsp;</div><div class="c">&nbsp;</div><div class="b">&nbsp;</div><div class="a">&nbsp;</div>
-			</a>
+			<?php $this->btnMarkAsRead2->Render(); ?>
 		</div>
 		<div class="paginator"><?php $this->dtrMessages->PaginatorAlternate->Render(); ?></div>
 	</div>

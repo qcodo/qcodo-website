@@ -54,6 +54,27 @@
 		div#bottom div.hover { background-image: none; }
 		div#bottom div.hover div { font: 10px arial; color: #fff; display: block;}
 
+
+
+
+/* RoundedLinkButton */
+a.roundedLink { display: block; text-decoration: none;}
+a.roundedLink div {float: left; background-color: #335; color: #fff; font-weight: bold; border-color: #99c; border-style: solid; border-width: 0; font-size: 0;}
+a.roundedLink div.a { width: 1px; height: 7px; position: relative; top: 3px; border-width: 1px 0; }
+a.roundedLink div.b { width: 1px; height: 9px; position: relative; top: 2px; border-width: 1px 0; }
+a.roundedLink div.c { width: 1px; height: 11px;position: relative; top: 1px; border-width: 1px 0; }
+a.roundedLink div.d { width: 1px; height: 13px;position: relative; top: 1px;}
+a.roundedLink div.e { width: 1px; height: 13px;position: relative; top: 0px; border-width: 1px 0; border-color: #66a;}
+a.roundedLink div.f { height: 15px; padding: 0 2px; font-size: 10px; font-family: Verdana, Arial, Helvetica; }
+
+a.roundedLinkGray div { background-color: #d3d3d3; border-color: #e0e0e0; color: #9090a0; }
+a.roundedLinkGray div.e { border-color: #ddd; }
+a.roundedLink:hover div { background-color: #aba; border-color: #dfd; color: #335; }
+a.roundedLink:hover div.e { border-color: #cec; }
+
+
+
+
 /* FORUMS */
 	div.toolbar { background: url(/images/gen/bottom.jpg) repeat; font-size: 10px; color: #fff; height: 22px; padding-top: 6px;}
 	h2 div.right {float: right; font-size: 10px; font-weight: normal; padding-top: 4px;}
