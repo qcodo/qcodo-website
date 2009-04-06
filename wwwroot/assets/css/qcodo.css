@@ -60,12 +60,12 @@
 /* RoundedLinkButton */
 a.roundedLink { display: block; text-decoration: none;}
 a.roundedLink div {float: left; background-color: #335; color: #fff; font-weight: bold; border-color: #99c; border-style: solid; border-width: 0; font-size: 0;}
-a.roundedLink div.a { width: 1px; height: 7px; position: relative; top: 3px; border-width: 1px 0; }
+a.roundedLink div.a { width: 1px; height: 5px; position: relative; top: 4px; border-width: 1px 0; }
 a.roundedLink div.b { width: 1px; height: 9px; position: relative; top: 2px; border-width: 1px 0; }
 a.roundedLink div.c { width: 1px; height: 11px;position: relative; top: 1px; border-width: 1px 0; }
 a.roundedLink div.d { width: 1px; height: 13px;position: relative; top: 1px;}
 a.roundedLink div.e { width: 1px; height: 13px;position: relative; top: 0px; border-width: 1px 0; border-color: #66a;}
-a.roundedLink div.f { height: 15px; padding: 0 2px; font-size: 10px; font-family: Verdana, Arial, Helvetica; }
+a.roundedLink div.f { height: 15px; padding: 0 4px; font-size: 10px; font-family: Verdana, Arial, Helvetica; }
 
 a.roundedLinkGray div { background-color: #d3d3d3; border-color: #e0e0e0; color: #9090a0; }
 a.roundedLinkGray div.e { border-color: #ddd; }
@@ -151,21 +151,7 @@ a.roundedLink:hover div.e { border-color: #cec; }
 
 			div.topic div.controlBar { font: 10px arial, helvetica; margin-top: 15px; height: 15px; }
 			div.topic div.controlBar div.controls { float: left; width: 330px; }
-				div.topic div.controlBar div.controls a.action { display: block; text-decoration: none;}
-					div.topic div.controlBar div.controls a.action div {float: left; background-color: #d3d3d3; color: #9090a0; font-weight: bold; border-color: #e0e0e0; border-style: solid; border-width: 0;}
-					div.topic div.controlBar div.controls a.action div.a { width: 1px; height: 7px; position: relative; top: 3px; border-width: 1px 0; }
-					div.topic div.controlBar div.controls a.action div.b { width: 1px; height: 9px; position: relative; top: 2px; border-width: 1px 0; }
-					div.topic div.controlBar div.controls a.action div.c { width: 1px; height: 11px;position: relative; top: 1px; border-width: 1px 0; }
-					div.topic div.controlBar div.controls a.action div.d { width: 1px; height: 13px;position: relative; top: 1px;}
-					div.topic div.controlBar div.controls a.action div.e { width: 1px; height: 13px;position: relative; top: 0px; border-width: 1px 0; border-color: #ddd;}
-					div.topic div.controlBar div.controls a.action div.f { height: 15px; padding: 0 2px; font-size: 10px; font-family: Verdana, Arial, Helvetica; }
-	
-					div.topic div.controlBar div.controls a.actionActive div { background-color: #335; border-color: #99c; color: #fff; }
-					div.topic div.controlBar div.controls a.actionActive div.e { border-color: #66a; }
-					div.topic div.controlBar div.controls a.action:hover div { background-color: #aba; border-color: #dfd; color: #335; }
-					div.topic div.controlBar div.controls a.action:hover div.e { border-color: #cec; }
-					
-					div.topic div.controlBar div.controls div.spacer { float: left; margin-left: 8px; width: 0px; }				
+				div.topic div.controlBar div.controls div.spacer { float: left; margin-left: 8px; width: 0px; }				
 
 			div.topic div.controlBar div.paginator { float: right; margin-top: 1px; }
 

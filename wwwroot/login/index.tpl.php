@@ -20,8 +20,9 @@
 			<br/><br/>
 		</div>
 		<div class="sidebar">
-		Forgot My Password<br/><br/>
-		Register
+		<?php $this->btnRegister->Render(); ?>
+		<br/><br/>
+		<?php $this->btnForgot->Render(); ?>
 		</div>
 	</div>
 	
