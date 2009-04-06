@@ -58,7 +58,7 @@
 			$this->dtrTopics = new QDataRepeater($this, 'dtrTopics');
 			$this->dtrTopics->Template = 'dtrTopics.tpl.php';
 			$this->dtrTopics->SetDataBinder('dtrTopics_Bind');
-			$this->dtrTopics->Paginator = new PaginatorTextbox($this);
+			$this->dtrTopics->Paginator = new ForumTopicsPaginator($this);
 			
 			$this->dtrTopics->ItemsPerPage = 20;
 			if ($this->objTopic) $this->dtrTopics->PageNumber = Topic::GetPageNumber($this->objTopic, 20);

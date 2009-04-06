@@ -1,5 +1,5 @@
 <?php
-	class PaginatorTextbox extends QPaginatorBase {
+	class ForumTopicsPaginator extends QPaginatorBase {
 		// APPEARANCE
 		protected $strLabelForPrevious;
 		protected $strLabelForNext;
