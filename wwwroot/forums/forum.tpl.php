@@ -26,6 +26,7 @@
 
 	<div class="controlBar">
 		<div class="controls">
+			<?php $this->btnRespond->Render(); ?>
 			<a href="#" class="action" onclick="return false;">
 				<div class="a">&nbsp;</div><div class="b">&nbsp;</div><div class="c">&nbsp;</div><div class="d">&nbsp;</div><div class="e">&nbsp;</div>
 				<div class="f">Respond</div>

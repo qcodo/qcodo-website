@@ -9,6 +9,8 @@
 		protected $lstSearch;
 		protected $txtSearch;
 		
+		protected $btnRespond;
+		
 		protected $objForum;
 		public $objTopic;
 		protected $objFirstMessage;
@@ -63,6 +65,9 @@
 			$this->dtrTopics->ItemsPerPage = 20;
 			if ($this->objTopic) $this->dtrTopics->PageNumber = Topic::GetPageNumber($this->objTopic, 20);
 			$this->dtrTopics->UseAjax = true;
+			
+			$this->btnRespond = new RoundedLinkButton($this);
+			$this->btnRespond->Text = 'Respond';
 		}
 
 		public function dtrTopics_Bind() {
