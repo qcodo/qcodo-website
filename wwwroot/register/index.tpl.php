@@ -1,14 +1,17 @@
 <?php require(__INCLUDES__ . '/header.inc.php'); ?>
 
 	<div class="form">
-		<h1>Log In</h1>
+		<h1>Register</h1>
 		<div class="mainForm">
 			<p class="instructions">In order to post messages in the Forums, contribute to the Wiki, or upload new files and patches to the Downloads,
-			you must be a registered user of the <strong>Qcodo.com</strong> website.</p>
+			you must be a registered user of the <strong>Qcodo.com</strong> website.<br/>
+			<br/>
+			Please fill in the fields below to register.  Fields in <strong>BOLD</strong> are required.</p>
 
 			<br/>
 			<?php $this->txtUsername->RenderForForm(); ?>
 			<?php $this->txtPassword->RenderForForm(); ?>
+			<?php $this->txtConfirmPassword->RenderForForm(); ?>
 			
 			<div class="renderWithName"><div class="left">&nbsp;</div><div class="right">
 				<?php $this->chkRemember->Render(); ?>
@@ -16,13 +19,10 @@
 			</div></div>
 
 			<br/><br/>
-			<?php $this->btnLogin->RenderForForm(); ?>
+			<?php $this->btnRegister->RenderForForm(); ?>
 			<br/><br/>
 		</div>
 		<div class="sidebar">
-		<?php $this->btnRegister->Render(); ?>
-		<br/><br/>
-		<?php $this->btnForgot->Render(); ?>
 		</div>
 	</div>
 	

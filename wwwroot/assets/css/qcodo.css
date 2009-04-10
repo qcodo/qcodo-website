@@ -12,16 +12,16 @@
 		div.form div.mainForm { margin-left: 180px; float: left; width: 500px; border: 0 solid #ccc; padding: 0 16px 0 0; border-width: 0 4px 0 0;}
 		div.form div.sidebar { margin-left: 30px; float: left; }
 
-	div.renderWithName { padding: 4px 0 4px 0; overflow: auto; height: 100%; }
-		div.renderWithName div.left { float: left; width: 100px; margin-right: 25px; padding-top: 2px; }
-		div.renderWithName div.required { font-weight: bold; }
+	div.renderForForm { padding: 4px 0 4px 0; overflow: auto; height: 100%; }
+		div.renderForForm div.left { float: left; width: 100px; margin-right: 25px; padding-top: 2px; }
+		div.renderForForm div.required { font-weight: bold; }
 
-		div.renderWithName div.right { }
-		div.renderWithName div.right span.error { margin-left: 15px; font: 10px 'Arial', 'Helvetica'; color: #966; font-style: italic; }
+		div.renderForForm div.right { float: left; }
+		div.renderForForm div.right span.error { margin-left: 15px; font: 10px 'Arial', 'Helvetica'; color: #966; font-style: italic; }
 		
-		div.renderWithName input { padding: 0; margin: 0; }
-		div.renderWithName span.instructions { font: 10px 'Verdana', 'Arial', 'Helvetica'; color: #666; font-style: italic; text-transform: none;}
-		div.renderWithName span.forCheckbox { position: relative; top: -2px; font-style: normal; }
+		div.renderForForm input { padding: 0; margin: 0; }
+		div.renderForForm div.right span.instructions { font: 10px 'Arial', 'Helvetica'; color: #666; font-style: italic; text-transform: none;}
+		div.renderForForm span.forCheckbox { position: relative; top: -2px; font-style: normal; }
 
 
 	h2 { color: #eee; background-color: #353; margin: 0; padding: 2px 5px 2px 5px; font-size: 20px;}

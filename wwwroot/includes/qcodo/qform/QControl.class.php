@@ -18,7 +18,7 @@
 		//			<Instructions>		<Error> or <warning>
 		//
 		// REMEMBER: THIS IS JUST AN EXAMPLE!!!  Feel free to modify.
-		public function RenderWithName($blnDisplayOutput = true) {
+		public function RenderForForm($blnDisplayOutput = true) {
 			////////////////////
 			// Call RenderHelper
 			$this->RenderHelper(func_get_args(), __FUNCTION__);
@@ -31,7 +31,7 @@
 			$this->blnIsBlockElement = true;
 
 			// Render the Control's Dressing
-			$strToReturn = '<div class="renderWithName">';
+			$strToReturn = '<div class="renderForForm">';
 
 			// Render the Left side
 			$strLeftClass = "left";
@@ -40,12 +40,13 @@
 			if (!$this->blnEnabled)
 				$strLeftClass .= ' disabled';
 
+			$strToReturn .= sprintf('<div class="%s"><label for="%s">%s</label></div>' , $strLeftClass, $this->strControlId, $this->strName);
+				
 			if ($this->strInstructions)
 				$strInstructions = '<br/><span class="instructions">' . $this->strInstructions . '</span>';
 			else
 				$strInstructions = '';
 
-			$strToReturn .= sprintf('<div class="%s"><label for="%s">%s</label>%s</div>' , $strLeftClass, $this->strControlId, $this->strName, $strInstructions);
 
 			// Render the Right side
 			if ($this->strValidationError)
@@ -56,8 +57,8 @@
 				$strMessage = '';
 
 			try {
-				$strToReturn .= sprintf('<div class="right">%s%s%s%s</div>',
-					$this->strHtmlBefore, $this->GetControlHtml(), $this->strHtmlAfter, $strMessage);
+				$strToReturn .= sprintf('<div class="right">%s%s%s%s%s</div>',
+					$this->strHtmlBefore, $this->GetControlHtml(), $this->strHtmlAfter, $strMessage, $strInstructions);
 			} catch (QCallerException $objExc) {
 				$objExc->IncrementOffset();
 				throw $objExc;
