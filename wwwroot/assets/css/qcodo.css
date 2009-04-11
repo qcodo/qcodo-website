@@ -11,6 +11,7 @@
 		div.form h1 { margin-left: 180px; }
 		div.form div.mainForm { margin-left: 180px; float: left; width: 500px; border: 0 solid #ccc; padding: 0 16px 0 0; border-width: 0 4px 0 0;}
 		div.form div.sidebar { margin-left: 30px; float: left; }
+		div.form div.sidebar p.hint { font-size: 11px; color: #777; margin: 4px 0;}
 
 	div.renderForForm { padding: 4px 0 4px 0; overflow: auto; height: 100%; }
 		div.renderForForm div.left { float: left; width: 100px; margin-right: 25px; padding-top: 2px; }
@@ -67,8 +68,10 @@ a.roundedLink div.d { width: 1px; height: 13px;position: relative; top: 1px;}
 a.roundedLink div.e { width: 1px; height: 13px;position: relative; top: 0px; border-width: 1px 0; border-color: #66a;}
 a.roundedLink div.f { height: 15px; padding: 0 4px; font-size: 10px; font-family: Verdana, Arial, Helvetica; }
 
-a.roundedLinkGray div { background-color: #d3d3d3; border-color: #e0e0e0; color: #9090a0; }
+a.roundedLinkGray div { background-color: #d3d3d3; border-color: #e0e0e0; color: #666; }
 a.roundedLinkGray div.e { border-color: #ddd; }
+a.roundedLinkLight div { background-color: #d3d3d3; border-color: #e0e0e0; color: #9090a0; }
+a.roundedLinkLight div.e { border-color: #ddd; }
 a.roundedLink:hover div { background-color: #aba; border-color: #dfd; color: #335; }
 a.roundedLink:hover div.e { border-color: #cec; }
 

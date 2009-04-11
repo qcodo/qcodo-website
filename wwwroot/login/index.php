@@ -12,8 +12,8 @@
 		protected $btnLogin;
 		protected $chkRemember;
 
-		protected $btnRegister;
-		protected $btnForgot;
+		protected $lnkRegister;
+		protected $lnkForgot;
 
 		protected function Form_Create() {
 			parent::Form_Create();
@@ -39,13 +39,15 @@
 			$this->chkRemember = new QCheckBox($this);
 			$this->chkRemember->HtmlEntities = false;
 			
-			$this->btnRegister = new RoundedLinkButton($this);
-			$this->btnRegister->Text = 'Register';
-			$this->btnRegister->LinkUrl = '/register/';
-						
-			$this->btnForgot = new RoundedLinkButton($this);
-			$this->btnForgot->Text = 'Forgot My Password';
-			$this->btnForgot->LinkUrl = '/login/forgot.php';
+			$this->lnkRegister = new RoundedLinkButton($this);
+			$this->lnkRegister->Text = 'Register';
+			$this->lnkRegister->LinkUrl = '/register/';
+			$this->lnkRegister->AddCssClass('roundedLinkGray');
+			
+			$this->lnkForgot = new RoundedLinkButton($this);
+			$this->lnkForgot->Text = 'Forgot My Password';
+			$this->lnkForgot->LinkUrl = '/login/forgot.php';
+			$this->lnkForgot->AddCssClass('roundedLinkGray');
 			
 			// Add Actions
 			$this->txtUsername->AddAction(new QEnterKeyEvent(), new QFocusControlAction($this->txtPassword));

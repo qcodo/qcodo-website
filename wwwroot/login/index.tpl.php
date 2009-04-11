@@ -20,9 +20,11 @@
 			<br/><br/>
 		</div>
 		<div class="sidebar">
-		<?php $this->btnRegister->Render(); ?>
-		<br/><br/>
-		<?php $this->btnForgot->Render(); ?>
+			<p class="hint">Not yet a member?</p>
+			<?php $this->lnkRegister->Render(); ?>
+			<br/><br/>
+			<p class="hint">Trouble logging in?</p>
+			<?php $this->lnkForgot->Render(); ?>
 		</div>
 	</div>
 	
