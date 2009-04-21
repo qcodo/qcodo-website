@@ -30,7 +30,7 @@
 	 * property-read QLabel $ArticleLabel
 	 * property QDateTimePicker $PostDateControl
 	 * property-read QLabel $PostDateLabel
-	 * property QLabel $LastUpdatedDateControl
+	 * property QDateTimePicker $LastUpdatedDateControl
 	 * property-read QLabel $LastUpdatedDateLabel
 	 * property-read string $TitleVerb a verb indicating whether or not this is being edited or created
 	 * property-read boolean $EditMode a boolean indicating whether or not this is being edited or created
@@ -51,7 +51,7 @@
 		protected $txtByline;
 		protected $txtArticle;
 		protected $calPostDate;
-		protected $lblLastUpdatedDate;
+		protected $calLastUpdatedDate;
 
 		// Controls that allow the viewing of Article's individual data fields
 		protected $lblArticleSectionId;
@@ -60,6 +60,7 @@
 		protected $lblByline;
 		protected $lblArticle;
 		protected $lblPostDate;
+		protected $lblLastUpdatedDate;
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
 
@@ -339,19 +340,33 @@
 		protected $strPostDateDateTimeFormat;
 
 		/**
+		 * Create and setup QDateTimePicker calLastUpdatedDate
+		 * @param string $strControlId optional ControlId to use
+		 * @return QDateTimePicker
+		 */
+		public function calLastUpdatedDate_Create($strControlId = null) {
+			$this->calLastUpdatedDate = new QDateTimePicker($this->objParentObject, $strControlId);
+			$this->calLastUpdatedDate->Name = QApplication::Translate('Last Updated Date');
+			$this->calLastUpdatedDate->DateTime = $this->objArticle->LastUpdatedDate;
+			$this->calLastUpdatedDate->DateTimePickerType = QDateTimePickerType::DateTime;
+			return $this->calLastUpdatedDate;
+		}
+
+		/**
 		 * Create and setup QLabel lblLastUpdatedDate
 		 * @param string $strControlId optional ControlId to use
+		 * @param string $strDateTimeFormat optional DateTimeFormat to use
 		 * @return QLabel
 		 */
-		public function lblLastUpdatedDate_Create($strControlId = null) {
+		public function lblLastUpdatedDate_Create($strControlId = null, $strDateTimeFormat = null) {
 			$this->lblLastUpdatedDate = new QLabel($this->objParentObject, $strControlId);
 			$this->lblLastUpdatedDate->Name = QApplication::Translate('Last Updated Date');
-			if ($this->blnEditMode)
-				$this->lblLastUpdatedDate->Text = $this->objArticle->LastUpdatedDate;
-			else
-				$this->lblLastUpdatedDate->Text = 'N/A';
+			$this->strLastUpdatedDateDateTimeFormat = $strDateTimeFormat;
+			$this->lblLastUpdatedDate->Text = sprintf($this->objArticle->LastUpdatedDate) ? $this->objArticle->__toString($this->strLastUpdatedDateDateTimeFormat) : null;
 			return $this->lblLastUpdatedDate;
 		}
+
+		protected $strLastUpdatedDateDateTimeFormat;
 
 
 
@@ -395,7 +410,8 @@
 			if ($this->calPostDate) $this->calPostDate->DateTime = $this->objArticle->PostDate;
 			if ($this->lblPostDate) $this->lblPostDate->Text = sprintf($this->objArticle->PostDate) ? $this->objArticle->__toString($this->strPostDateDateTimeFormat) : null;
 
-			if ($this->lblLastUpdatedDate) if ($this->blnEditMode) $this->lblLastUpdatedDate->Text = $this->objArticle->LastUpdatedDate;
+			if ($this->calLastUpdatedDate) $this->calLastUpdatedDate->DateTime = $this->objArticle->LastUpdatedDate;
+			if ($this->lblLastUpdatedDate) $this->lblLastUpdatedDate->Text = sprintf($this->objArticle->LastUpdatedDate) ? $this->objArticle->__toString($this->strLastUpdatedDateDateTimeFormat) : null;
 
 		}
 
@@ -426,6 +442,7 @@
 				if ($this->txtByline) $this->objArticle->Byline = $this->txtByline->Text;
 				if ($this->txtArticle) $this->objArticle->Article = $this->txtArticle->Text;
 				if ($this->calPostDate) $this->objArticle->PostDate = $this->calPostDate->DateTime;
+				if ($this->calLastUpdatedDate) $this->objArticle->LastUpdatedDate = $this->calLastUpdatedDate->DateTime;
 
 				// Update any UniqueReverseReferences (if any) for controls that have been created for it
 
@@ -511,8 +528,8 @@
 					if (!$this->lblPostDate) return $this->lblPostDate_Create();
 					return $this->lblPostDate;
 				case 'LastUpdatedDateControl':
-					if (!$this->lblLastUpdatedDate) return $this->lblLastUpdatedDate_Create();
-					return $this->lblLastUpdatedDate;
+					if (!$this->calLastUpdatedDate) return $this->calLastUpdatedDate_Create();
+					return $this->calLastUpdatedDate;
 				case 'LastUpdatedDateLabel':
 					if (!$this->lblLastUpdatedDate) return $this->lblLastUpdatedDate_Create();
 					return $this->lblLastUpdatedDate;
@@ -553,7 +570,7 @@
 					case 'PostDateControl':
 						return ($this->calPostDate = QType::Cast($mixValue, 'QControl'));
 					case 'LastUpdatedDateControl':
-						return ($this->lblLastUpdatedDate = QType::Cast($mixValue, 'QControl'));
+						return ($this->calLastUpdatedDate = QType::Cast($mixValue, 'QControl'));
 					default:
 						return parent::__set($strName, $mixValue);
 				}

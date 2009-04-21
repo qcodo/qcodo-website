@@ -21,6 +21,9 @@
 	 * @property string $Subject the value for strSubject 
 	 * @property string $Body the value for strBody 
 	 * @property string $Html the value for strHtml 
+	 * @property boolean $HighPriorityFlag the value for blnHighPriorityFlag 
+	 * @property boolean $ErrorFlag the value for blnErrorFlag 
+	 * @property string $ErrorMessage the value for strErrorMessage 
 	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
 	class EmailQueueGen extends QBaseClass {
@@ -77,6 +80,31 @@
 		 */
 		protected $strHtml;
 		const HtmlDefault = null;
+
+
+		/**
+		 * Protected member variable that maps to the database column email_queue.high_priority_flag
+		 * @var boolean blnHighPriorityFlag
+		 */
+		protected $blnHighPriorityFlag;
+		const HighPriorityFlagDefault = null;
+
+
+		/**
+		 * Protected member variable that maps to the database column email_queue.error_flag
+		 * @var boolean blnErrorFlag
+		 */
+		protected $blnErrorFlag;
+		const ErrorFlagDefault = null;
+
+
+		/**
+		 * Protected member variable that maps to the database column email_queue.error_message
+		 * @var string strErrorMessage
+		 */
+		protected $strErrorMessage;
+		const ErrorMessageMaxLength = 255;
+		const ErrorMessageDefault = null;
 
 
 		/**
@@ -370,6 +398,9 @@
 			$objBuilder->AddSelectItem($strTableName, 'subject', $strAliasPrefix . 'subject');
 			$objBuilder->AddSelectItem($strTableName, 'body', $strAliasPrefix . 'body');
 			$objBuilder->AddSelectItem($strTableName, 'html', $strAliasPrefix . 'html');
+			$objBuilder->AddSelectItem($strTableName, 'high_priority_flag', $strAliasPrefix . 'high_priority_flag');
+			$objBuilder->AddSelectItem($strTableName, 'error_flag', $strAliasPrefix . 'error_flag');
+			$objBuilder->AddSelectItem($strTableName, 'error_message', $strAliasPrefix . 'error_message');
 		}
 
 
@@ -413,6 +444,12 @@
 			$objToReturn->strBody = $objDbRow->GetColumn($strAliasName, 'Blob');
 			$strAliasName = array_key_exists($strAliasPrefix . 'html', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'html'] : $strAliasPrefix . 'html';
 			$objToReturn->strHtml = $objDbRow->GetColumn($strAliasName, 'Blob');
+			$strAliasName = array_key_exists($strAliasPrefix . 'high_priority_flag', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'high_priority_flag'] : $strAliasPrefix . 'high_priority_flag';
+			$objToReturn->blnHighPriorityFlag = $objDbRow->GetColumn($strAliasName, 'Bit');
+			$strAliasName = array_key_exists($strAliasPrefix . 'error_flag', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'error_flag'] : $strAliasPrefix . 'error_flag';
+			$objToReturn->blnErrorFlag = $objDbRow->GetColumn($strAliasName, 'Bit');
+			$strAliasName = array_key_exists($strAliasPrefix . 'error_message', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'error_message'] : $strAliasPrefix . 'error_message';
+			$objToReturn->strErrorMessage = $objDbRow->GetColumn($strAliasName, 'VarChar');
 
 			// Instantiate Virtual Attributes
 			foreach ($objDbRow->GetColumnNameArray() as $strColumnName => $mixValue) {
@@ -485,6 +522,70 @@
 				QQ::Equal(QQN::EmailQueue()->Id, $intId)
 			);
 		}
+			
+		/**
+		 * Load an array of EmailQueue objects,
+		 * by HighPriorityFlag Index(es)
+		 * @param boolean $blnHighPriorityFlag
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @return EmailQueue[]
+		*/
+		public static function LoadArrayByHighPriorityFlag($blnHighPriorityFlag, $objOptionalClauses = null) {
+			// Call EmailQueue::QueryArray to perform the LoadArrayByHighPriorityFlag query
+			try {
+				return EmailQueue::QueryArray(
+					QQ::Equal(QQN::EmailQueue()->HighPriorityFlag, $blnHighPriorityFlag),
+					$objOptionalClauses);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+		}
+
+		/**
+		 * Count EmailQueues
+		 * by HighPriorityFlag Index(es)
+		 * @param boolean $blnHighPriorityFlag
+		 * @return int
+		*/
+		public static function CountByHighPriorityFlag($blnHighPriorityFlag) {
+			// Call EmailQueue::QueryCount to perform the CountByHighPriorityFlag query
+			return EmailQueue::QueryCount(
+				QQ::Equal(QQN::EmailQueue()->HighPriorityFlag, $blnHighPriorityFlag)
+			);
+		}
+			
+		/**
+		 * Load an array of EmailQueue objects,
+		 * by ErrorFlag Index(es)
+		 * @param boolean $blnErrorFlag
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @return EmailQueue[]
+		*/
+		public static function LoadArrayByErrorFlag($blnErrorFlag, $objOptionalClauses = null) {
+			// Call EmailQueue::QueryArray to perform the LoadArrayByErrorFlag query
+			try {
+				return EmailQueue::QueryArray(
+					QQ::Equal(QQN::EmailQueue()->ErrorFlag, $blnErrorFlag),
+					$objOptionalClauses);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+		}
+
+		/**
+		 * Count EmailQueues
+		 * by ErrorFlag Index(es)
+		 * @param boolean $blnErrorFlag
+		 * @return int
+		*/
+		public static function CountByErrorFlag($blnErrorFlag) {
+			// Call EmailQueue::QueryCount to perform the CountByErrorFlag query
+			return EmailQueue::QueryCount(
+				QQ::Equal(QQN::EmailQueue()->ErrorFlag, $blnErrorFlag)
+			);
+		}
 
 
 
@@ -520,13 +621,19 @@
 							`from_address`,
 							`subject`,
 							`body`,
-							`html`
+							`html`,
+							`high_priority_flag`,
+							`error_flag`,
+							`error_message`
 						) VALUES (
 							' . $objDatabase->SqlVariable($this->strToAddress) . ',
 							' . $objDatabase->SqlVariable($this->strFromAddress) . ',
 							' . $objDatabase->SqlVariable($this->strSubject) . ',
 							' . $objDatabase->SqlVariable($this->strBody) . ',
-							' . $objDatabase->SqlVariable($this->strHtml) . '
+							' . $objDatabase->SqlVariable($this->strHtml) . ',
+							' . $objDatabase->SqlVariable($this->blnHighPriorityFlag) . ',
+							' . $objDatabase->SqlVariable($this->blnErrorFlag) . ',
+							' . $objDatabase->SqlVariable($this->strErrorMessage) . '
 						)
 					');
 
@@ -546,7 +653,10 @@
 							`from_address` = ' . $objDatabase->SqlVariable($this->strFromAddress) . ',
 							`subject` = ' . $objDatabase->SqlVariable($this->strSubject) . ',
 							`body` = ' . $objDatabase->SqlVariable($this->strBody) . ',
-							`html` = ' . $objDatabase->SqlVariable($this->strHtml) . '
+							`html` = ' . $objDatabase->SqlVariable($this->strHtml) . ',
+							`high_priority_flag` = ' . $objDatabase->SqlVariable($this->blnHighPriorityFlag) . ',
+							`error_flag` = ' . $objDatabase->SqlVariable($this->blnErrorFlag) . ',
+							`error_message` = ' . $objDatabase->SqlVariable($this->strErrorMessage) . '
 						WHERE
 							`id` = ' . $objDatabase->SqlVariable($this->intId) . '
 					');
@@ -630,6 +740,9 @@
 			$this->strSubject = $objReloaded->strSubject;
 			$this->strBody = $objReloaded->strBody;
 			$this->strHtml = $objReloaded->strHtml;
+			$this->blnHighPriorityFlag = $objReloaded->blnHighPriorityFlag;
+			$this->blnErrorFlag = $objReloaded->blnErrorFlag;
+			$this->strErrorMessage = $objReloaded->strErrorMessage;
 		}
 
 
@@ -691,6 +804,27 @@
 					 * @return string
 					 */
 					return $this->strHtml;
+
+				case 'HighPriorityFlag':
+					/**
+					 * Gets the value for blnHighPriorityFlag 
+					 * @return boolean
+					 */
+					return $this->blnHighPriorityFlag;
+
+				case 'ErrorFlag':
+					/**
+					 * Gets the value for blnErrorFlag 
+					 * @return boolean
+					 */
+					return $this->blnErrorFlag;
+
+				case 'ErrorMessage':
+					/**
+					 * Gets the value for strErrorMessage 
+					 * @return string
+					 */
+					return $this->strErrorMessage;
 
 
 				///////////////////
@@ -794,6 +928,45 @@
 						throw $objExc;
 					}
 
+				case 'HighPriorityFlag':
+					/**
+					 * Sets the value for blnHighPriorityFlag 
+					 * @param boolean $mixValue
+					 * @return boolean
+					 */
+					try {
+						return ($this->blnHighPriorityFlag = QType::Cast($mixValue, QType::Boolean));
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
+				case 'ErrorFlag':
+					/**
+					 * Sets the value for blnErrorFlag 
+					 * @param boolean $mixValue
+					 * @return boolean
+					 */
+					try {
+						return ($this->blnErrorFlag = QType::Cast($mixValue, QType::Boolean));
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
+				case 'ErrorMessage':
+					/**
+					 * Sets the value for strErrorMessage 
+					 * @param string $mixValue
+					 * @return string
+					 */
+					try {
+						return ($this->strErrorMessage = QType::Cast($mixValue, QType::String));
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
 
 				///////////////////
 				// Member Objects
@@ -841,6 +1014,9 @@
 			$strToReturn .= '<element name="Subject" type="xsd:string"/>';
 			$strToReturn .= '<element name="Body" type="xsd:string"/>';
 			$strToReturn .= '<element name="Html" type="xsd:string"/>';
+			$strToReturn .= '<element name="HighPriorityFlag" type="xsd:boolean"/>';
+			$strToReturn .= '<element name="ErrorFlag" type="xsd:boolean"/>';
+			$strToReturn .= '<element name="ErrorMessage" type="xsd:string"/>';
 			$strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
 			$strToReturn .= '</sequence></complexType>';
 			return $strToReturn;
@@ -875,6 +1051,12 @@
 				$objToReturn->strBody = $objSoapObject->Body;
 			if (property_exists($objSoapObject, 'Html'))
 				$objToReturn->strHtml = $objSoapObject->Html;
+			if (property_exists($objSoapObject, 'HighPriorityFlag'))
+				$objToReturn->blnHighPriorityFlag = $objSoapObject->HighPriorityFlag;
+			if (property_exists($objSoapObject, 'ErrorFlag'))
+				$objToReturn->blnErrorFlag = $objSoapObject->ErrorFlag;
+			if (property_exists($objSoapObject, 'ErrorMessage'))
+				$objToReturn->strErrorMessage = $objSoapObject->ErrorMessage;
 			if (property_exists($objSoapObject, '__blnRestored'))
 				$objToReturn->__blnRestored = $objSoapObject->__blnRestored;
 			return $objToReturn;
@@ -925,6 +1107,12 @@
 					return new QQNode('body', 'Body', 'string', $this);
 				case 'Html':
 					return new QQNode('html', 'Html', 'string', $this);
+				case 'HighPriorityFlag':
+					return new QQNode('high_priority_flag', 'HighPriorityFlag', 'boolean', $this);
+				case 'ErrorFlag':
+					return new QQNode('error_flag', 'ErrorFlag', 'boolean', $this);
+				case 'ErrorMessage':
+					return new QQNode('error_message', 'ErrorMessage', 'string', $this);
 
 				case '_PrimaryKeyNode':
 					return new QQNode('id', 'Id', 'integer', $this);
@@ -957,6 +1145,12 @@
 					return new QQNode('body', 'Body', 'string', $this);
 				case 'Html':
 					return new QQNode('html', 'Html', 'string', $this);
+				case 'HighPriorityFlag':
+					return new QQNode('high_priority_flag', 'HighPriorityFlag', 'boolean', $this);
+				case 'ErrorFlag':
+					return new QQNode('error_flag', 'ErrorFlag', 'boolean', $this);
+				case 'ErrorMessage':
+					return new QQNode('error_message', 'ErrorMessage', 'string', $this);
 
 				case '_PrimaryKeyNode':
 					return new QQNode('id', 'Id', 'integer', $this);

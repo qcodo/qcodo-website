@@ -648,6 +648,38 @@
 			
 		/**
 		 * Load an array of Download objects,
+		 * by ParentDownloadId Index(es)
+		 * @param integer $intParentDownloadId
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @return Download[]
+		*/
+		public static function LoadArrayByParentDownloadId($intParentDownloadId, $objOptionalClauses = null) {
+			// Call Download::QueryArray to perform the LoadArrayByParentDownloadId query
+			try {
+				return Download::QueryArray(
+					QQ::Equal(QQN::Download()->ParentDownloadId, $intParentDownloadId),
+					$objOptionalClauses);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+		}
+
+		/**
+		 * Count Downloads
+		 * by ParentDownloadId Index(es)
+		 * @param integer $intParentDownloadId
+		 * @return int
+		*/
+		public static function CountByParentDownloadId($intParentDownloadId) {
+			// Call Download::QueryCount to perform the CountByParentDownloadId query
+			return Download::QueryCount(
+				QQ::Equal(QQN::Download()->ParentDownloadId, $intParentDownloadId)
+			);
+		}
+			
+		/**
+		 * Load an array of Download objects,
 		 * by DownloadCategoryId Index(es)
 		 * @param integer $intDownloadCategoryId
 		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
@@ -707,38 +739,6 @@
 			// Call Download::QueryCount to perform the CountByPersonId query
 			return Download::QueryCount(
 				QQ::Equal(QQN::Download()->PersonId, $intPersonId)
-			);
-		}
-			
-		/**
-		 * Load an array of Download objects,
-		 * by ParentDownloadId Index(es)
-		 * @param integer $intParentDownloadId
-		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
-		 * @return Download[]
-		*/
-		public static function LoadArrayByParentDownloadId($intParentDownloadId, $objOptionalClauses = null) {
-			// Call Download::QueryArray to perform the LoadArrayByParentDownloadId query
-			try {
-				return Download::QueryArray(
-					QQ::Equal(QQN::Download()->ParentDownloadId, $intParentDownloadId),
-					$objOptionalClauses);
-			} catch (QCallerException $objExc) {
-				$objExc->IncrementOffset();
-				throw $objExc;
-			}
-		}
-
-		/**
-		 * Count Downloads
-		 * by ParentDownloadId Index(es)
-		 * @param integer $intParentDownloadId
-		 * @return int
-		*/
-		public static function CountByParentDownloadId($intParentDownloadId) {
-			// Call Download::QueryCount to perform the CountByParentDownloadId query
-			return Download::QueryCount(
-				QQ::Equal(QQN::Download()->ParentDownloadId, $intParentDownloadId)
 			);
 		}
 

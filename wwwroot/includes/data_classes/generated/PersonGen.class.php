@@ -17,11 +17,12 @@
 	 * @subpackage GeneratedDataObjects
 	 * @property-read integer $Id the value for intId (Read-Only PK)
 	 * @property integer $PersonTypeId the value for intPersonTypeId (Not Null)
-	 * @property string $Username the value for strUsername (Unique)
+	 * @property string $Username the value for strUsername (Not Null)
 	 * @property string $Password the value for strPassword 
 	 * @property string $FirstName the value for strFirstName (Not Null)
 	 * @property string $LastName the value for strLastName (Not Null)
 	 * @property string $Email the value for strEmail (Unique)
+	 * @property boolean $PasswordResetFlag the value for blnPasswordResetFlag 
 	 * @property boolean $DisplayRealNameFlag the value for blnDisplayRealNameFlag 
 	 * @property boolean $DisplayEmailFlag the value for blnDisplayEmailFlag 
 	 * @property boolean $OptInFlag the value for blnOptInFlag 
@@ -83,7 +84,7 @@
 		 * @var string strPassword
 		 */
 		protected $strPassword;
-		const PasswordMaxLength = 20;
+		const PasswordMaxLength = 100;
 		const PasswordDefault = null;
 
 
@@ -112,6 +113,14 @@
 		protected $strEmail;
 		const EmailMaxLength = 150;
 		const EmailDefault = null;
+
+
+		/**
+		 * Protected member variable that maps to the database column person.password_reset_flag
+		 * @var boolean blnPasswordResetFlag
+		 */
+		protected $blnPasswordResetFlag;
+		const PasswordResetFlagDefault = null;
 
 
 		/**
@@ -594,6 +603,7 @@
 			$objBuilder->AddSelectItem($strTableName, 'first_name', $strAliasPrefix . 'first_name');
 			$objBuilder->AddSelectItem($strTableName, 'last_name', $strAliasPrefix . 'last_name');
 			$objBuilder->AddSelectItem($strTableName, 'email', $strAliasPrefix . 'email');
+			$objBuilder->AddSelectItem($strTableName, 'password_reset_flag', $strAliasPrefix . 'password_reset_flag');
 			$objBuilder->AddSelectItem($strTableName, 'display_real_name_flag', $strAliasPrefix . 'display_real_name_flag');
 			$objBuilder->AddSelectItem($strTableName, 'display_email_flag', $strAliasPrefix . 'display_email_flag');
 			$objBuilder->AddSelectItem($strTableName, 'opt_in_flag', $strAliasPrefix . 'opt_in_flag');
@@ -763,6 +773,8 @@
 			$objToReturn->strLastName = $objDbRow->GetColumn($strAliasName, 'VarChar');
 			$strAliasName = array_key_exists($strAliasPrefix . 'email', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'email'] : $strAliasPrefix . 'email';
 			$objToReturn->strEmail = $objDbRow->GetColumn($strAliasName, 'VarChar');
+			$strAliasName = array_key_exists($strAliasPrefix . 'password_reset_flag', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'password_reset_flag'] : $strAliasPrefix . 'password_reset_flag';
+			$objToReturn->blnPasswordResetFlag = $objDbRow->GetColumn($strAliasName, 'Bit');
 			$strAliasName = array_key_exists($strAliasPrefix . 'display_real_name_flag', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'display_real_name_flag'] : $strAliasPrefix . 'display_real_name_flag';
 			$objToReturn->blnDisplayRealNameFlag = $objDbRow->GetColumn($strAliasName, 'Bit');
 			$strAliasName = array_key_exists($strAliasPrefix . 'display_email_flag', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'display_email_flag'] : $strAliasPrefix . 'display_email_flag';
@@ -941,18 +953,6 @@
 		}
 			
 		/**
-		 * Load a single Person object,
-		 * by Username Index(es)
-		 * @param string $strUsername
-		 * @return Person
-		*/
-		public static function LoadByUsername($strUsername) {
-			return Person::QuerySingle(
-				QQ::Equal(QQN::Person()->Username, $strUsername)
-			);
-		}
-			
-		/**
 		 * Load an array of Person objects,
 		 * by PersonTypeId Index(es)
 		 * @param integer $intPersonTypeId
@@ -981,6 +981,38 @@
 			// Call Person::QueryCount to perform the CountByPersonTypeId query
 			return Person::QueryCount(
 				QQ::Equal(QQN::Person()->PersonTypeId, $intPersonTypeId)
+			);
+		}
+			
+		/**
+		 * Load an array of Person objects,
+		 * by Username Index(es)
+		 * @param string $strUsername
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @return Person[]
+		*/
+		public static function LoadArrayByUsername($strUsername, $objOptionalClauses = null) {
+			// Call Person::QueryArray to perform the LoadArrayByUsername query
+			try {
+				return Person::QueryArray(
+					QQ::Equal(QQN::Person()->Username, $strUsername),
+					$objOptionalClauses);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+		}
+
+		/**
+		 * Count People
+		 * by Username Index(es)
+		 * @param string $strUsername
+		 * @return int
+		*/
+		public static function CountByUsername($strUsername) {
+			// Call Person::QueryCount to perform the CountByUsername query
+			return Person::QueryCount(
+				QQ::Equal(QQN::Person()->Username, $strUsername)
 			);
 		}
 			
@@ -1145,6 +1177,7 @@
 							`first_name`,
 							`last_name`,
 							`email`,
+							`password_reset_flag`,
 							`display_real_name_flag`,
 							`display_email_flag`,
 							`opt_in_flag`,
@@ -1160,6 +1193,7 @@
 							' . $objDatabase->SqlVariable($this->strFirstName) . ',
 							' . $objDatabase->SqlVariable($this->strLastName) . ',
 							' . $objDatabase->SqlVariable($this->strEmail) . ',
+							' . $objDatabase->SqlVariable($this->blnPasswordResetFlag) . ',
 							' . $objDatabase->SqlVariable($this->blnDisplayRealNameFlag) . ',
 							' . $objDatabase->SqlVariable($this->blnDisplayEmailFlag) . ',
 							' . $objDatabase->SqlVariable($this->blnOptInFlag) . ',
@@ -1189,6 +1223,7 @@
 							`first_name` = ' . $objDatabase->SqlVariable($this->strFirstName) . ',
 							`last_name` = ' . $objDatabase->SqlVariable($this->strLastName) . ',
 							`email` = ' . $objDatabase->SqlVariable($this->strEmail) . ',
+							`password_reset_flag` = ' . $objDatabase->SqlVariable($this->blnPasswordResetFlag) . ',
 							`display_real_name_flag` = ' . $objDatabase->SqlVariable($this->blnDisplayRealNameFlag) . ',
 							`display_email_flag` = ' . $objDatabase->SqlVariable($this->blnDisplayEmailFlag) . ',
 							`opt_in_flag` = ' . $objDatabase->SqlVariable($this->blnOptInFlag) . ',
@@ -1281,6 +1316,7 @@
 			$this->strFirstName = $objReloaded->strFirstName;
 			$this->strLastName = $objReloaded->strLastName;
 			$this->strEmail = $objReloaded->strEmail;
+			$this->blnPasswordResetFlag = $objReloaded->blnPasswordResetFlag;
 			$this->blnDisplayRealNameFlag = $objReloaded->blnDisplayRealNameFlag;
 			$this->blnDisplayEmailFlag = $objReloaded->blnDisplayEmailFlag;
 			$this->blnOptInFlag = $objReloaded->blnOptInFlag;
@@ -1325,7 +1361,7 @@
 
 				case 'Username':
 					/**
-					 * Gets the value for strUsername (Unique)
+					 * Gets the value for strUsername (Not Null)
 					 * @return string
 					 */
 					return $this->strUsername;
@@ -1357,6 +1393,13 @@
 					 * @return string
 					 */
 					return $this->strEmail;
+
+				case 'PasswordResetFlag':
+					/**
+					 * Gets the value for blnPasswordResetFlag 
+					 * @return boolean
+					 */
+					return $this->blnPasswordResetFlag;
 
 				case 'DisplayRealNameFlag':
 					/**
@@ -1592,7 +1635,7 @@
 
 				case 'Username':
 					/**
-					 * Sets the value for strUsername (Unique)
+					 * Sets the value for strUsername (Not Null)
 					 * @param string $mixValue
 					 * @return string
 					 */
@@ -1650,6 +1693,19 @@
 					 */
 					try {
 						return ($this->strEmail = QType::Cast($mixValue, QType::String));
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
+				case 'PasswordResetFlag':
+					/**
+					 * Sets the value for blnPasswordResetFlag 
+					 * @param boolean $mixValue
+					 * @return boolean
+					 */
+					try {
+						return ($this->blnPasswordResetFlag = QType::Cast($mixValue, QType::Boolean));
 					} catch (QCallerException $objExc) {
 						$objExc->IncrementOffset();
 						throw $objExc;
@@ -2806,6 +2862,7 @@
 			$strToReturn .= '<element name="FirstName" type="xsd:string"/>';
 			$strToReturn .= '<element name="LastName" type="xsd:string"/>';
 			$strToReturn .= '<element name="Email" type="xsd:string"/>';
+			$strToReturn .= '<element name="PasswordResetFlag" type="xsd:boolean"/>';
 			$strToReturn .= '<element name="DisplayRealNameFlag" type="xsd:boolean"/>';
 			$strToReturn .= '<element name="DisplayEmailFlag" type="xsd:boolean"/>';
 			$strToReturn .= '<element name="OptInFlag" type="xsd:boolean"/>';
@@ -2851,6 +2908,8 @@
 				$objToReturn->strLastName = $objSoapObject->LastName;
 			if (property_exists($objSoapObject, 'Email'))
 				$objToReturn->strEmail = $objSoapObject->Email;
+			if (property_exists($objSoapObject, 'PasswordResetFlag'))
+				$objToReturn->blnPasswordResetFlag = $objSoapObject->PasswordResetFlag;
 			if (property_exists($objSoapObject, 'DisplayRealNameFlag'))
 				$objToReturn->blnDisplayRealNameFlag = $objSoapObject->DisplayRealNameFlag;
 			if (property_exists($objSoapObject, 'DisplayEmailFlag'))
@@ -3007,6 +3066,8 @@
 					return new QQNode('last_name', 'LastName', 'string', $this);
 				case 'Email':
 					return new QQNode('email', 'Email', 'string', $this);
+				case 'PasswordResetFlag':
+					return new QQNode('password_reset_flag', 'PasswordResetFlag', 'boolean', $this);
 				case 'DisplayRealNameFlag':
 					return new QQNode('display_real_name_flag', 'DisplayRealNameFlag', 'boolean', $this);
 				case 'DisplayEmailFlag':
@@ -3073,6 +3134,8 @@
 					return new QQNode('last_name', 'LastName', 'string', $this);
 				case 'Email':
 					return new QQNode('email', 'Email', 'string', $this);
+				case 'PasswordResetFlag':
+					return new QQNode('password_reset_flag', 'PasswordResetFlag', 'boolean', $this);
 				case 'DisplayRealNameFlag':
 					return new QQNode('display_real_name_flag', 'DisplayRealNameFlag', 'boolean', $this);
 				case 'DisplayEmailFlag':

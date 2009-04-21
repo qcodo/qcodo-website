@@ -569,38 +569,6 @@
 			
 		/**
 		 * Load an array of Message objects,
-		 * by PersonId Index(es)
-		 * @param integer $intPersonId
-		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
-		 * @return Message[]
-		*/
-		public static function LoadArrayByPersonId($intPersonId, $objOptionalClauses = null) {
-			// Call Message::QueryArray to perform the LoadArrayByPersonId query
-			try {
-				return Message::QueryArray(
-					QQ::Equal(QQN::Message()->PersonId, $intPersonId),
-					$objOptionalClauses);
-			} catch (QCallerException $objExc) {
-				$objExc->IncrementOffset();
-				throw $objExc;
-			}
-		}
-
-		/**
-		 * Count Messages
-		 * by PersonId Index(es)
-		 * @param integer $intPersonId
-		 * @return int
-		*/
-		public static function CountByPersonId($intPersonId) {
-			// Call Message::QueryCount to perform the CountByPersonId query
-			return Message::QueryCount(
-				QQ::Equal(QQN::Message()->PersonId, $intPersonId)
-			);
-		}
-			
-		/**
-		 * Load an array of Message objects,
 		 * by TopicId Index(es)
 		 * @param integer $intTopicId
 		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
@@ -628,6 +596,38 @@
 			// Call Message::QueryCount to perform the CountByTopicId query
 			return Message::QueryCount(
 				QQ::Equal(QQN::Message()->TopicId, $intTopicId)
+			);
+		}
+			
+		/**
+		 * Load an array of Message objects,
+		 * by PersonId Index(es)
+		 * @param integer $intPersonId
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @return Message[]
+		*/
+		public static function LoadArrayByPersonId($intPersonId, $objOptionalClauses = null) {
+			// Call Message::QueryArray to perform the LoadArrayByPersonId query
+			try {
+				return Message::QueryArray(
+					QQ::Equal(QQN::Message()->PersonId, $intPersonId),
+					$objOptionalClauses);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+		}
+
+		/**
+		 * Count Messages
+		 * by PersonId Index(es)
+		 * @param integer $intPersonId
+		 * @return int
+		*/
+		public static function CountByPersonId($intPersonId) {
+			// Call Message::QueryCount to perform the CountByPersonId query
+			return Message::QueryCount(
+				QQ::Equal(QQN::Message()->PersonId, $intPersonId)
 			);
 		}
 

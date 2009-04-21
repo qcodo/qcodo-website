@@ -28,6 +28,12 @@
 	 * property-read QLabel $BodyLabel
 	 * property QTextBox $HtmlControl
 	 * property-read QLabel $HtmlLabel
+	 * property QCheckBox $HighPriorityFlagControl
+	 * property-read QLabel $HighPriorityFlagLabel
+	 * property QCheckBox $ErrorFlagControl
+	 * property-read QLabel $ErrorFlagLabel
+	 * property QTextBox $ErrorMessageControl
+	 * property-read QLabel $ErrorMessageLabel
 	 * property-read string $TitleVerb a verb indicating whether or not this is being edited or created
 	 * property-read boolean $EditMode a boolean indicating whether or not this is being edited or created
 	 */
@@ -46,6 +52,9 @@
 		protected $txtSubject;
 		protected $txtBody;
 		protected $txtHtml;
+		protected $chkHighPriorityFlag;
+		protected $chkErrorFlag;
+		protected $txtErrorMessage;
 
 		// Controls that allow the viewing of EmailQueue's individual data fields
 		protected $lblToAddress;
@@ -53,6 +62,9 @@
 		protected $lblSubject;
 		protected $lblBody;
 		protected $lblHtml;
+		protected $lblHighPriorityFlag;
+		protected $lblErrorFlag;
+		protected $lblErrorMessage;
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
 
@@ -291,6 +303,79 @@
 			return $this->lblHtml;
 		}
 
+		/**
+		 * Create and setup QCheckBox chkHighPriorityFlag
+		 * @param string $strControlId optional ControlId to use
+		 * @return QCheckBox
+		 */
+		public function chkHighPriorityFlag_Create($strControlId = null) {
+			$this->chkHighPriorityFlag = new QCheckBox($this->objParentObject, $strControlId);
+			$this->chkHighPriorityFlag->Name = QApplication::Translate('High Priority Flag');
+			$this->chkHighPriorityFlag->Checked = $this->objEmailQueue->HighPriorityFlag;
+			return $this->chkHighPriorityFlag;
+		}
+
+		/**
+		 * Create and setup QLabel lblHighPriorityFlag
+		 * @param string $strControlId optional ControlId to use
+		 * @return QLabel
+		 */
+		public function lblHighPriorityFlag_Create($strControlId = null) {
+			$this->lblHighPriorityFlag = new QLabel($this->objParentObject, $strControlId);
+			$this->lblHighPriorityFlag->Name = QApplication::Translate('High Priority Flag');
+			$this->lblHighPriorityFlag->Text = ($this->objEmailQueue->HighPriorityFlag) ? QApplication::Translate('Yes') : QApplication::Translate('No');
+			return $this->lblHighPriorityFlag;
+		}
+
+		/**
+		 * Create and setup QCheckBox chkErrorFlag
+		 * @param string $strControlId optional ControlId to use
+		 * @return QCheckBox
+		 */
+		public function chkErrorFlag_Create($strControlId = null) {
+			$this->chkErrorFlag = new QCheckBox($this->objParentObject, $strControlId);
+			$this->chkErrorFlag->Name = QApplication::Translate('Error Flag');
+			$this->chkErrorFlag->Checked = $this->objEmailQueue->ErrorFlag;
+			return $this->chkErrorFlag;
+		}
+
+		/**
+		 * Create and setup QLabel lblErrorFlag
+		 * @param string $strControlId optional ControlId to use
+		 * @return QLabel
+		 */
+		public function lblErrorFlag_Create($strControlId = null) {
+			$this->lblErrorFlag = new QLabel($this->objParentObject, $strControlId);
+			$this->lblErrorFlag->Name = QApplication::Translate('Error Flag');
+			$this->lblErrorFlag->Text = ($this->objEmailQueue->ErrorFlag) ? QApplication::Translate('Yes') : QApplication::Translate('No');
+			return $this->lblErrorFlag;
+		}
+
+		/**
+		 * Create and setup QTextBox txtErrorMessage
+		 * @param string $strControlId optional ControlId to use
+		 * @return QTextBox
+		 */
+		public function txtErrorMessage_Create($strControlId = null) {
+			$this->txtErrorMessage = new QTextBox($this->objParentObject, $strControlId);
+			$this->txtErrorMessage->Name = QApplication::Translate('Error Message');
+			$this->txtErrorMessage->Text = $this->objEmailQueue->ErrorMessage;
+			$this->txtErrorMessage->MaxLength = EmailQueue::ErrorMessageMaxLength;
+			return $this->txtErrorMessage;
+		}
+
+		/**
+		 * Create and setup QLabel lblErrorMessage
+		 * @param string $strControlId optional ControlId to use
+		 * @return QLabel
+		 */
+		public function lblErrorMessage_Create($strControlId = null) {
+			$this->lblErrorMessage = new QLabel($this->objParentObject, $strControlId);
+			$this->lblErrorMessage->Name = QApplication::Translate('Error Message');
+			$this->lblErrorMessage->Text = $this->objEmailQueue->ErrorMessage;
+			return $this->lblErrorMessage;
+		}
+
 
 
 		/**
@@ -318,6 +403,15 @@
 
 			if ($this->txtHtml) $this->txtHtml->Text = $this->objEmailQueue->Html;
 			if ($this->lblHtml) $this->lblHtml->Text = $this->objEmailQueue->Html;
+
+			if ($this->chkHighPriorityFlag) $this->chkHighPriorityFlag->Checked = $this->objEmailQueue->HighPriorityFlag;
+			if ($this->lblHighPriorityFlag) $this->lblHighPriorityFlag->Text = ($this->objEmailQueue->HighPriorityFlag) ? QApplication::Translate('Yes') : QApplication::Translate('No');
+
+			if ($this->chkErrorFlag) $this->chkErrorFlag->Checked = $this->objEmailQueue->ErrorFlag;
+			if ($this->lblErrorFlag) $this->lblErrorFlag->Text = ($this->objEmailQueue->ErrorFlag) ? QApplication::Translate('Yes') : QApplication::Translate('No');
+
+			if ($this->txtErrorMessage) $this->txtErrorMessage->Text = $this->objEmailQueue->ErrorMessage;
+			if ($this->lblErrorMessage) $this->lblErrorMessage->Text = $this->objEmailQueue->ErrorMessage;
 
 		}
 
@@ -347,6 +441,9 @@
 				if ($this->txtSubject) $this->objEmailQueue->Subject = $this->txtSubject->Text;
 				if ($this->txtBody) $this->objEmailQueue->Body = $this->txtBody->Text;
 				if ($this->txtHtml) $this->objEmailQueue->Html = $this->txtHtml->Text;
+				if ($this->chkHighPriorityFlag) $this->objEmailQueue->HighPriorityFlag = $this->chkHighPriorityFlag->Checked;
+				if ($this->chkErrorFlag) $this->objEmailQueue->ErrorFlag = $this->chkErrorFlag->Checked;
+				if ($this->txtErrorMessage) $this->objEmailQueue->ErrorMessage = $this->txtErrorMessage->Text;
 
 				// Update any UniqueReverseReferences (if any) for controls that have been created for it
 
@@ -425,6 +522,24 @@
 				case 'HtmlLabel':
 					if (!$this->lblHtml) return $this->lblHtml_Create();
 					return $this->lblHtml;
+				case 'HighPriorityFlagControl':
+					if (!$this->chkHighPriorityFlag) return $this->chkHighPriorityFlag_Create();
+					return $this->chkHighPriorityFlag;
+				case 'HighPriorityFlagLabel':
+					if (!$this->lblHighPriorityFlag) return $this->lblHighPriorityFlag_Create();
+					return $this->lblHighPriorityFlag;
+				case 'ErrorFlagControl':
+					if (!$this->chkErrorFlag) return $this->chkErrorFlag_Create();
+					return $this->chkErrorFlag;
+				case 'ErrorFlagLabel':
+					if (!$this->lblErrorFlag) return $this->lblErrorFlag_Create();
+					return $this->lblErrorFlag;
+				case 'ErrorMessageControl':
+					if (!$this->txtErrorMessage) return $this->txtErrorMessage_Create();
+					return $this->txtErrorMessage;
+				case 'ErrorMessageLabel':
+					if (!$this->lblErrorMessage) return $this->lblErrorMessage_Create();
+					return $this->lblErrorMessage;
 				default:
 					try {
 						return parent::__get($strName);
@@ -459,6 +574,12 @@
 						return ($this->txtBody = QType::Cast($mixValue, 'QControl'));
 					case 'HtmlControl':
 						return ($this->txtHtml = QType::Cast($mixValue, 'QControl'));
+					case 'HighPriorityFlagControl':
+						return ($this->chkHighPriorityFlag = QType::Cast($mixValue, 'QControl'));
+					case 'ErrorFlagControl':
+						return ($this->chkErrorFlag = QType::Cast($mixValue, 'QControl'));
+					case 'ErrorMessageControl':
+						return ($this->txtErrorMessage = QType::Cast($mixValue, 'QControl'));
 					default:
 						return parent::__set($strName, $mixValue);
 				}

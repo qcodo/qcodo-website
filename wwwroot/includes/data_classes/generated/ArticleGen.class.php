@@ -22,7 +22,7 @@
 	 * @property string $Byline the value for strByline 
 	 * @property string $Article the value for strArticle 
 	 * @property QDateTime $PostDate the value for dttPostDate 
-	 * @property-read string $LastUpdatedDate the value for strLastUpdatedDate (Read-Only Timestamp)
+	 * @property QDateTime $LastUpdatedDate the value for dttLastUpdatedDate 
 	 * @property ArticleSection $ArticleSection the value for the ArticleSection object referenced by intArticleSectionId (Not Null)
 	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
@@ -92,9 +92,9 @@
 
 		/**
 		 * Protected member variable that maps to the database column article.last_updated_date
-		 * @var string strLastUpdatedDate
+		 * @var QDateTime dttLastUpdatedDate
 		 */
-		protected $strLastUpdatedDate;
+		protected $dttLastUpdatedDate;
 		const LastUpdatedDateDefault = null;
 
 
@@ -447,7 +447,7 @@
 			$strAliasName = array_key_exists($strAliasPrefix . 'post_date', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'post_date'] : $strAliasPrefix . 'post_date';
 			$objToReturn->dttPostDate = $objDbRow->GetColumn($strAliasName, 'DateTime');
 			$strAliasName = array_key_exists($strAliasPrefix . 'last_updated_date', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'last_updated_date'] : $strAliasPrefix . 'last_updated_date';
-			$objToReturn->strLastUpdatedDate = $objDbRow->GetColumn($strAliasName, 'VarChar');
+			$objToReturn->dttLastUpdatedDate = $objDbRow->GetColumn($strAliasName, 'DateTime');
 
 			// Instantiate Virtual Attributes
 			foreach ($objDbRow->GetColumnNameArray() as $strColumnName => $mixValue) {
@@ -594,14 +594,16 @@
 							`description`,
 							`byline`,
 							`article`,
-							`post_date`
+							`post_date`,
+							`last_updated_date`
 						) VALUES (
 							' . $objDatabase->SqlVariable($this->intArticleSectionId) . ',
 							' . $objDatabase->SqlVariable($this->strTitle) . ',
 							' . $objDatabase->SqlVariable($this->strDescription) . ',
 							' . $objDatabase->SqlVariable($this->strByline) . ',
 							' . $objDatabase->SqlVariable($this->strArticle) . ',
-							' . $objDatabase->SqlVariable($this->dttPostDate) . '
+							' . $objDatabase->SqlVariable($this->dttPostDate) . ',
+							' . $objDatabase->SqlVariable($this->dttLastUpdatedDate) . '
 						)
 					');
 
@@ -611,21 +613,6 @@
 					// Perform an UPDATE query
 
 					// First checking for Optimistic Locking constraints (if applicable)
-					if (!$blnForceUpdate) {
-						// Perform the Optimistic Locking check
-						$objResult = $objDatabase->Query('
-							SELECT
-								`last_updated_date`
-							FROM
-								`article`
-							WHERE
-								`id` = ' . $objDatabase->SqlVariable($this->intId) . '
-						');
-						
-						$objRow = $objResult->FetchArray();
-						if ($objRow[0] != $this->strLastUpdatedDate)
-							throw new QOptimisticLockingException('Article');
-					}
 
 					// Perform the UPDATE query
 					$objDatabase->NonQuery('
@@ -637,7 +624,8 @@
 							`description` = ' . $objDatabase->SqlVariable($this->strDescription) . ',
 							`byline` = ' . $objDatabase->SqlVariable($this->strByline) . ',
 							`article` = ' . $objDatabase->SqlVariable($this->strArticle) . ',
-							`post_date` = ' . $objDatabase->SqlVariable($this->dttPostDate) . '
+							`post_date` = ' . $objDatabase->SqlVariable($this->dttPostDate) . ',
+							`last_updated_date` = ' . $objDatabase->SqlVariable($this->dttLastUpdatedDate) . '
 						WHERE
 							`id` = ' . $objDatabase->SqlVariable($this->intId) . '
 					');
@@ -651,18 +639,6 @@
 			// Update __blnRestored and any Non-Identity PK Columns (if applicable)
 			$this->__blnRestored = true;
 
-			// Update Local Timestamp
-			$objResult = $objDatabase->Query('
-				SELECT
-					`last_updated_date`
-				FROM
-					`article`
-				WHERE
-					`id` = ' . $objDatabase->SqlVariable($this->intId) . '
-			');
-						
-			$objRow = $objResult->FetchArray();
-			$this->strLastUpdatedDate = $objRow[0];
 
 			// Return 
 			return $mixToReturn;
@@ -734,7 +710,7 @@
 			$this->strByline = $objReloaded->strByline;
 			$this->strArticle = $objReloaded->strArticle;
 			$this->dttPostDate = $objReloaded->dttPostDate;
-			$this->strLastUpdatedDate = $objReloaded->strLastUpdatedDate;
+			$this->dttLastUpdatedDate = $objReloaded->dttLastUpdatedDate;
 		}
 
 
@@ -806,10 +782,10 @@
 
 				case 'LastUpdatedDate':
 					/**
-					 * Gets the value for strLastUpdatedDate (Read-Only Timestamp)
-					 * @return string
+					 * Gets the value for dttLastUpdatedDate 
+					 * @return QDateTime
 					 */
-					return $this->strLastUpdatedDate;
+					return $this->dttLastUpdatedDate;
 
 
 				///////////////////
@@ -941,6 +917,19 @@
 						throw $objExc;
 					}
 
+				case 'LastUpdatedDate':
+					/**
+					 * Sets the value for dttLastUpdatedDate 
+					 * @param QDateTime $mixValue
+					 * @return QDateTime
+					 */
+					try {
+						return ($this->dttLastUpdatedDate = QType::Cast($mixValue, QType::DateTime));
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
 
 				///////////////////
 				// Member Objects
@@ -1021,7 +1010,7 @@
 			$strToReturn .= '<element name="Byline" type="xsd:string"/>';
 			$strToReturn .= '<element name="Article" type="xsd:string"/>';
 			$strToReturn .= '<element name="PostDate" type="xsd:dateTime"/>';
-			$strToReturn .= '<element name="LastUpdatedDate" type="xsd:string"/>';
+			$strToReturn .= '<element name="LastUpdatedDate" type="xsd:dateTime"/>';
 			$strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
 			$strToReturn .= '</sequence></complexType>';
 			return $strToReturn;
@@ -1061,7 +1050,7 @@
 			if (property_exists($objSoapObject, 'PostDate'))
 				$objToReturn->dttPostDate = new QDateTime($objSoapObject->PostDate);
 			if (property_exists($objSoapObject, 'LastUpdatedDate'))
-				$objToReturn->strLastUpdatedDate = $objSoapObject->LastUpdatedDate;
+				$objToReturn->dttLastUpdatedDate = new QDateTime($objSoapObject->LastUpdatedDate);
 			if (property_exists($objSoapObject, '__blnRestored'))
 				$objToReturn->__blnRestored = $objSoapObject->__blnRestored;
 			return $objToReturn;
@@ -1086,6 +1075,8 @@
 				$objObject->intArticleSectionId = null;
 			if ($objObject->dttPostDate)
 				$objObject->dttPostDate = $objObject->dttPostDate->__toString(QDateTime::FormatSoap);
+			if ($objObject->dttLastUpdatedDate)
+				$objObject->dttLastUpdatedDate = $objObject->dttLastUpdatedDate->__toString(QDateTime::FormatSoap);
 			return $objObject;
 		}
 
@@ -1123,7 +1114,7 @@
 				case 'PostDate':
 					return new QQNode('post_date', 'PostDate', 'QDateTime', $this);
 				case 'LastUpdatedDate':
-					return new QQNode('last_updated_date', 'LastUpdatedDate', 'string', $this);
+					return new QQNode('last_updated_date', 'LastUpdatedDate', 'QDateTime', $this);
 
 				case '_PrimaryKeyNode':
 					return new QQNode('id', 'Id', 'integer', $this);
@@ -1161,7 +1152,7 @@
 				case 'PostDate':
 					return new QQNode('post_date', 'PostDate', 'QDateTime', $this);
 				case 'LastUpdatedDate':
-					return new QQNode('last_updated_date', 'LastUpdatedDate', 'string', $this);
+					return new QQNode('last_updated_date', 'LastUpdatedDate', 'QDateTime', $this);
 
 				case '_PrimaryKeyNode':
 					return new QQNode('id', 'Id', 'integer', $this);

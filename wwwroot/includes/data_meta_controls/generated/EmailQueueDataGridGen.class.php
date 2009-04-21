@@ -279,6 +279,9 @@
 				case 'Subject': return QQN::EmailQueue()->Subject;
 				case 'Body': return QQN::EmailQueue()->Body;
 				case 'Html': return QQN::EmailQueue()->Html;
+				case 'HighPriorityFlag': return QQN::EmailQueue()->HighPriorityFlag;
+				case 'ErrorFlag': return QQN::EmailQueue()->ErrorFlag;
+				case 'ErrorMessage': return QQN::EmailQueue()->ErrorMessage;
 				default: throw new QCallerException('Simple Property not found in EmailQueueDataGrid content: ' . $mixContent);
 			} else if ($mixContent instanceof QQAssociationNode)
 				throw new QCallerException('Content QQNode cannot go through any "To Many" association nodes.');
