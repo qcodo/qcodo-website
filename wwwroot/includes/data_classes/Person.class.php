@@ -92,6 +92,16 @@
 			$this->strPassword = trim(strtolower($strPassword));
 		}
 
+		/**
+		 * Resets the password and generates a random one for the user
+		 * @return string the new, randomly generated password
+		 */
+		public function SetRandomPassword() {
+			$strPassword = strtolower(substr(md5(microtime()), 4, 8));
+			$this->SetPassword($strPassword);
+			return $strPassword;
+		}
+
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...
 		// but feel free to use these as a starting point)
