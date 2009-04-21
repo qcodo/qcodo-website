@@ -17,8 +17,13 @@
 		protected $txtLastName;
 		protected $txtEmail;
 
+		protected $chkDisplayRealNameFlag;
+		protected $chkOptInFlag;
+		protected $txtLocation;
+		protected $lstCountry;
+		protected $txtUrl;
+
 		protected $btnRegister;
-		protected $chkRemember;
 		
 		protected $lnkLogin;
 
@@ -29,45 +34,53 @@
 			$this->mctPerson = new PersonMetaControl($this, new Person());
 
 			// Define Controls
-			$this->txtUsername = $this->mctPerson->txtUsername_Create();
+			$this->txtUsername = $this->mctPerson->txtUsername_Create('username');
 			$this->txtUsername->Instructions = '6 - 20 alphanumeric characters';
 
-			$this->txtPassword = new QTextBox($this);
+			$this->txtPassword = new QTextBox($this, 'password');
 			$this->txtPassword->Name = 'Password';
 			$this->txtPassword->MaxLength = Person::PasswordMaxLength;
 			$this->txtPassword->TextMode = QTextMode::Password;
 			$this->txtPassword->Required = true;
 			$this->txtPassword->CausesValidation = true;
 			
-			$this->txtConfirmPassword = new QTextBox($this);
+			$this->txtConfirmPassword = new QTextBox($this, 'confirmPassword');
 			$this->txtConfirmPassword->Name = 'Confirm';
 			$this->txtConfirmPassword->MaxLength = Person::PasswordMaxLength;
 			$this->txtConfirmPassword->TextMode = QTextMode::Password;
 			$this->txtConfirmPassword->Required = true;
 			$this->txtConfirmPassword->CausesValidation = true;
 			
-			$this->txtFirstName = $this->mctPerson->txtFirstName_Create();
-			$this->txtLastName = $this->mctPerson->txtLastName_Create();
-			$this->txtEmail = $this->mctPerson->txtEmail_Create();
+			$this->txtFirstName = $this->mctPerson->txtFirstName_Create('firstName');
+			$this->txtLastName = $this->mctPerson->txtLastName_Create('lastName');
+			$this->txtEmail = $this->mctPerson->txtEmail_Create('email');
+			$this->txtEmail->Instructions = 'You hate SPAM.  So do we.<br/>We will NEVER release your information to anyone. Period.';
+
+			$this->chkDisplayRealNameFlag = $this->mctPerson->chkDisplayRealNameFlag_Create('realName');
+			$this->chkOptInFlag = $this->mctPerson->chkOptInFlag_Create('optIn');
 			
+			$this->txtLocation = $this->mctPerson->txtLocation_Create('location');
+			$this->txtLocation->Name = 'Your Location';
+			$this->txtLocation->Instructions = 'e.g., "Sunnyvale, CA"';
+			
+			$this->lstCountry = $this->mctPerson->lstCountry_Create('country');
+			$this->lstCountry->Name = 'Display Country Flag';
+
+			$this->txtUrl = $this->mctPerson->txtUrl_Create('url');
+			$this->txtUrl->Name = 'Website URL';
+			$this->txtUrl->Instructions = 'Be sure and include "http://"';
+
 			$this->btnRegister = new QButton($this);
 			$this->btnRegister->Text = 'Register';
 			$this->btnRegister->Name = '&nbsp;';
 			$this->btnRegister->CausesValidation = true;
 
-			$this->chkRemember = new QCheckBox($this);
-			$this->chkRemember->HtmlEntities = false;
-
 			$this->lnkLogin = new RoundedLinkButton($this);
 			$this->lnkLogin->Text = 'Login';
 			$this->lnkLogin->LinkUrl = '/login/';
 			$this->lnkLogin->AddCssClass('roundedLinkGray');
-			
+
 			// Add Actions
-			$this->txtUsername->AddAction(new QEnterKeyEvent(), new QFocusControlAction($this->txtPassword));
-			$this->txtUsername->AddAction(new QEnterKeyEvent(), new QTerminateAction());
-			$this->txtPassword->AddAction(new QEnterKeyEvent(), new QAjaxAction('btnRegister_Click'));
-			$this->txtPassword->AddAction(new QEnterKeyEvent(), new QTerminateAction());
 			$this->btnRegister->AddAction(new QClickEvent(), new QAjaxAction('btnRegister_Click'));
 
 			// Initial Focus

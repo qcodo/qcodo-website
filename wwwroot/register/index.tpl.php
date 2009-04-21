@@ -19,12 +19,21 @@
 			<?php $this->txtEmail->RenderForForm(); ?>
 			<br/>
 
-			<div class="renderWithName"><div class="left">&nbsp;</div><div class="right">
-				<?php $this->chkRemember->Render(); ?>
-				<span class="instructions forCheckbox">Keep me logged in to <strong>Qcodo.com</strong> on this computer</span>
+			<div class="renderForForm"><div class="left">Display Real Name</div><div class="right">
+				<?php $this->chkDisplayRealNameFlag->Render(); ?>
+				<span class="instructions forCheckbox">Leave unchecked to use your Username as your Display Name</span>
 			</div></div>
+			<div class="renderForForm"><div class="left">Opt-In to Emails</div><div class="right">
+				<?php $this->chkOptInFlag->Render(); ?>
+				<span class="instructions forCheckbox">Opt-In to occasional e-mail announcements from Qcodo</span>
+			</div></div>
+			<br/>
 
-			<br/><br/>
+			<?php $this->txtLocation->RenderForForm(); ?>
+			<?php $this->lstCountry->RenderForForm(); ?>
+			<?php $this->txtUrl->RenderForForm(); ?>
+			<br/> 
+
 			<?php $this->btnRegister->RenderForForm(); ?>
 			<br/><br/>
 		</div>
