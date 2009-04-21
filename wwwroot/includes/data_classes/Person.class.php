@@ -82,6 +82,15 @@
 			$strPassword = trim(strtolower($strPassword));
 			return ($this->strPassword == $strPassword);
 		}
+		
+		/**
+		 * Sets the password and encrypts it
+		 * @param $strPassword string
+		 * @return void
+		 */
+		public function SetPassword($strPassword) {
+			$this->strPassword = trim(strtolower($strPassword));
+		}
 
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...

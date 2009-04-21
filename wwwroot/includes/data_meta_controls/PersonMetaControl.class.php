@@ -46,5 +46,39 @@
 			$this->txtUsername->MaxLength = Person::UsernameMaxLength;
 			return $this->txtUsername;
 		}
+
+
+		/**
+		 * Create and setup QListBox lstCountry
+		 * @param string $strControlId optional ControlId to use
+		 * @return QListBox
+		 */
+		public function lstCountry_Create($strControlId = null) {
+			$this->lstCountry = new QListBox($this->objParentObject, $strControlId);
+			$this->lstCountry->Name = QApplication::Translate('Country');
+			$this->lstCountry->AddItem(QApplication::Translate('- Select One -'), null);
+			$objCountryArray = Country::QueryArray(QQ::All(), QQ::OrderBy(QQN::Country()->Name));
+			if ($objCountryArray) foreach ($objCountryArray as $objCountry) {
+				$objListItem = new QListItem($objCountry->__toString(), $objCountry->Id);
+				if (($this->objPerson->Country) && ($this->objPerson->Country->Id == $objCountry->Id))
+					$objListItem->Selected = true;
+				$this->lstCountry->AddItem($objListItem);
+			}
+			return $this->lstCountry;
+		}
+		
+
+		/**
+		 * Create and setup QTextBox txtUrl
+		 * @param string $strControlId optional ControlId to use
+		 * @return QTextBox
+		 */
+		public function txtUrl_Create($strControlId = null) {
+			$this->txtUrl = new UrlTextBox($this->objParentObject, $strControlId);
+			$this->txtUrl->Name = QApplication::Translate('Url');
+			$this->txtUrl->Text = $this->objPerson->Url;
+			$this->txtUrl->MaxLength = Person::UrlMaxLength;
+			return $this->txtUrl;
+		}
 	}
 ?>

@@ -86,24 +86,44 @@
 			// Initial Focus
 			$this->txtUsername->Focus();
 		}
-
-		protected function btnLogin_Click($strFormId, $strControlId, $strParameter) {
-			$objPerson = Person::LoadByUsername(trim(strtolower($this->txtUsername->Text)));
-			if ($objPerson && $objPerson->IsPasswordValid($this->txtPassword->Text)) {
-				QApplication::LoginPerson($objPerson);
-				
-				if ($this->chkRemember->Checked)
-					QApplication::SetLoginTicketToCookie($objPerson);
-
-				QApplication::Redirect('/');
+		
+		protected function Form_Validate($blnToReturn = true) {
+			// Check Username
+			if (($strUsername = trim($this->txtUsername->Text)) &&
+				Person::LoadByUsername($strUsername)) {
+				$this->txtUsername->Warning = 'Username already taken';
+				$blnToReturn = false;
 			}
 
-			// If we're here, either the username and/or password is not valid
-			$this->txtUsername->Warning = 'Invalid username or password';
-			$this->txtPassword->Text = null;
-			
-			// Call Form_Validate() to do that blinking thing
-			$this->Form_Validate();
+			if (trim(strlen($this->txtUsername->Text)) < 6) {
+				$this->txtUsername->Warning = 'Username must be at least 6 alphanumeric characters';
+				$blnToReturn = false;
+			}
+
+			// Check Password
+			if ($this->txtPassword->Text != $this->txtConfirmPassword->Text) {
+				$this->txtConfirmPassword->Warning = 'Does not match';
+				$blnToReturn = false;
+			}
+
+			// Is Email Taken?
+			if (Person::LoadByEmail(trim(strtolower($this->txtEmail->Text)))) {
+				$this->txtEmail->Warning = 'Email is already taken';
+				$blnToReturn = false;
+			}
+
+			return parent::Form_Validate($blnToReturn);
+		}
+
+		protected function btnRegister_Click($strFormId, $strControlId, $strParameter) {
+			$this->mctPerson->Person->RegistrationDate = QDateTime::Now();
+			$this->mctPerson->Person->PersonTypeId = PersonType::ForumsUser;
+
+			$this->mctPerson->Person->SetPassword($this->txtPassword->Text);
+			$this->mctPerson->SavePerson();
+
+			QApplication::LoginPerson($this->mctPerson->Person);
+			QApplication::Redirect('/register/confirmed.php');
 		}
 	}
 
