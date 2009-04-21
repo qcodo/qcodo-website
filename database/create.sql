@@ -88,6 +88,7 @@ CREATE TABLE `person`
 `email` VARCHAR(150) NOT NULL UNIQUE,
 `password_reset_flag` BOOLEAN,
 `display_real_name_flag` BOOLEAN,
+`display_email_flag` BOOLEAN,
 `opt_in_flag` BOOLEAN,
 `donated_flag` BOOLEAN,
 `location` VARCHAR(100),
