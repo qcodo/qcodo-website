@@ -13,8 +13,11 @@
 		 * @return string
 		 */
 		static public function GenerateFirstName() {
-			if (!QRandomDataGenerator::$FirstNameArray)
+			// Create FirstNameArray if it is not yet created
+			if (!QRandomDataGenerator::$FirstNameArray) {
 				QRandomDataGenerator::$FirstNameArray = array_merge(QRandomDataGenerator::$MaleFirstNameArray, QRandomDataGenerator::$FemaleFirstNameArray);
+			}
+
 			return QRandomDataGenerator::$FirstNameArray[rand(0, count(QRandomDataGenerator::$FirstNameArray) - 1)];
 		}
 
@@ -70,9 +73,110 @@
 			return ucwords($strContent);
 		}
 
-		static public $FirstNameArray;
+		/**
+		 * Generates and returns random Content based on "Lorem Ipsum" text.  Caller must specify
+		 * the number of paragraphs to be generated, where the word count for each individual
+		 * paragraph is a random number selected between intMinimumWordsPerParagraph and intMaximumWordsPerParagraph.
+		 *   
+		 * @param integer $intParagraphCount number of paragraphs to generate, 
+		 * @param integer $intMinimumWordsPerParagraph the minimum number of words per paragraph
+		 * @param integer $intMaximumWordsPerParagraph the maximum number of words per paragraph
+		 * @return string
+		 */
+		static public function GenerateContent($intParagraphCount, $intMinimumWordsPerParagraph = 20, $intMaximumWordsPerParagraph = 150) {
+			$strContent = null;
+			for ($intParagraph = 0; $intParagraph < $intParagraphCount; $intParagraph++) {
+				$intWordCount = rand($intMinimumWordsPerParagraph, $intMaximumWordsPerParagraph);
+				$strParagraph = null;
+				
+				// Add Sentences
+				while (str_word_count($strParagraph) < $intWordCount) {
+					$strParagraph .= QRandomDataGenerator::$LipsumArray[rand(0, count(QRandomDataGenerator::$LipsumArray) - 1)] . '  ';
+				}
 
-		static public $FemaleFirstNameArray = array('Abbey', 'Abbie', 'Abby', 'Abigail', 'Adah', 'Adalia', 'Adda',
+				$strParagraph = trim($strParagraph);
+
+				// Remove Words
+				while (str_word_count($strParagraph) > $intWordCount) {
+					$strParagraph = trim(substr($strParagraph, 0, strrpos($strParagraph, ' ')));
+				}
+
+				// Remove Comma (if applicable)
+				if (QString::LastCharacter($strParagraph) == ',')
+					$strParagraph = trim(substr($strParagraph, 0, strlen($strParagraph) - 1));
+
+				// Add Period (if applicable)
+				if (QString::LastCharacter($strParagraph) != '.')
+					$strParagraph .= '.';
+
+				$strContent .= $strParagraph . "\r\n\r\n";
+			}
+
+			return trim($strContent);
+		}
+
+		/**
+		 * Generates a random QDateTime given the range of $dttStart and $dttEnd
+		 * @param QDateTime $dttStart the start date for the range
+		 * @param QDateTime $dttEnd the end date for the range
+		 * @return QDateTime
+		 */
+		static public function GenerateDateTime(QDateTime $dttStart, QDateTime $dttEnd) {
+			$intStart = $dttStart->Timestamp;
+			$intEnd = $dttEnd->Timestamp;
+			$intRand = rand($intStart, $intEnd);
+			return QDateTime::FromTimestamp($intRand);
+		}
+
+		/**
+		 * A very simple / basic random 10-digit telephone number generator.
+		 * @return string
+		 */
+		static public function GeneratePhone() {
+			return rand(200, 999) . '-' . rand(200, 999) . '-' . rand(1000, 9999);
+		}
+
+		/**
+		 * Returns a randomly generated email based on a first name and last name.
+		 * @param string $strFirstName first name of the email user
+		 * @param string $strLastName last name of the email user
+		 * @return string
+		 */
+		static public function GenerateEmail($strFirstName, $strLastName) {
+			$strFirstName = trim(strtolower(str_replace("'", '', str_replace(' ', '', $strFirstName))));
+			$strLastName = trim(strtolower(str_replace("'", '', str_replace(' ', '', $strLastName))));
+
+			// three different "styles" of email
+			switch (rand(1, 3)) {
+				case 1:
+					$strEmail = QString::FirstCharacter($strFirstName) . $strLastName . rand(0, 9999) . '@';
+					break;
+				case 2:
+					$strEmail = $strFirstName . QString::FirstCharacter($strLastName) . rand(0, 9999) . '@';
+					break;
+				case 3:
+					$strEmail = $strFirstName . '.' . $strLastName . rand(0, 9999) . '@';
+					break;
+			}
+
+			return $strEmail . QRandomDataGenerator::$EmailDomainArray[rand(0, count(QRandomDataGenerator::$EmailDomainArray) - 1)];
+		}
+
+		/**
+		 * Returns a randomly generated "username" based on a first name and last name.
+		 * @param string $strFirstName first name of the user
+		 * @param string $strLastName last name of the user
+		 * @return string
+		 */
+		static public function GenerateUsername($strFirstName, $strLastName) {
+			$strFirstName = trim(strtolower(str_replace("'", '', str_replace(' ', '', $strFirstName))));
+			$strLastName = trim(strtolower(str_replace("'", '', str_replace(' ', '', $strLastName))));
+			return QString::FirstCharacter($strFirstName) . $strLastName . rand(0, 9999);
+		}
+
+		static protected $FirstNameArray;
+
+		static protected $FemaleFirstNameArray = array('Abbey', 'Abbie', 'Abby', 'Abigail', 'Adah', 'Adalia', 'Adda',
 			'Addie', 'Addy', 'Adela', 'Adelaide', 'Adele', 'Adelina', 'Adeline', 'Adella', 'Adelle', 'Adie',
 			'Adine', 'Adria', 'Adrianne', 'Adrienne', 'Agatha', 'Aggie', 'Aggy', 'Agnes', 'Aileen', 'Ailie',
 			'Aimee', 'Airlia', 'Alana', 'Alanna', 'Alarice', 'Alberta', 'Alethea', 'Alex', 'Alexa', 'Alexandra',
@@ -215,7 +319,7 @@
 			'Vivian', 'Voletta', 'Wanda', 'Wenda', 'Wendy', 'Wenona', 'Whitney', 'Wilda', 'Willa', 'Willette',
 			'Willow', 'Wilhelmina', 'Wylma', 'Wilona', 'Winifred', 'Winona', 'Wynette', 'Wynne');
 
-		static public $MaleFirstNameArray = array('Aaron', 'Abbott', 'Abel', 'Abie', 'Abner', 'Abraham', 'Abram',
+		static protected $MaleFirstNameArray = array('Aaron', 'Abbott', 'Abel', 'Abie', 'Abner', 'Abraham', 'Abram',
 			'Adal', 'Adam', 'Adalbert', 'Addis', 'Addison', 'Adley', 'Adolf', 'Adolph', 'Adolphus', 'Adrian',
 			'Aiden', 'Aiken', 'Ajax', 'Alan', 'Alastair', 'Alban', 'Albe', 'Albern', 'Albert', 'Albin',
 			'Albion', 'Alden', 'Aldis', 'Aldrich', 'Alec', 'Aleck', 'Alex', 'Alexander', 'Alfie', 'Alfonso',
@@ -341,7 +445,7 @@
 			'Wilmer', 'Wilmot', 'Wilson', 'Winfred', 'Winslow', 'Winston', 'Winthrop', 'Wirt', 'Wolfe', 'Wolfram',
 			'Woodley', 'Woodrow', 'Woodward', 'Worthington', 'Wright', 'Wyatt', 'Wylie', 'Wyman', 'Wyndham');
 
-		static public $LastNameArray = array('Ho', 'Giffin', 'Smith', 'Johnson', 'Williams', 'Jones', 'Brown',
+		static protected $LastNameArray = array('Ho', 'Giffin', 'Smith', 'Johnson', 'Williams', 'Jones', 'Brown',
 			'Davis', 'Miller', 'Wilson', 'Moore', 'Taylor', 'Anderson', 'Thomas', 'Jackson', 'White', 'Harris',
 			'Martin', 'Thompson', 'Garcia', 'Martinez', 'Robinson', 'Clark', 'Rodriguez', 'Lewis', 'Lee', 'Walker',
 			'Hall', 'Allen', 'Young', 'Hernandez', 'King', 'Wright', 'Lopez', 'Hill', 'Scott', 'Green',
@@ -364,7 +468,7 @@
 			'Maher', 'McKenna', 'Bell', 'Scott', 'Hogan', 'O\'Keeffe', 'Magee', 'McNamara', 'McDonald', 'McDermott',
 			'Moloney', 'O\'Rourke', 'Buckley', 'Dwyer');
 
-		static public $WordArray = array('wheel', 'island', 'turtle', 'chair', 'ear', 'shoe', 'basketball',
+		static protected $WordArray = array('wheel', 'island', 'turtle', 'chair', 'ear', 'shoe', 'basketball',
 			'octopus', 'bed', 'flag', 'castle', 'paint', 'car', 'horse', 'pinwheel', 'kite', 'safetypin',
 			'submarine', 'watermelon', 'tea', 'telephone', 'whistle', 'piano', 'clam', 'ring', 'frog', 'olive',
 			'mailman', 'mountain', 'camel', 'wind', 'summer', 'green', 'surfboard', 'cow', 'pencil', 'shower',
@@ -428,7 +532,306 @@
 			'picture frame', 'electric guitar', 'icecream cone', 'shooting star', 'christmas tree', 'lightning rod',
 			'quotation marks', 'telephone pole', 'hot air balloon', 'tic tac toe', 'two left feet', 'ball and chain');
 
-		static public $EmailDomainArray = array('hotmail.com', 'mail.nasa.gov', 'gmail.com', 'yahoo.com', 'rocketmail.com',
+		static protected $LipsumArray = array(
+			'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+			'Donec egestas malesuada nisi.',
+			'Pellentesque in mauris.',
+			'Sed libero lorem, facilisis ac, suscipit a, convallis vitae, nunc.',
+			'Nulla vitae diam.',
+			'Quisque lorem.',
+			'Sed fringilla leo tincidunt lectus.',
+			'Aenean iaculis, tellus eget fringilla pulvinar, orci enim ultrices ipsum, ac dignissim leo nisl vitae mauris.',
+			'Duis vitae sem.',
+			'Proin feugiat ante ut sem.',
+			'Curabitur in neque.',
+			'Donec et augue.',
+			'Aliquam ac nibh a lacus iaculis malesuada.',
+			'Integer luctus suscipit nisl.',
+			'Nulla condimentum luctus tortor.',
+			'Nunc ultrices.',
+			'Suspendisse dapibus fringilla lectus.',
+			'Maecenas at sem et dolor rutrum molestie.',
+			'In congue scelerisque magna.',
+			'In ultrices porta mauris.',
+			'Fusce mauris.',
+			'Cras sit amet tortor vitae purus ultricies feugiat.',
+			'Curabitur et leo ut nisi condimentum accumsan.',
+			'Nulla nisl magna, sodales et, tincidunt sit amet, egestas a, ipsum.',
+			'Curabitur nisi.',
+			'Nam auctor blandit nisl.',
+			'Vestibulum arcu purus, sollicitudin hendrerit, pharetra in, accumsan ac, ipsum.',
+			'Donec nulla lectus, consequat ac, ornare id, tempus quis, ipsum.',
+			'Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.',
+			'Morbi mattis euismod mauris.',
+			'Mauris pulvinar.',
+			'Vestibulum lacus lectus, rhoncus eget, lobortis gravida, interdum eu, ligula.',
+			'In hac habitasse platea dictumst.',
+			'Vivamus facilisis sodales mauris.',
+			'Quisque auctor ligula non purus.',
+			'Cras eu libero.',
+			'Proin sem neque, adipiscing vel, commodo et, tempus vitae, purus.',
+			'Sed lacinia, mi eu laoreet placerat, sapien sem malesuada odio, id volutpat arcu risus a sem.',
+			'Morbi pretium lectus eu nisi.',
+			'Proin porttitor odio sed sem.',
+			'Curabitur adipiscing malesuada velit.',
+			'Sed iaculis ligula sit amet nulla.',
+			'Fusce ultrices sagittis purus.',
+			'Nunc posuere felis id nisi.',
+			'Fusce nisi arcu, rutrum a, ultrices ac, convallis quis, nisl.',
+			'Sed eu est non lacus auctor dictum.',
+			'Nam ultricies tempus ligula.',
+			'Vestibulum quis dolor sit amet nisl semper adipiscing.',
+			'Etiam sagittis erat non purus.',
+			'Fusce tempus tincidunt nulla.',
+			'Nunc malesuada magna ac neque.',
+			'In hac habitasse platea dictumst.',
+			'Aliquam tortor.',
+			'Vestibulum tincidunt nisl sit amet nulla.',
+			'Quisque at ligula sit amet tellus hendrerit dictum.',
+			'Nulla facilisi.',
+			'Pellentesque in odio.',
+			'Maecenas consectetur.',
+			'Maecenas gravida tincidunt sem.',
+			'In hac habitasse platea dictumst.',
+			'Ut nec diam sed diam rutrum feugiat.',
+			'Sed egestas.',
+			'Nunc vestibulum.',
+			'Phasellus accumsan.',
+			'Maecenas aliquam diam lobortis orci.',
+			'Curabitur id metus.',
+			'Nullam commodo arcu sit amet turpis.',
+			'Vivamus a felis.',
+			'Sed tristique egestas quam.',
+			'Nunc nec orci.',
+			'Proin pretium blandit velit.',
+			'Nam quis est.',
+			'Donec at arcu.',
+			'Donec vestibulum.',
+			'In ac purus.',
+			'Sed dignissim.',
+			'Morbi pharetra.',
+			'Fusce iaculis, urna sit amet hendrerit imperdiet, erat nulla placerat metus, ut pretium sapien lectus sed urna.',
+			'Maecenas egestas, mauris sit amet suscipit pretium, massa lacus facilisis eros, eu sodales dui eros eu nisl.',
+			'Nunc ante nisl, fringilla id, rhoncus ut, laoreet at, orci.',
+			'Mauris vulputate purus et purus.',
+			'Sed malesuada sapien a orci.',
+			'Sed semper est eu diam.',
+			'Praesent sem nisi, malesuada et, blandit quis, consectetur a, nisl.',
+			'In euismod massa condimentum nisi.',
+			'Integer vel purus vel mauris dapibus elementum.',
+			'Ut euismod, urna ac rhoncus hendrerit, erat metus blandit nunc, vel molestie felis massa eget turpis.',
+			'Vestibulum et est in nibh porttitor interdum.',
+			'Suspendisse vitae sapien.',
+			'Nulla iaculis, tortor non tristique tempus, arcu tellus fermentum quam, quis elementum massa mi vel nibh.',
+			'Aliquam erat volutpat.',
+			'Morbi quis metus.',
+			'Nulla posuere.',
+			'Suspendisse aliquet pharetra enim.',
+			'Morbi sagittis.',
+			'Morbi imperdiet nunc a tortor.',
+			'Sed hendrerit, tellus vel mattis malesuada, leo nunc feugiat dui, nec interdum massa augue porta risus.',
+			'Praesent a dui non velit eleifend euismod.',
+			'Maecenas consequat tristique elit.',
+			'Curabitur in justo sed nibh vestibulum pharetra.',
+			'Aliquam ac orci.',
+			'Vestibulum commodo interdum purus.',
+			'Vivamus suscipit tellus nec metus.',
+			'Donec pulvinar aliquam justo.',
+			'Donec ante.',
+			'Curabitur nec elit at justo mollis sollicitudin.',
+			'Sed ipsum.',
+			'Phasellus augue.',
+			'Nulla accumsan velit et nisl.',
+			'Sed varius.',
+			'Suspendisse viverra semper magna.',
+			'Sed suscipit risus sit amet odio.',
+			'Nullam ac odio nec enim ornare lacinia.',
+			'Nullam at arcu.',
+			'Nunc risus purus, posuere at, hendrerit et, porttitor id, tellus.',
+			'Nam pretium neque et eros luctus tincidunt.',
+			'Nam laoreet justo.',
+			'Donec facilisis.',
+			'Nunc dapibus, elit ut ultricies ultricies, nulla magna pharetra est, et tempus lacus velit id orci.',
+			'Integer ut libero.',
+			'Suspendisse non elit.',
+			'Integer eros ipsum, suscipit id, feugiat a, tempor a, nunc.',
+			'Aenean neque tortor, scelerisque sed, pretium in, tristique iaculis, mauris.',
+			'Donec hendrerit eros vitae est.',
+			'Curabitur nibh.',
+			'In varius, arcu vitae placerat malesuada, elit est semper lectus, eu facilisis ante elit sit amet arcu.',
+			'Nulla facilisi.',
+			'Quisque iaculis turpis.',
+			'Fusce porta orci eu lorem.',
+			'Mauris tortor.',
+			'Mauris interdum ligula nec tortor.',
+			'Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.',
+			'Nullam tincidunt.',
+			'Nulla lacus odio, hendrerit id, volutpat non, auctor in, leo.',
+			'Sed sollicitudin, quam ut pulvinar posuere, ipsum nibh faucibus nibh, quis pulvinar lectus elit vitae diam.',
+			'Proin ut nibh.',
+			'Sed vestibulum, odio eget lacinia hendrerit, sem elit faucibus sem, at accumsan dolor ligula sit amet felis.',
+			'Etiam tincidunt.',
+			'Integer pellentesque lacus ut nibh.',
+			'Praesent interdum, turpis quis faucibus sagittis, neque nulla porta erat, vitae auctor neque nisl vitae ligula.',
+			'Nulla aliquet tincidunt risus.',
+			'Fusce cursus tempor velit.',
+			'Aenean blandit.',
+			'Morbi nisl.',
+			'Ut convallis leo luctus nibh.',
+			'Curabitur convallis, felis id scelerisque egestas, nunc turpis eleifend mauris, eget placerat leo nulla id sem.',
+			'Aliquam bibendum, erat et mollis tincidunt, velit magna facilisis nisi, pharetra venenatis sem libero non nibh.',
+			'Nullam elementum iaculis leo.',
+			'Aliquam a ipsum quis lectus elementum rutrum.',
+			'Suspendisse potenti.',
+			'Praesent cursus porta orci.',
+			'Suspendisse potenti.',
+			'Mauris lectus.',
+			'Vestibulum ut urna.',
+			'Mauris dapibus luctus mi.',
+			'Suspendisse faucibus eleifend diam.',
+			'Ut lacinia neque eu nulla.',
+			'Aliquam et mi.',
+			'Nullam nec urna ac mi hendrerit tempus.',
+			'Curabitur quis metus.',
+			'In hac habitasse platea dictumst.',
+			'Morbi pulvinar tempor nunc.',
+			'Maecenas adipiscing massa sed quam.',
+			'Integer dictum magna a tellus.',
+			'In orci.',
+			'Nulla sapien risus, lobortis vitae, posuere in, dictum nec, mi.',
+			'Etiam dignissim neque porta enim scelerisque egestas.',
+			'Sed nec massa.',
+			'Duis facilisis, ante non vehicula venenatis, risus lacus sagittis arcu, ut pretium turpis nunc ut tellus.',
+			'Aliquam erat volutpat.',
+			'Integer placerat diam quis metus.',
+			'Suspendisse potenti.',
+			'Ut et risus quis justo iaculis vestibulum.',
+			'Phasellus sed leo a massa sodales scelerisque.',
+			'Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.',
+			'Phasellus quis urna quis turpis tempor porta.',
+			'Vestibulum mollis, sapien et varius hendrerit, nisl quam hendrerit massa, vel feugiat dui erat ac arcu.',
+			'Curabitur consectetur, libero eget mattis feugiat, tortor lorem rhoncus purus, nec porta augue lectus vel ligula.',
+			'Proin posuere rhoncus ligula.',
+			'Ut sapien orci, tristique id, rhoncus ac, euismod sed, diam.',
+			'Etiam nibh urna, placerat ut, pulvinar gravida, rhoncus id, nibh.',
+			'Morbi consequat enim sed metus.',
+			'Nunc consectetur lectus ut erat.',
+			'Fusce metus lectus, ultricies non, fringilla quis, vulputate euismod, lorem.',
+			'Proin pretium cursus ipsum.',
+			'Nulla volutpat, turpis vel iaculis interdum, tortor eros molestie massa, id placerat massa magna vel magna.',
+			'Praesent in ipsum eu massa tempus euismod.',
+			'Mauris consequat.',
+			'Aenean venenatis felis vitae leo.',
+			'In faucibus fringilla ante.',
+			'Etiam leo sapien, varius vestibulum, tincidunt nec, laoreet eu, lectus.',
+			'Integer consectetur ipsum fringilla nunc.',
+			'Proin tincidunt pellentesque urna.',
+			'Phasellus mollis, orci id interdum condimentum, sapien nunc aliquam est, nec tristique odio mi vitae nibh.',
+			'Aliquam erat volutpat.',
+			'Aenean purus.',
+			'Fusce sodales pretium augue.',
+			'Proin tempor.',
+			'Mauris tristique lacinia tellus.',
+			'Sed tincidunt arcu eu quam.',
+			'Proin placerat, nulla sit amet sollicitudin rutrum, metus ipsum facilisis felis, eget dapibus ante elit nec nulla.',
+			'Morbi gravida pretium ante.',
+			'Nullam faucibus, urna vel porttitor sagittis, sapien diam tempor diam, ac tempor ipsum diam sit amet enim.',
+			'In porta rhoncus libero.',
+			'Suspendisse potenti.',
+			'Proin nec arcu eu ipsum sollicitudin hendrerit.',
+			'Suspendisse ullamcorper ligula sed risus.',
+			'Vivamus eget arcu in odio aliquam viverra.',
+			'Morbi vulputate tincidunt quam.',
+			'Suspendisse potenti.',
+			'Suspendisse aliquam risus vel neque.',
+			'Praesent fermentum suscipit eros.',
+			'Duis sit amet mauris.',
+			'Quisque at odio.',
+			'Sed nec augue et turpis tincidunt accumsan.',
+			'Pellentesque eu sem.',
+			'Praesent tellus metus, molestie non, tristique facilisis, rutrum ut, odio.',
+			'Nulla facilisis neque nec est.',
+			'Ut nunc nulla, dapibus sit amet, sollicitudin id, posuere eu, libero.',
+			'Curabitur elit.',
+			'Duis sapien ante, vulputate at, dapibus a, molestie eu, eros.',
+			'Nulla fringilla ipsum quis justo.',
+			'Suspendisse semper.',
+			'Aenean ac neque.',
+			'Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.',
+			'Nam imperdiet.',
+			'Phasellus varius dolor.',
+			'Vivamus iaculis tincidunt lacus.',
+			'Duis turpis tellus, pulvinar eu, interdum facilisis, euismod at, tellus.',
+			'Ut lacus.',
+			'Proin condimentum, neque quis rhoncus tempus, nunc risus imperdiet velit, non semper mauris dui ut dolor.',
+			'Donec convallis leo ut nunc.',
+			'Vestibulum vitae massa.',
+			'Integer mollis.',
+			'Nullam elementum.',
+			'Fusce pellentesque leo eu sapien.',
+			'Aliquam nunc.',
+			'Maecenas at diam.',
+			'Proin venenatis nisl nec eros.',
+			'Suspendisse potenti.',
+			'Suspendisse potenti.',
+			'Suspendisse condimentum.',
+			'Suspendisse et ante eu ante pulvinar ullamcorper.',
+			'Suspendisse potenti.',
+			'Vestibulum ut neque sed ante suscipit porttitor.',
+			'Nulla facilisi.',
+			'Proin odio.',
+			'Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.',
+			'Vivamus eget magna.',
+			'Suspendisse dignissim lacus non ipsum.',
+			'Phasellus in tortor.',
+			'Vivamus justo.',
+			'Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Fusce fringilla.',
+			'Donec vel orci.',
+			'Aenean elementum rutrum tellus.',
+			'Donec eleifend.',
+			'Sed nec sapien.',
+			'Suspendisse risus lacus, dictum eget, interdum sodales, pellentesque quis, risus.',
+			'Ut vitae turpis.',
+			'In lacus lectus, aliquet in, blandit eget, tristique id, enim.',
+			'Maecenas sed urna.',
+			'Morbi ullamcorper est sit amet nisi.',
+			'Aliquam erat volutpat.',
+			'Praesent non lorem nec eros dignissim fringilla.',
+			'Nullam rhoncus ligula et ligula.',
+			'Aenean non odio.',
+			'Mauris enim.',
+			'Ut elementum dapibus lacus.',
+			'Nulla venenatis metus ut neque.',
+			'Aliquam ultricies accumsan urna.',
+			'Aliquam vitae libero.',
+			'Nullam enim leo, scelerisque accumsan, sagittis vel, pellentesque et, ipsum.',
+			'Ut eu orci vitae elit mollis eleifend.',
+			'Proin tristique, purus iaculis ultrices pharetra, odio tellus sagittis sem, eget faucibus nunc libero non nibh.',
+			'Donec rutrum, sapien ornare lobortis fringilla, magna odio rhoncus mauris, quis rhoncus sapien erat et est.',
+			'Morbi a turpis non arcu auctor fermentum.',
+			'Suspendisse pharetra.',
+			'Praesent ligula.',
+			'Vivamus tristique, magna sed posuere ullamcorper, odio mi scelerisque massa, ut dapibus odio lacus tincidunt diam.',
+			'Maecenas pharetra libero quis tortor.',
+			'Quisque erat nunc, lacinia quis, dapibus eget, dignissim sed, lorem.',
+			'Pellentesque vitae arcu.',
+			'Nulla facilisi.',
+			'Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.',
+			'In hac habitasse platea dictumst.',
+			'Aenean suscipit metus at nunc fringilla tempor.',
+			'Aenean eget magna eget massa congue egestas.',
+			'In gravida leo vel felis.',
+			'Suspendisse potenti.',
+			'Vestibulum tristique condimentum justo.',
+			'Proin nec nunc in magna placerat tincidunt.',
+			'In eget felis quis dui blandit scelerisque.',
+			'Ut sapien eros, gravida nec, placerat et, luctus eu, libero.',
+			'Quisque eros elit, laoreet quis, consectetur ac, posuere ac, velit.',
+			'Vestibulum a lectus.',
+			'Suspendisse pretium, nisl nec facilisis ullamcorper, dui arcu eleifend urna, quis vulputate nibh enim eget magna.',
+			'Nam id enim.');
+
+		static protected $EmailDomainArray = array('hotmail.com', 'mail.nasa.gov', 'gmail.com', 'yahoo.com', 'rocketmail.com',
 			'lycos.com', 'sbcglobal.net', 'sbcyahoo.com', 'earthlink.net', 'attmail.com', 'aol.com', 'excite.com',
 			'northwestern.edu', 'rice.edu', 'freemail.com');
 	}
