@@ -11,7 +11,7 @@
 	for ($intIndex = 0; $intIndex < 10; $intIndex++) {
 		$strFirstName = QRandomDataGenerator::GenerateFirstName();
 		$strLastName = QRandomDataGenerator::GenerateLastName();
-		$strEmail = QRandomDataGenerator::GenerateUsername($strFirstName, $strLastName);
+		$strEmail = QRandomDataGenerator::GenerateWebsiteUrl($strFirstName, $strLastName);
 		print $strFirstName . ' ' . $strLastName . '  -  ' . $strEmail . "\r\n";
 	}
 

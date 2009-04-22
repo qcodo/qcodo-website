@@ -163,6 +163,28 @@
 		}
 
 		/**
+		 * Returns a randomly generated Home Page URL based on a first name and last name.
+		 * @param string $strFirstName first name of the email user
+		 * @param string $strLastName last name of the email user
+		 * @return string
+		 */
+		static public function GenerateHomeUrl($strFirstName, $strLastName) {
+			return 'http://www.' . QRandomDataGenerator::GenerateUsername($strFirstName, $strLastName) . '.' .
+				QRandomDataGenerator::$TldArray[rand(0, count(QRandomDataGenerator::$TldArray) - 1)] . '/';
+		}
+
+		/**
+		 * Returns a randomly generated Website URL
+		 * @return string
+		 */
+		static public function GenerateWebsiteUrl() {
+			$strDomain = QRandomDataGenerator::GenerateWord();
+			$strDomain = str_replace(' ', '', $strDomain);
+			return 'http://www.' . $strDomain . '.' .
+				QRandomDataGenerator::$TldArray[rand(0, count(QRandomDataGenerator::$TldArray) - 1)] . '/';
+		}
+
+		/**
 		 * Returns a randomly generated "username" based on a first name and last name.
 		 * @param string $strFirstName first name of the user
 		 * @param string $strLastName last name of the user
@@ -834,5 +856,7 @@
 		static protected $EmailDomainArray = array('hotmail.com', 'mail.nasa.gov', 'gmail.com', 'yahoo.com', 'rocketmail.com',
 			'lycos.com', 'sbcglobal.net', 'sbcyahoo.com', 'earthlink.net', 'attmail.com', 'aol.com', 'excite.com',
 			'northwestern.edu', 'rice.edu', 'freemail.com');
+
+		static protected $TldArray = array('com', 'net', 'org', 'co.uk', 'biz', 'info', 'tv', 'co.za');		
 	}
 ?>
