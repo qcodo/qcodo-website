@@ -83,6 +83,13 @@
 		QApplicationBase::$ClassFile['personmetacontrol'] = __DATA_META_CONTROLS__ . '/PersonMetaControl.class.php';
 		QApplicationBase::$ClassFile['persondatagrid'] = __DATA_META_CONTROLS__ . '/PersonDataGrid.class.php';
 
+	// ClassPaths for the Timezone class
+		QApplicationBase::$ClassFile['timezone'] = __DATA_CLASSES__ . '/Timezone.class.php';
+		QApplicationBase::$ClassFile['qqnodetimezone'] = __DATA_CLASSES__ . '/Timezone.class.php';
+		QApplicationBase::$ClassFile['qqreversereferencenodetimezone'] = __DATA_CLASSES__ . '/Timezone.class.php';
+		QApplicationBase::$ClassFile['timezonemetacontrol'] = __DATA_META_CONTROLS__ . '/TimezoneMetaControl.class.php';
+		QApplicationBase::$ClassFile['timezonedatagrid'] = __DATA_META_CONTROLS__ . '/TimezoneDataGrid.class.php';
+
 	// ClassPaths for the Topic class
 		QApplicationBase::$ClassFile['topic'] = __DATA_CLASSES__ . '/Topic.class.php';
 		QApplicationBase::$ClassFile['qqnodetopic'] = __DATA_CLASSES__ . '/Topic.class.php';

@@ -1,4 +1,4 @@
---- Altered from http://www.mediacollege.com/internet/samples/html/country-list.html
+/* Altered from http://www.mediacollege.com/internet/samples/html/country-list.html */
 
 INSERT INTO country(code, name) VALUES ('AF','Afghanistan');
 INSERT INTO country(code, name) VALUES ('AL','Albania');

@@ -1,8 +1,8 @@
---- Generated from script run on PHP 5.2.8 (using internal list of available TimeZone Identifiers):
----
----	foreach (DateTimeZone::ListIdentifiers() as $strName)
----		if (strpos($strName, '/') !== false)
----			print "INSERT INTO timezone(name) VALUES ('" . $strName . "');\r\n";
+/* Generated from script run on PHP 5.2.8 (using internal list of available TimeZone Identifiers):
+	foreach (DateTimeZone::ListIdentifiers() as $strName)
+		if (strpos($strName, '/') !== false)
+			print "INSERT INTO timezone(name) VALUES ('" . $strName . "');\r\n";
+*/
 
 INSERT INTO timezone(name) VALUES ('Africa/Abidjan');
 INSERT INTO timezone(name) VALUES ('Africa/Accra');

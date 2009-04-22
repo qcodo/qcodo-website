@@ -1,9 +1,9 @@
 <?php
 	/**
 	 * This is the "Meta" DataGrid class for the List functionality
-	 * of the Person class.  This code-generated class
+	 * of the Timezone class.  This code-generated class
 	 * contains a QDataGrid class which can be used by any QForm or QPanel,
-	 * listing a collection of Person objects.  It includes
+	 * listing a collection of Timezone objects.  It includes
 	 * functionality to perform pagination and sorting on columns.
 	 *
 	 * To take advantage of some (or all) of these control objects, you
@@ -16,7 +16,7 @@
 	 * @subpackage MetaControls
 	 * 
 	 */
-	class PersonDataGridGen extends QDataGrid {
+	class TimezoneDataGridGen extends QDataGrid {
 		/**
 		 * Standard DataGrid constructor which also pre-configures the DataBinder
 		 * to its own SimpleDataBinder.  Also pre-configures UseAjax to true.
@@ -33,9 +33,9 @@
 
 		/**
 		 * Given the description of the Column's contents, this is a simple, express
-		 * way of adding a column to this Person datagrid.  The description of a column's
+		 * way of adding a column to this Timezone datagrid.  The description of a column's
 		 * content can be either a text string description of a simple field name
-		 * in the Person object, or it can be any QQNode extending from QQN::Person().
+		 * in the Timezone object, or it can be any QQNode extending from QQN::Timezone().
 		 * 
 		 * MetaAddColumn will automatically pre-configure the column with the name, html
 		 * and sort rules given the content being specified.
@@ -43,7 +43,7 @@
 		 * Any of these things can be overridden with OverrideParameters.
 		 * 
 		 * Finally, $mixContents can also be an array of contents, if displaying and/or
-		 * sorting using two fields from the Person object.
+		 * sorting using two fields from the Timezone object.
 		 *
 		 * @param mixed $mixContents
 		 * @param string $objOverrideParameters[]
@@ -125,7 +125,7 @@
 		 * 
 		 * Also, $mixContent cannot be an array.  Only a single field can be specified.
 		 *
-		 * @param mixed $mixContent string or QQNode from Person
+		 * @param mixed $mixContent string or QQNode from Timezone
 		 * @param string $strTypeClassName the name of the TypeClass to use $NameArray against
 		 * @param mixed $objOverrideParameters
 		 */
@@ -226,7 +226,7 @@
 		public function MetaDataBinder() {
 			// Remember!  We need to first set the TotalItemCount, which will affect the calcuation of LimitClause below
 			if ($this->Paginator) {
-				$this->TotalItemCount = Person::CountAll();
+				$this->TotalItemCount = Timezone::CountAll();
 			}
 
 			// Setup the $objClauses Array
@@ -241,16 +241,16 @@
 			if ($objClause = $this->LimitClause)
 				array_push($objClauses, $objClause);
 
-			// Set the DataSource to be a Query result from Person, given the clauses above
-			$this->DataSource = Person::LoadAll($objClauses);
+			// Set the DataSource to be a Query result from Timezone, given the clauses above
+			$this->DataSource = Timezone::LoadAll($objClauses);
 		}
 
 
 		/**
 		 * Used internally by the Meta-based Add Column tools.
 		 *
-		 * Given a QQNode or a Text String, this will return a Person-based QQNode.
-		 * It will also verify that it is a proper Person-based QQNode, and will throw an exception otherwise.
+		 * Given a QQNode or a Text String, this will return a Timezone-based QQNode.
+		 * It will also verify that it is a proper Timezone-based QQNode, and will throw an exception otherwise.
 		 *
 		 * @param mixed $mixContent
 		 * @return QQNode
@@ -259,7 +259,7 @@
 			if ($mixContent instanceof QQNode) {
 				if (!$mixContent->_ParentNode)
 					throw new QCallerException('Content QQNode cannot be a Top Level Node');
-				if ($mixContent->_RootTableName == 'person') {
+				if ($mixContent->_RootTableName == 'timezone') {
 					if (($mixContent instanceof QQReverseReferenceNode) && !($mixContent->_PropertyName))
 						throw new QCallerException('Content QQNode cannot go through any "To Many" association nodes.');
 					$objCurrentNode = $mixContent;
@@ -271,28 +271,11 @@
 					}
 					return $mixContent;
 				} else
-					throw new QCallerException('Content QQNode has a root table of "' . $mixContent->_RootTableName . '". Must be a root of "person".');
+					throw new QCallerException('Content QQNode has a root table of "' . $mixContent->_RootTableName . '". Must be a root of "timezone".');
 			} else if (is_string($mixContent)) switch ($mixContent) {
-				case 'Id': return QQN::Person()->Id;
-				case 'PersonTypeId': return QQN::Person()->PersonTypeId;
-				case 'Username': return QQN::Person()->Username;
-				case 'Password': return QQN::Person()->Password;
-				case 'FirstName': return QQN::Person()->FirstName;
-				case 'LastName': return QQN::Person()->LastName;
-				case 'Email': return QQN::Person()->Email;
-				case 'PasswordResetFlag': return QQN::Person()->PasswordResetFlag;
-				case 'DisplayRealNameFlag': return QQN::Person()->DisplayRealNameFlag;
-				case 'DisplayEmailFlag': return QQN::Person()->DisplayEmailFlag;
-				case 'OptInFlag': return QQN::Person()->OptInFlag;
-				case 'DonatedFlag': return QQN::Person()->DonatedFlag;
-				case 'Location': return QQN::Person()->Location;
-				case 'CountryId': return QQN::Person()->CountryId;
-				case 'Country': return QQN::Person()->Country;
-				case 'Url': return QQN::Person()->Url;
-				case 'Timezone': return QQN::Person()->Timezone;
-				case 'TimezoneObject': return QQN::Person()->TimezoneObject;
-				case 'RegistrationDate': return QQN::Person()->RegistrationDate;
-				default: throw new QCallerException('Simple Property not found in PersonDataGrid content: ' . $mixContent);
+				case 'Id': return QQN::Timezone()->Id;
+				case 'Name': return QQN::Timezone()->Name;
+				default: throw new QCallerException('Simple Property not found in TimezoneDataGrid content: ' . $mixContent);
 			} else if ($mixContent instanceof QQAssociationNode)
 				throw new QCallerException('Content QQNode cannot go through any "To Many" association nodes.');
 			else

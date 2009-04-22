@@ -73,6 +73,12 @@
 			return new QQNodePerson('person', null, null);
 		}
 		/**
+		 * @return QQNodeTimezone
+		 */
+		static public function Timezone() {
+			return new QQNodeTimezone('timezone', null, null);
+		}
+		/**
 		 * @return QQNodeTopic
 		 */
 		static public function Topic() {
