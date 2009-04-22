@@ -15,4 +15,5 @@ mysql -uroot mysql -e "CREATE DATABASE $dbname DEFAULT CHARACTER SET UTF8"
 mysql -uroot $dbname < $dbpath/create.sql
 mysql -uroot $dbname < $dbpath/data.sql
 mysql -uroot $dbname < $dbpath/countries.sql
+mysql -uroot $dbname < $dbpath/timezones.sql
 echo "Done."

@@ -216,8 +216,9 @@
 		 *	zz - "PM" or "AM"
 		 *	zzz - "p.m." or "a.m."
 		 *	zzzz - "P.M." or "A.M."
-		 * 
-		 *  ttt - Timezone as a three-letter code (e.g. GMT)
+		 *
+		 *  ttt - Timezone Abbreviation as a three-letter code (e.g. PDT, GMT)
+		 *  tttt - Timezone Identifier (e.g. America/Los_Angeles)
 		 *
 		 * @param string $strFormat the format of the date
 		 * @return string the formatted date as a string
@@ -323,6 +324,9 @@
 						case 'ttt':
 							$strToReturn .= parent::format('T');
 							break;
+						case 'tttt':
+							$strToReturn .= parent::format('e');
+							break;
 
 						default:
 							$strToReturn .= $strArray[$intIndex];
@@ -371,6 +375,27 @@
 				parent::setDate(2000, 1, 1);
 			if ($this->blnTimeNull)
 				parent::setTime(0, 0, 0);
+		}
+		
+		/**
+		 * Converts the current QDateTime object to a different TimeZone.
+		 * 
+		 * TimeZone should be passed in as a string-based identifier.
+		 * 
+		 * Note that this is different than the built-in DateTime::SetTimezone() method which expicitly
+		 * takes in a DateTimeZone object.  QDateTime::ConvertToTimezone allows you to specify any
+		 * string-based Timezone identifier.  If none is specified and/or if the specified timezone
+		 * is not a valid identifier, it will simply remain unchanged as opposed to throwing an exeception
+		 * or error.
+		 * 
+		 * @param string $strTimezoneIdentifier a string-based parameter specifying a timezone identifier (e.g. America/Los_Angeles)
+		 * @return void
+		 */
+		public function ConvertToTimezone($strTimezoneIdentifier) {
+			try {
+				$dtzNewTimezone = new DateTimeZone($strTimezoneIdentifier);
+				$this->SetTimezone($dtzNewTimezone);
+			} catch (Exception $objExc) {}
 		}
 
 		public function IsEqualTo(QDateTime $dttCompare) {
