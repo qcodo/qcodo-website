@@ -28,10 +28,46 @@
 
 		/**
 		 * Generates and returns a random Female First Name
-		 * @return string
+		 * @return string the randomly-generated Female First Name
 		 */
 		static public function GenerateFemaleFirstName() {
 			return QRandomDataGenerator::$FemaleFirstNameArray[rand(0, count(QRandomDataGenerator::$FemaleFirstNameArray) - 1)];
+		}
+		
+		/**
+		 * Generates and returns a random Word
+		 * @return string the randomly-generated word
+		 */
+		static public function GenerateWord() {
+			return QRandomDataGenerator::$WordArray[rand(0, count(QRandomDataGenerator::$WordArray) - 1)];
+		}
+
+		/**
+		 * Generates and returns a random Title
+		 * @param integer $intMinimumWordCount number of words for the title, or if a range, the minimum number of words for the title
+		 * @param integer $intMaximumWordCount if a range, the maximum number of words for the title
+		 * @return string the randomly-generated title
+		 */
+		static public function GenerateTitle($intMinimumWordCount, $intMaximumWordCount = null) {
+			if (is_null($intMaximumWordCount))
+				$intCount = $intMinimumWordCount;
+			else
+				$intCount = rand($intMinimumWordCount, $intMaximumWordCount);
+
+			if (!($intCount >= 1))
+				throw new QCallerException('Requested word count must be greater than 0');
+
+			$strContent = null;
+			for ($intIndex = 0; $intIndex < $intCount; $intIndex++) {
+				$strContent .= QRandomDataGenerator::GenerateWord() . ' ';
+			}
+			$strContent = trim($strContent);
+
+			// Fixup due to double-word entries
+			while (str_word_count($strContent) > $intCount)
+				$strContent = trim(substr($strContent, 0, strrpos($strContent, ' ')));
+
+			return ucwords($strContent);
 		}
 
 		static public $FirstNameArray;
@@ -327,6 +363,70 @@
 			'Sheehan', 'Ward', 'Whelan', 'Lyons', 'Reid', 'Graham', 'Higgins', 'Cullen', 'Keane', 'King',
 			'Maher', 'McKenna', 'Bell', 'Scott', 'Hogan', 'O\'Keeffe', 'Magee', 'McNamara', 'McDonald', 'McDermott',
 			'Moloney', 'O\'Rourke', 'Buckley', 'Dwyer');
+
+		static public $WordArray = array('wheel', 'island', 'turtle', 'chair', 'ear', 'shoe', 'basketball',
+			'octopus', 'bed', 'flag', 'castle', 'paint', 'car', 'horse', 'pinwheel', 'kite', 'safetypin',
+			'submarine', 'watermelon', 'tea', 'telephone', 'whistle', 'piano', 'clam', 'ring', 'frog', 'olive',
+			'mailman', 'mountain', 'camel', 'wind', 'summer', 'green', 'surfboard', 'cow', 'pencil', 'shower',
+			'glasses', 'stove', 'chimney', 'window', 'rainbow', 'moon', 'peacock', 'sky', 'ocean', 'volcano',
+			'dinosaur', 'whale', 'elephant', 'flea', 'snail', 'fireplace', 'forest', 'spoon', 'lace', 'gasoline',
+			'rice', 'honeybee', 'shoulderpad', 'arm', 'ask', 'axe', 'bat', 'big', 'bow', 'box',
+			'cat', 'cup', 'dog', 'eat', 'egg', 'eye', 'fan', 'fin', 'fly', 'gap',
+			'gun', 'hat', 'jug', 'key', 'lip', 'mug', 'odd', 'jar', 'jet', 'peg',
+			'pen', 'pig', 'pin', 'sad', 'saw', 'see', 'sun', 'ton', 'van', 'bald',
+			'beak', 'bell', 'belt', 'bite', 'blow', 'bolt', 'bomb', 'bone', 'book', 'boot',
+			'cane', 'card', 'chin', 'clam', 'cork', 'crab', 'cube', 'dart', 'deep', 'dice',
+			'door', 'down', 'drip', 'duck', 'edge', 'face', 'fang', 'fish', 'fist', 'flag',
+			'fold', 'fork', 'full', 'golf', 'gong', 'grin', 'heel', 'hook', 'idea', 'inch',
+			'iron', 'jump', 'kick', 'kite', 'knee', 'lava', 'left', 'lens', 'loop', 'mail',
+			'male', 'mast', 'maze', 'moon', 'nail', 'neck', 'nose', 'oval', 'palm', 'path',
+			'pipe', 'plug', 'roof', 'root', 'rope', 'safe', 'sail', 'scar', 'ship', 'shin',
+			'sign', 'sing', 'skis', 'sock', 'sofa', 'spot', 'stop', 'swan', 'talk', 'tall',
+			'tent', 'thin', 'tree', 'well', 'west', 'wide', 'wing', 'wink', 'wolf', 'angle',
+			'ankle', 'anvil', 'apple', 'arrow', 'beard', 'blank', 'broom', 'cabin', 'chain', 'chair',
+			'cheek', 'clown', 'colon', 'crack', 'cross', 'crown', 'dream', 'dress', 'drink', 'eagle',
+			'elbow', 'empty', 'fence', 'ghost', 'globe', 'happy', 'heart', 'house', 'igloo', 'japan',
+			'joker', 'knife', 'label', 'lapel', 'large', 'laugh', 'medal', 'money', 'mouth', 'music',
+			'noose', 'north', 'panda', 'patch', 'peace', 'petal', 'piano', 'pivot', 'point', 'pound',
+			'prism', 'punch', 'quack', 'rifle', 'right', 'robot', 'round', 'ruler', 'scale', 'shark',
+			'shout', 'skull', 'small', 'smell', 'smile', 'smoke', 'snail', 'south', 'spoon', 'spray',
+			'straw', 'sword', 'tepee', 'thick', 'think', 'thumb', 'trunk', 'twins', 'unzip', 'whale',
+			'wheel', 'witch', 'anchor', 'apache', 'banana', 'barrel', 'bottle', 'buckle', 'bullet', 'cactus',
+			'camera', 'candle', 'cannon', 'castle', 'center', 'cheese', 'church', 'collar', 'comedy', 'convex',
+			'cookie', 'corner', 'divide', 'dollar', 'eraser', 'eskimo', 'faucet', 'female', 'finger', 'flower',
+			'funnel', 'grapes', 'hammer', 'helmet', 'icicle', 'kitten', 'ladder', 'launch', 'listen', 'locket',
+			'magnet', 'medium', 'middle', 'muscle', 'oneway', 'pencil', 'period', 'pillar', 'pirate', 'planet',
+			'poison', 'profit', 'puzzle', 'rabbit', 'record', 'rocket', 'saddle', 'salute', 'shield', 'shovel',
+			'shower', 'sickle', 'square', 'stairs', 'stereo', 'stilts', 'stripe', 'switch', 'target', 'tennis',
+			'toilet', 'tongue', 'trophy', 'turtle', 'zipper', 'antenna', 'balloon', 'barbell', 'bigfoot', 'chimney',
+			'concave', 'cupcake', 'cyclops', 'earmuff', 'earring', 'eyeball', 'feather', 'gondola', 'grenade',
+			'iceberg', 'keyhole', 'keyring', 'knuckle', 'ladybug', 'lighter', 'mailbox', 'missile', 'monster',
+			'necktie', 'overlap', 'padlock', 'pelican', 'percent', 'pulltab', 'pumpkin', 'pyramid', 'quarter',
+			'sausage', 'shallow', 'sheriff', 'snorkel', 'snowman', 'stinger', 'vampire', 'volcano', 'whisper',
+			'whistle', 'cassette', 'cemetery', 'chainsaw', 'cufflink', 'diagonal', 'diameter', 'dinosaur',
+			'doghouse', 'dominoes', 'doorbell', 'doorstep', 'dynamite', 'elephant', 'elevator', 'envelope',
+			'flagpole', 'football', 'goldfish', 'handball', 'headband', 'infinity', 'lollipop', 'mountain',
+			'multiply', 'mushroom', 'necklace', 'negative', 'overbite', 'positive', 'postcard', 'question',
+			'ricochet', 'scissors', 'shoelace', 'shoulder', 'starfish', 'suitcase', 'surround', 'teardrop',
+			'timebomb', 'triplets', 'trombone', 'umbrella', 'unicycle', 'upstairs', 'vertical', 'windmill',
+			'blockhead', 'boomerang', 'bumblebee', 'butterfly', 'checkmark', 'cigarette', 'different', 'direction',
+			'hamburger', 'honeycomb', 'horseshoe', 'hourglass', 'lampshade', 'launchpad', 'lightbulb', 'megaphone',
+			'northeast', 'northstar', 'northwest', 'parachute', 'periscope', 'rectangle', 'scarecrow', 'sideburns',
+			'southeast', 'southwest', 'stoplight', 'submarine', 'swordfish', 'telephone', 'binoculars', 'cloverleaf',
+			'downstairs', 'drawbridge', 'fingernail', 'flashlight', 'footprints', 'helicopter', 'horizontal',
+			'paintbrush', 'skateboard', 'sunglasses', 'tablespoon', 'toothbrush', 'caterpillar', 'loudspeaker',
+			'screwdriver', 'thermometer', 'wheelbarrow', 'cheeseburger', 'perpendicular', 't shirt', 'yo yo',
+			'big ben', 'big hand', 'bow tie', 'cue ball', 'eye patch', 'fig leaf', 'fly swatter', 'for sale',
+			'ice skate', 'peg leg', 'six oclock', 'ski jump', 'tea kettle', 'top hat', 'coat hanger', 'dead bolt',
+			'fire hydrant', 'four eyes', 'half hour', 'knee pad', 'left hand', 'ping pong', 'punk rocker', 'shoe box',
+			'slot machine', 'tape measure', 'wine glass', 'brick wall', 'bulls eye', 'candy cane', 'cross eyed',
+			'eight ball', 'first floor', 'great britain', 'laser beam', 'morse code', 'north pole', 'paint can',
+			'paper clip', 'right hand', 'short juice', 'south pole', 'stick figure', 'teddy bear', 'third floor',
+			'wrist watch', 'bottle cap', 'broken heart', 'bubble gum', 'credit card', 'floppy disk', 'little hand',
+			'rabbit ears', 'roller skate', 'saftey pin', 'second floor', 'spider web', 'spiked heel', 'square inch',
+			'toilet paper', 'tuning fork', 'upside down', 'diamond ring', 'eyebrow pencil', 'fishing pole',
+			'picture frame', 'electric guitar', 'icecream cone', 'shooting star', 'christmas tree', 'lightning rod',
+			'quotation marks', 'telephone pole', 'hot air balloon', 'tic tac toe', 'two left feet', 'ball and chain');
 
 		static public $EmailDomainArray = array('hotmail.com', 'mail.nasa.gov', 'gmail.com', 'yahoo.com', 'rocketmail.com',
 			'lycos.com', 'sbcglobal.net', 'sbcyahoo.com', 'earthlink.net', 'attmail.com', 'aol.com', 'excite.com',
