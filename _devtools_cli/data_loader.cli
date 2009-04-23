@@ -1,0 +1,13 @@
+#!/usr/local/bin/php
+<?php
+	require(dirname(__FILE__) . '/cli_prepend.inc.php');
+
+	while (QDataGen::DisplayWhileTask('Generating Person records', 100)) {
+		$objPerson = new Person();
+		$objPerson->PersonTypeId = QDataGen::GenerateFromArrayWithProbabilities(array(
+			array(PersonType::Administrator, 1),
+			array(PersonType::Contributor, 10),
+			array(PersonType::ForumsUser, 100)
+		));
+	}
+?>

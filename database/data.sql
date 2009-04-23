@@ -1,7 +1,12 @@
-INSERT INTO forum VALUES (1,1,'Official Announcements',1,'This is an announcement-only forum for official Qcodo announcements, releases, etc.',NULL);
-INSERT INTO forum VALUES (2,2,'General Discussion',0,'Forum for any topic of interest to the Qcodo community, including questions about the framework itself.',NULL);
-INSERT INTO forum VALUES (3,3,'Bugs and Issues',0,'This forum is specific to reporting bugs and issues with the framework.',NULL);
-INSERT INTO forum VALUES (4,4,'Feature Requests',0,'Forum discussing feature requests for the framework.',NULL);
+INSERT INTO `forum` VALUES 
+	(2,2,'General Discussion',0,'Forum for any topic of interest to the Qcodo community, including questions about the framework itself.',null),
+	(3,3,'Bugs and Issues',0,'This forum is specific to reporting bugs and issues with the framework.',null),
+	(4,7,'Feature Requests',0,'Forum discussing feature requests for the framework.',null),
+	(5,1,'Official Blog',1,'This is a blog of current Qcodo and Qcodo website development activities.  Official Qcodo announcements will also be posted here.',null),
+	(6,6,'Getting Started, Installation and Setup',0,'For questions, issues and topics that specifically deal with getting started with Qcodo (e.g. installation, configuration, subfoldering, etc.)',null),
+	(7,5,'Examples Site and \"Qcodo Manual\" Project',0,'For anything regarding the <a href=\"http://examples.qcodo.com/\" class=\"link_body\">Examples Site</a> or the <a href=\"http://qcodo.kri-soft.be/\" class=\"link_body\">\"Qcodo Manual\" Project</a>.',null),
+	(8,5,'QForge and Qcodo Hosting',0,'For anything regarding <a class=\"link_body\" href=\"http://qforge.qcodo.com/\">QForge</a> or <a class=\"link_body\" href=\"http://www.qcodohosting.org/\">Qcodo Hosting</a>',null),
+	(9,4,'Qcodo Jobs Board',0,'For Qcodo-related job openings, contracting opportunities and developers for hire.','2009-03-26 17:45:53');
 
 INSERT INTO person_type VALUES (1,'Administrator');
 INSERT INTO person_type VALUES (2,'Moderator');

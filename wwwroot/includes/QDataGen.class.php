@@ -1,11 +1,131 @@
 <?php
-	class QRandomDataGenerator extends QBaseClass {
+	class QDataGen extends QBaseClass {
+		/**
+		 * Given an array of items, this will randomly select an item from the array based on a set of probabilities.
+		 * 
+		 * This must be a multidimensional array, where each item is an array itself.  The first item within the subarray
+		 * is the item itself that could potentially be selected, and the second item within the subarray is the probability
+		 * that it should be selected.
+		 * 
+		 * Note that the probability calculation is based on adding up the probability numbers of all items.
+		 * 
+		 * For example, if you specified an array like the following:
+		 * 	$mixArray[0] = array('apple', 2);
+		 * 	$mixArray[1] = array('orange', 3);
+		 * 	$mixArray[2] = array('banana', 5);
+		 * this method will have a 20% chance of returning "apple", 30% chance of returning "orange",
+		 * and a 50% chance of returning "banana".
+		 * 
+		 * @param mixed[] $mixArray a multidimensional array of items to select from
+		 * @return mixed
+		 */
+		static public function GenerateFromArrayWithProbabilities($mixArray) {
+			$intTotalProbability = 0;
+			$intCount = count($mixArray);
+			for ($intIndex = 0; $intIndex < $intCount; $intIndex++) {
+				$intTotalProbability += $mixArray[$intIndex][1];
+				$mixArray[$intIndex][2] = $intTotalProbability;
+			}
+
+			$intResult = rand(0, $intTotalProbability - 1);
+			foreach ($mixArray as $mixItem) {
+				if ($intResult < $mixItem[2]) {
+					return $mixItem[0];
+				}
+			}
+
+			// If we are here, then something has gone wrong
+			throw new QCallerException('Invalid multidimensional array passed into method');
+		}
+
+		/**
+		 * Given an array of items, this will randomly select an item from the array.
+		 * 
+		 * This must be a simple (one-dimensional) array.
+		 * @param mixed[] $mixArray a simple (one-dimensional) array of items to select from
+		 * @return unknown_type
+		 */
+		static public function GenerateFromArray($mixArray) {
+			return $mixArray[rand(0, count($mixArray) - 1)];
+		}
+
+		static protected $ForEachTaskStep;
+
+		/**
+		 * Displays CLI status information, given a description of what is happening and the total number of steps to be iterated.
+		 * 
+		 * Meant to be used in conjunction with a foreach loop.  Does not manage within a while loop.  
+		 * @param string $strDescription the description of the current task
+		 * @param integer $intTotal the total number of iterations or steps for this task
+		 * @return void
+		 */
+		static public function DisplayForEachTaskStart($strDescription, $intTotal) {
+			print trim($strDescription) . ' (' . $intTotal . ')... [0]';
+			QDataGen::$ForEachTaskStep = 0;
+		}
+
+		/**
+		 * Updates CLI status information, iterating to the next step number
+		 * @return integer the next step number
+		 */
+		static public function DisplayForEachTaskNext() {
+			print str_repeat(chr(8), strlen(QDataGen::$ForEachTaskStep) + 1);
+			QDataGen::$ForEachTaskStep++;
+			print QDataGen::$ForEachTaskStep . ']';
+			return QDataGen::$ForEachTaskStep;
+		}
+		
+		/**
+		 * Updates CLI status information, specifying that the current task is done.
+		 * @return void
+		 */
+		static public function DisplayForEachTaskEnd() {
+			print " Done.\r\n";
+		}
+
+		static protected $WhileTaskStep = null;
+
+		/**
+		 * Displays and manages a while loop, displaying the description and status to the CLI output.
+		 * 
+		 * Meant to be used in conjunction with a while loop, managing the boolean while() logic, itself.
+		 * @param $strDescription the description of the while task being executed
+		 * @param $intTotal the total number of iterations
+		 * @return boolean true/false return value to be used within a while() statement
+		 */
+		static public function DisplayWhileTask($strDescription, $intTotal) {
+			if (is_null(QDataGen::$WhileTaskStep)) {
+				// Display the Start of the Task, and begin the iteration
+				print trim($strDescription) . ' (' . $intTotal . ')... [0]';
+				QDataGen::$WhileTaskStep = 0;
+				return true;
+
+			} else {
+
+				// Update the Status and Increment the Step
+				print str_repeat(chr(8), strlen(QDataGen::$WhileTaskStep) + 1);
+				QDataGen::$WhileTaskStep++;
+				print QDataGen::$WhileTaskStep . ']';
+
+				// Continue the Loop if applicable
+				if (QDataGen::$WhileTaskStep < $intTotal) {
+					return true;
+
+				// Otherwise, stop the loop and clear the loop state
+				} else {
+					QDataGen::$WhileTaskStep = null;
+					print " Done.\r\n";
+					return false;
+				}
+			}
+		}
+
 		/**
 		 * Generates and returns a random Last Name
 		 * @return string
 		 */
 		static public function GenerateLastName() {
-			return QRandomDataGenerator::$LastNameArray[rand(0, count(QRandomDataGenerator::$LastNameArray) - 1)];
+			return QDataGen::$LastNameArray[rand(0, count(QDataGen::$LastNameArray) - 1)];
 		}
 
 		/**
@@ -14,11 +134,11 @@
 		 */
 		static public function GenerateFirstName() {
 			// Create FirstNameArray if it is not yet created
-			if (!QRandomDataGenerator::$FirstNameArray) {
-				QRandomDataGenerator::$FirstNameArray = array_merge(QRandomDataGenerator::$MaleFirstNameArray, QRandomDataGenerator::$FemaleFirstNameArray);
+			if (!QDataGen::$FirstNameArray) {
+				QDataGen::$FirstNameArray = array_merge(QDataGen::$MaleFirstNameArray, QDataGen::$FemaleFirstNameArray);
 			}
 
-			return QRandomDataGenerator::$FirstNameArray[rand(0, count(QRandomDataGenerator::$FirstNameArray) - 1)];
+			return QDataGen::$FirstNameArray[rand(0, count(QDataGen::$FirstNameArray) - 1)];
 		}
 
 		/**
@@ -26,7 +146,7 @@
 		 * @return string
 		 */
 		static public function GenerateMaleFirstName() {
-			return QRandomDataGenerator::$MaleFirstNameArray[rand(0, count(QRandomDataGenerator::$MaleFirstNameArray) - 1)];
+			return QDataGen::$MaleFirstNameArray[rand(0, count(QDataGen::$MaleFirstNameArray) - 1)];
 		}
 
 		/**
@@ -34,7 +154,7 @@
 		 * @return string the randomly-generated Female First Name
 		 */
 		static public function GenerateFemaleFirstName() {
-			return QRandomDataGenerator::$FemaleFirstNameArray[rand(0, count(QRandomDataGenerator::$FemaleFirstNameArray) - 1)];
+			return QDataGen::$FemaleFirstNameArray[rand(0, count(QDataGen::$FemaleFirstNameArray) - 1)];
 		}
 		
 		/**
@@ -42,7 +162,7 @@
 		 * @return string the randomly-generated word
 		 */
 		static public function GenerateWord() {
-			return QRandomDataGenerator::$WordArray[rand(0, count(QRandomDataGenerator::$WordArray) - 1)];
+			return QDataGen::$WordArray[rand(0, count(QDataGen::$WordArray) - 1)];
 		}
 
 		/**
@@ -62,7 +182,7 @@
 
 			$strContent = null;
 			for ($intIndex = 0; $intIndex < $intCount; $intIndex++) {
-				$strContent .= QRandomDataGenerator::GenerateWord() . ' ';
+				$strContent .= QDataGen::GenerateWord() . ' ';
 			}
 			$strContent = trim($strContent);
 
@@ -91,7 +211,7 @@
 				
 				// Add Sentences
 				while (str_word_count($strParagraph) < $intWordCount) {
-					$strParagraph .= QRandomDataGenerator::$LipsumArray[rand(0, count(QRandomDataGenerator::$LipsumArray) - 1)] . '  ';
+					$strParagraph .= QDataGen::$LipsumArray[rand(0, count(QDataGen::$LipsumArray) - 1)] . '  ';
 				}
 
 				$strParagraph = trim($strParagraph);
@@ -159,7 +279,7 @@
 					break;
 			}
 
-			return $strEmail . QRandomDataGenerator::$EmailDomainArray[rand(0, count(QRandomDataGenerator::$EmailDomainArray) - 1)];
+			return $strEmail . QDataGen::$EmailDomainArray[rand(0, count(QDataGen::$EmailDomainArray) - 1)];
 		}
 
 		/**
@@ -169,8 +289,8 @@
 		 * @return string
 		 */
 		static public function GenerateHomeUrl($strFirstName, $strLastName) {
-			return 'http://www.' . QRandomDataGenerator::GenerateUsername($strFirstName, $strLastName) . '.' .
-				QRandomDataGenerator::$TldArray[rand(0, count(QRandomDataGenerator::$TldArray) - 1)] . '/';
+			return 'http://www.' . QDataGen::GenerateUsername($strFirstName, $strLastName) . '.' .
+				QDataGen::$TldArray[rand(0, count(QDataGen::$TldArray) - 1)] . '/';
 		}
 
 		/**
@@ -178,10 +298,10 @@
 		 * @return string
 		 */
 		static public function GenerateWebsiteUrl() {
-			$strDomain = QRandomDataGenerator::GenerateWord();
+			$strDomain = QDataGen::GenerateWord();
 			$strDomain = str_replace(' ', '', $strDomain);
 			return 'http://www.' . $strDomain . '.' .
-				QRandomDataGenerator::$TldArray[rand(0, count(QRandomDataGenerator::$TldArray) - 1)] . '/';
+				QDataGen::$TldArray[rand(0, count(QDataGen::$TldArray) - 1)] . '/';
 		}
 
 		/**

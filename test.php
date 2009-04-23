@@ -1,5 +1,22 @@
 <?php
 	require '/var/www/qcodo-website/_devtools_cli/cli_prepend.inc.php';
+	
+	$mixArray[0] = array('apple', 2);
+	$mixArray[1] = array('orange', 3);
+	$mixArray[2] = array('banana', 10);
+	$intCountArray = array();
+	$intIterations = 100000;
+	for ($intIndex = 0; $intIndex < $intIterations; $intIndex++) {
+		$strValue = QDataGen::GenerateFromArray($mixArray);
+		if (array_key_exists($strValue, $intCountArray))
+			$intCountArray[$strValue]++;
+		else
+			$intCountArray[$strValue] = 1;
+	}
+	foreach ($intCountArray as $strValue => $intCount)
+		print $strValue . ' - ' . ($intCount / $intIterations * 100) . "\r\n";
+	exit();
+
 //	foreach (DateTimeZone::listIdentifiers() as $strName)
 //		if (strpos($strName, '/') !== false)
 //			print "INSERT INTO timezone(name) VALUES ('" . $strName . "');\r\n";
