@@ -17,7 +17,7 @@
 	 * @subpackage GeneratedDataObjects
 	 * @property-read integer $Id the value for intId (Read-Only PK)
 	 * @property integer $PersonTypeId the value for intPersonTypeId (Not Null)
-	 * @property string $Username the value for strUsername (Not Null)
+	 * @property string $Username the value for strUsername (Unique)
 	 * @property string $Password the value for strPassword 
 	 * @property string $FirstName the value for strFirstName (Not Null)
 	 * @property string $LastName the value for strLastName (Not Null)
@@ -971,6 +971,18 @@
 			
 		/**
 		 * Load a single Person object,
+		 * by Username Index(es)
+		 * @param string $strUsername
+		 * @return Person
+		*/
+		public static function LoadByUsername($strUsername) {
+			return Person::QuerySingle(
+				QQ::Equal(QQN::Person()->Username, $strUsername)
+			);
+		}
+			
+		/**
+		 * Load a single Person object,
 		 * by Email Index(es)
 		 * @param string $strEmail
 		 * @return Person
@@ -1010,38 +1022,6 @@
 			// Call Person::QueryCount to perform the CountByPersonTypeId query
 			return Person::QueryCount(
 				QQ::Equal(QQN::Person()->PersonTypeId, $intPersonTypeId)
-			);
-		}
-			
-		/**
-		 * Load an array of Person objects,
-		 * by Username Index(es)
-		 * @param string $strUsername
-		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
-		 * @return Person[]
-		*/
-		public static function LoadArrayByUsername($strUsername, $objOptionalClauses = null) {
-			// Call Person::QueryArray to perform the LoadArrayByUsername query
-			try {
-				return Person::QueryArray(
-					QQ::Equal(QQN::Person()->Username, $strUsername),
-					$objOptionalClauses);
-			} catch (QCallerException $objExc) {
-				$objExc->IncrementOffset();
-				throw $objExc;
-			}
-		}
-
-		/**
-		 * Count People
-		 * by Username Index(es)
-		 * @param string $strUsername
-		 * @return int
-		*/
-		public static function CountByUsername($strUsername) {
-			// Call Person::QueryCount to perform the CountByUsername query
-			return Person::QueryCount(
-				QQ::Equal(QQN::Person()->Username, $strUsername)
 			);
 		}
 			
@@ -1426,7 +1406,7 @@
 
 				case 'Username':
 					/**
-					 * Gets the value for strUsername (Not Null)
+					 * Gets the value for strUsername (Unique)
 					 * @return string
 					 */
 					return $this->strUsername;
@@ -1721,7 +1701,7 @@
 
 				case 'Username':
 					/**
-					 * Sets the value for strUsername (Not Null)
+					 * Sets the value for strUsername (Unique)
 					 * @param string $mixValue
 					 * @return string
 					 */
