@@ -28,6 +28,10 @@
 	 * property-read QLabel $DescriptionLabel
 	 * property QDateTimePicker $LastPostDateControl
 	 * property-read QLabel $LastPostDateLabel
+	 * property QIntegerTextBox $MessageCountControl
+	 * property-read QLabel $MessageCountLabel
+	 * property QIntegerTextBox $TopicCountControl
+	 * property-read QLabel $TopicCountLabel
 	 * property-read string $TitleVerb a verb indicating whether or not this is being edited or created
 	 * property-read boolean $EditMode a boolean indicating whether or not this is being edited or created
 	 */
@@ -46,6 +50,8 @@
 		protected $chkAnnounceOnlyFlag;
 		protected $txtDescription;
 		protected $calLastPostDate;
+		protected $txtMessageCount;
+		protected $txtTopicCount;
 
 		// Controls that allow the viewing of Forum's individual data fields
 		protected $lblOrderNumber;
@@ -53,6 +59,8 @@
 		protected $lblAnnounceOnlyFlag;
 		protected $lblDescription;
 		protected $lblLastPostDate;
+		protected $lblMessageCount;
+		protected $lblTopicCount;
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
 
@@ -297,6 +305,58 @@
 
 		protected $strLastPostDateDateTimeFormat;
 
+		/**
+		 * Create and setup QIntegerTextBox txtMessageCount
+		 * @param string $strControlId optional ControlId to use
+		 * @return QIntegerTextBox
+		 */
+		public function txtMessageCount_Create($strControlId = null) {
+			$this->txtMessageCount = new QIntegerTextBox($this->objParentObject, $strControlId);
+			$this->txtMessageCount->Name = QApplication::Translate('Message Count');
+			$this->txtMessageCount->Text = $this->objForum->MessageCount;
+			return $this->txtMessageCount;
+		}
+
+		/**
+		 * Create and setup QLabel lblMessageCount
+		 * @param string $strControlId optional ControlId to use
+		 * @param string $strFormat optional sprintf format to use
+		 * @return QLabel
+		 */
+		public function lblMessageCount_Create($strControlId = null, $strFormat = null) {
+			$this->lblMessageCount = new QLabel($this->objParentObject, $strControlId);
+			$this->lblMessageCount->Name = QApplication::Translate('Message Count');
+			$this->lblMessageCount->Text = $this->objForum->MessageCount;
+			$this->lblMessageCount->Format = $strFormat;
+			return $this->lblMessageCount;
+		}
+
+		/**
+		 * Create and setup QIntegerTextBox txtTopicCount
+		 * @param string $strControlId optional ControlId to use
+		 * @return QIntegerTextBox
+		 */
+		public function txtTopicCount_Create($strControlId = null) {
+			$this->txtTopicCount = new QIntegerTextBox($this->objParentObject, $strControlId);
+			$this->txtTopicCount->Name = QApplication::Translate('Topic Count');
+			$this->txtTopicCount->Text = $this->objForum->TopicCount;
+			return $this->txtTopicCount;
+		}
+
+		/**
+		 * Create and setup QLabel lblTopicCount
+		 * @param string $strControlId optional ControlId to use
+		 * @param string $strFormat optional sprintf format to use
+		 * @return QLabel
+		 */
+		public function lblTopicCount_Create($strControlId = null, $strFormat = null) {
+			$this->lblTopicCount = new QLabel($this->objParentObject, $strControlId);
+			$this->lblTopicCount->Name = QApplication::Translate('Topic Count');
+			$this->lblTopicCount->Text = $this->objForum->TopicCount;
+			$this->lblTopicCount->Format = $strFormat;
+			return $this->lblTopicCount;
+		}
+
 
 
 		/**
@@ -324,6 +384,12 @@
 
 			if ($this->calLastPostDate) $this->calLastPostDate->DateTime = $this->objForum->LastPostDate;
 			if ($this->lblLastPostDate) $this->lblLastPostDate->Text = sprintf($this->objForum->LastPostDate) ? $this->objForum->__toString($this->strLastPostDateDateTimeFormat) : null;
+
+			if ($this->txtMessageCount) $this->txtMessageCount->Text = $this->objForum->MessageCount;
+			if ($this->lblMessageCount) $this->lblMessageCount->Text = $this->objForum->MessageCount;
+
+			if ($this->txtTopicCount) $this->txtTopicCount->Text = $this->objForum->TopicCount;
+			if ($this->lblTopicCount) $this->lblTopicCount->Text = $this->objForum->TopicCount;
 
 		}
 
@@ -353,6 +419,8 @@
 				if ($this->chkAnnounceOnlyFlag) $this->objForum->AnnounceOnlyFlag = $this->chkAnnounceOnlyFlag->Checked;
 				if ($this->txtDescription) $this->objForum->Description = $this->txtDescription->Text;
 				if ($this->calLastPostDate) $this->objForum->LastPostDate = $this->calLastPostDate->DateTime;
+				if ($this->txtMessageCount) $this->objForum->MessageCount = $this->txtMessageCount->Text;
+				if ($this->txtTopicCount) $this->objForum->TopicCount = $this->txtTopicCount->Text;
 
 				// Update any UniqueReverseReferences (if any) for controls that have been created for it
 
@@ -431,6 +499,18 @@
 				case 'LastPostDateLabel':
 					if (!$this->lblLastPostDate) return $this->lblLastPostDate_Create();
 					return $this->lblLastPostDate;
+				case 'MessageCountControl':
+					if (!$this->txtMessageCount) return $this->txtMessageCount_Create();
+					return $this->txtMessageCount;
+				case 'MessageCountLabel':
+					if (!$this->lblMessageCount) return $this->lblMessageCount_Create();
+					return $this->lblMessageCount;
+				case 'TopicCountControl':
+					if (!$this->txtTopicCount) return $this->txtTopicCount_Create();
+					return $this->txtTopicCount;
+				case 'TopicCountLabel':
+					if (!$this->lblTopicCount) return $this->lblTopicCount_Create();
+					return $this->lblTopicCount;
 				default:
 					try {
 						return parent::__get($strName);
@@ -465,6 +545,10 @@
 						return ($this->txtDescription = QType::Cast($mixValue, 'QControl'));
 					case 'LastPostDateControl':
 						return ($this->calLastPostDate = QType::Cast($mixValue, 'QControl'));
+					case 'MessageCountControl':
+						return ($this->txtMessageCount = QType::Cast($mixValue, 'QControl'));
+					case 'TopicCountControl':
+						return ($this->txtTopicCount = QType::Cast($mixValue, 'QControl'));
 					default:
 						return parent::__set($strName, $mixValue);
 				}

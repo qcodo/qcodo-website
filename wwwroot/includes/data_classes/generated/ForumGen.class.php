@@ -21,6 +21,8 @@
 	 * @property boolean $AnnounceOnlyFlag the value for blnAnnounceOnlyFlag 
 	 * @property string $Description the value for strDescription 
 	 * @property QDateTime $LastPostDate the value for dttLastPostDate 
+	 * @property integer $MessageCount the value for intMessageCount 
+	 * @property integer $TopicCount the value for intTopicCount 
 	 * @property-read Message $_Message the value for the private _objMessage (Read-Only) if set due to an expansion on the message.forum_id reverse relationship
 	 * @property-read Message[] $_MessageArray the value for the private _objMessageArray (Read-Only) if set due to an ExpandAsArray on the message.forum_id reverse relationship
 	 * @property-read Topic $_Topic the value for the private _objTopic (Read-Only) if set due to an expansion on the topic.forum_id reverse relationship
@@ -81,6 +83,22 @@
 		 */
 		protected $dttLastPostDate;
 		const LastPostDateDefault = null;
+
+
+		/**
+		 * Protected member variable that maps to the database column forum.message_count
+		 * @var integer intMessageCount
+		 */
+		protected $intMessageCount;
+		const MessageCountDefault = null;
+
+
+		/**
+		 * Protected member variable that maps to the database column forum.topic_count
+		 * @var integer intTopicCount
+		 */
+		protected $intTopicCount;
+		const TopicCountDefault = null;
 
 
 		/**
@@ -406,6 +424,8 @@
 			$objBuilder->AddSelectItem($strTableName, 'announce_only_flag', $strAliasPrefix . 'announce_only_flag');
 			$objBuilder->AddSelectItem($strTableName, 'description', $strAliasPrefix . 'description');
 			$objBuilder->AddSelectItem($strTableName, 'last_post_date', $strAliasPrefix . 'last_post_date');
+			$objBuilder->AddSelectItem($strTableName, 'message_count', $strAliasPrefix . 'message_count');
+			$objBuilder->AddSelectItem($strTableName, 'topic_count', $strAliasPrefix . 'topic_count');
 		}
 
 
@@ -495,6 +515,10 @@
 			$objToReturn->strDescription = $objDbRow->GetColumn($strAliasName, 'VarChar');
 			$strAliasName = array_key_exists($strAliasPrefix . 'last_post_date', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'last_post_date'] : $strAliasPrefix . 'last_post_date';
 			$objToReturn->dttLastPostDate = $objDbRow->GetColumn($strAliasName, 'DateTime');
+			$strAliasName = array_key_exists($strAliasPrefix . 'message_count', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'message_count'] : $strAliasPrefix . 'message_count';
+			$objToReturn->intMessageCount = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'topic_count', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'topic_count'] : $strAliasPrefix . 'topic_count';
+			$objToReturn->intTopicCount = $objDbRow->GetColumn($strAliasName, 'Integer');
 
 			// Instantiate Virtual Attributes
 			foreach ($objDbRow->GetColumnNameArray() as $strColumnName => $mixValue) {
@@ -622,13 +646,17 @@
 							`name`,
 							`announce_only_flag`,
 							`description`,
-							`last_post_date`
+							`last_post_date`,
+							`message_count`,
+							`topic_count`
 						) VALUES (
 							' . $objDatabase->SqlVariable($this->intOrderNumber) . ',
 							' . $objDatabase->SqlVariable($this->strName) . ',
 							' . $objDatabase->SqlVariable($this->blnAnnounceOnlyFlag) . ',
 							' . $objDatabase->SqlVariable($this->strDescription) . ',
-							' . $objDatabase->SqlVariable($this->dttLastPostDate) . '
+							' . $objDatabase->SqlVariable($this->dttLastPostDate) . ',
+							' . $objDatabase->SqlVariable($this->intMessageCount) . ',
+							' . $objDatabase->SqlVariable($this->intTopicCount) . '
 						)
 					');
 
@@ -648,7 +676,9 @@
 							`name` = ' . $objDatabase->SqlVariable($this->strName) . ',
 							`announce_only_flag` = ' . $objDatabase->SqlVariable($this->blnAnnounceOnlyFlag) . ',
 							`description` = ' . $objDatabase->SqlVariable($this->strDescription) . ',
-							`last_post_date` = ' . $objDatabase->SqlVariable($this->dttLastPostDate) . '
+							`last_post_date` = ' . $objDatabase->SqlVariable($this->dttLastPostDate) . ',
+							`message_count` = ' . $objDatabase->SqlVariable($this->intMessageCount) . ',
+							`topic_count` = ' . $objDatabase->SqlVariable($this->intTopicCount) . '
 						WHERE
 							`id` = ' . $objDatabase->SqlVariable($this->intId) . '
 					');
@@ -732,6 +762,8 @@
 			$this->blnAnnounceOnlyFlag = $objReloaded->blnAnnounceOnlyFlag;
 			$this->strDescription = $objReloaded->strDescription;
 			$this->dttLastPostDate = $objReloaded->dttLastPostDate;
+			$this->intMessageCount = $objReloaded->intMessageCount;
+			$this->intTopicCount = $objReloaded->intTopicCount;
 		}
 
 
@@ -793,6 +825,20 @@
 					 * @return QDateTime
 					 */
 					return $this->dttLastPostDate;
+
+				case 'MessageCount':
+					/**
+					 * Gets the value for intMessageCount 
+					 * @return integer
+					 */
+					return $this->intMessageCount;
+
+				case 'TopicCount':
+					/**
+					 * Gets the value for intTopicCount 
+					 * @return integer
+					 */
+					return $this->intTopicCount;
 
 
 				///////////////////
@@ -923,6 +969,32 @@
 					 */
 					try {
 						return ($this->dttLastPostDate = QType::Cast($mixValue, QType::DateTime));
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
+				case 'MessageCount':
+					/**
+					 * Sets the value for intMessageCount 
+					 * @param integer $mixValue
+					 * @return integer
+					 */
+					try {
+						return ($this->intMessageCount = QType::Cast($mixValue, QType::Integer));
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
+				case 'TopicCount':
+					/**
+					 * Sets the value for intTopicCount 
+					 * @param integer $mixValue
+					 * @return integer
+					 */
+					try {
+						return ($this->intTopicCount = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {
 						$objExc->IncrementOffset();
 						throw $objExc;
@@ -1275,6 +1347,8 @@
 			$strToReturn .= '<element name="AnnounceOnlyFlag" type="xsd:boolean"/>';
 			$strToReturn .= '<element name="Description" type="xsd:string"/>';
 			$strToReturn .= '<element name="LastPostDate" type="xsd:dateTime"/>';
+			$strToReturn .= '<element name="MessageCount" type="xsd:int"/>';
+			$strToReturn .= '<element name="TopicCount" type="xsd:int"/>';
 			$strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
 			$strToReturn .= '</sequence></complexType>';
 			return $strToReturn;
@@ -1309,6 +1383,10 @@
 				$objToReturn->strDescription = $objSoapObject->Description;
 			if (property_exists($objSoapObject, 'LastPostDate'))
 				$objToReturn->dttLastPostDate = new QDateTime($objSoapObject->LastPostDate);
+			if (property_exists($objSoapObject, 'MessageCount'))
+				$objToReturn->intMessageCount = $objSoapObject->MessageCount;
+			if (property_exists($objSoapObject, 'TopicCount'))
+				$objToReturn->intTopicCount = $objSoapObject->TopicCount;
 			if (property_exists($objSoapObject, '__blnRestored'))
 				$objToReturn->__blnRestored = $objSoapObject->__blnRestored;
 			return $objToReturn;
@@ -1361,6 +1439,10 @@
 					return new QQNode('description', 'Description', 'string', $this);
 				case 'LastPostDate':
 					return new QQNode('last_post_date', 'LastPostDate', 'QDateTime', $this);
+				case 'MessageCount':
+					return new QQNode('message_count', 'MessageCount', 'integer', $this);
+				case 'TopicCount':
+					return new QQNode('topic_count', 'TopicCount', 'integer', $this);
 				case 'Message':
 					return new QQReverseReferenceNodeMessage($this, 'message', 'reverse_reference', 'forum_id');
 				case 'Topic':
@@ -1397,6 +1479,10 @@
 					return new QQNode('description', 'Description', 'string', $this);
 				case 'LastPostDate':
 					return new QQNode('last_post_date', 'LastPostDate', 'QDateTime', $this);
+				case 'MessageCount':
+					return new QQNode('message_count', 'MessageCount', 'integer', $this);
+				case 'TopicCount':
+					return new QQNode('topic_count', 'TopicCount', 'integer', $this);
 				case 'Message':
 					return new QQReverseReferenceNodeMessage($this, 'message', 'reverse_reference', 'forum_id');
 				case 'Topic':

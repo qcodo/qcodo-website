@@ -31,7 +31,7 @@
 		public function __get($strName) {
 			switch ($strName) {
 				case 'ReplyCount': 
-					$intMessageCount = $this->CountMessages() - 1;
+					$intMessageCount = $this->MessageCount - 1;
 					if ($intMessageCount == 0) return 'no replies';
 					else if ($intMessageCount == 1) return '1 reply';
 					else return $intMessageCount . ' replies';
@@ -48,6 +48,15 @@
 			}
 		}
 
+		/**
+		 * Given a Topic and the number of items in a "page", this will
+		 * return the page number that the topic shows up in
+		 * when listing all topics for the Topic's forum, assuming
+		 * the list of topics is ordered by reverse last_post_date
+		 * @param Topic $objTopic the topic to search for
+		 * @param integer $intItemsPerPage
+		 * @return unknown_type
+		 */
 		public static function GetPageNumber(Topic $objTopic, $intItemsPerPage) {
 			$objResult = Topic::GetDatabase()->Query('SELECT id FROM topic WHERE forum_id=' . $objTopic->ForumId . ' ORDER BY last_post_date DESC');
 			$intRecordNumber = 0;
@@ -60,6 +69,20 @@
 			$intPageNumber = floor($intRecordNumber / $intItemsPerPage);
 			if ($intRecordNumber % $intItemsPerPage) $intPageNumber++;
 			return $intPageNumber;
+		}
+
+
+		/**
+		 * This will refresh all the stats (last post date, message count) and save the record to the database
+		 * @return void
+		 */
+		public function RefreshStats() {
+			$objMessage = Message::QuerySingle(QQ::Equal(QQN::Message()->TopicId, $this->intId), QQ::Clause(QQ::OrderBy(QQN::Message()->PostDate, false), QQ::LimitInfo(1)));
+			$this->dttLastPostDate = $objMessage->PostDate;
+
+			$this->intMessageCount = Message::CountByTopicId($this->intId);
+
+			$this->Save();
 		}
 
 		// Override or Create New Load/Count methods

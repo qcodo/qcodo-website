@@ -26,6 +26,8 @@
 	 * property-read QLabel $PersonIdLabel
 	 * property QDateTimePicker $LastPostDateControl
 	 * property-read QLabel $LastPostDateLabel
+	 * property QIntegerTextBox $MessageCountControl
+	 * property-read QLabel $MessageCountLabel
 	 * property QIntegerTextBox $ViewCountControl
 	 * property-read QLabel $ViewCountLabel
 	 * property QListBox $PersonAsEmailControl
@@ -51,6 +53,7 @@
 		protected $txtName;
 		protected $lstPerson;
 		protected $calLastPostDate;
+		protected $txtMessageCount;
 		protected $txtViewCount;
 
 		// Controls that allow the viewing of Topic's individual data fields
@@ -58,6 +61,7 @@
 		protected $lblName;
 		protected $lblPersonId;
 		protected $lblLastPostDate;
+		protected $lblMessageCount;
 		protected $lblViewCount;
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
@@ -303,6 +307,32 @@
 		protected $strLastPostDateDateTimeFormat;
 
 		/**
+		 * Create and setup QIntegerTextBox txtMessageCount
+		 * @param string $strControlId optional ControlId to use
+		 * @return QIntegerTextBox
+		 */
+		public function txtMessageCount_Create($strControlId = null) {
+			$this->txtMessageCount = new QIntegerTextBox($this->objParentObject, $strControlId);
+			$this->txtMessageCount->Name = QApplication::Translate('Message Count');
+			$this->txtMessageCount->Text = $this->objTopic->MessageCount;
+			return $this->txtMessageCount;
+		}
+
+		/**
+		 * Create and setup QLabel lblMessageCount
+		 * @param string $strControlId optional ControlId to use
+		 * @param string $strFormat optional sprintf format to use
+		 * @return QLabel
+		 */
+		public function lblMessageCount_Create($strControlId = null, $strFormat = null) {
+			$this->lblMessageCount = new QLabel($this->objParentObject, $strControlId);
+			$this->lblMessageCount->Name = QApplication::Translate('Message Count');
+			$this->lblMessageCount->Text = $this->objTopic->MessageCount;
+			$this->lblMessageCount->Format = $strFormat;
+			return $this->lblMessageCount;
+		}
+
+		/**
 		 * Create and setup QIntegerTextBox txtViewCount
 		 * @param string $strControlId optional ControlId to use
 		 * @return QIntegerTextBox
@@ -495,6 +525,9 @@
 			if ($this->calLastPostDate) $this->calLastPostDate->DateTime = $this->objTopic->LastPostDate;
 			if ($this->lblLastPostDate) $this->lblLastPostDate->Text = sprintf($this->objTopic->LastPostDate) ? $this->objTopic->__toString($this->strLastPostDateDateTimeFormat) : null;
 
+			if ($this->txtMessageCount) $this->txtMessageCount->Text = $this->objTopic->MessageCount;
+			if ($this->lblMessageCount) $this->lblMessageCount->Text = $this->objTopic->MessageCount;
+
 			if ($this->txtViewCount) $this->txtViewCount->Text = $this->objTopic->ViewCount;
 			if ($this->lblViewCount) $this->lblViewCount->Text = $this->objTopic->ViewCount;
 
@@ -618,6 +651,7 @@
 				if ($this->txtName) $this->objTopic->Name = $this->txtName->Text;
 				if ($this->lstPerson) $this->objTopic->PersonId = $this->lstPerson->SelectedValue;
 				if ($this->calLastPostDate) $this->objTopic->LastPostDate = $this->calLastPostDate->DateTime;
+				if ($this->txtMessageCount) $this->objTopic->MessageCount = $this->txtMessageCount->Text;
 				if ($this->txtViewCount) $this->objTopic->ViewCount = $this->txtViewCount->Text;
 
 				// Update any UniqueReverseReferences (if any) for controls that have been created for it
@@ -697,6 +731,12 @@
 				case 'LastPostDateLabel':
 					if (!$this->lblLastPostDate) return $this->lblLastPostDate_Create();
 					return $this->lblLastPostDate;
+				case 'MessageCountControl':
+					if (!$this->txtMessageCount) return $this->txtMessageCount_Create();
+					return $this->txtMessageCount;
+				case 'MessageCountLabel':
+					if (!$this->lblMessageCount) return $this->lblMessageCount_Create();
+					return $this->lblMessageCount;
 				case 'ViewCountControl':
 					if (!$this->txtViewCount) return $this->txtViewCount_Create();
 					return $this->txtViewCount;
@@ -753,6 +793,8 @@
 						return ($this->lstPerson = QType::Cast($mixValue, 'QControl'));
 					case 'LastPostDateControl':
 						return ($this->calLastPostDate = QType::Cast($mixValue, 'QControl'));
+					case 'MessageCountControl':
+						return ($this->txtMessageCount = QType::Cast($mixValue, 'QControl'));
 					case 'ViewCountControl':
 						return ($this->txtViewCount = QType::Cast($mixValue, 'QControl'));
 					case 'PersonAsEmailControl':

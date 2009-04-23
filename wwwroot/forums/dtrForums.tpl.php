@@ -5,10 +5,12 @@
 	</p>
 	<div class="stats">
 		<div class="left">
-			<strong><?php _p($_ITEM->CountMessages()); ?></strong> messages in <strong><?php _p($_ITEM->CountTopics()); ?></strong> topics
+			<strong><?php _p($_ITEM->MessageCount); ?></strong> message<?php _p(($_ITEM->MessageCount != 1) ? 's' : ''); ?> in <strong><?php _p($_ITEM->TopicCount); ?></strong> topic<?php _p(($_ITEM->TopicCount != 1) ? 's' : ''); ?>
 		</div>
 		<div class="right">
-			last post on <strong><?php _p($_ITEM->LastPostDate->__toString('DDD MMM D, h:mm z')); ?></strong>
+			<?php if ($_ITEM->LastPostDate) { ?>
+				last post on <strong><?php _p($_ITEM->LastPostDate->__toString('DDD MMM D, h:mm z')); ?></strong>
+			<?php } ?>
 		</div>
 	</div>
 </div>

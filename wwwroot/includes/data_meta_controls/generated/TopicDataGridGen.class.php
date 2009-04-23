@@ -280,6 +280,7 @@
 				case 'PersonId': return QQN::Topic()->PersonId;
 				case 'Person': return QQN::Topic()->Person;
 				case 'LastPostDate': return QQN::Topic()->LastPostDate;
+				case 'MessageCount': return QQN::Topic()->MessageCount;
 				case 'ViewCount': return QQN::Topic()->ViewCount;
 				default: throw new QCallerException('Simple Property not found in TopicDataGrid content: ' . $mixContent);
 			} else if ($mixContent instanceof QQAssociationNode)

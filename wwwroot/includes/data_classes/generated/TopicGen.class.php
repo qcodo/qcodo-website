@@ -20,6 +20,7 @@
 	 * @property string $Name the value for strName 
 	 * @property integer $PersonId the value for intPersonId (Not Null)
 	 * @property QDateTime $LastPostDate the value for dttLastPostDate (Not Null)
+	 * @property integer $MessageCount the value for intMessageCount 
 	 * @property integer $ViewCount the value for intViewCount 
 	 * @property Forum $Forum the value for the Forum object referenced by intForumId (Not Null)
 	 * @property Person $Person the value for the Person object referenced by intPersonId (Not Null)
@@ -78,6 +79,14 @@
 		 */
 		protected $dttLastPostDate;
 		const LastPostDateDefault = null;
+
+
+		/**
+		 * Protected member variable that maps to the database column topic.message_count
+		 * @var integer intMessageCount
+		 */
+		protected $intMessageCount;
+		const MessageCountDefault = null;
 
 
 		/**
@@ -462,6 +471,7 @@
 			$objBuilder->AddSelectItem($strTableName, 'name', $strAliasPrefix . 'name');
 			$objBuilder->AddSelectItem($strTableName, 'person_id', $strAliasPrefix . 'person_id');
 			$objBuilder->AddSelectItem($strTableName, 'last_post_date', $strAliasPrefix . 'last_post_date');
+			$objBuilder->AddSelectItem($strTableName, 'message_count', $strAliasPrefix . 'message_count');
 			$objBuilder->AddSelectItem($strTableName, 'view_count', $strAliasPrefix . 'view_count');
 		}
 
@@ -578,6 +588,8 @@
 			$objToReturn->intPersonId = $objDbRow->GetColumn($strAliasName, 'Integer');
 			$strAliasName = array_key_exists($strAliasPrefix . 'last_post_date', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'last_post_date'] : $strAliasPrefix . 'last_post_date';
 			$objToReturn->dttLastPostDate = $objDbRow->GetColumn($strAliasName, 'DateTime');
+			$strAliasName = array_key_exists($strAliasPrefix . 'message_count', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'message_count'] : $strAliasPrefix . 'message_count';
+			$objToReturn->intMessageCount = $objDbRow->GetColumn($strAliasName, 'Integer');
 			$strAliasName = array_key_exists($strAliasPrefix . 'view_count', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'view_count'] : $strAliasPrefix . 'view_count';
 			$objToReturn->intViewCount = $objDbRow->GetColumn($strAliasName, 'Integer');
 
@@ -896,12 +908,14 @@
 							`name`,
 							`person_id`,
 							`last_post_date`,
+							`message_count`,
 							`view_count`
 						) VALUES (
 							' . $objDatabase->SqlVariable($this->intForumId) . ',
 							' . $objDatabase->SqlVariable($this->strName) . ',
 							' . $objDatabase->SqlVariable($this->intPersonId) . ',
 							' . $objDatabase->SqlVariable($this->dttLastPostDate) . ',
+							' . $objDatabase->SqlVariable($this->intMessageCount) . ',
 							' . $objDatabase->SqlVariable($this->intViewCount) . '
 						)
 					');
@@ -922,6 +936,7 @@
 							`name` = ' . $objDatabase->SqlVariable($this->strName) . ',
 							`person_id` = ' . $objDatabase->SqlVariable($this->intPersonId) . ',
 							`last_post_date` = ' . $objDatabase->SqlVariable($this->dttLastPostDate) . ',
+							`message_count` = ' . $objDatabase->SqlVariable($this->intMessageCount) . ',
 							`view_count` = ' . $objDatabase->SqlVariable($this->intViewCount) . '
 						WHERE
 							`id` = ' . $objDatabase->SqlVariable($this->intId) . '
@@ -1005,6 +1020,7 @@
 			$this->strName = $objReloaded->strName;
 			$this->PersonId = $objReloaded->PersonId;
 			$this->dttLastPostDate = $objReloaded->dttLastPostDate;
+			$this->intMessageCount = $objReloaded->intMessageCount;
 			$this->intViewCount = $objReloaded->intViewCount;
 		}
 
@@ -1060,6 +1076,13 @@
 					 * @return QDateTime
 					 */
 					return $this->dttLastPostDate;
+
+				case 'MessageCount':
+					/**
+					 * Gets the value for intMessageCount 
+					 * @return integer
+					 */
+					return $this->intMessageCount;
 
 				case 'ViewCount':
 					/**
@@ -1246,6 +1269,19 @@
 					 */
 					try {
 						return ($this->dttLastPostDate = QType::Cast($mixValue, QType::DateTime));
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
+				case 'MessageCount':
+					/**
+					 * Sets the value for intMessageCount 
+					 * @param integer $mixValue
+					 * @return integer
+					 */
+					try {
+						return ($this->intMessageCount = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {
 						$objExc->IncrementOffset();
 						throw $objExc;
@@ -1890,6 +1926,7 @@
 			$strToReturn .= '<element name="Name" type="xsd:string"/>';
 			$strToReturn .= '<element name="Person" type="xsd1:Person"/>';
 			$strToReturn .= '<element name="LastPostDate" type="xsd:dateTime"/>';
+			$strToReturn .= '<element name="MessageCount" type="xsd:int"/>';
 			$strToReturn .= '<element name="ViewCount" type="xsd:int"/>';
 			$strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
 			$strToReturn .= '</sequence></complexType>';
@@ -1927,6 +1964,8 @@
 				$objToReturn->Person = Person::GetObjectFromSoapObject($objSoapObject->Person);
 			if (property_exists($objSoapObject, 'LastPostDate'))
 				$objToReturn->dttLastPostDate = new QDateTime($objSoapObject->LastPostDate);
+			if (property_exists($objSoapObject, 'MessageCount'))
+				$objToReturn->intMessageCount = $objSoapObject->MessageCount;
 			if (property_exists($objSoapObject, 'ViewCount'))
 				$objToReturn->intViewCount = $objSoapObject->ViewCount;
 			if (property_exists($objSoapObject, '__blnRestored'))
@@ -2072,6 +2111,8 @@
 					return new QQNodePerson('person_id', 'Person', 'integer', $this);
 				case 'LastPostDate':
 					return new QQNode('last_post_date', 'LastPostDate', 'QDateTime', $this);
+				case 'MessageCount':
+					return new QQNode('message_count', 'MessageCount', 'integer', $this);
 				case 'ViewCount':
 					return new QQNode('view_count', 'ViewCount', 'integer', $this);
 				case 'PersonAsEmail':
@@ -2116,6 +2157,8 @@
 					return new QQNodePerson('person_id', 'Person', 'integer', $this);
 				case 'LastPostDate':
 					return new QQNode('last_post_date', 'LastPostDate', 'QDateTime', $this);
+				case 'MessageCount':
+					return new QQNode('message_count', 'MessageCount', 'integer', $this);
 				case 'ViewCount':
 					return new QQNode('view_count', 'ViewCount', 'integer', $this);
 				case 'PersonAsEmail':
