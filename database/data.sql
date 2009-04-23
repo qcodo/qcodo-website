@@ -22,3 +22,5 @@ INSERT INTO `download_category` VALUES
 INSERT INTO article_section VALUES(1,'Getting Started');
 INSERT INTO article_section VALUES(2,'Harnessing the Power of Qcodo');
 INSERT INTO article_section VALUES(3,'Advanced Topics');
+
+INSERT INTO person(person_type_id, username, first_name, last_name, email, password) VALUES (1, 'mikeho', 'Mike', 'Ho', 'mike@quasidea.com', '67a1e09bb1f83f5007dc119c14d663aa');

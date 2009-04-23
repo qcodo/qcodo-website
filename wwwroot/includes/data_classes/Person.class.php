@@ -75,21 +75,31 @@
 		
 		/**
 		 * Returns whether or not the passed-in password is valid
-		 * @param $strPassword string
+		 * @param string $strPassword
 		 * @return boolean
 		 */
 		public function IsPasswordValid($strPassword) {
-			$strPassword = trim(strtolower($strPassword));
-			return ($this->strPassword == $strPassword);
+			return ($this->strPassword == $this->EncryptPassword($strPassword));
 		}
-		
+
+		/**
+		 * Actually performs the encryption of the password, itself
+		 * @param string $strPassword the password to encrypt
+		 * @return string the encrypted password
+		 */
+		protected function EncryptPassword($strPassword) {
+			$strPassword = trim(strtolower($strPassword));
+			$strMd5 = md5('salt' . $strPassword);
+			return strtolower($strMd5);
+		}
+
 		/**
 		 * Sets the password and encrypts it
-		 * @param $strPassword string
+		 * @param string $strPassword
 		 * @return void
 		 */
 		public function SetPassword($strPassword) {
-			$this->strPassword = trim(strtolower($strPassword));
+			$this->strPassword = $this->EncryptPassword($strPassword);
 		}
 
 		/**

@@ -2,12 +2,17 @@
 <?php
 	require(dirname(__FILE__) . '/cli_prepend.inc.php');
 
-	while (QDataGen::DisplayWhileTask('Generating Person records', 100)) {
+	while (QDataGen::DisplayWhileTask('Generating Person records', 200)) {
 		$objPerson = new Person();
 		$objPerson->PersonTypeId = QDataGen::GenerateFromArrayWithProbabilities(array(
-			array(PersonType::Administrator, 1),
-			array(PersonType::Contributor, 10),
-			array(PersonType::ForumsUser, 100)
+			array(PersonType::Contributor, 5),
+			array(PersonType::ForumsUser, 95)
 		));
+		$objPerson->FirstName = QDataGen::GenerateFirstName();
+		$objPerson->LastName = QDataGen::GenerateLastName();
+		$objPerson->Username = QDataGen::GenerateUsername($objPerson->FirstName, $objPerson->LastName);
+		$objPerson->Email = QDataGen::GenerateEmail($objPerson->FirstName, $objPerson->LastName);
+		$objPerson->SetPassword('password');
+		$objPerson->Save();
 	}
 ?>
