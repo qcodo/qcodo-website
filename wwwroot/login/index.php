@@ -19,12 +19,12 @@
 			parent::Form_Create();
 
 			// Define Controls
-			$this->txtUsername = new QTextBox($this);
+			$this->txtUsername = new QTextBox($this, 'username');
 			$this->txtUsername->Name = 'Email / Username';
 			$this->txtUsername->MaxLength = Person::EmailMaxLength;
 			$this->txtUsername->Required = true;
 			
-			$this->txtPassword = new QTextBox($this);
+			$this->txtPassword = new QTextBox($this, 'password');
 			$this->txtPassword->Name = 'Password';
 			$this->txtPassword->MaxLength = Person::PasswordMaxLength;
 			$this->txtPassword->TextMode = QTextMode::Password;
