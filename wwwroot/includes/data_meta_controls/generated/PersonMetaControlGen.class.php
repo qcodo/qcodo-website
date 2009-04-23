@@ -46,8 +46,8 @@
 	 * property-read QLabel $CountryIdLabel
 	 * property QTextBox $UrlControl
 	 * property-read QLabel $UrlLabel
-	 * property QListBox $TimezoneControl
-	 * property-read QLabel $TimezoneLabel
+	 * property QListBox $TimezoneIdControl
+	 * property-read QLabel $TimezoneIdLabel
 	 * property QDateTimePicker $RegistrationDateControl
 	 * property-read QLabel $RegistrationDateLabel
 	 * property QListBox $TopicAsEmailControl
@@ -83,7 +83,7 @@
 		protected $txtLocation;
 		protected $lstCountry;
 		protected $txtUrl;
-		protected $lstTimezoneObject;
+		protected $lstTimezone;
 		protected $calRegistrationDate;
 
 		// Controls that allow the viewing of Person's individual data fields
@@ -101,7 +101,7 @@
 		protected $lblLocation;
 		protected $lblCountryId;
 		protected $lblUrl;
-		protected $lblTimezone;
+		protected $lblTimezoneId;
 		protected $lblRegistrationDate;
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
@@ -584,34 +584,34 @@
 		}
 
 		/**
-		 * Create and setup QListBox lstTimezoneObject
+		 * Create and setup QListBox lstTimezone
 		 * @param string $strControlId optional ControlId to use
 		 * @return QListBox
 		 */
-		public function lstTimezoneObject_Create($strControlId = null) {
-			$this->lstTimezoneObject = new QListBox($this->objParentObject, $strControlId);
-			$this->lstTimezoneObject->Name = QApplication::Translate('Timezone Object');
-			$this->lstTimezoneObject->AddItem(QApplication::Translate('- Select One -'), null);
-			$objTimezoneObjectArray = Timezone::LoadAll();
-			if ($objTimezoneObjectArray) foreach ($objTimezoneObjectArray as $objTimezoneObject) {
-				$objListItem = new QListItem($objTimezoneObject->__toString(), $objTimezoneObject->Id);
-				if (($this->objPerson->TimezoneObject) && ($this->objPerson->TimezoneObject->Id == $objTimezoneObject->Id))
+		public function lstTimezone_Create($strControlId = null) {
+			$this->lstTimezone = new QListBox($this->objParentObject, $strControlId);
+			$this->lstTimezone->Name = QApplication::Translate('Timezone');
+			$this->lstTimezone->AddItem(QApplication::Translate('- Select One -'), null);
+			$objTimezoneArray = Timezone::LoadAll();
+			if ($objTimezoneArray) foreach ($objTimezoneArray as $objTimezone) {
+				$objListItem = new QListItem($objTimezone->__toString(), $objTimezone->Id);
+				if (($this->objPerson->Timezone) && ($this->objPerson->Timezone->Id == $objTimezone->Id))
 					$objListItem->Selected = true;
-				$this->lstTimezoneObject->AddItem($objListItem);
+				$this->lstTimezone->AddItem($objListItem);
 			}
-			return $this->lstTimezoneObject;
+			return $this->lstTimezone;
 		}
 
 		/**
-		 * Create and setup QLabel lblTimezone
+		 * Create and setup QLabel lblTimezoneId
 		 * @param string $strControlId optional ControlId to use
 		 * @return QLabel
 		 */
-		public function lblTimezone_Create($strControlId = null) {
-			$this->lblTimezone = new QLabel($this->objParentObject, $strControlId);
-			$this->lblTimezone->Name = QApplication::Translate('Timezone Object');
-			$this->lblTimezone->Text = ($this->objPerson->TimezoneObject) ? $this->objPerson->TimezoneObject->__toString() : null;
-			return $this->lblTimezone;
+		public function lblTimezoneId_Create($strControlId = null) {
+			$this->lblTimezoneId = new QLabel($this->objParentObject, $strControlId);
+			$this->lblTimezoneId->Name = QApplication::Translate('Timezone');
+			$this->lblTimezoneId->Text = ($this->objPerson->Timezone) ? $this->objPerson->Timezone->__toString() : null;
+			return $this->lblTimezoneId;
 		}
 
 		/**
@@ -624,6 +624,7 @@
 			$this->calRegistrationDate->Name = QApplication::Translate('Registration Date');
 			$this->calRegistrationDate->DateTime = $this->objPerson->RegistrationDate;
 			$this->calRegistrationDate->DateTimePickerType = QDateTimePickerType::DateTime;
+			$this->calRegistrationDate->Required = true;
 			return $this->calRegistrationDate;
 		}
 
@@ -638,6 +639,7 @@
 			$this->lblRegistrationDate->Name = QApplication::Translate('Registration Date');
 			$this->strRegistrationDateDateTimeFormat = $strDateTimeFormat;
 			$this->lblRegistrationDate->Text = sprintf($this->objPerson->RegistrationDate) ? $this->objPerson->__toString($this->strRegistrationDateDateTimeFormat) : null;
+			$this->lblRegistrationDate->Required = true;
 			return $this->lblRegistrationDate;
 		}
 
@@ -828,18 +830,18 @@
 			if ($this->txtUrl) $this->txtUrl->Text = $this->objPerson->Url;
 			if ($this->lblUrl) $this->lblUrl->Text = $this->objPerson->Url;
 
-			if ($this->lstTimezoneObject) {
-					$this->lstTimezoneObject->RemoveAllItems();
-				$this->lstTimezoneObject->AddItem(QApplication::Translate('- Select One -'), null);
-				$objTimezoneObjectArray = Timezone::LoadAll();
-				if ($objTimezoneObjectArray) foreach ($objTimezoneObjectArray as $objTimezoneObject) {
-					$objListItem = new QListItem($objTimezoneObject->__toString(), $objTimezoneObject->Id);
-					if (($this->objPerson->TimezoneObject) && ($this->objPerson->TimezoneObject->Id == $objTimezoneObject->Id))
+			if ($this->lstTimezone) {
+					$this->lstTimezone->RemoveAllItems();
+				$this->lstTimezone->AddItem(QApplication::Translate('- Select One -'), null);
+				$objTimezoneArray = Timezone::LoadAll();
+				if ($objTimezoneArray) foreach ($objTimezoneArray as $objTimezone) {
+					$objListItem = new QListItem($objTimezone->__toString(), $objTimezone->Id);
+					if (($this->objPerson->Timezone) && ($this->objPerson->Timezone->Id == $objTimezone->Id))
 						$objListItem->Selected = true;
-					$this->lstTimezoneObject->AddItem($objListItem);
+					$this->lstTimezone->AddItem($objListItem);
 				}
 			}
-			if ($this->lblTimezone) $this->lblTimezone->Text = ($this->objPerson->TimezoneObject) ? $this->objPerson->TimezoneObject->__toString() : null;
+			if ($this->lblTimezoneId) $this->lblTimezoneId->Text = ($this->objPerson->Timezone) ? $this->objPerson->Timezone->__toString() : null;
 
 			if ($this->calRegistrationDate) $this->calRegistrationDate->DateTime = $this->objPerson->RegistrationDate;
 			if ($this->lblRegistrationDate) $this->lblRegistrationDate->Text = sprintf($this->objPerson->RegistrationDate) ? $this->objPerson->__toString($this->strRegistrationDateDateTimeFormat) : null;
@@ -974,7 +976,7 @@
 				if ($this->txtLocation) $this->objPerson->Location = $this->txtLocation->Text;
 				if ($this->lstCountry) $this->objPerson->CountryId = $this->lstCountry->SelectedValue;
 				if ($this->txtUrl) $this->objPerson->Url = $this->txtUrl->Text;
-				if ($this->lstTimezoneObject) $this->objPerson->Timezone = $this->lstTimezoneObject->SelectedValue;
+				if ($this->lstTimezone) $this->objPerson->TimezoneId = $this->lstTimezone->SelectedValue;
 				if ($this->calRegistrationDate) $this->objPerson->RegistrationDate = $this->calRegistrationDate->DateTime;
 
 				// Update any UniqueReverseReferences (if any) for controls that have been created for it
@@ -1114,12 +1116,12 @@
 				case 'UrlLabel':
 					if (!$this->lblUrl) return $this->lblUrl_Create();
 					return $this->lblUrl;
-				case 'TimezoneControl':
-					if (!$this->lstTimezoneObject) return $this->lstTimezoneObject_Create();
-					return $this->lstTimezoneObject;
-				case 'TimezoneLabel':
-					if (!$this->lblTimezone) return $this->lblTimezone_Create();
-					return $this->lblTimezone;
+				case 'TimezoneIdControl':
+					if (!$this->lstTimezone) return $this->lstTimezone_Create();
+					return $this->lstTimezone;
+				case 'TimezoneIdLabel':
+					if (!$this->lblTimezoneId) return $this->lblTimezoneId_Create();
+					return $this->lblTimezoneId;
 				case 'RegistrationDateControl':
 					if (!$this->calRegistrationDate) return $this->calRegistrationDate_Create();
 					return $this->calRegistrationDate;
@@ -1196,8 +1198,8 @@
 						return ($this->lstCountry = QType::Cast($mixValue, 'QControl'));
 					case 'UrlControl':
 						return ($this->txtUrl = QType::Cast($mixValue, 'QControl'));
-					case 'TimezoneControl':
-						return ($this->lstTimezoneObject = QType::Cast($mixValue, 'QControl'));
+					case 'TimezoneIdControl':
+						return ($this->lstTimezone = QType::Cast($mixValue, 'QControl'));
 					case 'RegistrationDateControl':
 						return ($this->calRegistrationDate = QType::Cast($mixValue, 'QControl'));
 					case 'TopicAsEmailControl':

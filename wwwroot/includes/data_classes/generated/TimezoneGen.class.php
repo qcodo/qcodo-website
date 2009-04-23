@@ -17,8 +17,8 @@
 	 * @subpackage GeneratedDataObjects
 	 * @property-read integer $Id the value for intId (Read-Only PK)
 	 * @property string $Name the value for strName (Unique)
-	 * @property-read Person $_Person the value for the private _objPerson (Read-Only) if set due to an expansion on the person.timezone reverse relationship
-	 * @property-read Person[] $_PersonArray the value for the private _objPersonArray (Read-Only) if set due to an ExpandAsArray on the person.timezone reverse relationship
+	 * @property-read Person $_Person the value for the private _objPerson (Read-Only) if set due to an expansion on the person.timezone_id reverse relationship
+	 * @property-read Person[] $_PersonArray the value for the private _objPersonArray (Read-Only) if set due to an ExpandAsArray on the person.timezone_id reverse relationship
 	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
 	class TimezoneGen extends QBaseClass {
@@ -684,7 +684,7 @@
 				case '_Person':
 					/**
 					 * Gets the value for the private _objPerson (Read-Only)
-					 * if set due to an expansion on the person.timezone reverse relationship
+					 * if set due to an expansion on the person.timezone_id reverse relationship
 					 * @return Person
 					 */
 					return $this->_objPerson;
@@ -692,7 +692,7 @@
 				case '_PersonArray':
 					/**
 					 * Gets the value for the private _objPersonArray (Read-Only)
-					 * if set due to an ExpandAsArray on the person.timezone reverse relationship
+					 * if set due to an ExpandAsArray on the person.timezone_id reverse relationship
 					 * @return Person[]
 					 */
 					return (array) $this->_objPersonArray;
@@ -783,7 +783,7 @@
 				return array();
 
 			try {
-				return Person::LoadArrayByTimezone($this->intId, $objOptionalClauses);
+				return Person::LoadArrayByTimezoneId($this->intId, $objOptionalClauses);
 			} catch (QCallerException $objExc) {
 				$objExc->IncrementOffset();
 				throw $objExc;
@@ -798,7 +798,7 @@
 			if ((is_null($this->intId)))
 				return 0;
 
-			return Person::CountByTimezone($this->intId);
+			return Person::CountByTimezoneId($this->intId);
 		}
 
 		/**
@@ -820,7 +820,7 @@
 				UPDATE
 					`person`
 				SET
-					`timezone` = ' . $objDatabase->SqlVariable($this->intId) . '
+					`timezone_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 				WHERE
 					`id` = ' . $objDatabase->SqlVariable($objPerson->Id) . '
 			');
@@ -845,10 +845,10 @@
 				UPDATE
 					`person`
 				SET
-					`timezone` = null
+					`timezone_id` = null
 				WHERE
 					`id` = ' . $objDatabase->SqlVariable($objPerson->Id) . ' AND
-					`timezone` = ' . $objDatabase->SqlVariable($this->intId) . '
+					`timezone_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 			');
 		}
 
@@ -868,9 +868,9 @@
 				UPDATE
 					`person`
 				SET
-					`timezone` = null
+					`timezone_id` = null
 				WHERE
-					`timezone` = ' . $objDatabase->SqlVariable($this->intId) . '
+					`timezone_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 			');
 		}
 
@@ -894,7 +894,7 @@
 					`person`
 				WHERE
 					`id` = ' . $objDatabase->SqlVariable($objPerson->Id) . ' AND
-					`timezone` = ' . $objDatabase->SqlVariable($this->intId) . '
+					`timezone_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 			');
 		}
 
@@ -914,7 +914,7 @@
 				DELETE FROM
 					`person`
 				WHERE
-					`timezone` = ' . $objDatabase->SqlVariable($this->intId) . '
+					`timezone_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 			');
 		}
 
@@ -999,7 +999,7 @@
 				case 'Name':
 					return new QQNode('name', 'Name', 'string', $this);
 				case 'Person':
-					return new QQReverseReferenceNodePerson($this, 'person', 'reverse_reference', 'timezone');
+					return new QQReverseReferenceNodePerson($this, 'person', 'reverse_reference', 'timezone_id');
 
 				case '_PrimaryKeyNode':
 					return new QQNode('id', 'Id', 'integer', $this);
@@ -1025,7 +1025,7 @@
 				case 'Name':
 					return new QQNode('name', 'Name', 'string', $this);
 				case 'Person':
-					return new QQReverseReferenceNodePerson($this, 'person', 'reverse_reference', 'timezone');
+					return new QQReverseReferenceNodePerson($this, 'person', 'reverse_reference', 'timezone_id');
 
 				case '_PrimaryKeyNode':
 					return new QQNode('id', 'Id', 'integer', $this);

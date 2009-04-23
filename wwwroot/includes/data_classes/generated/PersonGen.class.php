@@ -30,10 +30,10 @@
 	 * @property string $Location the value for strLocation 
 	 * @property integer $CountryId the value for intCountryId 
 	 * @property string $Url the value for strUrl 
-	 * @property integer $Timezone the value for intTimezone 
-	 * @property QDateTime $RegistrationDate the value for dttRegistrationDate 
+	 * @property integer $TimezoneId the value for intTimezoneId 
+	 * @property QDateTime $RegistrationDate the value for dttRegistrationDate (Not Null)
 	 * @property Country $Country the value for the Country object referenced by intCountryId 
-	 * @property Timezone $TimezoneObject the value for the Timezone object referenced by intTimezone 
+	 * @property Timezone $Timezone the value for the Timezone object referenced by intTimezoneId 
 	 * @property-read Topic $_TopicAsEmail the value for the private _objTopicAsEmail (Read-Only) if set due to an expansion on the email_topic_person_assn association table
 	 * @property-read Topic[] $_TopicAsEmailArray the value for the private _objTopicAsEmailArray (Read-Only) if set due to an ExpandAsArray on the email_topic_person_assn association table
 	 * @property-read Topic $_TopicAsReadOnce the value for the private _objTopicAsReadOnce (Read-Only) if set due to an expansion on the read_once_topic_person_assn association table
@@ -184,11 +184,11 @@
 
 
 		/**
-		 * Protected member variable that maps to the database column person.timezone
-		 * @var integer intTimezone
+		 * Protected member variable that maps to the database column person.timezone_id
+		 * @var integer intTimezoneId
 		 */
-		protected $intTimezone;
-		const TimezoneDefault = null;
+		protected $intTimezoneId;
+		const TimezoneIdDefault = null;
 
 
 		/**
@@ -345,13 +345,13 @@
 
 		/**
 		 * Protected member variable that contains the object pointed by the reference
-		 * in the database column person.timezone.
+		 * in the database column person.timezone_id.
 		 *
-		 * NOTE: Always use the TimezoneObject property getter to correctly retrieve this Timezone object.
+		 * NOTE: Always use the Timezone property getter to correctly retrieve this Timezone object.
 		 * (Because this class implements late binding, this variable reference MAY be null.)
-		 * @var Timezone objTimezoneObject
+		 * @var Timezone objTimezone
 		 */
-		protected $objTimezoneObject;
+		protected $objTimezone;
 
 
 
@@ -631,7 +631,7 @@
 			$objBuilder->AddSelectItem($strTableName, 'location', $strAliasPrefix . 'location');
 			$objBuilder->AddSelectItem($strTableName, 'country_id', $strAliasPrefix . 'country_id');
 			$objBuilder->AddSelectItem($strTableName, 'url', $strAliasPrefix . 'url');
-			$objBuilder->AddSelectItem($strTableName, 'timezone', $strAliasPrefix . 'timezone');
+			$objBuilder->AddSelectItem($strTableName, 'timezone_id', $strAliasPrefix . 'timezone_id');
 			$objBuilder->AddSelectItem($strTableName, 'registration_date', $strAliasPrefix . 'registration_date');
 		}
 
@@ -810,8 +810,8 @@
 			$objToReturn->intCountryId = $objDbRow->GetColumn($strAliasName, 'Integer');
 			$strAliasName = array_key_exists($strAliasPrefix . 'url', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'url'] : $strAliasPrefix . 'url';
 			$objToReturn->strUrl = $objDbRow->GetColumn($strAliasName, 'VarChar');
-			$strAliasName = array_key_exists($strAliasPrefix . 'timezone', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'timezone'] : $strAliasPrefix . 'timezone';
-			$objToReturn->intTimezone = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'timezone_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'timezone_id'] : $strAliasPrefix . 'timezone_id';
+			$objToReturn->intTimezoneId = $objDbRow->GetColumn($strAliasName, 'Integer');
 			$strAliasName = array_key_exists($strAliasPrefix . 'registration_date', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'registration_date'] : $strAliasPrefix . 'registration_date';
 			$objToReturn->dttRegistrationDate = $objDbRow->GetColumn($strAliasName, 'DateTime');
 
@@ -833,11 +833,11 @@
 			if (!is_null($objDbRow->GetColumn($strAliasName)))
 				$objToReturn->objCountry = Country::InstantiateDbRow($objDbRow, $strAliasPrefix . 'country_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 
-			// Check for TimezoneObject Early Binding
-			$strAlias = $strAliasPrefix . 'timezone__id';
+			// Check for Timezone Early Binding
+			$strAlias = $strAliasPrefix . 'timezone_id__id';
 			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
 			if (!is_null($objDbRow->GetColumn($strAliasName)))
-				$objToReturn->objTimezoneObject = Timezone::InstantiateDbRow($objDbRow, $strAliasPrefix . 'timezone__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+				$objToReturn->objTimezone = Timezone::InstantiateDbRow($objDbRow, $strAliasPrefix . 'timezone_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 
 
 
@@ -1059,16 +1059,16 @@
 			
 		/**
 		 * Load an array of Person objects,
-		 * by Timezone Index(es)
-		 * @param integer $intTimezone
+		 * by TimezoneId Index(es)
+		 * @param integer $intTimezoneId
 		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @return Person[]
 		*/
-		public static function LoadArrayByTimezone($intTimezone, $objOptionalClauses = null) {
-			// Call Person::QueryArray to perform the LoadArrayByTimezone query
+		public static function LoadArrayByTimezoneId($intTimezoneId, $objOptionalClauses = null) {
+			// Call Person::QueryArray to perform the LoadArrayByTimezoneId query
 			try {
 				return Person::QueryArray(
-					QQ::Equal(QQN::Person()->Timezone, $intTimezone),
+					QQ::Equal(QQN::Person()->TimezoneId, $intTimezoneId),
 					$objOptionalClauses);
 			} catch (QCallerException $objExc) {
 				$objExc->IncrementOffset();
@@ -1078,14 +1078,14 @@
 
 		/**
 		 * Count People
-		 * by Timezone Index(es)
-		 * @param integer $intTimezone
+		 * by TimezoneId Index(es)
+		 * @param integer $intTimezoneId
 		 * @return int
 		*/
-		public static function CountByTimezone($intTimezone) {
-			// Call Person::QueryCount to perform the CountByTimezone query
+		public static function CountByTimezoneId($intTimezoneId) {
+			// Call Person::QueryCount to perform the CountByTimezoneId query
 			return Person::QueryCount(
-				QQ::Equal(QQN::Person()->Timezone, $intTimezone)
+				QQ::Equal(QQN::Person()->TimezoneId, $intTimezoneId)
 			);
 		}
 
@@ -1226,7 +1226,7 @@
 							`location`,
 							`country_id`,
 							`url`,
-							`timezone`,
+							`timezone_id`,
 							`registration_date`
 						) VALUES (
 							' . $objDatabase->SqlVariable($this->intPersonTypeId) . ',
@@ -1243,7 +1243,7 @@
 							' . $objDatabase->SqlVariable($this->strLocation) . ',
 							' . $objDatabase->SqlVariable($this->intCountryId) . ',
 							' . $objDatabase->SqlVariable($this->strUrl) . ',
-							' . $objDatabase->SqlVariable($this->intTimezone) . ',
+							' . $objDatabase->SqlVariable($this->intTimezoneId) . ',
 							' . $objDatabase->SqlVariable($this->dttRegistrationDate) . '
 						)
 					');
@@ -1274,7 +1274,7 @@
 							`location` = ' . $objDatabase->SqlVariable($this->strLocation) . ',
 							`country_id` = ' . $objDatabase->SqlVariable($this->intCountryId) . ',
 							`url` = ' . $objDatabase->SqlVariable($this->strUrl) . ',
-							`timezone` = ' . $objDatabase->SqlVariable($this->intTimezone) . ',
+							`timezone_id` = ' . $objDatabase->SqlVariable($this->intTimezoneId) . ',
 							`registration_date` = ' . $objDatabase->SqlVariable($this->dttRegistrationDate) . '
 						WHERE
 							`id` = ' . $objDatabase->SqlVariable($this->intId) . '
@@ -1368,7 +1368,7 @@
 			$this->strLocation = $objReloaded->strLocation;
 			$this->CountryId = $objReloaded->CountryId;
 			$this->strUrl = $objReloaded->strUrl;
-			$this->Timezone = $objReloaded->Timezone;
+			$this->TimezoneId = $objReloaded->TimezoneId;
 			$this->dttRegistrationDate = $objReloaded->dttRegistrationDate;
 		}
 
@@ -1495,16 +1495,16 @@
 					 */
 					return $this->strUrl;
 
-				case 'Timezone':
+				case 'TimezoneId':
 					/**
-					 * Gets the value for intTimezone 
+					 * Gets the value for intTimezoneId 
 					 * @return integer
 					 */
-					return $this->intTimezone;
+					return $this->intTimezoneId;
 
 				case 'RegistrationDate':
 					/**
-					 * Gets the value for dttRegistrationDate 
+					 * Gets the value for dttRegistrationDate (Not Null)
 					 * @return QDateTime
 					 */
 					return $this->dttRegistrationDate;
@@ -1527,15 +1527,15 @@
 						throw $objExc;
 					}
 
-				case 'TimezoneObject':
+				case 'Timezone':
 					/**
-					 * Gets the value for the Timezone object referenced by intTimezone 
+					 * Gets the value for the Timezone object referenced by intTimezoneId 
 					 * @return Timezone
 					 */
 					try {
-						if ((!$this->objTimezoneObject) && (!is_null($this->intTimezone)))
-							$this->objTimezoneObject = Timezone::Load($this->intTimezone);
-						return $this->objTimezoneObject;
+						if ((!$this->objTimezone) && (!is_null($this->intTimezoneId)))
+							$this->objTimezone = Timezone::Load($this->intTimezoneId);
+						return $this->objTimezone;
 					} catch (QCallerException $objExc) {
 						$objExc->IncrementOffset();
 						throw $objExc;
@@ -1869,15 +1869,15 @@
 						throw $objExc;
 					}
 
-				case 'Timezone':
+				case 'TimezoneId':
 					/**
-					 * Sets the value for intTimezone 
+					 * Sets the value for intTimezoneId 
 					 * @param integer $mixValue
 					 * @return integer
 					 */
 					try {
-						$this->objTimezoneObject = null;
-						return ($this->intTimezone = QType::Cast($mixValue, QType::Integer));
+						$this->objTimezone = null;
+						return ($this->intTimezoneId = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {
 						$objExc->IncrementOffset();
 						throw $objExc;
@@ -1885,7 +1885,7 @@
 
 				case 'RegistrationDate':
 					/**
-					 * Sets the value for dttRegistrationDate 
+					 * Sets the value for dttRegistrationDate (Not Null)
 					 * @param QDateTime $mixValue
 					 * @return QDateTime
 					 */
@@ -1932,15 +1932,15 @@
 					}
 					break;
 
-				case 'TimezoneObject':
+				case 'Timezone':
 					/**
-					 * Sets the value for the Timezone object referenced by intTimezone 
+					 * Sets the value for the Timezone object referenced by intTimezoneId 
 					 * @param Timezone $mixValue
 					 * @return Timezone
 					 */
 					if (is_null($mixValue)) {
-						$this->intTimezone = null;
-						$this->objTimezoneObject = null;
+						$this->intTimezoneId = null;
+						$this->objTimezone = null;
 						return null;
 					} else {
 						// Make sure $mixValue actually is a Timezone object
@@ -1953,11 +1953,11 @@
 
 						// Make sure $mixValue is a SAVED Timezone object
 						if (is_null($mixValue->Id))
-							throw new QCallerException('Unable to set an unsaved TimezoneObject for this Person');
+							throw new QCallerException('Unable to set an unsaved Timezone for this Person');
 
 						// Update Local Member Variables
-						$this->objTimezoneObject = $mixValue;
-						$this->intTimezone = $mixValue->Id;
+						$this->objTimezone = $mixValue;
+						$this->intTimezoneId = $mixValue->Id;
 
 						// Return $mixValue
 						return $mixValue;
@@ -2982,7 +2982,7 @@
 			$strToReturn .= '<element name="Location" type="xsd:string"/>';
 			$strToReturn .= '<element name="Country" type="xsd1:Country"/>';
 			$strToReturn .= '<element name="Url" type="xsd:string"/>';
-			$strToReturn .= '<element name="TimezoneObject" type="xsd1:Timezone"/>';
+			$strToReturn .= '<element name="Timezone" type="xsd1:Timezone"/>';
 			$strToReturn .= '<element name="RegistrationDate" type="xsd:dateTime"/>';
 			$strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
 			$strToReturn .= '</sequence></complexType>';
@@ -3039,9 +3039,9 @@
 				$objToReturn->Country = Country::GetObjectFromSoapObject($objSoapObject->Country);
 			if (property_exists($objSoapObject, 'Url'))
 				$objToReturn->strUrl = $objSoapObject->Url;
-			if ((property_exists($objSoapObject, 'TimezoneObject')) &&
-				($objSoapObject->TimezoneObject))
-				$objToReturn->TimezoneObject = Timezone::GetObjectFromSoapObject($objSoapObject->TimezoneObject);
+			if ((property_exists($objSoapObject, 'Timezone')) &&
+				($objSoapObject->Timezone))
+				$objToReturn->Timezone = Timezone::GetObjectFromSoapObject($objSoapObject->Timezone);
 			if (property_exists($objSoapObject, 'RegistrationDate'))
 				$objToReturn->dttRegistrationDate = new QDateTime($objSoapObject->RegistrationDate);
 			if (property_exists($objSoapObject, '__blnRestored'))
@@ -3066,10 +3066,10 @@
 				$objObject->objCountry = Country::GetSoapObjectFromObject($objObject->objCountry, false);
 			else if (!$blnBindRelatedObjects)
 				$objObject->intCountryId = null;
-			if ($objObject->objTimezoneObject)
-				$objObject->objTimezoneObject = Timezone::GetSoapObjectFromObject($objObject->objTimezoneObject, false);
+			if ($objObject->objTimezone)
+				$objObject->objTimezone = Timezone::GetSoapObjectFromObject($objObject->objTimezone, false);
 			else if (!$blnBindRelatedObjects)
-				$objObject->intTimezone = null;
+				$objObject->intTimezoneId = null;
 			if ($objObject->dttRegistrationDate)
 				$objObject->dttRegistrationDate = $objObject->dttRegistrationDate->__toString(QDateTime::FormatSoap);
 			return $objObject;
@@ -3205,10 +3205,10 @@
 					return new QQNodeCountry('country_id', 'Country', 'integer', $this);
 				case 'Url':
 					return new QQNode('url', 'Url', 'string', $this);
+				case 'TimezoneId':
+					return new QQNode('timezone_id', 'TimezoneId', 'integer', $this);
 				case 'Timezone':
-					return new QQNode('timezone', 'Timezone', 'integer', $this);
-				case 'TimezoneObject':
-					return new QQNodeTimezone('timezone', 'TimezoneObject', 'integer', $this);
+					return new QQNodeTimezone('timezone_id', 'Timezone', 'integer', $this);
 				case 'RegistrationDate':
 					return new QQNode('registration_date', 'RegistrationDate', 'QDateTime', $this);
 				case 'TopicAsEmail':
@@ -3277,10 +3277,10 @@
 					return new QQNodeCountry('country_id', 'Country', 'integer', $this);
 				case 'Url':
 					return new QQNode('url', 'Url', 'string', $this);
+				case 'TimezoneId':
+					return new QQNode('timezone_id', 'TimezoneId', 'integer', $this);
 				case 'Timezone':
-					return new QQNode('timezone', 'Timezone', 'integer', $this);
-				case 'TimezoneObject':
-					return new QQNodeTimezone('timezone', 'TimezoneObject', 'integer', $this);
+					return new QQNodeTimezone('timezone_id', 'Timezone', 'integer', $this);
 				case 'RegistrationDate':
 					return new QQNode('registration_date', 'RegistrationDate', 'QDateTime', $this);
 				case 'TopicAsEmail':

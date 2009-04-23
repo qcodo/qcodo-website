@@ -89,4 +89,19 @@
 	$strContent = substr($strContent, 0, strlen($strContent) - 2);
 	$strContent .= ');';
 	file_put_contents(dirname(__FILE__) . '/words.txt', $strContent);
+
+	$strContent = '		static public $CityArray = array(';
+	$intCount = 4;
+	foreach (explode("\n", file_get_contents(dirname(__FILE__) . '/cityList.txt')) as $strName) {
+		$strName = trim(str_replace("'", "\\'", $strName));
+		$strContent .= "'" . $strName . "',";
+		if ($intCount % 10)
+			$strContent .= ' ';
+		else
+			$strContent .= "\r\n\t\t\t";
+		$intCount++;
+	}
+	$strContent = substr($strContent, 0, strlen($strContent) - 2);
+	$strContent .= ');';
+	file_put_contents(dirname(__FILE__) . '/cities.txt', $strContent);
 ?>

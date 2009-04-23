@@ -2,17 +2,46 @@
 <?php
 	require(dirname(__FILE__) . '/cli_prepend.inc.php');
 
+	$intMaxCountryId = Country::CountAll();
+	$intMaxTimeZoneId = Timezone::CountAll();
+
 	while (QDataGen::DisplayWhileTask('Generating Person records', 200)) {
 		$objPerson = new Person();
+		
+		// Person Type Id
 		$objPerson->PersonTypeId = QDataGen::GenerateFromArrayWithProbabilities(array(
 			array(PersonType::Contributor, 5),
 			array(PersonType::ForumsUser, 95)
 		));
+
+		// Required Stuff
 		$objPerson->FirstName = QDataGen::GenerateFirstName();
 		$objPerson->LastName = QDataGen::GenerateLastName();
 		$objPerson->Username = QDataGen::GenerateUsername($objPerson->FirstName, $objPerson->LastName);
 		$objPerson->Email = QDataGen::GenerateEmail($objPerson->FirstName, $objPerson->LastName);
 		$objPerson->SetPassword('password');
+
+		// Flags
+		$objPerson->DisplayRealNameFlag = !rand(0, 3);
+		$objPerson->DisplayEmailFlag = !rand(0, 7);
+		$objPerson->OptInFlag = !rand(0, 3);
+		$objPerson->DonatedFlag = !rand(0, 80);
+
+		// Location and Country Flag
+		if (rand(0, 2)) {
+			$objPerson->Location = QDataGen::GenerateCity();
+			if (rand(0, 2)) {
+				$objPerson->CountryId = rand(1, $intMaxCountryId);
+				$objPerson->Location .= ', ' . $objPerson->Country->Name;
+			}
+		}
+
+		// Other Stuff
+		if (!rand(0, 5)) $objPerson->Url = QDataGen::GenerateWebsiteUrl();
+		if (!rand(0, 2)) $objPerson->TimezoneId = rand(1, $intMaxTimeZoneId);
+		$objPerson->RegistrationDate = QDataGen::GenerateDateTime(new QDateTime('2005-01-01'), QDateTime::Now());
+
+		// Save
 		$objPerson->Save();
 	}
 ?>

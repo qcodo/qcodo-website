@@ -289,8 +289,8 @@
 				case 'CountryId': return QQN::Person()->CountryId;
 				case 'Country': return QQN::Person()->Country;
 				case 'Url': return QQN::Person()->Url;
+				case 'TimezoneId': return QQN::Person()->TimezoneId;
 				case 'Timezone': return QQN::Person()->Timezone;
-				case 'TimezoneObject': return QQN::Person()->TimezoneObject;
 				case 'RegistrationDate': return QQN::Person()->RegistrationDate;
 				default: throw new QCallerException('Simple Property not found in PersonDataGrid content: ' . $mixContent);
 			} else if ($mixContent instanceof QQAssociationNode)
