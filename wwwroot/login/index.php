@@ -20,8 +20,8 @@
 
 			// Define Controls
 			$this->txtUsername = new QTextBox($this);
-			$this->txtUsername->Name = 'Username';
-			$this->txtUsername->MaxLength = Person::UsernameMaxLength;
+			$this->txtUsername->Name = 'Email / Username';
+			$this->txtUsername->MaxLength = Person::EmailMaxLength;
 			$this->txtUsername->Required = true;
 			
 			$this->txtPassword = new QTextBox($this);
@@ -62,13 +62,19 @@
 
 		protected function btnLogin_Click($strFormId, $strControlId, $strParameter) {
 			$objPerson = Person::LoadByUsername(trim(strtolower($this->txtUsername->Text)));
+			if (!$objPerson) $objPerson = Person::LoadByEmail(trim(strtolower($this->txtUsername->Text)));
+
 			if ($objPerson && $objPerson->IsPasswordValid($this->txtPassword->Text)) {
 				QApplication::LoginPerson($objPerson);
 				
 				if ($this->chkRemember->Checked)
 					QApplication::SetLoginTicketToCookie($objPerson);
 
-				QApplication::Redirect('/');
+				// Redirect to the correct location
+				if ($objPerson->PasswordResetFlag)
+					QApplication::Redirect('/profile/password.php');
+				else
+					QApplication::Redirect('/');
 			}
 
 			// If we're here, either the username and/or password is not valid

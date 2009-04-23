@@ -62,7 +62,10 @@
 								$strToReturn .= sprintf($strStarIcon, 'Financial Contributor', 'Financial Contributor');
 								
 							return $strToReturn;
-				
+
+				case 'SmtpEmailAddress':
+					return $this->strFirstName . ' ' . $this->strLastName . ' <' . $this->strEmail . '>';
+
 				default:
 					try {
 						return parent::__get($strName);
@@ -103,13 +106,26 @@
 		}
 
 		/**
-		 * Resets the password and generates a random one for the user
+		 * Resets the password and generates a random one for the user.
+		 * Then, queues up an email message alerting the user of the new password.
 		 * @return string the new, randomly generated password
 		 */
-		public function SetRandomPassword() {
+		public function ResetPassword() {
 			$strPassword = strtolower(substr(md5(microtime()), 4, 8));
 			$this->SetPassword($strPassword);
-			return $strPassword;
+			$this->PasswordResetFlag = true;
+			$this->Save();
+
+			// Setup Token Array
+			$strTokenArray = array(
+				'NAME' => $this->strFirstName . ' ' . $this->strLastName,
+				'USERNAME' => $this->strUsername,
+				'PASSWORD' => $strPassword
+			);
+
+			// Send Message
+			QApplication::SendEmailUsingTemplate('forgot_password', 'Qcodo.com Credentials', QCODO_EMAILER,
+				$this->SmtpEmailAddress, $strTokenArray, true);
 		}
 
 		// Override or Create New Load/Count methods

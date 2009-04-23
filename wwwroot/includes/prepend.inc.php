@@ -220,6 +220,30 @@
 				// Next, Clear the Ticket from the Cookie, itself
 				setcookie('strTicket', '', time() - 60*60*24*365, '/', /* '.qcodo.com' */ null);
 			}
+
+			/**
+			 * Using an email template, this will queue up an email into the email queue to be sent out.
+			 * @param string $strTemplateName the name of the template to use
+			 * @param string $strSubject the subject of the email
+			 * @param string $strFrom who the email is sent from
+			 * @param string $strTo who the email shout be sent to
+			 * @param string $strTokenArray the replacement token array
+			 * @param boolean $blnHighPriorityFlag whether or not this is a high priority message (to be sent before all other queued messages)
+			 * @return void
+			 */
+			public static function SendEmailUsingTemplate($strTemplateName, $strSubject, $strFrom, $strTo, $strTokenArray, $blnHighPriorityFlag = false) {
+				$strContent = file_get_contents(__INCLUDES__ . '/email_templates/' . $strTemplateName . '.txt');
+				foreach ($strTokenArray as $strKey => $strValue) {
+					$strContent = str_replace('%' . $strKey . '%', $strValue, $strContent);
+				}
+				$objEmail = new EmailQueue();
+				$objEmail->ToAddress = $strTo;
+				$objEmail->FromAddress = $strFrom;
+				$objEmail->Subject = $strSubject;
+				$objEmail->Body = $strContent;
+				$objEmail->HighPriorityFlag = $blnHighPriorityFlag;
+				$objEmail->Save();
+			}
 		}
 
 
