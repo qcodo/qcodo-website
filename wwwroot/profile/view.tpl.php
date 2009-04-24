@@ -2,12 +2,13 @@
 
 <div class="form">
 	<h1>
-		<div class="superhead">User Profile</div>
+		<div class="superhead">Qcodo.com User Profile</div>
 		<?php _p($this->mctPerson->Person->DisplayName); ?>
 	</h1>
 
 	<div class="mainForm" <?php if (!$this->btnEdit) _p('style="border: 0;"', false); ?>>
 		<br/>
+		<?php $this->lblRole->RenderForForm(); ?>
 		<?php $this->lblUsername->RenderForForm(); ?>
 		<?php $this->lblName->RenderForForm(); ?>
 		<?php $this->lblEmail->RenderForForm(); ?>
@@ -22,7 +23,7 @@
 		<?php $this->btnEdit->Render(); ?>
 		<br/><br/>
 
-		<p class="hint">Life changes?</p>
+		<p class="hint">Big, life changes?</p>
 		<?php $this->btnEditEmail->Render(); ?>
 		<br/><br/>
 		

@@ -5,6 +5,7 @@
 		protected $strPageTitle = 'Profile - ';
 		protected $mctPerson;
 
+		protected $lblRole;
 		protected $lblName;
 		protected $lblUsername;
 		protected $lblEmail;
@@ -24,6 +25,12 @@
 				QApplication::Redirect('/');
 			$this->mctPerson = new PersonMetaControl($this, $objPerson);
 			$this->strPageTitle .= $objPerson->DisplayName;
+
+			$this->lblRole = $this->mctPerson->lblPersonTypeId_Create();
+			$this->lblRole->Name = 'Qcodo Role';
+
+			if ($this->mctPerson->Person->DonatedFlag)
+				$this->lblRole->Text .= ' and Financial Contributor';
 
 			$this->lblName = $this->mctPerson->lblFirstName_Create();
 			$this->lblName->Name = 'Name';

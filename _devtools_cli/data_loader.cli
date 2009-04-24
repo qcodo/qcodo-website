@@ -15,7 +15,7 @@
 		// Person Type Id
 		$objPerson->PersonTypeId = QDataGen::GenerateFromArrayWithProbabilities(array(
 			array(PersonType::Contributor, 5),
-			array(PersonType::ForumsUser, 95)
+			array(PersonType::RegisteredUser, 95)
 		));
 
 		// Required Stuff

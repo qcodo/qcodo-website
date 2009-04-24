@@ -21,7 +21,7 @@
 		const Administrator = 1;
 		const Moderator = 2;
 		const Contributor = 3;
-		const ForumsUser = 4;
+		const RegisteredUser = 4;
 
 		const MaxId = 4;
 
@@ -29,20 +29,20 @@
 			1 => 'Administrator',
 			2 => 'Moderator',
 			3 => 'Contributor',
-			4 => 'Forums User');
+			4 => 'Registered User');
 
 		public static $TokenArray = array(
 			1 => 'Administrator',
 			2 => 'Moderator',
 			3 => 'Contributor',
-			4 => 'ForumsUser');
+			4 => 'RegisteredUser');
 
 		public static function ToString($intPersonTypeId) {
 			switch ($intPersonTypeId) {
 				case 1: return 'Administrator';
 				case 2: return 'Moderator';
 				case 3: return 'Contributor';
-				case 4: return 'Forums User';
+				case 4: return 'Registered User';
 				default:
 					throw new QCallerException(sprintf('Invalid intPersonTypeId: %s', $intPersonTypeId));
 			}
@@ -53,7 +53,7 @@
 				case 1: return 'Administrator';
 				case 2: return 'Moderator';
 				case 3: return 'Contributor';
-				case 4: return 'ForumsUser';
+				case 4: return 'RegisteredUser';
 				default:
 					throw new QCallerException(sprintf('Invalid intPersonTypeId: %s', $intPersonTypeId));
 			}

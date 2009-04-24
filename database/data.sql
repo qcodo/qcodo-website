@@ -11,7 +11,7 @@ INSERT INTO `forum` VALUES
 INSERT INTO person_type VALUES (1,'Administrator');
 INSERT INTO person_type VALUES (2,'Moderator');
 INSERT INTO person_type VALUES (3,'Contributor');
-INSERT INTO person_type VALUES (4,'Forums User');
+INSERT INTO person_type VALUES (4,'Registered User');
 
 INSERT INTO `download_category` VALUES
 	(1,1,'Official Releases',1,'For Official Qcodo Releases','For the latest DEVELOPMENT snapshot, please go to the <a href=\"/support/\" class=\"link_body\">Support</a> page.', NULL),
