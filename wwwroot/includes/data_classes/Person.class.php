@@ -35,7 +35,8 @@
 		public function __get($strName) {
 			switch ($strName) {
 				case 'DisplayForForums':
-							$strToReturn = QApplication::HtmlEntities($this->DisplayName);
+							$strToReturn = sprintf('<a href="/profile/view.php/%s">%s</a>',
+								$this->strUsername, QApplication::HtmlEntities($this->DisplayName));
 
 							if ($this->strLocation)
 								$strToReturn .= ' (' . QApplication::HtmlEntities($this->strLocation, ENT_COMPAT, QApplication::$EncodingType) . ')';

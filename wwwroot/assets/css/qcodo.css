@@ -1,9 +1,10 @@
 	body { margin: 0; padding: 0; min-width: 1000px; font: 12px arial, helvetica, sans-serif; color: #333; }
 	img { border: 0; }
-	p a { color: #740; text-decoration: none; font-weight: bold; }
-	p a:hover { text-decoration: underline; }
+	a { color: inherit; text-decoration: underline; font-weight: bold; }
+	a:hover { text-decoration: none; }
 
 	h1 { font-weight: normal; font-size: 36px; font-family: Arial, Helvetica, sans-serif; color: #666; margin: 0; padding: 0; }
+	h1 div.superhead { font-size: 12px; color: #888; font-weight: bold; margin: 0; padding: 0; }
 
 	p.instructions { font-style: italic; color: #666; }
 	p.hint { font-size: 11px; color: #777; margin: 4px 0;}

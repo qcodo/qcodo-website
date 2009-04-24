@@ -1,9 +1,36 @@
 <?php require(__INCLUDES__ . '/header.inc.php'); ?>
 
-<strong>User Profile</strong>
-<h1><?php _p($this->mctPerson->Person->DisplayName); ?></h1>
-<br/>
-<?php $this->lblName->RenderForForm(); ?>
-<?php $this->lblRegistrationDate->RenderForForm(); ?>
+<div class="form">
+	<h1>
+		<div class="superhead">User Profile</div>
+		<?php _p($this->mctPerson->Person->DisplayName); ?>
+	</h1>
+
+	<div class="mainForm" <?php if (!$this->btnEdit) _p('style="border: 0;"', false); ?>>
+		<br/>
+		<?php $this->lblUsername->RenderForForm(); ?>
+		<?php $this->lblName->RenderForForm(); ?>
+		<?php $this->lblEmail->RenderForForm(); ?>
+		<?php $this->lblUrl->RenderForForm(); ?>
+		<?php $this->lblLocation->RenderForForm(); ?>
+		<?php $this->lblRegistrationDate->RenderForForm(); ?>
+	</div>
+
+<?php if ($this->btnEdit) { ?>
+	<div class="sidebar">
+		<p class="hint">Don't like what you see?</p>
+		<?php $this->btnEdit->Render(); ?>
+		<br/><br/>
+
+		<p class="hint">Life changes?</p>
+		<?php $this->btnEditEmail->Render(); ?>
+		<br/><br/>
+		
+		<p class="hint">Worried about Identity Theft?</p>
+		<?php $this->btnPassword->Render(); ?>
+	</div>
+<?php } ?>
+
+</div>
 
 <?php require(__INCLUDES__ . '/footer.inc.php'); ?>
