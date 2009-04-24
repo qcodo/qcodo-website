@@ -27,7 +27,7 @@
 		 */
 		public function __toString() {
 			if ($this->blnDisplayRealNameFlag)
-				return $this->strFirstName . ' ' . $this->strLastName;
+				return $this->DisplayName;
 			else
 				return $this->strUsername;
 		}
@@ -35,10 +35,10 @@
 		public function __get($strName) {
 			switch ($strName) {
 				case 'DisplayForForums':
-							$strToReturn = $this->DisplayName;
+							$strToReturn = QApplication::HtmlEntities($this->DisplayName);
 
 							if ($this->strLocation)
-								$strToReturn .= ' (' . htmlentities($this->strLocation, ENT_COMPAT, QApplication::$EncodingType) . ')';
+								$strToReturn .= ' (' . QApplication::HtmlEntities($this->strLocation, ENT_COMPAT, QApplication::$EncodingType) . ')';
 		
 							// Display the Flag (if applicable)
 							if ($this->Country) {
@@ -62,7 +62,7 @@
 
 				case 'DisplayName':
 					if ($this->blnDisplayRealNameFlag)
-						$strToReturn = htmlentities($this->strFirstName, ENT_COMPAT, QApplication::$EncodingType) . ' ' . htmlentities($this->strLastName, ENT_COMPAT, QApplication::$EncodingType);
+						$strToReturn = $this->strFirstName . ' ' . $this->strLastName;
 					else
 						$strToReturn = $this->strUsername;
 					return $strToReturn;
