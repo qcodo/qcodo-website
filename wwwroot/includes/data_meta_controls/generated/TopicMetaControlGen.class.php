@@ -299,7 +299,7 @@
 			$this->lblLastPostDate = new QLabel($this->objParentObject, $strControlId);
 			$this->lblLastPostDate->Name = QApplication::Translate('Last Post Date');
 			$this->strLastPostDateDateTimeFormat = $strDateTimeFormat;
-			$this->lblLastPostDate->Text = sprintf($this->objTopic->LastPostDate) ? $this->objTopic->__toString($this->strLastPostDateDateTimeFormat) : null;
+			$this->lblLastPostDate->Text = sprintf($this->objTopic->LastPostDate) ? $this->objTopic->LastPostDate->__toString($this->strLastPostDateDateTimeFormat) : null;
 			$this->lblLastPostDate->Required = true;
 			return $this->lblLastPostDate;
 		}

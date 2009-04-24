@@ -317,7 +317,7 @@
 			$this->lblPostDate = new QLabel($this->objParentObject, $strControlId);
 			$this->lblPostDate->Name = QApplication::Translate('Post Date');
 			$this->strPostDateDateTimeFormat = $strDateTimeFormat;
-			$this->lblPostDate->Text = sprintf($this->objMessage->PostDate) ? $this->objMessage->__toString($this->strPostDateDateTimeFormat) : null;
+			$this->lblPostDate->Text = sprintf($this->objMessage->PostDate) ? $this->objMessage->PostDate->__toString($this->strPostDateDateTimeFormat) : null;
 			$this->lblPostDate->Required = true;
 			return $this->lblPostDate;
 		}

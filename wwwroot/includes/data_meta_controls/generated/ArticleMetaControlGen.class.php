@@ -333,7 +333,7 @@
 			$this->lblPostDate = new QLabel($this->objParentObject, $strControlId);
 			$this->lblPostDate->Name = QApplication::Translate('Post Date');
 			$this->strPostDateDateTimeFormat = $strDateTimeFormat;
-			$this->lblPostDate->Text = sprintf($this->objArticle->PostDate) ? $this->objArticle->__toString($this->strPostDateDateTimeFormat) : null;
+			$this->lblPostDate->Text = sprintf($this->objArticle->PostDate) ? $this->objArticle->PostDate->__toString($this->strPostDateDateTimeFormat) : null;
 			return $this->lblPostDate;
 		}
 
@@ -362,7 +362,7 @@
 			$this->lblLastUpdatedDate = new QLabel($this->objParentObject, $strControlId);
 			$this->lblLastUpdatedDate->Name = QApplication::Translate('Last Updated Date');
 			$this->strLastUpdatedDateDateTimeFormat = $strDateTimeFormat;
-			$this->lblLastUpdatedDate->Text = sprintf($this->objArticle->LastUpdatedDate) ? $this->objArticle->__toString($this->strLastUpdatedDateDateTimeFormat) : null;
+			$this->lblLastUpdatedDate->Text = sprintf($this->objArticle->LastUpdatedDate) ? $this->objArticle->LastUpdatedDate->__toString($this->strLastUpdatedDateDateTimeFormat) : null;
 			return $this->lblLastUpdatedDate;
 		}
 

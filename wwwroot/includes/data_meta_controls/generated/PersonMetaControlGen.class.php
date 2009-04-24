@@ -638,7 +638,7 @@
 			$this->lblRegistrationDate = new QLabel($this->objParentObject, $strControlId);
 			$this->lblRegistrationDate->Name = QApplication::Translate('Registration Date');
 			$this->strRegistrationDateDateTimeFormat = $strDateTimeFormat;
-			$this->lblRegistrationDate->Text = sprintf($this->objPerson->RegistrationDate) ? $this->objPerson->__toString($this->strRegistrationDateDateTimeFormat) : null;
+			$this->lblRegistrationDate->Text = sprintf($this->objPerson->RegistrationDate) ? $this->objPerson->RegistrationDate->__toString($this->strRegistrationDateDateTimeFormat) : null;
 			$this->lblRegistrationDate->Required = true;
 			return $this->lblRegistrationDate;
 		}
