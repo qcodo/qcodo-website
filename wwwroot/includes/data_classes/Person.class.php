@@ -35,11 +35,8 @@
 		public function __get($strName) {
 			switch ($strName) {
 				case 'DisplayForForums':
-							if ($this->blnDisplayRealNameFlag)
-								$strToReturn = htmlentities($this->strFirstName, ENT_COMPAT, QApplication::$EncodingType) . ' ' . htmlentities($this->strLastName, ENT_COMPAT, QApplication::$EncodingType);
-							else
-								$strToReturn = $this->strUsername;
-							
+							$strToReturn = $this->DisplayName;
+
 							if ($this->strLocation)
 								$strToReturn .= ' (' . htmlentities($this->strLocation, ENT_COMPAT, QApplication::$EncodingType) . ')';
 		
@@ -62,6 +59,13 @@
 								$strToReturn .= sprintf($strStarIcon, 'Financial Contributor', 'Financial Contributor');
 								
 							return $strToReturn;
+
+				case 'DisplayName':
+					if ($this->blnDisplayRealNameFlag)
+						$strToReturn = htmlentities($this->strFirstName, ENT_COMPAT, QApplication::$EncodingType) . ' ' . htmlentities($this->strLastName, ENT_COMPAT, QApplication::$EncodingType);
+					else
+						$strToReturn = $this->strUsername;
+					return $strToReturn;
 
 				case 'SmtpEmailAddress':
 					return $this->strFirstName . ' ' . $this->strLastName . ' <' . $this->strEmail . '>';
