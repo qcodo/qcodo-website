@@ -68,11 +68,11 @@
 		public function dlgFileAsset_Upload() {
 			// File Not Uploaded
 			if (!file_exists($this->dlgFileAsset->flcFileAsset->File) || !$this->dlgFileAsset->flcFileAsset->Size) {
-				$this->dlgFileAsset->ShowError($this->strUnacceptableMessage);
+				$this->dlgFileAsset->ShowError($this->strUnacceptableMessage . ' 1');
 
 			// File Has Incorrect MIME Type (only if an acceptiblemimearray is setup)
 			} else if (is_array($this->strAcceptibleMimeArray) && (!array_key_exists($this->dlgFileAsset->flcFileAsset->Type, $this->strAcceptibleMimeArray))) {
-				$this->dlgFileAsset->ShowError($this->strUnacceptableMessage);
+				$this->dlgFileAsset->ShowError($this->strUnacceptableMessage . ' 2');
 
 			// File Successfully Uploaded
 			} else {
@@ -123,6 +123,9 @@
 			// Create a new shell FileAsset for this panel
 			$this->File = null;
 			$this->Refresh();
+
+			// Temporary fix for Double DBox Render issue after Delete/Reupload
+			QApplication::ExecuteJavaScript('document.getElementById(document.getElementById("Qform__FormId").value).removeChild(document.getElementById("' . $this->dlgFileAsset->ControlId . '_ctl"));');
 		}
 
 		public function __get($strName) {
@@ -163,8 +166,20 @@
 			// Now, we need to see if the file, itself, is actually in the docroot somewhere so that
 			// it can be viewed, and if so, we need to return the web-based URL (relative to the docroot)
 			if ($this->strFile) {
-				if (substr($this->strFile, 0, strlen(__DOCROOT__)) == __DOCROOT__)
-					return __VIRTUAL_DIRECTORY__ . substr($this->strFile, strlen(__DOCROOT__));
+
+				// Normalize all backslashes to just plain slashes 
+				$strFile = str_replace('\\', '/', substr($this->strFile, 0, strlen(__DOCROOT__)));
+				$strDocRoot = str_replace('\\', '/', __DOCROOT__);
+				if ($strFile == $strDocRoot) {
+					$strToReturn = __VIRTUAL_DIRECTORY__ . substr($this->strFile, strlen(__DOCROOT__));
+
+					// On Windows, we must replace all "\" with "/"
+					if (substr(__DOCROOT__, 1, 2) == ':\\') {
+						$strToReturn = str_replace('\\', '/', $strToReturn);
+					}
+
+					return $strToReturn;
+				}
 			}
 
 			return null;
@@ -181,7 +196,12 @@
 			} else {
 				// Valid File Selected
 				$this->strFile = realpath($strFile);
-				
+
+				// On Windows, we must replace all "\" with "/"
+				if (substr($this->strFile, 1, 2) == ':\\') {
+					$this->strFile = str_replace('\\', '/', $this->strFile);
+				}
+
 				// Figure Out File Type, and Display Icon Accordingly
 				$strExtension = substr($this->strFile, strrpos($this->strFile, '.') + 1);
 				switch (trim(strtolower($strExtension))) {
@@ -219,13 +239,17 @@
 					break;
 				case QFileAssetType::Pdf:
 					$this->intFileAssetType = $intFileAssetType;
-					$this->strAcceptibleMimeArray = array('application/pdf' => 'pdf');
+					$this->strAcceptibleMimeArray = array(
+						'application/pdf' => 'pdf',
+						'application/octet-stream' => 'pdf'
+					);
 					$this->strUnacceptableMessage = QApplication::Translate('Must be a PDF');
 					break;
 				case QFileAssetType::Document:
 					$this->intFileAssetType = $intFileAssetType;
 					$this->strAcceptibleMimeArray = array(
 						'application/pdf' => 'pdf',
+						'application/octet-stream' => 'pdf',
 						'image/pjpeg' => 'jpg',
 						'image/jpeg' => 'jpg',
 						'image/jpg' => 'jpg',
