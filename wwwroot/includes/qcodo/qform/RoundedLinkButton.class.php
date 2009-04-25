@@ -16,8 +16,6 @@
 		protected $strCssClass = 'roundedLink';
 		protected $blnIsBlockElement = true;
 
-		protected $strLinkUrl = '#';
-
 		/**
 		 * Get the HTML for this Control.
 		 * @return string
@@ -41,51 +39,6 @@
 
 			// Return the HTML.
 			return $strToReturn;
-		}
-
-		/**
-		 * Constructor for this control
-		 * @param mixed $objParentObject Parent QForm or QControl that is responsible for rendering this control
-		 * @param string $strControlId optional control ID
-		 */
-		public function __construct($objParentObject, $strControlId = null) {
-			try {
-				parent::__construct($objParentObject, $strControlId);
-			} catch (QCallerException $objExc) { $objExc->IncrementOffset(); throw $objExc; }
-		}
-
-		/////////////////////////
-		// Public Properties: GET
-		/////////////////////////
-		public function __get($strName) {
-			switch ($strName) {
-				case 'LinkUrl': return $this->strLinkUrl;
-
-				default:
-					try {
-						return parent::__get($strName);
-					} catch (QCallerException $objExc) { $objExc->IncrementOffset(); throw $objExc; }
-			}
-		}
-
-		/////////////////////////
-		// Public Properties: SET
-		/////////////////////////
-		public function __set($strName, $mixValue) {
-			$this->blnModified = true;
-
-			switch ($strName) {
-
-				case 'LinkUrl': 
-					try {
-						return ($this->strLinkUrl = QType::Cast($mixValue, QType::String));
-					} catch (QCallerException $objExc) { $objExc->IncrementOffset(); throw $objExc; }
-
-				default:
-					try {
-						return (parent::__set($strName, $mixValue));
-					} catch (QCallerException $objExc) { $objExc->IncrementOffset(); throw $objExc; }
-			}
 		}
 	}
 ?>
