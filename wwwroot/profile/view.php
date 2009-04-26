@@ -13,7 +13,7 @@
 		protected $lblUrl;
 		protected $lblRegistrationDate;
 		
-		protected $btnEditEmail;
+		protected $btnEditAccount;
 		protected $btnEdit;
 		protected $btnPassword;
 
@@ -67,24 +67,32 @@
 				$this->btnEdit->LinkUrl = '/profile/edit.php';
 				$this->btnEdit->AddCssClass('roundedLinkGray');
 				
-				$this->btnEditEmail = new RoundedLinkButton($this);
-				$this->btnEditEmail->Text = 'Edit My Username or Email';
-				$this->btnEditEmail->LinkUrl = '/profile/email.php';
-				$this->btnEditEmail->AddCssClass('roundedLinkGray');
+				$this->btnEditAccount = new RoundedLinkButton($this);
+				$this->btnEditAccount->Text = 'Edit My Account';
+				$this->btnEditAccount->LinkUrl = '/profile/account.php';
+				$this->btnEditAccount->AddCssClass('roundedLinkGray');
 				
 				$this->btnPassword = new RoundedLinkButton($this);
 				$this->btnPassword->Text = 'Change My Password';
 				$this->btnPassword->LinkUrl = '/profile/password.php';
 				$this->btnPassword->AddCssClass('roundedLinkGray');
+
+			// Otherwise, if is administrator
+			} else if (QApplication::$Person && (QApplication::$Person->PersonTypeId == PersonType::Administrator)) {
+				$this->btnEdit = new RoundedLinkButton($this);
+				$this->btnEdit->Text = 'Edit User\'s Profile';
+				$this->btnEdit->LinkUrl = '/profile/edit.php/' . $this->mctPerson->Person->Username;
+				$this->btnEdit->AddCssClass('roundedLinkGray');
+
+				$this->btnEditAccount = new RoundedLinkButton($this);
+				$this->btnEditAccount->Text = 'Edit User\'s Account';
+				$this->btnEditAccount->LinkUrl = '/profile/email.php/' . $this->mctPerson->Person->Username;
+				$this->btnEditAccount->AddCssClass('roundedLinkGray');
 			}
 		}
 
 		public function IsOwner() {
 			return (QApplication::$Person && (QApplication::$Person->Id == $this->mctPerson->Person->Id));
-		}
-
-		protected function btnButton_Click($strFormId, $strControlId, $strParameter) {
-			$this->lblMessage->Text = 'Hello, World!';
 		}
 	}
 

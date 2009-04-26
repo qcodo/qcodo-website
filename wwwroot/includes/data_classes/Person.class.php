@@ -35,8 +35,8 @@
 		public function __get($strName) {
 			switch ($strName) {
 				case 'DisplayForForums':
-							$strToReturn = sprintf('<a href="/profile/view.php/%s">%s</a>',
-								$this->strUsername, QApplication::HtmlEntities($this->DisplayName));
+							$strToReturn = sprintf('<a href="%s">%s</a>',
+								$this->ViewProfileUrl, QApplication::HtmlEntities($this->DisplayName));
 
 							if ($this->strLocation)
 								$strToReturn .= ' (' . QApplication::HtmlEntities($this->strLocation, ENT_COMPAT, QApplication::$EncodingType) . ')';
@@ -67,6 +67,9 @@
 					else
 						$strToReturn = $this->strUsername;
 					return $strToReturn;
+
+				case 'ViewProfileUrl':
+					return '/profile/view.php/' . $this->strUsername;
 
 				case 'SmtpEmailAddress':
 					return $this->strFirstName . ' ' . $this->strLastName . ' <' . $this->strEmail . '>';

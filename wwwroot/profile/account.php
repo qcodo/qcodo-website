@@ -3,20 +3,16 @@
 	QApplication::Authenticate();
 
 	class QcodoForm extends QcodoWebsiteForm {
-		protected $strPageTitle = 'Edit My Profile';
+		protected $strPageTitle = 'Edit My Account';
 		protected $intNavBarIndex = 0;
 		protected $intSubNavIndex = 0;
 
 		protected $mctPerson;
-
-		protected $lstTimezone;
-		protected $chkDisplayRealNameFlag;
-		protected $chkDisplayEmailFlag;
-		protected $chkOptInFlag;
-		protected $txtLocation;
-		protected $lstCountry;
-		protected $txtUrl;
-
+		protected $txtUsername;
+		protected $txtFirstName;
+		protected $txtLastName;
+		protected $txtEmail;
+		
 		protected $btnUpdate;
 		protected $btnCancel;
 
@@ -40,7 +36,7 @@
 
 			// Update the Page Title if Not Editing Myself (for administrators)
 			if (QApplication::$Person->Id != $this->mctPerson->Person->Id) {
-				$this->strPageTitle = 'Edit Profile - ' . $this->mctPerson->Person->DisplayName;
+				$this->strPageTitle = 'Edit Account - ' . $this->mctPerson->Person->DisplayName;
 			}
 
 			// Define Controls

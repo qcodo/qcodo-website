@@ -41,11 +41,16 @@
 				$strLeftClass .= ' disabled';
 
 			$strToReturn .= sprintf('<div class="%s"><label for="%s">%s</label></div>' , $strLeftClass, $this->strControlId, $this->strName);
-				
-			if ($this->strInstructions)
-				$strInstructions = '<br/><span class="instructions">' . $this->strInstructions . '</span>';
-			else
+
+			if ($this->strInstructions) {
+				if ($this instanceof QCheckBox) {
+					$strInstructions = ' <span class="instructions forCheckbox">' . $this->strInstructions . '</span>';
+				} else {
+					$strInstructions = '<br/><span class="instructions">' . $this->strInstructions . '</span>';
+				}
+			} else {
 				$strInstructions = '';
+			}
 
 
 			// Render the Right side

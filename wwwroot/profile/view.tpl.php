@@ -21,14 +21,16 @@
 	<div class="sidebar">
 		<p class="hint">Don't like what you see?</p>
 		<?php $this->btnEdit->Render(); ?>
-		<br/><br/>
 
-		<p class="hint">Big, life changes?</p>
-		<?php $this->btnEditEmail->Render(); ?>
 		<br/><br/>
-		
-		<p class="hint">Worried about Identity Theft?</p>
-		<?php $this->btnPassword->Render(); ?>
+		<p class="hint">Big, life changes?</p>
+		<?php $this->btnEditAccount->Render(); ?>
+
+		<?php if ($this->btnPassword) { ?>
+			<br/><br/>
+			<p class="hint">Worried about Identity Theft?</p>
+			<?php $this->btnPassword->Render(); ?>
+		<?php } ?>
 	</div>
 <?php } ?>
 
