@@ -13,6 +13,9 @@
 		protected $lblUrl;
 		protected $lblRegistrationDate;
 		
+		protected $lblTimezone;
+		protected $lblOptInFlag;
+		
 		protected $btnEditAccount;
 		protected $btnEdit;
 		protected $btnPassword;
@@ -77,6 +80,12 @@
 				$this->btnPassword->LinkUrl = '/profile/password.php';
 				$this->btnPassword->AddCssClass('roundedLinkGray');
 
+				$this->lblTimezone = $this->mctPerson->lblTimezoneId_Create();
+				$this->lblTimezone->HtmlEntities = false;
+				if (!$this->lblTimezone->Text) $this->lblTimezone->Text = '<span class="meta">none selected</span>';
+
+				$this->lblOptInFlag = $this->mctPerson->lblOptInFlag_Create();
+				
 			// Otherwise, if is administrator
 			} else if (QApplication::$Person && (QApplication::$Person->PersonTypeId == PersonType::Administrator)) {
 				$this->btnEdit = new RoundedLinkButton($this);
@@ -86,7 +95,7 @@
 
 				$this->btnEditAccount = new RoundedLinkButton($this);
 				$this->btnEditAccount->Text = 'Edit User\'s Account';
-				$this->btnEditAccount->LinkUrl = '/profile/email.php/' . $this->mctPerson->Person->Username;
+				$this->btnEditAccount->LinkUrl = '/profile/account.php/' . $this->mctPerson->Person->Username;
 				$this->btnEditAccount->AddCssClass('roundedLinkGray');
 			}
 		}

@@ -12,7 +12,10 @@
 		protected $txtFirstName;
 		protected $txtLastName;
 		protected $txtEmail;
-		
+
+		protected $lstPersonType;
+		protected $chkDonatedFlag;
+
 		protected $btnUpdate;
 		protected $btnCancel;
 
@@ -40,20 +43,23 @@
 			}
 
 			// Define Controls
-			$this->lstTimezone = $this->mctPerson->lstTimezone_Create('timezone');
+			$this->txtUsername = $this->mctPerson->txtUsername_Create('username');
+			$this->txtFirstName = $this->mctPerson->txtFirstName_Create('firstName');
+			$this->txtLastName = $this->mctPerson->txtLastName_Create('lastName');
+			$this->txtEmail = $this->mctPerson->txtEmail_Create('email');
 
-			$this->chkDisplayRealNameFlag = $this->mctPerson->chkDisplayRealNameFlag_Create('realName');
-			$this->chkDisplayEmailFlag = $this->mctPerson->chkDisplayEmailFlag_Create('displayEmail');
-			$this->chkOptInFlag = $this->mctPerson->chkOptInFlag_Create('optIn');
+			if (QApplication::$Person->PersonTypeId == PersonType::Administrator) {
+				$this->lstPersonType = $this->mctPerson->lstPersonType_Create('role');
+				$this->chkDonatedFlag = $this->mctPerson->chkDonatedFlag_Create('donated');
 
-			$this->txtLocation = $this->mctPerson->txtLocation_Create('location');
-			$this->lstCountry = $this->mctPerson->lstCountry_Create('country');
-			$this->txtUrl = $this->mctPerson->txtUrl_Create('url');
+				if ($this->mctPerson->Person->Id == QApplication::$Person->Id)
+					$this->lstPersonType->Enabled = false;
+			}
 
 			// Define Buttons
 			$this->btnUpdate = new QButton($this);
 			$this->btnUpdate->CausesValidation = true;
-			
+
 			$this->btnCancel = new QLinkButton($this);
 			$this->btnCancel->LinkUrl = $this->mctPerson->Person->ViewProfileUrl;
 
@@ -61,7 +67,31 @@
 			$this->btnUpdate->AddAction(new QClickEvent(), new QAjaxAction('btnUpdate_Click'));
 
 			// Initial Focus
-			$this->lstTimezone->Focus();
+			$this->txtUsername->Focus();
+		}
+
+		protected function Form_Validate($blnToReturn = true) {
+			// Check Username
+			if (($strUsername = trim($this->txtUsername->Text)) &&
+				($objPerson = Person::LoadByUsername($strUsername)) &&
+				($objPerson->Id != $this->mctPerson->Person->Id)) {
+				$this->txtUsername->Warning = 'Username already taken';
+				$blnToReturn = false;
+			}
+
+			if (trim(strlen($this->txtUsername->Text)) < 6) {
+				$this->txtUsername->Warning = 'Username must be at least 6 alphanumeric characters';
+				$blnToReturn = false;
+			}
+
+			// Is Email Taken?
+			if (($objPerson = Person::LoadByEmail(trim(strtolower($this->txtEmail->Text)))) &&
+				($objPerson->Id != $this->mctPerson->Person->Id)) {
+				$this->txtEmail->Warning = 'Email is already taken';
+				$blnToReturn = false;
+			}
+
+			return parent::Form_Validate($blnToReturn);
 		}
 
 		protected function btnUpdate_Click($strFormId, $strControlId, $strParameter) {

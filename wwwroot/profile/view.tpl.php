@@ -12,9 +12,16 @@
 		<?php $this->lblUsername->RenderForForm(); ?>
 		<?php $this->lblName->RenderForForm(); ?>
 		<?php $this->lblEmail->RenderForForm(); ?>
-		<?php $this->lblUrl->RenderForForm(); ?>
-		<?php $this->lblLocation->RenderForForm(); ?>
+		<?php $this->lblUrl->RenderForForm('Name=Website URL','Required=true'); ?>
+		<?php $this->lblLocation->RenderForForm('Name=Location','Required=true'); ?>
 		<?php $this->lblRegistrationDate->RenderForForm(); ?>
+
+<?php if ($this->lblTimezone) { ?>
+		<div class="subsection">
+			<?php $this->lblTimezone->RenderForForm(); ?>			
+			<?php $this->lblOptInFlag->RenderForForm('Name=Opt-In to Emails'); ?>
+		</div>
+<?php } ?>
 	</div>
 
 <?php if ($this->btnEdit) { ?>

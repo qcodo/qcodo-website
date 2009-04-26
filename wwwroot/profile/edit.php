@@ -57,7 +57,7 @@
 			// Define Buttons
 			$this->btnUpdate = new QButton($this);
 			$this->btnUpdate->CausesValidation = true;
-			
+
 			$this->btnCancel = new QLinkButton($this);
 			$this->btnCancel->LinkUrl = $this->mctPerson->Person->ViewProfileUrl;
 
