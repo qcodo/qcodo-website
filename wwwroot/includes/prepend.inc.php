@@ -286,7 +286,7 @@
 			public static function DisplayTimezoneLink(QDateTime $dttDateTime, $blnDisplayOutput = true) {
 				if ($dttDateTime) {
 					if (QApplication::$Person)
-						$strToReturn = '<a href="/profile/edit.php">' . $dttDateTime->__toString('ttt') . '</a>';
+						$strToReturn = '<a href="/profile/edit.php" title="click to update timezone settings">' . $dttDateTime->__toString('ttt') . '</a>';
 					else
 						$strToReturn = $dttDateTime->__toString('ttt');
 				} else {

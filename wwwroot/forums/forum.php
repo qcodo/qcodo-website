@@ -1,5 +1,6 @@
 <?php
 	require('../includes/prepend.inc.php');
+	require(dirname(__FILE__) . '/MessageEditDialogBox.class.php');
 
 	class QcodoForm extends QcodoWebsiteForm {
 		protected $strPageTitle = 'Forums';
@@ -8,6 +9,8 @@
 
 		protected $lstSearch;
 		protected $txtSearch;
+		
+		protected $lblTopicInfo;
 		
 		protected $btnRespond1;
 		protected $btnRespond2;
@@ -22,6 +25,8 @@
 
 		protected $dtrMessages;
 		protected $dtrTopics;
+		
+		protected $dlgMessage;
 		
 		protected function Form_Create() {
 			parent::Form_Create();
@@ -67,6 +72,10 @@
 			if ($this->objTopic) $this->dtrTopics->PageNumber = Topic::GetPageNumber($this->objTopic, 20);
 			$this->dtrTopics->UseAjax = true;
 
+			$this->lblTopicInfo = new QLabel($this);
+			$this->lblTopicInfo->TagName = 'div';
+			$this->lblTopicInfo->Template = dirname(__FILE__) . '/lblTopicInfo.tpl.php';
+			
 			$this->btnRespond1 = new RoundedLinkButton($this);
 			$this->btnRespond1->Text = 'Respond';
 			$this->btnRespond2 = new RoundedLinkButton($this);
@@ -84,8 +93,15 @@
 			
 			$this->btnRespond1->AddCssClass('roundedLinkGray');
 			$this->btnRespond2->AddCssClass('roundedLinkGray');
+
+			$this->dlgMessage = new MessageEditDialogBox($this);
 			
 			// Add Control actions
+			$this->btnRespond1->AddAction(new QClickEvent(), new QAjaxAction('btnRespond_Click'));
+			$this->btnRespond1->AddAction(new QClickEvent(), new QTerminateAction());
+			$this->btnRespond2->AddAction(new QClickEvent(), new QAjaxAction('btnRespond_Click'));
+			$this->btnRespond2->AddAction(new QClickEvent(), new QTerminateAction());
+
 			$this->btnMarkAsViewed1->AddAction(new QClickEvent(), new QAjaxAction('btnMarkAsViewed_Click'));
 			$this->btnMarkAsViewed1->AddAction(new QClickEvent(), new QTerminateAction());
 			$this->btnMarkAsViewed2->AddAction(new QClickEvent(), new QAjaxAction('btnMarkAsViewed_Click'));
@@ -207,6 +223,39 @@
 				$this->dtrMessages->Paginator->Visible = ($this->dtrMessages->PageCount > 1);
 				$this->dtrMessages->PaginatorAlternate->Visible = ($this->dtrMessages->PageCount > 1);
 			}
+		}
+		
+		public function btnRespond_Click($strFormId, $strControlId, $strParameter) {
+			$this->btnRespond1->RemoveCssClass('roundedLinkGray');
+			$this->btnRespond2->RemoveCssClass('roundedLinkGray');
+
+			if (QApplication::$Person) {
+				$objMessage = new Message();
+				$objMessage->Forum = $this->objTopic->Forum;
+				$objMessage->Topic = $this->objTopic;
+				$objMessage->Person = QApplication::$Person;
+				$objMessage->ReplyNumber = $this->objTopic->MessageCount;
+				$this->dlgMessage->EditMessage($objMessage);
+			} else
+				QApplication::Redirect('/login/');
+		}
+		
+		public function CloseMessageDialog($blnRefresh = false, $blnRepaginate = false) {
+			$this->btnRespond1->AddCssClass('roundedLinkGray');
+			$this->btnRespond2->AddCssClass('roundedLinkGray');
+			
+			if ($blnRefresh) {
+				$this->lblTopicInfo->Refresh();
+				$this->dtrMessages->Refresh();
+				$this->dtrTopics->Refresh();
+
+				if ($blnRepaginate) {
+					$this->dtrMessages->PageNumber = 1;
+					$this->dtrTopics->PageNumber = 1;
+				}
+			}
+
+			$this->dlgMessage->HideDialogBox();
 		}
 
 		protected function btnSearch_Click($strFormId, $strControlId, $strParameter) {

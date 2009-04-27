@@ -45,7 +45,7 @@
 
 		objWrapper.handleResize = function(objEvent) {
 			objEvent = qcodo.handleEvent(objEvent);
-			if (objEvent.target) {
+			if (objEvent.target && objEvent.target.nodeName) {
 				if ((objEvent.target.nodeName.toLowerCase() == 'div') || (objEvent.target.nodeName.toLowerCase() == 'span'))
 					return;
 			};
@@ -172,7 +172,7 @@
 		if (qcodo.isBrowser(qcodo.IE))
 			objDbBg.style.overflow = "auto";
 		else
-			objDbBg.style.overflow = "hide";
+			objDbBg.style.overflow = "hidden";
 
 		if (blnMatteClickable) {
 			objDbBg.style.cursor = "pointer";

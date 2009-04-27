@@ -19,5 +19,9 @@
 	 * @subpackage MetaControls
 	 */
 	class MessageMetaControl extends MessageMetaControlGen {
+		public function ReplaceObject(Message $objMessage) {
+			$this->objMessage = $objMessage;
+			$this->Refresh();
+		}
 	}
 ?>
