@@ -267,6 +267,35 @@
 				$objEmail->HighPriorityFlag = $blnHighPriorityFlag;
 				$objEmail->Save();
 			}
+			
+			public static function LocalizeDateTime(QDateTime $dttDateTime) {
+				$dttToReturn = new QDateTime($dttDateTime);
+				if (QApplication::$Person && QApplication::$Person->Timezone) {
+					$dttToReturn->ConvertToTimezone(QApplication::$Person->Timezone->Name);
+				}
+				return $dttToReturn;
+			}
+
+			/**
+			 * Displays the timezone of a given datetime WITH a link to the user's "Edit Profile" page (to update
+			 * his/her timezone preferences) if the user is logged in.
+			 * @param QDateTime $dttDateTime
+			 * @param boolean $blnDisplayOutput whether or not to print the actual output, or just return it
+			 * @return string the html to be outputted
+			 */
+			public static function DisplayTimezoneLink(QDateTime $dttDateTime, $blnDisplayOutput = true) {
+				if ($dttDateTime) {
+					if (QApplication::$Person)
+						$strToReturn = '<a href="/profile/edit.php">' . $dttDateTime->__toString('ttt') . '</a>';
+					else
+						$strToReturn = $dttDateTime->__toString('ttt');
+				} else {
+					$strToReturn = '';
+				}
+				
+				if ($blnDisplayOutput) print $strToReturn;
+				return $strToReturn;
+			}
 		}
 
 

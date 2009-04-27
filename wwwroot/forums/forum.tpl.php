@@ -13,7 +13,10 @@
 	<div class="topic">
 <?php if (!$this->objTopic) { ?>
 	<h2>Please select a topic on the left</h2>
-<?php } else { ?>
+<?php
+	} else {
+		$dttLocalize = QApplication::LocalizeDateTime($this->objFirstMessage->PostDate);
+?>
 	<h1><?php _p($this->objTopic->Name); ?></h1>
 	<h3>
 		thread:
@@ -21,7 +24,8 @@
 		&nbsp;|&nbsp;
 		last: <strong><?php _p(QDateTime::Now()->Difference($this->objTopic->LastPostDate)->SimpleDisplay()); ?> ago</strong>
 		&nbsp;|&nbsp;
-		started: <strong><?php _p(strtolower($this->objFirstMessage->PostDate->__toString('DDDD, MMMM D, YYYY, h:mm z')))?></strong>
+		started: <strong><?php _p(strtolower($dttLocalize->__toString('DDDD, MMMM D, YYYY, h:mm z'))); ?>
+			<?php _p(strtolower(QApplication::DisplayTimezoneLink($dttLocalize, false)), false); ?></strong>
 	</h3>
 
 	<div class="controlBar">
