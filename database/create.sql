@@ -10,10 +10,28 @@ PRIMARY KEY (`id`)
 
 
 
+CREATE TABLE `person_type`
+(
+`id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
+`name` VARCHAR(50) NOT NULL UNIQUE,
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM;
+
+
+
 CREATE TABLE `announcement`
 (
 `id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
 `announcement` TEXT,
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM;
+
+
+
+CREATE TABLE `timezone`
+(
+`id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
+`name` VARCHAR(50) UNIQUE,
 PRIMARY KEY (`id`)
 ) ENGINE=MyISAM;
 
@@ -24,6 +42,17 @@ CREATE TABLE `country`
 `id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
 `name` VARCHAR(255),
 `code` VARCHAR(2) UNIQUE,
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM;
+
+
+
+CREATE TABLE `counter`
+(
+`id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
+`filename` VARCHAR(100),
+`token` VARCHAR(100) UNIQUE,
+`counter` INTEGER,
 PRIMARY KEY (`id`)
 ) ENGINE=MyISAM;
 
@@ -74,50 +103,6 @@ PRIMARY KEY (`id`)
 
 
 
-CREATE TABLE `article`
-(
-`id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
-`article_section_id` INTEGER unsigned  NOT NULL,
-`title` VARCHAR(200) NOT NULL,
-`description` TEXT,
-`byline` VARCHAR(200),
-`article` TEXT,
-`post_date` DATETIME,
-`last_updated_date` DATETIME,
-PRIMARY KEY (`id`)
-) ENGINE=MyISAM;
-
-
-
-CREATE TABLE `counter`
-(
-`id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
-`filename` VARCHAR(100),
-`token` VARCHAR(100) UNIQUE,
-`counter` INTEGER,
-PRIMARY KEY (`id`)
-) ENGINE=MyISAM;
-
-
-
-CREATE TABLE `timezone`
-(
-`id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
-`name` VARCHAR(50) UNIQUE,
-PRIMARY KEY (`id`)
-) ENGINE=MyISAM;
-
-
-
-CREATE TABLE `person_type`
-(
-`id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
-`name` VARCHAR(50) NOT NULL UNIQUE,
-PRIMARY KEY (`id`)
-) ENGINE=MyISAM;
-
-
-
 CREATE TABLE `person`
 (
 `id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
@@ -142,15 +127,6 @@ PRIMARY KEY (`id`)
 
 
 
-CREATE TABLE `login_ticket`
-(
-`id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
-`person_id` INTEGER unsigned  NOT NULL,
-PRIMARY KEY (`id`)
-) ENGINE=MyISAM;
-
-
-
 CREATE TABLE `download`
 (
 `id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
@@ -163,6 +139,30 @@ CREATE TABLE `download`
 `filename` VARCHAR(100),
 `download_count` INTEGER,
 `post_date` DATETIME NOT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM;
+
+
+
+CREATE TABLE `article`
+(
+`id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
+`article_section_id` INTEGER unsigned  NOT NULL,
+`title` VARCHAR(200) NOT NULL,
+`description` TEXT,
+`byline` VARCHAR(200),
+`article` TEXT,
+`post_date` DATETIME,
+`last_updated_date` DATETIME,
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM;
+
+
+
+CREATE TABLE `login_ticket`
+(
+`id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
+`person_id` INTEGER unsigned  NOT NULL,
 PRIMARY KEY (`id`)
 ) ENGINE=MyISAM;
 
@@ -182,7 +182,16 @@ PRIMARY KEY (`id`)
 
 
 
-CREATE TABLE `read_topic_person_assn`
+CREATE TABLE `email_topic_person_assn`
+(
+`topic_id` INTEGER unsigned  NOT NULL,
+`person_id` INTEGER unsigned  NOT NULL,
+PRIMARY KEY (`topic_id`,`person_id`)
+) ENGINE=MyISAM;
+
+
+
+CREATE TABLE `read_once_topic_person_assn`
 (
 `topic_id` INTEGER unsigned  NOT NULL,
 `person_id` INTEGER unsigned  NOT NULL,
@@ -198,22 +207,14 @@ CREATE TABLE `message`
 `topic_id` INTEGER unsigned  NOT NULL,
 `person_id` INTEGER unsigned  NOT NULL,
 `message` TEXT,
+`reply_number` INTEGER unsigned,
 `post_date` DATETIME NOT NULL,
 PRIMARY KEY (`id`)
 ) ENGINE=MyISAM;
 
 
 
-CREATE TABLE `read_once_topic_person_assn`
-(
-`topic_id` INTEGER unsigned  NOT NULL,
-`person_id` INTEGER unsigned  NOT NULL,
-PRIMARY KEY (`topic_id`,`person_id`)
-) ENGINE=MyISAM;
-
-
-
-CREATE TABLE `email_topic_person_assn`
+CREATE TABLE `read_topic_person_assn`
 (
 `topic_id` INTEGER unsigned  NOT NULL,
 `person_id` INTEGER unsigned  NOT NULL,
@@ -223,39 +224,39 @@ PRIMARY KEY (`topic_id`,`person_id`)
 
 CREATE INDEX `email_queue_high_priority_flag_idx`  ON `email_queue`(`high_priority_flag`);
 CREATE INDEX `email_queue_error_flag_idx`  ON `email_queue`(`error_flag`);
-CREATE INDEX `article_section_id_idx`  ON `article`(`article_section_id`);
-ALTER TABLE `article` ADD FOREIGN KEY article_section_id_idxfk(`article_section_id`) REFERENCES `article_section`(`id`);
 CREATE INDEX `person_type_id_idx`  ON `person`(`person_type_id`);
 ALTER TABLE `person` ADD FOREIGN KEY person_type_id_idxfk(`person_type_id`) REFERENCES `person_type`(`id`);
 ALTER TABLE `person` ADD FOREIGN KEY country_id_idxfk(`country_id`) REFERENCES `country`(`id`);
 ALTER TABLE `person` ADD FOREIGN KEY timezone_id_idxfk(`timezone_id`) REFERENCES `timezone`(`id`);
-CREATE INDEX `login_ticket_person_id_idx`  ON `login_ticket`(`person_id`);
-ALTER TABLE `login_ticket` ADD FOREIGN KEY person_id_idxfk(`person_id`) REFERENCES `person`(`id`);
 CREATE INDEX `download_parent_download_id_idx`  ON `download`(`parent_download_id`);
 ALTER TABLE `download` ADD FOREIGN KEY parent_download_id_idxfk(`parent_download_id`) REFERENCES `download`(`id`);
 CREATE INDEX `download_category_id_idx`  ON `download`(`download_category_id`);
 ALTER TABLE `download` ADD FOREIGN KEY download_category_id_idxfk(`download_category_id`) REFERENCES `download_category`(`id`);
 CREATE INDEX `download_person_id_idx`  ON `download`(`person_id`);
 ALTER TABLE `download` ADD FOREIGN KEY person_id_idxfk(`person_id`) REFERENCES `person`(`id`);
+CREATE INDEX `article_section_id_idx`  ON `article`(`article_section_id`);
+ALTER TABLE `article` ADD FOREIGN KEY article_section_id_idxfk(`article_section_id`) REFERENCES `article_section`(`id`);
+CREATE INDEX `login_ticket_person_id_idx`  ON `login_ticket`(`person_id`);
+ALTER TABLE `login_ticket` ADD FOREIGN KEY person_id_idxfk(`person_id`) REFERENCES `person`(`id`);
 CREATE INDEX `topic_forum_id_idx`  ON `topic`(`forum_id`);
 ALTER TABLE `topic` ADD FOREIGN KEY forum_id_idxfk(`forum_id`) REFERENCES `forum`(`id`);
 CREATE INDEX `topic_person_id_idx`  ON `topic`(`person_id`);
 ALTER TABLE `topic` ADD FOREIGN KEY person_id_idxfk(`person_id`) REFERENCES `person`(`id`);
-CREATE INDEX `read_topic_person_assn_topic_id_idxfk`  ON `read_topic_person_assn`(`topic_id`);
-ALTER TABLE `read_topic_person_assn` ADD FOREIGN KEY topic_id_idxfk(`topic_id`) REFERENCES `topic`(`id`);
-CREATE INDEX `read_topic_person_assn_person_id_idxfk`  ON `read_topic_person_assn`(`person_id`);
-ALTER TABLE `read_topic_person_assn` ADD FOREIGN KEY person_id_idxfk(`person_id`) REFERENCES `person`(`id`);
+CREATE INDEX `email_topic_person_assn_topic_id_idxfk`  ON `email_topic_person_assn`(`topic_id`);
+ALTER TABLE `email_topic_person_assn` ADD FOREIGN KEY topic_id_idxfk(`topic_id`) REFERENCES `topic`(`id`);
+CREATE INDEX `email_topic_person_assn_person_id_idxfk`  ON `email_topic_person_assn`(`person_id`);
+ALTER TABLE `email_topic_person_assn` ADD FOREIGN KEY person_id_idxfk(`person_id`) REFERENCES `person`(`id`);
+CREATE INDEX `read_once_topic_person_assn_topic_id_idxfk`  ON `read_once_topic_person_assn`(`topic_id`);
+ALTER TABLE `read_once_topic_person_assn` ADD FOREIGN KEY topic_id_idxfk(`topic_id`) REFERENCES `topic`(`id`);
+CREATE INDEX `read_once_topic_person_assn_person_id_idxfk`  ON `read_once_topic_person_assn`(`person_id`);
+ALTER TABLE `read_once_topic_person_assn` ADD FOREIGN KEY person_id_idxfk(`person_id`) REFERENCES `person`(`id`);
 CREATE INDEX `message_forum_id_idx`  ON `message`(`forum_id`);
 ALTER TABLE `message` ADD FOREIGN KEY forum_id_idxfk(`forum_id`) REFERENCES `forum`(`id`);
 CREATE INDEX `message_topic_id_idx`  ON `message`(`topic_id`);
 ALTER TABLE `message` ADD FOREIGN KEY topic_id_idxfk(`topic_id`) REFERENCES `topic`(`id`);
 CREATE INDEX `message_person_id_idx`  ON `message`(`person_id`);
 ALTER TABLE `message` ADD FOREIGN KEY person_id_idxfk(`person_id`) REFERENCES `person`(`id`);
-CREATE INDEX `read_once_topic_person_assn_topic_id_idxfk`  ON `read_once_topic_person_assn`(`topic_id`);
-ALTER TABLE `read_once_topic_person_assn` ADD FOREIGN KEY topic_id_idxfk(`topic_id`) REFERENCES `topic`(`id`);
-CREATE INDEX `read_once_topic_person_assn_person_id_idxfk`  ON `read_once_topic_person_assn`(`person_id`);
-ALTER TABLE `read_once_topic_person_assn` ADD FOREIGN KEY person_id_idxfk(`person_id`) REFERENCES `person`(`id`);
-CREATE INDEX `email_topic_person_assn_topic_id_idxfk`  ON `email_topic_person_assn`(`topic_id`);
-ALTER TABLE `email_topic_person_assn` ADD FOREIGN KEY topic_id_idxfk(`topic_id`) REFERENCES `topic`(`id`);
-CREATE INDEX `email_topic_person_assn_person_id_idxfk`  ON `email_topic_person_assn`(`person_id`);
-ALTER TABLE `email_topic_person_assn` ADD FOREIGN KEY person_id_idxfk(`person_id`) REFERENCES `person`(`id`);
+CREATE INDEX `read_topic_person_assn_topic_id_idxfk`  ON `read_topic_person_assn`(`topic_id`);
+ALTER TABLE `read_topic_person_assn` ADD FOREIGN KEY topic_id_idxfk(`topic_id`) REFERENCES `topic`(`id`);
+CREATE INDEX `read_topic_person_assn_person_id_idxfk`  ON `read_topic_person_assn`(`person_id`);
+ALTER TABLE `read_topic_person_assn` ADD FOREIGN KEY person_id_idxfk(`person_id`) REFERENCES `person`(`id`);

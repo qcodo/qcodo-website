@@ -26,6 +26,8 @@
 	 * property-read QLabel $PersonIdLabel
 	 * property QTextBox $MessageControl
 	 * property-read QLabel $MessageLabel
+	 * property QIntegerTextBox $ReplyNumberControl
+	 * property-read QLabel $ReplyNumberLabel
 	 * property QDateTimePicker $PostDateControl
 	 * property-read QLabel $PostDateLabel
 	 * property-read string $TitleVerb a verb indicating whether or not this is being edited or created
@@ -45,6 +47,7 @@
 		protected $lstTopic;
 		protected $lstPerson;
 		protected $txtMessage;
+		protected $txtReplyNumber;
 		protected $calPostDate;
 
 		// Controls that allow the viewing of Message's individual data fields
@@ -52,6 +55,7 @@
 		protected $lblTopicId;
 		protected $lblPersonId;
 		protected $lblMessage;
+		protected $lblReplyNumber;
 		protected $lblPostDate;
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
@@ -294,6 +298,32 @@
 		}
 
 		/**
+		 * Create and setup QIntegerTextBox txtReplyNumber
+		 * @param string $strControlId optional ControlId to use
+		 * @return QIntegerTextBox
+		 */
+		public function txtReplyNumber_Create($strControlId = null) {
+			$this->txtReplyNumber = new QIntegerTextBox($this->objParentObject, $strControlId);
+			$this->txtReplyNumber->Name = QApplication::Translate('Reply Number');
+			$this->txtReplyNumber->Text = $this->objMessage->ReplyNumber;
+			return $this->txtReplyNumber;
+		}
+
+		/**
+		 * Create and setup QLabel lblReplyNumber
+		 * @param string $strControlId optional ControlId to use
+		 * @param string $strFormat optional sprintf format to use
+		 * @return QLabel
+		 */
+		public function lblReplyNumber_Create($strControlId = null, $strFormat = null) {
+			$this->lblReplyNumber = new QLabel($this->objParentObject, $strControlId);
+			$this->lblReplyNumber->Name = QApplication::Translate('Reply Number');
+			$this->lblReplyNumber->Text = $this->objMessage->ReplyNumber;
+			$this->lblReplyNumber->Format = $strFormat;
+			return $this->lblReplyNumber;
+		}
+
+		/**
 		 * Create and setup QDateTimePicker calPostDate
 		 * @param string $strControlId optional ControlId to use
 		 * @return QDateTimePicker
@@ -382,6 +412,9 @@
 			if ($this->txtMessage) $this->txtMessage->Text = $this->objMessage->Message;
 			if ($this->lblMessage) $this->lblMessage->Text = $this->objMessage->Message;
 
+			if ($this->txtReplyNumber) $this->txtReplyNumber->Text = $this->objMessage->ReplyNumber;
+			if ($this->lblReplyNumber) $this->lblReplyNumber->Text = $this->objMessage->ReplyNumber;
+
 			if ($this->calPostDate) $this->calPostDate->DateTime = $this->objMessage->PostDate;
 			if ($this->lblPostDate) $this->lblPostDate->Text = sprintf($this->objMessage->PostDate) ? $this->objMessage->__toString($this->strPostDateDateTimeFormat) : null;
 
@@ -412,6 +445,7 @@
 				if ($this->lstTopic) $this->objMessage->TopicId = $this->lstTopic->SelectedValue;
 				if ($this->lstPerson) $this->objMessage->PersonId = $this->lstPerson->SelectedValue;
 				if ($this->txtMessage) $this->objMessage->Message = $this->txtMessage->Text;
+				if ($this->txtReplyNumber) $this->objMessage->ReplyNumber = $this->txtReplyNumber->Text;
 				if ($this->calPostDate) $this->objMessage->PostDate = $this->calPostDate->DateTime;
 
 				// Update any UniqueReverseReferences (if any) for controls that have been created for it
@@ -485,6 +519,12 @@
 				case 'MessageLabel':
 					if (!$this->lblMessage) return $this->lblMessage_Create();
 					return $this->lblMessage;
+				case 'ReplyNumberControl':
+					if (!$this->txtReplyNumber) return $this->txtReplyNumber_Create();
+					return $this->txtReplyNumber;
+				case 'ReplyNumberLabel':
+					if (!$this->lblReplyNumber) return $this->lblReplyNumber_Create();
+					return $this->lblReplyNumber;
 				case 'PostDateControl':
 					if (!$this->calPostDate) return $this->calPostDate_Create();
 					return $this->calPostDate;
@@ -523,6 +563,8 @@
 						return ($this->lstPerson = QType::Cast($mixValue, 'QControl'));
 					case 'MessageControl':
 						return ($this->txtMessage = QType::Cast($mixValue, 'QControl'));
+					case 'ReplyNumberControl':
+						return ($this->txtReplyNumber = QType::Cast($mixValue, 'QControl'));
 					case 'PostDateControl':
 						return ($this->calPostDate = QType::Cast($mixValue, 'QControl'));
 					default:
