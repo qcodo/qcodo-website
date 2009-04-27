@@ -78,8 +78,10 @@
 			
 			$this->btnRespond1 = new RoundedLinkButton($this);
 			$this->btnRespond1->Text = 'Respond';
+			$this->btnRespond1->ToolTip = 'Post a Response';
 			$this->btnRespond2 = new RoundedLinkButton($this);
 			$this->btnRespond2->Text = 'Respond';
+			$this->btnRespond2->ToolTip = 'Post a Response';
 			
 			$this->btnNotify1 = new RoundedLinkButton($this);
 			$this->btnNotify1->Text = 'Email Notification';
