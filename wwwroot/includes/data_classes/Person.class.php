@@ -35,7 +35,7 @@
 		public function __get($strName) {
 			switch ($strName) {
 				case 'DisplayForForums':
-							$strToReturn = sprintf('<a href="%s">%s</a>',
+							$strToReturn = sprintf('<a href="%s" title="View Profile">%s</a>',
 								$this->ViewProfileUrl, QApplication::HtmlEntities($this->DisplayName));
 
 							if ($this->strLocation)

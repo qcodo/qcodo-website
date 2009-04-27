@@ -4,7 +4,21 @@
 <div class="messageBarRound <?php if ($_CONTROL->CurrentItemIndex % 2) print 'messageBarRoundAlternate'; ?>"><div class="a">&nbsp;</div><div class="b">&nbsp;</div><div class="c">&nbsp;</div><div class="d">&nbsp;</div><div class="e">&nbsp;</div></div>
 <div class="messageBar <?php if ($_CONTROL->CurrentItemIndex % 2) print 'messageBarAlternate'; ?>">
 	<div class="name">
-	<?php if ($_ITEM->ReplyNumber) _p('#' . $_ITEM->ReplyNumber . ' '); ?>
+<?php
+	if ($_FORM->IsMessageEditable($_ITEM)) {
+		if ($_ITEM->ReplyNumber) {
+			printf('<span class="replyNumber"><a href="#" title="Edit This Post" %s>Reply #%s</a> &nbsp;|&nbsp; </span>',
+				null, $_ITEM->ReplyNumber);
+		} else {
+			printf('<span class="replyNumber"><a href="#" title="Edit This Post" %s>Edit</a> &nbsp;|&nbsp; </span>',
+				null);
+		}
+	} else {
+		if ($_ITEM->ReplyNumber) {
+			printf('<span class="replyNumber">Reply #%s &nbsp;|&nbsp; </span>', $_ITEM->ReplyNumber);
+		}
+	}
+?>
 	<?php _p($_ITEM->Person->DisplayForForums, false); ?>
 	</div>
 	<div class="date">

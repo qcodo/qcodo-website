@@ -266,6 +266,16 @@
 		}
 		
 		/**
+		 * Specifies whether or not a given message is editable by the currently logged-in user
+		 * @param Message $objMessage
+		 * @return boolean
+		 */
+		public function IsMessageEditable(Message $objMessage) {
+			return (QApplication::$Person && ($objMessage->PersonId == QApplication::$Person->Id));
+		}
+
+
+		/**
 		 * For a specific topic, it will render all the necessary CSS classes for the dtrTopics qcontrol
 		 * @param Topic $objTopic
 		 * @return string

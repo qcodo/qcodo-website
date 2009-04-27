@@ -180,6 +180,7 @@ a.roundedLink:hover div.e { border-color: #cec; }
 
 		div#dtrMessages div.messageBar { background-color: #aba; height: 14px; padding: 0 10px 0 10px; }
 		div#dtrMessages div.messageBar div.name { float: left; font-size: 11px; font-weight: bold; color: #343; height: 11px; position: relative; top: -3px; }
+		div#dtrMessages div.messageBar div.name span.replyNumber { font-weight: normal; font-size: 10px; }
 		div#dtrMessages div.messageBar div.date { float: right; font-size: 10px; font-weight: bold; font-family: arial, helvetica; color: #343; position: relative; top: -1px; }
 
 		div#dtrMessages div.messageBody { background-color: #efe; width: 713px; padding: 10px; font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; overflow: auto; border: 1px solid #aba; }
