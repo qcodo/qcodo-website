@@ -83,6 +83,24 @@
 			$this->intMessageCount = Message::CountByTopicId($this->intId);
 
 			$this->Save();
+
+			// Update Reply Numbering
+			$intNumber = 0;
+			foreach ($this->GetMessageArray(QQ::OrderBy(QQN::Message()->PostDate)) as $objMessage) {
+				if (!$intNumber) {
+					if (!is_null($objMessage->ReplyNumber)) {
+						$objMessage->ReplyNumber = null;
+						$objMessage->Save();
+					}
+				} else {
+					if ($objMessage->ReplyNumber != $intNumber) {
+						$objMessage->ReplyNumber = $intNumber;
+						$objMessage->Save();
+					}
+				}
+				
+				$intNumber++;
+			}
 		}
 
 		// Override or Create New Load/Count methods

@@ -30,7 +30,7 @@
 			<div class="spacer">&nbsp;</div>
 			<?php $this->btnNotify1->Render(); ?>
 			<div class="spacer">&nbsp;</div>
-			<?php $this->btnMarkAsRead1->Render(); ?>
+			<?php $this->btnMarkAsViewed1->Render(); ?>
 		</div>
 		<div class="paginator"><?php $this->dtrMessages->Paginator->Render(); ?></div>
 	</div>
@@ -45,7 +45,7 @@
 			<div class="spacer">&nbsp;</div>
 			<?php $this->btnNotify2->Render(); ?>
 			<div class="spacer">&nbsp;</div>
-			<?php $this->btnMarkAsRead2->Render(); ?>
+			<?php $this->btnMarkAsViewed2->Render(); ?>
 		</div>
 		<div class="paginator"><?php $this->dtrMessages->PaginatorAlternate->Render(); ?></div>
 	</div>

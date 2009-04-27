@@ -152,6 +152,19 @@
 			public static function LoginPerson(Person $objPerson) {
 				$_SESSION['intPersonId'] = $objPerson->Id;
 				QApplication::$Person = $objPerson;
+				
+				// Mark any topics as viewed if applicable
+				if (array_key_exists('intViewedTopicArray', $_SESSION)) {
+					foreach ($_SESSION['intViewedTopicArray'] as $intTopicId => $blnValue) {
+						if ($blnValue) {
+							$objTopic = Topic::Load($intTopicId);
+							if ($objTopic && !$objTopic->IsPersonAsReadAssociated($objPerson)) {
+								$objTopic->AssociatePersonAsRead($objPerson);
+							}
+						}
+					}
+				}
+				QApplication::ClearViewedTopicArray();
 			}
 
 			/**
@@ -166,6 +179,16 @@
 
 				// Clear any login cookies (if applicable)
 				QApplication::ClearLoginTicketFromCookie();
+			}
+
+			/**
+			 * Clears out the Viewed Topic array
+			 * @return void
+			 */
+			public static function ClearViewedTopicArray() {
+				// Clear out any viewed data (if applicable)
+				$_SESSION['intViewedTopicArray'] = null;
+				unset($_SESSION['intViewedTopicArray']);
 			}
 
 			/**

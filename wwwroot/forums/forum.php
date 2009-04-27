@@ -1,7 +1,7 @@
 <?php
 	require('../includes/prepend.inc.php');
 
-	class QcodoForm extends QForm {
+	class QcodoForm extends QcodoWebsiteForm {
 		protected $strPageTitle = 'Forums';
 		protected $intNavBarIndex = QApplication::NavCommunity;
 		protected $intSubNavIndex = QApplication::NavCommunityForums;
@@ -13,8 +13,8 @@
 		protected $btnRespond2;
 		protected $btnNotify1;
 		protected $btnNotify2;
-		protected $btnMarkAsRead1;
-		protected $btnMarkAsRead2;
+		protected $btnMarkAsViewed1;
+		protected $btnMarkAsViewed2;
 		
 		protected $objForum;
 		public $objTopic;
@@ -26,21 +26,17 @@
 		protected function Form_Create() {
 			parent::Form_Create();
 
+			// For non-logged in users, create the ViewedTopicArray in Session
+			if (!QApplication::$Person) {
+				if (!array_key_exists('intViewedTopicArray', $_SESSION))
+					$_SESSION['intViewedTopicArray'] = array();
+			}
+
 			$this->objForum = Forum::Load(QApplication::PathInfo(0));
 			if (!$this->objForum) QApplication::Redirect('/forums/');
 
 			if ($this->objForum) {
-				$this->objTopic = Topic::Load(QApplication::PathInfo(1));
-				if ($this->objTopic) {
-					if ($this->objTopic->ForumId != $this->objForum->Id)
-						$this->objTopic = null;
-					else {
-						$this->objFirstMessage = Message::QuerySingle(
-							QQ::Equal(QQN::Message()->TopicId, $this->objTopic->Id),
-							QQ::OrderBy(QQN::Message()->Id)
-						);
-					}
-				}
+				$this->SelectTopic(QApplication::PathInfo(1));
 			}
 
 			$this->lstSearch = new QListBox($this);
@@ -73,34 +69,139 @@
 
 			$this->btnRespond1 = new RoundedLinkButton($this);
 			$this->btnRespond1->Text = 'Respond';
-			$this->btnRespond1->AddCssClass('roundedLinkGray');
 			$this->btnRespond2 = new RoundedLinkButton($this);
 			$this->btnRespond2->Text = 'Respond';
-			$this->btnRespond2->AddCssClass('roundedLinkGray');
 			
 			$this->btnNotify1 = new RoundedLinkButton($this);
 			$this->btnNotify1->Text = 'Email Notification';
 			$this->btnNotify2 = new RoundedLinkButton($this);
 			$this->btnNotify2->Text = 'Email Notification';
 			
-			$this->btnMarkAsRead1 = new RoundedLinkButton($this);
-			$this->btnMarkAsRead1->Text = 'Mark as Read';
-			$this->btnMarkAsRead1->AddCssClass('roundedLinkGray');
-			$this->btnMarkAsRead2 = new RoundedLinkButton($this);
-			$this->btnMarkAsRead2->Text = 'Mark as Read';
-			$this->btnMarkAsRead2->AddCssClass('roundedLinkGray');
+			$this->btnMarkAsViewed1 = new RoundedLinkButton($this);
+			$this->btnMarkAsViewed1->Text = 'Mark as Viewed';
+			$this->btnMarkAsViewed2 = new RoundedLinkButton($this);
+			$this->btnMarkAsViewed2->Text = 'Mark as Viewed';
+			
+			$this->btnRespond1->AddCssClass('roundedLinkGray');
+			$this->btnRespond2->AddCssClass('roundedLinkGray');
+			
+			// Add Control actions
+			$this->btnMarkAsViewed1->AddAction(new QClickEvent(), new QAjaxAction('btnMarkAsViewed_Click'));
+			$this->btnMarkAsViewed1->AddAction(new QClickEvent(), new QTerminateAction());
+			$this->btnMarkAsViewed2->AddAction(new QClickEvent(), new QAjaxAction('btnMarkAsViewed_Click'));
+			$this->btnMarkAsViewed2->AddAction(new QClickEvent(), new QTerminateAction());
+
+			$this->btnNotify1->AddAction(new QClickEvent(), new QAjaxAction('btnNotify_Click'));
+			$this->btnNotify1->AddAction(new QClickEvent(), new QTerminateAction());
+			$this->btnNotify2->AddAction(new QClickEvent(), new QAjaxAction('btnNotify_Click'));
+			$this->btnNotify2->AddAction(new QClickEvent(), new QTerminateAction());
+
+			$this->UpdateNotifyButtons();
+			$this->UpdateMarkAsViewedButtons();
+		}
+
+		protected function btnNotify_Click() {
+			if (!QApplication::$Person)
+				QApplication::Redirect('/login/');
+			else if ($this->objTopic) {
+				if ($this->IsTopicNotifying($this->objTopic))
+					$this->objTopic->UnassociatePersonAsEmail(QApplication::$Person);
+				else
+					$this->objTopic->AssociatePersonAsEmail(QApplication::$Person);
+
+				$this->UpdateNotifyButtons();
+				$this->dtrTopics->Refresh();
+			}
+		}
+
+		public function IsTopicNotifying(Topic $objTopic) {
+			return (QApplication::$Person && $objTopic->IsPersonAsEmailAssociated(QApplication::$Person));
+		}
+
+		public function UpdateNotifyButtons() {
+			if ($this->objTopic && QApplication::$Person &&
+				$this->objTopic->IsPersonAsEmailAssociated(QApplication::$Person)) {
+				$this->btnNotify1->Text = 'Email Notification';
+				$this->btnNotify2->Text = 'Email Notification';
+				$this->btnNotify1->ToolTip = 'You will receive an email whenever a reply is posted to this topic.';
+				$this->btnNotify2->ToolTip = 'You will receive an email whenever a reply is posted to this topic.';
+				$this->btnNotify1->RemoveCssClass('roundedLinkGray');
+				$this->btnNotify2->RemoveCssClass('roundedLinkGray');
+			} else {
+				$this->btnNotify1->Text = 'No Email Notification';
+				$this->btnNotify2->Text = 'No Email Notification';
+				$this->btnNotify1->ToolTip = 'Click to receive an email whenever a reply is posted to this topic.';
+				$this->btnNotify2->ToolTip = 'Click to receive an email whenever a reply is posted to this topic.';
+				$this->btnNotify1->AddCssClass('roundedLinkGray');
+				$this->btnNotify2->AddCssClass('roundedLinkGray');
+			}
+		}
+		
+		protected function btnMarkAsViewed_Click() {
+			if ($this->objTopic) {
+				if ($this->IsTopicViewed($this->objTopic)) {
+					$this->MarkTopicUnviewed($this->objTopic);
+				} else {
+					$this->MarkTopicViewed($this->objTopic);
+				}
+
+				$this->UpdateMarkAsViewedButtons();
+				$this->dtrTopics->Refresh();
+			}
+		}
+
+		public function UpdateMarkAsViewedButtons() {
+			if ($this->objTopic) {
+				if ($this->IsTopicViewed($this->objTopic)) {
+					$this->btnMarkAsViewed1->Text = 'Marked as Viewed';
+					$this->btnMarkAsViewed2->Text = 'Marked as Viewed';
+					$this->btnMarkAsViewed1->RemoveCssClass('roundedLinkGray');
+					$this->btnMarkAsViewed2->RemoveCssClass('roundedLinkGray');
+				} else {
+					$this->btnMarkAsViewed1->Text = 'Mark as Viewed';
+					$this->btnMarkAsViewed2->Text = 'Mark as Viewed';
+					$this->btnMarkAsViewed1->AddCssClass('roundedLinkGray');
+					$this->btnMarkAsViewed2->AddCssClass('roundedLinkGray');
+				}
+			}
+		}
+
+		/**
+		 * Action to Select a Topic to view
+		 * @param integer $intTopicId the topic ID that we are now viewing
+		 * @return void
+		 */
+		public function SelectTopic($intTopicId) {
+			$this->objTopic = Topic::Load(QApplication::PathInfo(1));
+			if ($this->objTopic) {
+				if ($this->objTopic->ForumId != $this->objForum->Id)
+					$this->objTopic = null;
+				else {
+					$this->objFirstMessage = Message::QuerySingle(
+						QQ::Equal(QQN::Message()->TopicId, $this->objTopic->Id),
+						QQ::OrderBy(QQN::Message()->Id)
+					);
+				}
+
+				$this->MarkTopicViewed($this->objTopic);
+			}
 		}
 
 		public function dtrTopics_Bind() {
-			$this->dtrTopics->TotalItemCount = $this->objForum->CountTopics();
+			$this->dtrTopics->TotalItemCount = $this->objForum->TopicCount;
 			$this->dtrTopics->DataSource = Topic::LoadArrayByForumId($this->objForum->Id, QQ::Clause(QQ::OrderBy(QQN::Topic()->LastPostDate, false), $this->dtrTopics->LimitClause));
 		}
 
 		public function dtrMessages_Bind() {
 			if ($this->objTopic) {
-				$this->dtrMessages->TotalItemCount = $this->objTopic->CountMessages();
+				$this->dtrMessages->TotalItemCount = $this->objTopic->MessageCount;
 
-				$objDataSource = $this->objTopic->GetMessageArray(QQ::Clause(QQ::OrderBy(QQN::Message()->PostDate), $this->dtrMessages->LimitClause));
+				$objDataSource = $this->objTopic->GetMessageArray(QQ::Clause(
+					QQ::OrderBy(QQN::Message()->PostDate, false),
+					$this->dtrMessages->LimitClause,
+					QQ::Expand(QQN::Message()->Person),
+					QQ::Expand(QQN::Message()->Person->Country)
+				));
 				$this->dtrMessages->DataSource = $objDataSource;
 				
 				$this->dtrMessages->Paginator->Visible = ($this->dtrMessages->PageCount > 1);
@@ -113,6 +214,65 @@
 				QApplication::Redirect(sprintf('/forums/search.php/1/%s/?strSearch=%s', $this->lstSearch->SelectedValue, urlencode($this->txtSearch->Text)));
 			else
 				QApplication::Redirect(sprintf('/forums/search.php/1/?strSearch=%s', urlencode($this->txtSearch->Text)));
+		}
+		
+		/**
+		 * For a specific topic, it will render all the necessary CSS classes for the dtrTopics qcontrol
+		 * @param Topic $objTopic
+		 * @return string
+		 */
+		public function RenderTopicCss(Topic $objTopic) {
+			$strToReturn = 'item';
+			if ($this->objTopic && ($objTopic->Id == $this->objTopic->Id))
+				$strToReturn .= ' selected';
+			if (!$this->IsTopicViewed($objTopic))
+				$strToReturn .= ' unviewed';
+			if ($this->IsTopicNotifying($objTopic))
+				$strToReturn .= ' notify';
+			return $strToReturn;
+		}
+
+		/**
+		 * Specifies whether or not this user has viewed the message already
+		 * @param Message $objMessage
+		 * @return boolean
+		 */
+		public function IsTopicViewed(Topic $objTopic) {
+			if (QApplication::$Person) {
+				return $objTopic->IsPersonAsReadAssociated(QApplication::$Person);
+			} else {
+				return array_key_exists($objTopic->Id, $_SESSION['intViewedTopicArray']);
+			}
+		}
+
+
+		/**
+		 * Will mark this topic as "viewed" by this person
+		 * @param Topic $objTopic
+		 * @return void
+		 */
+		public function MarkTopicViewed(Topic $objTopic) {
+			if (QApplication::$Person) {
+				if (!$objTopic->IsPersonAsReadAssociated(QApplication::$Person))
+					$objTopic->AssociatePersonAsRead(QApplication::$Person);
+			} else {
+				$_SESSION['intViewedTopicArray'][$objTopic->Id] = true;
+			}
+		}
+
+
+		/**
+		 * Will mark this topic as "unviewed" by this person
+		 * @param Topic $objTopic
+		 * @return void
+		 */
+		public function MarkTopicUnviewed(Topic $objTopic) {
+			if (QApplication::$Person) {
+				$objTopic->UnassociatePersonAsRead(QApplication::$Person);
+			} else {
+				$_SESSION['intViewedTopicArray'][$objTopic->Id] = false;
+				unset($_SESSION['intViewedTopicArray'][$objTopic->Id]);
+			}
 		}
 	}
 

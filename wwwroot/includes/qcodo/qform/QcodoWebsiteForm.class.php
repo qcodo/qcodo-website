@@ -17,4 +17,7 @@
 			return $blnToReturn;
 		}
 	}
+	
+	QcodoWebsiteForm::$FormStateHandler = 'QSessionFormStateHandler';
+	QcodoWebsiteForm::$EncryptionKey = '125r9uqwfjpsk';
 ?>
