@@ -27,6 +27,7 @@
 		protected $dtrTopics;
 		
 		protected $dlgMessage;
+		protected $pxyEditMessage;
 		
 		protected function Form_Create() {
 			parent::Form_Create();
@@ -97,6 +98,7 @@
 			$this->btnRespond2->AddCssClass('roundedLinkGray');
 
 			$this->dlgMessage = new MessageEditDialogBox($this);
+			$this->pxyEditMessage = new QControlProxy($this);
 			
 			// Add Control actions
 			$this->btnRespond1->AddAction(new QClickEvent(), new QAjaxAction('btnRespond_Click'));
@@ -114,6 +116,10 @@
 			$this->btnNotify2->AddAction(new QClickEvent(), new QAjaxAction('btnNotify_Click'));
 			$this->btnNotify2->AddAction(new QClickEvent(), new QTerminateAction());
 
+			$this->pxyEditMessage->AddAction(new QClickEvent(), new QAjaxAction('pxyEditMessage_Click'));
+			$this->pxyEditMessage->AddAction(new QClickEvent(), new QTerminateAction());
+			
+			// Update Button State
 			$this->UpdateNotifyButtons();
 			$this->UpdateMarkAsViewedButtons();
 		}
@@ -241,7 +247,17 @@
 			} else
 				QApplication::Redirect('/login/');
 		}
-		
+
+		public function pxyEditMessage_Click($strFormId, $strControlId, $strParameter) {
+			if (!QApplication::$Person) return;
+			$objMessage = Message::Load($strParameter);
+			if (!$objMessage) return;
+			if ($objMessage->TopicId != $this->objTopic->Id) return;
+			if ($objMessage->PersonId != QApplication::$Person->Id) return;
+			
+			$this->dlgMessage->EditMessage($objMessage);
+		}
+
 		public function CloseMessageDialog($blnRefresh = false, $blnRepaginate = false) {
 			$this->btnRespond1->AddCssClass('roundedLinkGray');
 			$this->btnRespond2->AddCssClass('roundedLinkGray');

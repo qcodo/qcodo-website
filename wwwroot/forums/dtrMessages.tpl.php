@@ -8,10 +8,10 @@
 	if ($_FORM->IsMessageEditable($_ITEM)) {
 		if ($_ITEM->ReplyNumber) {
 			printf('<span class="replyNumber"><a href="#" title="Edit This Post" %s>Reply #%s</a> &nbsp;|&nbsp; </span>',
-				null, $_ITEM->ReplyNumber);
+				$_FORM->pxyEditMessage->RenderAsEvents($_ITEM->Id, false), $_ITEM->ReplyNumber);
 		} else {
 			printf('<span class="replyNumber"><a href="#" title="Edit This Post" %s>Edit</a> &nbsp;|&nbsp; </span>',
-				null);
+				$_FORM->pxyEditMessage->RenderAsEvents($_ITEM->Id, false));
 		}
 	} else {
 		if ($_ITEM->ReplyNumber) {
