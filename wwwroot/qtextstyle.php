@@ -1,6 +1,10 @@
 <?php
 	require(dirname(__FILE__) . '/includes/prepend.inc.php');
 
+	class QTextStyleBlock extends QBaseClass {
+		
+	}
+	
 	class QTextStyle extends QBaseClass {
 		// These need to be overridden at a minimum
 		
@@ -29,6 +33,9 @@
 		// This is the logic
 		protected static $objStateStack;
 		protected static $strBufferArray;
+		
+		protected static $strContent;
+		protected static $strResult;
 
 		public static $strBlockProcedureArray = array(
 			'p' => 'ProcessParagraph',
@@ -40,7 +47,9 @@
 			'h6' => 'ProcessHeading6',
 			'bq' => 'ProcessBlockQuote',
 			'bc' => 'ProcessBlockCode',
-			'DEFAULT' => 'ProcessParagraph');
+			'#' => 'ProcessList',
+			'*' => 'ProcessList',
+			'default' => 'ProcessParagraph');
 
 		const StateText = 1;
 		const StateNewLine = 2;
@@ -49,121 +58,133 @@
 		const StateBulletedList = 5;
 		const StateBulletedListItem = 6;
 		const StateCode = 7;
-		
-		protected static function Run($strContent) {
+
+		const PatternBlockProcedure = '/([A-Za-z][A-Za-z0-9]*)(([{\\[][A-Za-z0-9:;,._" \'\\(\\)\\/\\-]*[}\\]])*)\\. /';
+		const PatternBlockList = '/([*#])(([{\\[][A-Za-z0-9:;,._" \'\\(\\)\\/\\-]*[}\\]])*) /';
+
+		/**
+		 * @param string[] $strMatches
+		 * @return boolean whether or not something was actually processed
+		 */
+		protected static function ProcessBlock($strMatches) {
 			// Pull Class Variables
 			$strBlockProcedureArray = self::GetValue('strBlockProcedureArray');
 
+			// Define components of a BlockCommand Call
+			$strBlockCommand = $strMatches[0];
+			$strBlockIdentifier = strtolower($strMatches[1]);
+			$strDirectives = $strMatches[2];
+
+			if (strpos(self::$strContent, $strBlockCommand) !== 0) return false;
+			if (!array_key_exists($strBlockIdentifier, $strBlockProcedureArray)) return false;
+			
+			// Calculate length for the entire block command
+			$intBlockCommandLength = strlen($strBlockCommand);
+
+			// Pull the content for this block
+			if (($intPosition = strpos(self::$strContent, "\n\n")) !== false) {
+				$strBlockContent = substr(self::$strContent, $intBlockCommandLength, $intPosition - $intBlockCommandLength);
+				$strRemainingContent = substr(self::$strContent, strlen($strBlockCommand . $strBlockContent) + 2);
+			} else {
+				$strBlockContent = substr(self::$strContent, $intBlockCommandLength);
+				$strRemainingContent = null;
+			}
+
+			// Pull Directives
+			$strStyle = null;
+			$strOptions = null;
+
+			if ($strDirectives) {
+				$strDirectives = preg_replace('/([\\}\\]])([\\{\\[])/', '$1\\\\$2', $strDirectives);
+				$strDirectives = explode('\\', $strDirectives);
+
+				for ($intDirectiveIndex = 0; $intDirectiveIndex < count($strDirectives); $intDirectiveIndex++) {
+					$strDirective = $strDirectives[$intDirectiveIndex];
+
+					if ((QString::FirstCharacter($strDirective) == '{') &&
+						(QString::LastCharacter($strDirective) == '}'))
+						$strStyle = substr($strDirective, 1, strlen($strDirective) - 2);
+
+					else if ((QString::FirstCharacter($strDirective) == '[') &&
+							 (QString::LastCharacter($strDirective) == ']'))
+						$strOptions = substr($strDirective, 1, strlen($strDirective) - 2);
+
+					else
+						return false;
+				}
+			}
+
+			self::$strResult .= self::CallMethod($strBlockProcedureArray[$strBlockIdentifier], $strBlockContent, $strBlockIdentifier, $strStyle, $strOptions);
+			self::$strContent = $strRemainingContent;
+			return true;
+		}
+
+		protected static function Run($strContent) {
 			// Reset teh stacks
 			self::$objStateStack = new QStack();
 			self::$objStateStack->Push(self::StateText);
 			self::$objStateStack->Push(self::StateNewLine);
 			self::$strBufferArray = array();
-			$strToReturn = null;
+			self::$strResult = null;
 
 			// Normalize all linebreaks
-			$strContent = str_replace("\r\n", "\n", $strContent);
+			self::$strContent = str_replace("\r\n", "\n", $strContent);
 
-			while ($strContent) {
+			while (self::$strContent) {
 				switch (self::$objStateStack->PeekLast()) {
 					case self::StateNewLine:
 						// See if we are declaring a special block
-						$strPattern = '/([A-Za-z][A-Za-z0-9]*)(([{\\[][A-Za-z0-9:;,._" \'\\(\\)\\/\\-]*[}\\]])*)\\. /';
-						preg_match($strPattern, $strContent, $strMatches);
-//var_dump($strMatches);
-
 						$blnValidMatch = false;
+						$strMatches = array();
 
-						if ((count($strMatches) >= 3) &&
-							($strBlockCommand = $strMatches[0]) && ($strBlockIdentifier = strtolower($strMatches[1])) &&
-							(strpos($strContent, $strBlockCommand) === 0) &&
-							(array_key_exists($strBlockIdentifier, $strBlockProcedureArray))) {
+						if (preg_match(self::PatternBlockProcedure, self::$strContent, $strMatches) &&
+							(count($strMatches) >= 3) &&
+							(self::CallMethod('ProcessBlock', $strMatches))) {
 
-							// Calculate length for the entire block command
-							$intBlockCommandLength = strlen($strBlockCommand);
+						} else if (preg_match(self::PatternBlockList, self::$strContent, $strMatches) &&
+							(count($strMatches) >= 3) &&
+							(self::CallMethod('ProcessBlock', $strMatches))) {
 
-							// Pull the content for this block
-							if (($intPosition = strpos($strContent, "\n\n")) !== false) {
-								$strBlockContent = substr($strContent, $intBlockCommandLength, $intPosition - $intBlockCommandLength);
-								$strNextContent = substr($strContent, strlen($strBlockCommand . $strBlockContent) + 2);
-							} else {
-								$strBlockContent = substr($strContent, $intBlockCommandLength);
-								$strNextContent = null;
-							}
-	
-							// Pull Directives
-							$strStyle = null;
-							$strOptions = null;
-							$blnDirectiveFailed = false;
-
-							if ($strDirectives = $strMatches[2]) {
-								$strDirectives = preg_replace('/([\\}\\]])([\\{\\[])/', '$1\\\\$2', $strDirectives);
-								$strDirectives = explode('\\', $strDirectives);
-
-								for ($intDirectiveIndex = 0; $intDirectiveIndex < count($strDirectives); $intDirectiveIndex++) {
-									$strDirective = $strDirectives[$intDirectiveIndex];
-
-									if ((QString::FirstCharacter($strDirective) == '{') &&
-										(QString::LastCharacter($strDirective) == '}'))
-										$strStyle = substr($strDirective, 1, strlen($strDirective) - 2);
-
-									else if ((QString::FirstCharacter($strDirective) == '[') &&
-											 (QString::LastCharacter($strDirective) == ']'))
-										$strOptions = substr($strDirective, 1, strlen($strDirective) - 2);
-
-									else
-										$blnDirectiveFailed = true;
-								}
-							}
-
-							if (!$blnDirectiveFailed) {
-								$strToReturn .= self::CallMethod($strBlockProcedureArray[$strBlockIdentifier], $strBlockContent, $strStyle, $strOptions);
-								$blnValidMatch = true;
-								$strContent = $strNextContent;
-							}
+						} else {
+							self::$strContent = 'default. ' . self::$strContent;
 						}
-
-						if (!$blnValidMatch) {
-							
-							if (($intPosition = strpos($strContent, "\n\n")) !== false) {
-								$strBlockContent = substr($strContent, 0, $intPosition);
-								$strContent = substr($strContent, strlen($strBlockContent) + 2);
-							} else {
-								$strBlockContent = $strContent;
-								$strContent = null;
-							}
-
-							$strToReturn .= self::CallMethod($strBlockProcedureArray['DEFAULT'], $strBlockContent);
-						}
+						
 						break;
 					default:
 						exit("OOPS");
 				}
 			}
 
-			return $strToReturn;
+			return self::$strResult;
 		}
 		
-		protected static function ProcessHeading2($strBlockContent, $strStyle = null, $strOptions = null) {
+		protected static function ProcessHeading2($strBlockContent, $strBlockIdentifier, $strStyle = null, $strOptions = null) {
 			if ($strStyle) $strStyle = ' style="' . $strStyle . '"';
 			return sprintf("<h2%s>%s</h2>\n\n", $strStyle, $strBlockContent);
 		}
 		
-		protected static function ProcessHeading3($strBlockContent, $strStyle = null, $strOptions = null) {
+		protected static function ProcessHeading3($strBlockContent, $strBlockIdentifier, $strStyle = null, $strOptions = null) {
 			if ($strStyle) $strStyle = ' style="' . $strStyle . '"';
 			return sprintf("<h3%s>%s</h3>\n\n", $strStyle, $strBlockContent);
 		}
 		
-		protected static function ProcessBlockQuote($strBlockContent, $strStyle = null, $strOptions = null) {
+		protected static function ProcessBlockQuote($strBlockContent, $strBlockIdentifier, $strStyle = null, $strOptions = null) {
 			if ($strStyle) $strStyle = ' style="' . $strStyle . '"';
 			if ($strOptions == 'fr')
 				$strBlockContent = 'In French, ' . $strBlockContent;
 			return sprintf("<blockquote%s>%s</blockquote>\n\n", $strStyle, $strBlockContent);
 		}
 		
-		protected static function ProcessParagraph($strBlockContent, $strStyle = null, $strOptions = null) {
+		protected static function ProcessParagraph($strBlockContent, $strBlockIdentifier, $strStyle = null, $strOptions = null) {
 			if ($strStyle) $strStyle = ' style="' . $strStyle . '"';
 			return sprintf("<p%s>%s</p>\n\n", $strStyle, $strBlockContent);
+		}
+		
+		protected static function ProcessList($strBlockContent, $strBlockIdentifier, $strStyle = null, $strOptions = null) {
+			var_dump($strBlockIdentifier);
+			var_dump($strStyle);
+			var_dump($strOptions);
+			exit(var_dump($strBlockContent));
 		}
 	}
 
