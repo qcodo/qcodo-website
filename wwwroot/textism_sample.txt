@@ -42,6 +42,21 @@ Mixed list:
 ** Sub point 1
 ** Sub point 2
 
+bc.
+<html>
+	<head>
+		<title>Foo</title>
+	</head>
+	<body>
+		asdflajsd flaksjdf lkajsdf
+	</body>
+</html>
+
+function foo() {
+	$strData = fooluasdfasdf asdjfasdf SDf sdaf asdf();
+	asdflkj;
+}
+.bc
 
 Well, that went well. How about we insert an <a href="/" title="watch out">old-fashioned hypertext link</a>? Will the quote marks in the tags get messed up? No!
 

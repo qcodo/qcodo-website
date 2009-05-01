@@ -51,6 +51,10 @@
 			'*' => 'ProcessList',
 			'default' => 'ProcessParagraph');
 
+		public static $strBlockEndMarkerArray = array(
+			'bc' => "\n.bc\n\n",
+			'default' => "\n\n");
+
 		const StateText = 1;
 		const StateNewLine = 2;
 		const StateTag = 3;
@@ -59,7 +63,7 @@
 		const StateBulletedListItem = 6;
 		const StateCode = 7;
 
-		const PatternBlockProcedure = '/([A-Za-z][A-Za-z0-9]*)(([{\\[][A-Za-z0-9:;,._" \'\\(\\)\\/\\-]*[}\\]])*)\\. /';
+		const PatternBlockProcedure = '/([A-Za-z][A-Za-z0-9]*)(([{\\[][A-Za-z0-9:;,._" \'\\(\\)\\/\\-]*[}\\]])*)\\.( |\\n)/';
 		const PatternBlockList = '/([*#])(([{\\[][A-Za-z0-9:;,._" \'\\(\\)\\/\\-]*[}\\]])*) /';
 
 		/**
@@ -69,7 +73,8 @@
 		protected static function ProcessBlock($strMatches) {
 			// Pull Class Variables
 			$strBlockProcedureArray = self::GetValue('strBlockProcedureArray');
-
+			$strBlockEndMarkerArray = self::GetValue('strBlockEndMarkerArray');
+			
 			// Define components of a BlockCommand Call
 			$strBlockCommand = $strMatches[0];
 			$strBlockIdentifier = strtolower($strMatches[1]);
@@ -77,14 +82,21 @@
 
 			if (strpos(self::$strContent, $strBlockCommand) !== 0) return false;
 			if (!array_key_exists($strBlockIdentifier, $strBlockProcedureArray)) return false;
-			
+
+			if (array_key_exists($strBlockIdentifier, $strBlockEndMarkerArray)) {
+				$strEndMarker = $strBlockEndMarkerArray[$strBlockIdentifier];
+			} else {
+				$strEndMarker = $strBlockEndMarkerArray['default'];
+			}
+			$intEndMarkerLength = strlen($strEndMarker);
+
 			// Calculate length for the entire block command
 			$intBlockCommandLength = strlen($strBlockCommand);
 
 			// Pull the content for this block
-			if (($intPosition = strpos(self::$strContent, "\n\n")) !== false) {
+			if (($intPosition = strpos(self::$strContent, $strEndMarker)) !== false) {
 				$strBlockContent = substr(self::$strContent, $intBlockCommandLength, $intPosition - $intBlockCommandLength);
-				$strRemainingContent = substr(self::$strContent, strlen($strBlockCommand . $strBlockContent) + 2);
+				$strRemainingContent = substr(self::$strContent, strlen($strBlockCommand . $strBlockContent) + $intEndMarkerLength);
 			} else {
 				$strBlockContent = substr(self::$strContent, $intBlockCommandLength);
 				$strRemainingContent = null;
@@ -140,7 +152,11 @@
 						$blnValidMatch = false;
 						$strMatches = array();
 
-						if (preg_match(self::PatternBlockProcedure, self::$strContent, $strMatches) &&
+						if (QString::FirstCharacter(self::$strContent) == "\n") {
+							self::$strContent = substr(self::$strContent, 1);
+							self::$strResult .= "<br/>\n";
+
+						} else if (preg_match(self::PatternBlockProcedure, self::$strContent, $strMatches) &&
 							(count($strMatches) >= 3) &&
 							(self::CallMethod('ProcessBlock', $strMatches))) {
 
@@ -177,7 +193,12 @@
 				$strBlockContent = 'In French, ' . $strBlockContent;
 			return sprintf("<blockquote%s>%s</blockquote>\n\n", $strStyle, self::CallMethod('ProcessLine', $strBlockContent));
 		}
-		
+
+		protected static function ProcessBlockCode($strBlockContent, $strBlockIdentifier, $strStyle = null, $strOptions = null) {
+			if ($strStyle) $strStyle = ' style="' . $strStyle . '"';
+			return sprintf("<div class=\"code\"%s><code><pre>%s</pre></code></div>\n\n", $strStyle, QApplication::HtmlEntities($strBlockContent));
+		}
+
 		protected static function ProcessParagraph($strBlockContent, $strBlockIdentifier, $strStyle = null, $strOptions = null) {
 			if ($strStyle) $strStyle = ' style="' . $strStyle . '"';
 			return sprintf("<p%s>%s</p>\n\n", $strStyle, self::CallMethod('ProcessLine', $strBlockContent));
@@ -242,6 +263,10 @@
 	$strHtml = QTextStyle::DisplayAsHtml($strContent);
 //	$strHtml = QTextStyle::DisplayAsHtml('h2{font-size: 55px;}. asjdkfalksdf');
 ?>
+
+<style>
+	div.code { background-color: #dfe; padding: 1px 12px; margin-left: 25px; overflow: auto; width: 700px; }
+</style>
 
 	<h3 style="margin: 0;">Original</h3>
 	<div style="font: 11px lucida console; border: 1px solid black; overflow: auto; width: 800px; height: 150px; padding: 10px;"><?php print(nl2br(htmlentities($strContent))); ?></div>
