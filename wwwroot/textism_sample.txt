@@ -10,6 +10,14 @@ Simple list:
 
 #{color:blue} one
 # two
+** something
+** else
+** to
+ 
+Does this line belong to "to" or to "two"?
+### a
+### b
+### c
 # three
 
 Multi-level list:

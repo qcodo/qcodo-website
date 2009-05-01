@@ -130,6 +130,9 @@
 			// Normalize all linebreaks
 			self::$strContent = str_replace("\r\n", "\n", $strContent);
 
+			// Normalize all tabs
+			self::$strContent = str_replace("\t", "    ", self::$strContent);
+
 			while (self::$strContent) {
 				switch (self::$objStateStack->PeekLast()) {
 					case self::StateNewLine:
@@ -160,31 +163,70 @@
 		
 		protected static function ProcessHeading2($strBlockContent, $strBlockIdentifier, $strStyle = null, $strOptions = null) {
 			if ($strStyle) $strStyle = ' style="' . $strStyle . '"';
-			return sprintf("<h2%s>%s</h2>\n\n", $strStyle, $strBlockContent);
+			return sprintf("<h2%s>%s</h2>\n\n", $strStyle, self::CallMethod('ProcessLine', $strBlockContent));
 		}
 		
 		protected static function ProcessHeading3($strBlockContent, $strBlockIdentifier, $strStyle = null, $strOptions = null) {
 			if ($strStyle) $strStyle = ' style="' . $strStyle . '"';
-			return sprintf("<h3%s>%s</h3>\n\n", $strStyle, $strBlockContent);
+			return sprintf("<h3%s>%s</h3>\n\n", $strStyle, self::CallMethod('ProcessLine', $strBlockContent));
 		}
 		
 		protected static function ProcessBlockQuote($strBlockContent, $strBlockIdentifier, $strStyle = null, $strOptions = null) {
 			if ($strStyle) $strStyle = ' style="' . $strStyle . '"';
 			if ($strOptions == 'fr')
 				$strBlockContent = 'In French, ' . $strBlockContent;
-			return sprintf("<blockquote%s>%s</blockquote>\n\n", $strStyle, $strBlockContent);
+			return sprintf("<blockquote%s>%s</blockquote>\n\n", $strStyle, self::CallMethod('ProcessLine', $strBlockContent));
 		}
 		
 		protected static function ProcessParagraph($strBlockContent, $strBlockIdentifier, $strStyle = null, $strOptions = null) {
 			if ($strStyle) $strStyle = ' style="' . $strStyle . '"';
-			return sprintf("<p%s>%s</p>\n\n", $strStyle, $strBlockContent);
+			return sprintf("<p%s>%s</p>\n\n", $strStyle, self::CallMethod('ProcessLine', $strBlockContent));
 		}
 		
 		protected static function ProcessList($strBlockContent, $strBlockIdentifier, $strStyle = null, $strOptions = null) {
-			var_dump($strBlockIdentifier);
-			var_dump($strStyle);
-			var_dump($strOptions);
-			exit(var_dump($strBlockContent));
+			if ($strStyle) $strStyle = ' style="' . $strStyle . '"';
+
+			return self::ProcessListRecursion($strBlockContent, $strBlockIdentifier, $strStyle, $strOptions);
+		}
+
+		protected static function ProcessListRecursion($strBlockContent, $strBlockIdentifier, $strStyle = null, $strOptions = null) {
+			if (QString::FirstCharacter($strBlockIdentifier) == '#') $strTag = 'ol';
+			else $strTag = 'ul';
+
+			$strToReturn = sprintf("<%s%s>\n", $strTag, $strStyle);
+			$strListItemArray = explode("\n" . $strBlockIdentifier . ' ', $strBlockContent);
+			
+			foreach ($strListItemArray as $strListItem) {
+				$strToReturn .= sprintf('<li>' . self::ProcessListItem($strListItem, $strBlockIdentifier) . "</li>\n");
+			}
+
+			$strToReturn .= sprintf("</%s>\n\n", $strTag);
+			return $strToReturn;
+		}
+
+		protected static function ProcessListItem($strListItemContent, $strBlockIdentifier) {
+			// Build pattern to identify sublist
+			$intBlockIdentifierLength = strlen($strBlockIdentifier);
+			$strPattern = sprintf('/\\n(%s|%s) /', str_repeat('\\#', $intBlockIdentifierLength+1), str_repeat('\\*', $intBlockIdentifierLength+1));
+
+			$strToReturn = null;
+			preg_match($strPattern, $strListItemContent, $strMatches);
+			if (count($strMatches) >= 1) {
+				$intPosition = strpos($strListItemContent, $strMatches[0]);
+				$strToReturn .= self::CallMethod('ProcessLine', substr($strListItemContent, 0, $intPosition));
+				$strListItemContent = substr($strListItemContent, $intPosition + strlen($strMatches[0]));
+
+				$strToReturn .= self::ProcessListRecursion($strListItemContent, $strMatches[1]);
+			} else {
+				$strToReturn .= self::CallMethod('ProcessLine', $strListItemContent);
+			}
+			
+			return $strToReturn;
+		}
+		
+		
+		protected static function ProcessLine($strContent) {
+			return nl2br(htmlentities($strContent));
 		}
 	}
 
