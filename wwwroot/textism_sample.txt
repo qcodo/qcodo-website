@@ -1,10 +1,10 @@
-h2{color:green}. This is a title
+h2{color:green}[foo]. This is a title
 
 h3. This is a subhead
 
 p{color:red}. This is some text of dubious character. Isn't the use of "quotes" just lazy writing -- and theft of 'intellectual property' besides? I think the time has come to see a block quote.
 
-bq[fr]. This is a block quote. I'll admit it's not the most exciting block quote ever devised.
+bq[fr][en][fr]{background-color: pink; padding: 5px;}. This is a block quote. I'll admit it's not the most exciting block quote ever devised.
 
 Simple list:
 

@@ -39,8 +39,9 @@
 			'h5' => 'ProcessHeading5',
 			'h6' => 'ProcessHeading6',
 			'bq' => 'ProcessBlockQuote',
-			'bc' => 'ProcessBlockCode');
-		
+			'bc' => 'ProcessBlockCode',
+			'DEFAULT' => 'ProcessParagraph');
+
 		const StateText = 1;
 		const StateNewLine = 2;
 		const StateTag = 3;
@@ -58,54 +59,111 @@
 			self::$objStateStack->Push(self::StateText);
 			self::$objStateStack->Push(self::StateNewLine);
 			self::$strBufferArray = array();
+			$strToReturn = null;
 
 			// Normalize all linebreaks
 			$strContent = str_replace("\r\n", "\n", $strContent);
 
-			switch (self::$objStateStack->PeekLast()) {
-				case self::StateNewLine:
-					// See if we are declaring a special block
-					$strPattern = '/([A-Za-z][A-Za-z0-9]*)({[A-Za-z0-9:;,._" \'\\(\\)\\/\\-]*})?\\. /';
-					preg_match($strPattern, $strContent, $strMatches);
-var_dump($strMatches);
-					if ((count($strMatches) >= 2) &&
-						($strBlockCommand = $strMatches[0]) && ($strBlockIdentifier = strtolower($strMatches[1])) &&
-						(strpos($strContent, $strBlockCommand) === 0) &&
-						(array_key_exists($strBlockIdentifier, $strBlockProcedureArray))) {
+			while ($strContent) {
+				switch (self::$objStateStack->PeekLast()) {
+					case self::StateNewLine:
+						// See if we are declaring a special block
+						$strPattern = '/([A-Za-z][A-Za-z0-9]*)(([{\\[][A-Za-z0-9:;,._" \'\\(\\)\\/\\-]*[}\\]])*)\\. /';
+						preg_match($strPattern, $strContent, $strMatches);
+//var_dump($strMatches);
 
-						// Calculate length for the entire block command
-						$intBlockCommandLength = strlen($strBlockCommand);
+						$blnValidMatch = false;
 
-						// Pull the content for this block
-						if (($intPosition = strpos($strContent, "\n\n")) !== false) {
-							$strBlockContent = substr($strContent, $intBlockCommandLength, $intPosition - $intBlockCommandLength);
-						} else {
-							$strBlockContent = substr($strContent, $intBlockCommandLength);
+						if ((count($strMatches) >= 3) &&
+							($strBlockCommand = $strMatches[0]) && ($strBlockIdentifier = strtolower($strMatches[1])) &&
+							(strpos($strContent, $strBlockCommand) === 0) &&
+							(array_key_exists($strBlockIdentifier, $strBlockProcedureArray))) {
+
+							// Calculate length for the entire block command
+							$intBlockCommandLength = strlen($strBlockCommand);
+
+							// Pull the content for this block
+							if (($intPosition = strpos($strContent, "\n\n")) !== false) {
+								$strBlockContent = substr($strContent, $intBlockCommandLength, $intPosition - $intBlockCommandLength);
+								$strNextContent = substr($strContent, strlen($strBlockCommand . $strBlockContent) + 2);
+							} else {
+								$strBlockContent = substr($strContent, $intBlockCommandLength);
+								$strNextContent = null;
+							}
+	
+							// Pull Directives
+							$strStyle = null;
+							$strOptions = null;
+							$blnDirectiveFailed = false;
+
+							if ($strDirectives = $strMatches[2]) {
+								$strDirectives = preg_replace('/([\\}\\]])([\\{\\[])/', '$1\\\\$2', $strDirectives);
+								$strDirectives = explode('\\', $strDirectives);
+
+								for ($intDirectiveIndex = 0; $intDirectiveIndex < count($strDirectives); $intDirectiveIndex++) {
+									$strDirective = $strDirectives[$intDirectiveIndex];
+
+									if ((QString::FirstCharacter($strDirective) == '{') &&
+										(QString::LastCharacter($strDirective) == '}'))
+										$strStyle = substr($strDirective, 1, strlen($strDirective) - 2);
+
+									else if ((QString::FirstCharacter($strDirective) == '[') &&
+											 (QString::LastCharacter($strDirective) == ']'))
+										$strOptions = substr($strDirective, 1, strlen($strDirective) - 2);
+
+									else
+										$blnDirectiveFailed = true;
+								}
+							}
+
+							if (!$blnDirectiveFailed) {
+								$strToReturn .= self::CallMethod($strBlockProcedureArray[$strBlockIdentifier], $strBlockContent, $strStyle, $strOptions);
+								$blnValidMatch = true;
+								$strContent = $strNextContent;
+							}
 						}
 
-						// Pull Style Directives
-						if (array_key_exists(2, $strMatches)) {
-							$strStyleDirective = $strMatches[2];
-							$strStyleDirective = substr($strStyleDirective, 1, strlen($strStyleDirective) - 2);
-						} else {
-							$strStyleDirective = null;
-						}
+						if (!$blnValidMatch) {
+							
+							if (($intPosition = strpos($strContent, "\n\n")) !== false) {
+								$strBlockContent = substr($strContent, 0, $intPosition);
+								$strContent = substr($strContent, strlen($strBlockContent) + 2);
+							} else {
+								$strBlockContent = $strContent;
+								$strContent = null;
+							}
 
-						return self::CallMethod($strBlockProcedureArray[$strBlockIdentifier], $strBlockContent, $strStyleDirective);
-					} else {
-						return "NONE";
-					}
-					break;
-				default:
-					exit("OOPS");
+							$strToReturn .= self::CallMethod($strBlockProcedureArray['DEFAULT'], $strBlockContent);
+						}
+						break;
+					default:
+						exit("OOPS");
+				}
 			}
-			$strStuff = var_export(self::GetValue('strBlockProcedureArray'));
-			return $strStuff . ' - ' . $strContent;
+
+			return $strToReturn;
 		}
 		
-		protected static function ProcessHeading2($strBlockContent, $strStyleDirective) {
-			if ($strStyleDirective) $strStyleDirective = ' style="' . $strStyleDirective . '"';
-			return sprintf('<h2%s>%s</h2>', $strStyleDirective, $strBlockContent);
+		protected static function ProcessHeading2($strBlockContent, $strStyle = null, $strOptions = null) {
+			if ($strStyle) $strStyle = ' style="' . $strStyle . '"';
+			return sprintf("<h2%s>%s</h2>\n\n", $strStyle, $strBlockContent);
+		}
+		
+		protected static function ProcessHeading3($strBlockContent, $strStyle = null, $strOptions = null) {
+			if ($strStyle) $strStyle = ' style="' . $strStyle . '"';
+			return sprintf("<h3%s>%s</h3>\n\n", $strStyle, $strBlockContent);
+		}
+		
+		protected static function ProcessBlockQuote($strBlockContent, $strStyle = null, $strOptions = null) {
+			if ($strStyle) $strStyle = ' style="' . $strStyle . '"';
+			if ($strOptions == 'fr')
+				$strBlockContent = 'In French, ' . $strBlockContent;
+			return sprintf("<blockquote%s>%s</blockquote>\n\n", $strStyle, $strBlockContent);
+		}
+		
+		protected static function ProcessParagraph($strBlockContent, $strStyle = null, $strOptions = null) {
+			if ($strStyle) $strStyle = ' style="' . $strStyle . '"';
+			return sprintf("<p%s>%s</p>\n\n", $strStyle, $strBlockContent);
 		}
 	}
 
@@ -123,11 +181,11 @@ var_dump($strMatches);
 ?>
 
 	<h3 style="margin: 0;">Original</h3>
-	<div style="font: 11px lucida console; border: 1px solid black; overflow: auto; width: 800px; height: 200px; padding: 10px;"><?php print(nl2br(htmlentities($strContent))); ?></div>
+	<div style="font: 11px lucida console; border: 1px solid black; overflow: auto; width: 800px; height: 150px; padding: 10px;"><?php print(nl2br(htmlentities($strContent))); ?></div>
 	<br/>
 	<h3 style="margin: 0;">Source HTML</h3>
-	<div style="font: 11px lucida console; border: 1px solid black; overflow: auto; width: 800px; height: 200px; padding: 10px;"><?php print(nl2br(htmlentities($strHtml))); ?></div>
+	<div style="font: 11px lucida console; border: 1px solid black; overflow: auto; width: 800px; height: 150px; padding: 10px;"><?php print(nl2br(htmlentities($strHtml))); ?></div>
 	<br/>
 	<h3 style="margin: 0;">Display HTML</h3>
-	<div style="font: 11px arial; border: 1px solid black; overflow: auto; width: 800px; height: 200px; padding: 10px;"><?php print($strHtml); ?></div>
+	<div style="font: 11px arial; border: 1px solid black; overflow: auto; width: 800px; height: 150px; padding: 10px;"><?php print($strHtml); ?></div>
 	
