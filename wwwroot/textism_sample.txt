@@ -42,6 +42,17 @@ Mixed list:
 ** Sub point 1
 ** Sub point 2
 
+Test test test test. Test test test test. Test test test test. Test test test test. Test test test test. Test test test test. Test test test test. Test test test test. Test test test test. Test test test test.
+
+h2.
+Line after
+
+Test test test test. Test test test test. Test test test test. Test test test test. Test test test test. Test test test test. Test test test test. Test test test test. Test test test test. Test test test test.
+
+ h2.
+
+Test test test test. Test test test test. Test test test test. Test test test test. Test test test test. Test test test test. Test test test test. Test test test test. Test test test test. Test test test test.
+
 bc.
 <html>
 	<head>

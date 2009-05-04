@@ -176,17 +176,37 @@
 
 			return self::$strResult;
 		}
-		
+
+		protected static function ProcessHeading1($strBlockContent, $strBlockIdentifier, $strStyle = null, $strOptions = null) {
+			if ($strStyle) $strStyle = ' style="' . $strStyle . '"';
+			return sprintf("<h1%s>%s</h1>\n\n", $strStyle, self::CallMethod('ProcessLine', $strBlockContent));
+		}
+
 		protected static function ProcessHeading2($strBlockContent, $strBlockIdentifier, $strStyle = null, $strOptions = null) {
 			if ($strStyle) $strStyle = ' style="' . $strStyle . '"';
 			return sprintf("<h2%s>%s</h2>\n\n", $strStyle, self::CallMethod('ProcessLine', $strBlockContent));
 		}
-		
+
 		protected static function ProcessHeading3($strBlockContent, $strBlockIdentifier, $strStyle = null, $strOptions = null) {
 			if ($strStyle) $strStyle = ' style="' . $strStyle . '"';
 			return sprintf("<h3%s>%s</h3>\n\n", $strStyle, self::CallMethod('ProcessLine', $strBlockContent));
 		}
-		
+
+		protected static function ProcessHeading4($strBlockContent, $strBlockIdentifier, $strStyle = null, $strOptions = null) {
+			if ($strStyle) $strStyle = ' style="' . $strStyle . '"';
+			return sprintf("<h4%s>%s</h4>\n\n", $strStyle, self::CallMethod('ProcessLine', $strBlockContent));
+		}
+
+		protected static function ProcessHeading5($strBlockContent, $strBlockIdentifier, $strStyle = null, $strOptions = null) {
+			if ($strStyle) $strStyle = ' style="' . $strStyle . '"';
+			return sprintf("<h5%s>%s</h5>\n\n", $strStyle, self::CallMethod('ProcessLine', $strBlockContent));
+		}
+
+		protected static function ProcessHeading6($strBlockContent, $strBlockIdentifier, $strStyle = null, $strOptions = null) {
+			if ($strStyle) $strStyle = ' style="' . $strStyle . '"';
+			return sprintf("<h6%s>%s</h6>\n\n", $strStyle, self::CallMethod('ProcessLine', $strBlockContent));
+		}
+
 		protected static function ProcessBlockQuote($strBlockContent, $strBlockIdentifier, $strStyle = null, $strOptions = null) {
 			if ($strStyle) $strStyle = ' style="' . $strStyle . '"';
 			if ($strOptions == 'fr')
@@ -244,8 +264,7 @@
 			
 			return $strToReturn;
 		}
-		
-		
+
 		protected static function ProcessLine($strContent) {
 			return nl2br(htmlentities($strContent));
 		}
