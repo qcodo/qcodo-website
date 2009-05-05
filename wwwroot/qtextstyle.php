@@ -32,7 +32,7 @@
 
 		// This is the logic
 		protected static $objStateStack;
-		protected static $strBufferArray;
+		protected static $objBufferStack;
 		
 		protected static $strContent;
 		protected static $strResult;
@@ -54,15 +54,7 @@
 		public static $strBlockEndMarkerArray = array(
 			'bc' => "\n.bc\n\n",
 			'default' => "\n\n");
-
-		const StateText = 1;
-		const StateNewLine = 2;
-		const StateTag = 3;
-		const StateStar = 4;
-		const StateBulletedList = 5;
-		const StateBulletedListItem = 6;
-		const StateCode = 7;
-
+		
 		//                              ([A-Za-z][A-Za-z0-9]*)  -  start of the pattern -- any block of text must be identified
 		//                                                         with a code (e.g. p, h1, h3, bq, etc.)
 		//                                                    (<|<>|>|=)?  -  optional text-align modifier
@@ -89,7 +81,7 @@
 			$strBlockCommand = $strMatches[0];
 			$strBlockIdentifier = strtolower($strMatches[1]);
 			$strPosition = $strMatches[2];
-			$strDirectives = $strMatches[3];
+			$strDirectives = array_key_exists(3, $strMatches) ? $strMatches[3] : null;
 
 			if (strpos(self::$strContent, $strBlockCommand) !== 0) return false;
 			if (!array_key_exists($strBlockIdentifier, $strBlockProcedureArray)) return false;
@@ -159,11 +151,7 @@
 		}
 
 		protected static function Run($strContent) {
-			// Reset teh stacks
-			self::$objStateStack = new QStack();
-			self::$objStateStack->Push(self::StateText);
-			self::$objStateStack->Push(self::StateNewLine);
-			self::$strBufferArray = array();
+			// Let's get started
 			self::$strResult = null;
 
 			// Normalize all linebreaks
@@ -173,31 +161,24 @@
 			self::$strContent = str_replace("\t", "    ", self::$strContent);
 
 			while (self::$strContent) {
-				switch (self::$objStateStack->PeekLast()) {
-					case self::StateNewLine:
-						// See if we are declaring a special block
-						$blnValidMatch = false;
-						$strMatches = array();
+				// See if we are declaring a special block
+				$blnValidMatch = false;
+				$strMatches = array();
 
-						if (QString::FirstCharacter(self::$strContent) == "\n") {
-							self::$strContent = substr(self::$strContent, 1);
-							self::$strResult .= "<br/>\n";
+				if (QString::FirstCharacter(self::$strContent) == "\n") {
+					self::$strContent = substr(self::$strContent, 1);
+					self::$strResult .= "<br/>\n";
 
-						} else if (preg_match(self::PatternBlockProcedure, self::$strContent, $strMatches) &&
-							(count($strMatches) >= 4) &&
-							(self::CallMethod('ProcessBlock', $strMatches))) {
+				} else if (preg_match(self::PatternBlockProcedure, self::$strContent, $strMatches) &&
+					(count($strMatches) >= 3) &&
+					(self::CallMethod('ProcessBlock', $strMatches))) {
 
-						} else if (preg_match(self::PatternBlockList, self::$strContent, $strMatches) &&
-							(count($strMatches) >= 4) &&
-							(self::CallMethod('ProcessBlock', $strMatches))) {
+				} else if (preg_match(self::PatternBlockList, self::$strContent, $strMatches) &&
+					(count($strMatches) >= 3) &&
+					(self::CallMethod('ProcessBlock', $strMatches))) {
 
-						} else {
-							self::$strContent = 'default. ' . self::$strContent;
-						}
-						
-						break;
-					default:
-						exit("OOPS");
+				} else {
+					self::$strContent = 'default. ' . self::$strContent;
 				}
 			}
 
@@ -289,9 +270,103 @@
 			
 			return $strToReturn;
 		}
+		
+		const CommandSwitchState = 1;
+		const CommandAddContent = 2;
+		const CommandAddSelf = 3;
+		const CommandCallMethod = 4;
+
+		const StateText = 1;
+		const StateQuote = 2;
+		const StateEndQuote = 3;
+		const StateCode = 4;
+		const StateImage = 5;
+		const StateStrong = 6;
+		const StateEmphasis = 7;
+
+		protected static $StateMachineArray = array(
+			self::StateText => array(
+				'"' => array(self::CommandSwitchState, self::StateQuote),
+				'<' => array(self::CommandAddContent, '&lt;'),
+				'>' => array(self::CommandAddContent, '&gt;'),
+				"\n" =>  array(self::CommandAddContent, '<br/>'),
+				'DEFAULT' => array(self::CommandAddSelf, null),
+				'END' => array(self::CommandCallMethod, 'FinishStateText')
+			),
+			self::StateQuote => array(
+				'"' => array(self::CommandSwitchState, self::StateEndQuote),
+				'<' => array(self::CommandAddContent, '&lt;'),
+				'>' => array(self::CommandAddContent, '&gt;'),
+				"\n" =>  array(self::CommandAddContent, '<br/>'),
+				'DEFAULT' => array(self::CommandAddSelf, null),
+				'END' => array(self::CommandCallMethod, 'FinishStateQuote')
+			),
+			self::StateEndQuote => array(
+				'DEFAULT' => array(self::CommandCallMethod, 'FinishStateEndQuote'),
+				'END' => array(self::CommandCallMethod, 'FinishStateEndQuote')
+			),
+		);
 
 		protected static function ProcessLine($strContent) {
-			return nl2br(htmlentities($strContent));
+			// Reset teh stacks
+			self::$objStateStack = new QStack();
+			self::$objStateStack->Push(self::StateText);
+
+			self::$objBufferStack = new QStack();
+			self::$objBufferStack->Push('');
+
+			while ($strContent) {
+				$arrStateMachine = self::$StateMachineArray[self::$objStateStack->PeekLast()];
+				$chrCurrent = QString::FirstCharacter($strContent);
+				$strBuffer = self::$objBufferStack->PeekLast();
+
+				if (array_key_exists($chrCurrent, $arrStateMachine))
+					$strKey = $chrCurrent;
+				else
+					$strKey = 'DEFAULT';
+
+				$intCommand = $arrStateMachine[$strKey][0];
+				$mixValue = $arrStateMachine[$strKey][1];
+				switch ($intCommand) {
+					case self::CommandSwitchState:
+						self::$objStateStack->Push($mixValue);
+						self::$objBufferStack->Push('');
+						break;
+					case self::CommandAddContent:
+						$strBuffer = self::$objBufferStack->Pop();
+						$strBuffer .= $mixValue;
+						self::$objBufferStack->Push($strBuffer);
+						break;
+					case self::CommandAddSelf:
+						$strBuffer = self::$objBufferStack->Pop();
+						$strBuffer .= $chrCurrent;
+						self::$objBufferStack->Push($strBuffer);
+						break;
+					case self::CommandCallMethod:
+						self::CallMethod($mixValue, $chrCurrent);
+						break;
+					default:
+						exit('OOPS 2');
+				}
+				
+				$strContent = substr($strContent, 1);
+			}
+
+			while (self::$objStateStack->Size() > 1) {
+				self::CallMethod(self::$StateMachineArray[self::$objStateStack->PeekLast()]['END'][1]);
+			}
+
+			return self::$objBufferStack->Pop();
+		}
+
+		protected static function FinishStateEndQuote($chrCurrent) {
+			self::$objBufferStack->Pop();
+			self::$objStateStack->Pop();
+			
+			$strBuffer = '&ldquo;' . self::$objBufferStack->Pop() . '&rdquo;' . $chrCurrent;
+			self::$objStateStack->Pop();
+
+			self::$objBufferStack->Push(self::$objBufferStack->Pop() . $strBuffer);
 		}
 	}
 
