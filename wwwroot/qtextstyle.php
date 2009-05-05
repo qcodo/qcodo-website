@@ -63,7 +63,17 @@
 		const StateBulletedListItem = 6;
 		const StateCode = 7;
 
+		//                              ([A-Za-z][A-Za-z0-9]*)  -  start of the pattern -- any block of text must be identified
+		//                                                         with a code (e.g. p, h1, h3, bq, etc.)
+		//                                                    (<|<>|>|=)?  -  optional text-align modifier
+		//                                                                 [{\\[]  -  style/option directives  -  [}\\]]
+		//                              the content of the directive, itself  -  [A-Za-z0-9:;,._" \'\\(\\)\\/\\-]*
+		//                                            all block definitions must end with a period and then whitesapce  -  \\.( |\\n)
 		const PatternBlockProcedure = '/([A-Za-z][A-Za-z0-9]*)(<|<>|>|=)?(([{\\[][A-Za-z0-9:;,._" \'\\(\\)\\/\\-]*[}\\]])*)\\.( |\\n)/';
+
+		//                         ([*#])  -  start of the pattern -- any list must be identified with a * or #
+		//                                 [{\\[][A-Za-z0-9:;,._" \'\\(\\)\\/\\-]*[}\\]]  -  optional directives (same as above)
+		//               all list-based block definitions must end with a single space  -  (space)
 		const PatternBlockList = '/([*#])(([{\\[][A-Za-z0-9:;,._" \'\\(\\)\\/\\-]*[}\\]])*) /';
 
 		/**
