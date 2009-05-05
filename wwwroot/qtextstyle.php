@@ -63,7 +63,7 @@
 		const StateBulletedListItem = 6;
 		const StateCode = 7;
 
-		const PatternBlockProcedure = '/([A-Za-z][A-Za-z0-9]*)(([{\\[][A-Za-z0-9:;,._" \'\\(\\)\\/\\-]*[}\\]])*)\\.( |\\n)/';
+		const PatternBlockProcedure = '/([A-Za-z][A-Za-z0-9]*)(<|<>|>|=)?(([{\\[][A-Za-z0-9:;,._" \'\\(\\)\\/\\-]*[}\\]])*)\\.( |\\n)/';
 		const PatternBlockList = '/([*#])(([{\\[][A-Za-z0-9:;,._" \'\\(\\)\\/\\-]*[}\\]])*) /';
 
 		/**
@@ -78,7 +78,8 @@
 			// Define components of a BlockCommand Call
 			$strBlockCommand = $strMatches[0];
 			$strBlockIdentifier = strtolower($strMatches[1]);
-			$strDirectives = $strMatches[2];
+			$strPosition = $strMatches[2];
+			$strDirectives = $strMatches[3];
 
 			if (strpos(self::$strContent, $strBlockCommand) !== 0) return false;
 			if (!array_key_exists($strBlockIdentifier, $strBlockProcedureArray)) return false;
@@ -102,8 +103,24 @@
 				$strRemainingContent = null;
 			}
 
+			// Figure Out Initial Style
+			switch ($strPosition) {
+				case '<':
+					$strStyle = 'text-align:left;';
+					break;
+				case '>':
+					$strStyle = 'text-align:right;';
+					break;
+				case '<>':
+					$strStyle = 'text-align:justify;';
+					break;
+				case '=':
+					$strStyle = 'text-align:center;';
+					break;
+				default:
+					$strStyle = null;
+			}
 			// Pull Directives
-			$strStyle = null;
 			$strOptions = null;
 
 			if ($strDirectives) {
@@ -115,7 +132,7 @@
 
 					if ((QString::FirstCharacter($strDirective) == '{') &&
 						(QString::LastCharacter($strDirective) == '}'))
-						$strStyle = substr($strDirective, 1, strlen($strDirective) - 2);
+						$strStyle .= substr($strDirective, 1, strlen($strDirective) - 2);
 
 					else if ((QString::FirstCharacter($strDirective) == '[') &&
 							 (QString::LastCharacter($strDirective) == ']'))
@@ -157,11 +174,11 @@
 							self::$strResult .= "<br/>\n";
 
 						} else if (preg_match(self::PatternBlockProcedure, self::$strContent, $strMatches) &&
-							(count($strMatches) >= 3) &&
+							(count($strMatches) >= 4) &&
 							(self::CallMethod('ProcessBlock', $strMatches))) {
 
 						} else if (preg_match(self::PatternBlockList, self::$strContent, $strMatches) &&
-							(count($strMatches) >= 3) &&
+							(count($strMatches) >= 4) &&
 							(self::CallMethod('ProcessBlock', $strMatches))) {
 
 						} else {
@@ -294,7 +311,7 @@
 
 <form method="post" action="/qtextstyle.php">
 	<h3>Original</h3>
-	<textarea class="box"><?php _p($strContent); ?></textarea>
+	<textarea class="box" id="sample" name="sample"><?php _p($strContent); ?></textarea> <input type="submit" style="position: relative; top: -25px; left: 25px;">
 	<br/>
 	<div style="float: left;">
 		<h3>Source HTML</h3>
