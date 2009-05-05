@@ -1,23 +1,23 @@
-h2{color:green}[foo]. This is a title
+h2{color:green}. This is a title
 
 h3. This is a subhead
 
+p<>. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog.
+
+p<. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog.
+
+p>. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog.
+
+p=. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog.
+
 p{color:red}. This is some text of dubious character. Isn't the use of "quotes" just lazy writing -- and theft of 'intellectual property' besides? I think the time has come to see a block quote.
 
-bq[fr][en][fr]{background-color: pink; padding: 5px;}. This is a block quote. I'll admit it's not the most exciting block quote ever devised.
+bq[fr]. This is a block quote. I'll admit it's not the most exciting block quote ever devised.
 
 Simple list:
 
 #{color:blue} one
 # two
-** something
-** else
-** to
- 
-Does this line belong to "to" or to "two"?
-### a
-### b
-### c
 # three
 
 Multi-level list:
@@ -42,32 +42,6 @@ Mixed list:
 ** Sub point 1
 ** Sub point 2
 
-Test test test test. Test test test test. Test test test test. Test test test test. Test test test test. Test test test test. Test test test test. Test test test test. Test test test test. Test test test test.
-
-h2.
-Line after
-
-Test test test test. Test test test test. Test test test test. Test test test test. Test test test test. Test test test test. Test test test test. Test test test test. Test test test test. Test test test test.
-
- h2.
-
-Test test test test. Test test test test. Test test test test. Test test test test. Test test test test. Test test test test. Test test test test. Test test test test. Test test test test. Test test test test.
-
-bc.
-<html>
-	<head>
-		<title>Foo</title>
-	</head>
-	<body>
-		asdflajsd flaksjdf lkajsdf
-	</body>
-</html>
-
-function foo() {
-	$strData = fooluasdfasdf asdjfasdf SDf sdaf asdf();
-	asdflkj;
-}
-.bc
 
 Well, that went well. How about we insert an <a href="/" title="watch out">old-fashioned hypertext link</a>? Will the quote marks in the tags get messed up? No!
 
@@ -104,6 +78,16 @@ This <code>is some code, "isn't it"</code>. Watch those quote marks! Now for som
 
 This isn't code.
 
+bc.
+<?php
+	function FooBar($strData) {
+		return "Hello, world!" . $strData;
+	}
+?>
+	<html>
+		<head><title>asdfasdf</title></head>
+	</html>
+.bc
 
 So you see, my friends:
 

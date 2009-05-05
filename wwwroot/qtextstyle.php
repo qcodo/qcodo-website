@@ -209,8 +209,6 @@
 
 		protected static function ProcessBlockQuote($strBlockContent, $strBlockIdentifier, $strStyle = null, $strOptions = null) {
 			if ($strStyle) $strStyle = ' style="' . $strStyle . '"';
-			if ($strOptions == 'fr')
-				$strBlockContent = 'In French, ' . $strBlockContent;
 			return sprintf("<blockquote%s>%s</blockquote>\n\n", $strStyle, self::CallMethod('ProcessLine', $strBlockContent));
 		}
 
@@ -278,21 +276,32 @@
 //		}
 //	}
 
-	$strContent = file_get_contents(dirname(__FILE__) . '/textism_sample.txt');
+	if (array_key_exists('sample', $_POST))
+		$strContent = $_POST['sample'];
+	else
+		$strContent = file_get_contents(dirname(__FILE__) . '/textism_sample.txt');
+
 	$strHtml = QTextStyle::DisplayAsHtml($strContent);
 //	$strHtml = QTextStyle::DisplayAsHtml('h2{font-size: 55px;}. asjdkfalksdf');
 ?>
 
 <style>
 	div.code { background-color: #dfe; padding: 1px 12px; margin-left: 25px; overflow: auto; width: 700px; }
+	h3 {margin: 0;}
+	.box { font: 11px lucida console; border: 1px solid black; overflow: auto; width: 450px; height: 500px; padding: 10px; margin-bottom: 12px;}
+	textarea.box {padding: 0; width: 800px; height: 150px;}
 </style>
 
-	<h3 style="margin: 0;">Original</h3>
-	<div style="font: 11px lucida console; border: 1px solid black; overflow: auto; width: 800px; height: 150px; padding: 10px;"><?php print(nl2br(htmlentities($strContent))); ?></div>
+<form method="post" action="/qtextstyle.php">
+	<h3>Original</h3>
+	<textarea class="box"><?php _p($strContent); ?></textarea>
 	<br/>
-	<h3 style="margin: 0;">Source HTML</h3>
-	<div style="font: 11px lucida console; border: 1px solid black; overflow: auto; width: 800px; height: 150px; padding: 10px;"><?php print(nl2br(htmlentities($strHtml))); ?></div>
-	<br/>
-	<h3 style="margin: 0;">Display HTML</h3>
-	<div style="font: 11px arial; border: 1px solid black; overflow: auto; width: 800px; height: 150px; padding: 10px;"><?php print($strHtml); ?></div>
-	
+	<div style="float: left;">
+		<h3>Source HTML</h3>
+		<div class="box"><?php print(nl2br(str_replace(' ', '&nbsp;', htmlentities($strHtml)))); ?></div>
+	</div>
+	<div style="float: left; margin-left: 25px;">
+	<h3>Display HTML</h3>
+	<div class="box" style="font-family: arial;"><?php print($strHtml); ?></div>
+	</div>
+</form>
