@@ -270,104 +270,146 @@
 			
 			return $strToReturn;
 		}
-		
-		const CommandSwitchState = 1;
-		const CommandAddContent = 2;
-		const CommandAddSelf = 3;
-		const CommandCallMethod = 4;
 
-		const StateText = 1;
-		const StateQuote = 2;
-		const StateEndQuote = 3;
-		const StateCode = 4;
-		const StateImage = 5;
-		const StateStrong = 6;
-		const StateEmphasis = 7;
+		const CommandStatePush = 1;
+		const CommandStatePop = 2;
+		const CommandContentPop = 3;
+		const CommandBufferAdd = 4;
+		const CommandBufferAddFromContent = 5;
+		const CommandCallMethod = 6;
+
+		const StateStart = 1;
+		const StateText = 2;
+		const StateSpace = 3;
+		const StateLineBreak = 4;
+		const StateStartQuote = 5;
+		const StateStartQuote2 = 6;
+		const StateEndQuote = 7;
+		const StateColon = 8;
+		const StateCode = 9;
+		const StateImage = 10;
+		const StateStrong = 11;
+		const StateEmphasis = 12;
 
 		protected static $StateMachineArray = array(
+			self::StateStart => array(
+				'DEFAULT' => array(self::CommandStatePop, self::CommandStatePush, self::StateText),
+				'END' => array(self::CommandStatePop)
+			),
 			self::StateText => array(
-				'"' => array(self::CommandSwitchState, self::StateQuote),
-				'<' => array(self::CommandAddContent, '&lt;'),
-				'>' => array(self::CommandAddContent, '&gt;'),
-				"\n" =>  array(self::CommandAddContent, '<br/>'),
-				'DEFAULT' => array(self::CommandAddSelf, null),
-				'END' => array(self::CommandCallMethod, 'FinishStateText')
-			),
-			self::StateQuote => array(
-				'"' => array(self::CommandSwitchState, self::StateEndQuote),
-				'<' => array(self::CommandAddContent, '&lt;'),
-				'>' => array(self::CommandAddContent, '&gt;'),
-				"\n" =>  array(self::CommandAddContent, '<br/>'),
-				'DEFAULT' => array(self::CommandAddSelf, null),
-				'END' => array(self::CommandCallMethod, 'FinishStateQuote')
-			),
-			self::StateEndQuote => array(
-				'DEFAULT' => array(self::CommandCallMethod, 'FinishStateEndQuote'),
-				'END' => array(self::CommandCallMethod, 'FinishStateEndQuote')
-			),
+				'DEFAULT' => array(self::CommandBufferAddFromContent, self::CommandContentPop),
+				'END' => array(self::CommandStatePop)
+			)
+			//			self::StateStart => array(
+//				'"' => array(self::CommandStatePush, self::StateStartQuote, self::CommandContentPop),
+//				'DEFAULT' => array(self::CommandStatePush, self::StateText),
+//				'END' => array(self::CommandStatePop)
+//			),
+//			self::StateSpace => array(
+//				'"' => array(self::CommandStatePush, self::StateStartQuote, self::CommandContentPop),
+//				'DEFAULT' => array(self::CommandStatePush, self::StateText),
+//				'END' => array(self::CommandStatePop)
+//			),
+//			self::StateLineBreak => array(
+//				'"' => array(self::CommandStatePush, self::StateStartQuote, self::CommandContentPop),
+//				'DEFAULT' => array(self::CommandStatePush, self::StateText),
+//				'END' => array(self::CommandStatePop)
+//			),
+//			self::StateText => array(
+//				'"' => array(self::CommandStatePush, self::StateEndQuote, self::CommandContentPop),
+//				'<' => array(self::CommandBufferAdd, '&lt;', self::CommandContentPop),
+//				'>' => array(self::CommandBufferAdd, '&gt;', self::CommandContentPop),
+//				"\n" => array(self::CommandStatePush, self::StateLineBreak, self::CommandContentPop),
+//				' ' =>  array(self::CommandStatePush, self::StateSpace, self::CommandContentPop),
+//				'DEFAULT' => array(self::CommandBufferAddFromContent, self::CommandContentPop),
+//				'END' => array(self::CommandStatePop)
+//			),
+//			self::StateStartQuote => array(
+//				'"' => array(self::CommandStatePush, self::StateStartQuote2, self::CommandContentPop),
+//				'<' => array(self::CommandBufferAdd, '&lt;', self::CommandContentPop),
+//				'>' => array(self::CommandBufferAdd, '&gt;', self::CommandContentPop),
+//				"\n" =>  array(self::CommandBufferAdd, '<br/>'),
+//				'DEFAULT' => array(self::CommandBufferAddFromContent, self::CommandContentPop),
+//				'END' => array(self::CommandStatePop)
+//			),
+//			self::StateEndQuote => array(
+//				'DEFAULT' => array(self::CommandBufferAddFromContent, self::CommandContentPop),
+//				'END' => array(self::CommandStatePop)
+//			),
 		);
 
 		protected static function ProcessLine($strContent) {
+//print ('<hr/>');
 			// Reset teh stacks
 			self::$objStateStack = new QStack();
-			self::$objStateStack->Push(self::StateText);
+			self::$objStateStack->Push(self::StateStart);
 
 			self::$objBufferStack = new QStack();
 			self::$objBufferStack->Push('');
 
-			while ($strContent) {
+			while (self::$objStateStack->Size()) {
+//print ($strContent . ' - PeekLast State ' . self::$objStateStack->PeekLast() . '<br/>');
 				$arrStateMachine = self::$StateMachineArray[self::$objStateStack->PeekLast()];
 				$chrCurrent = QString::FirstCharacter($strContent);
-				$strBuffer = self::$objBufferStack->PeekLast();
 
-				if (array_key_exists($chrCurrent, $arrStateMachine))
+				if (!strlen($strContent))
+					$strKey = 'END';
+				else if (array_key_exists($chrCurrent, $arrStateMachine))
 					$strKey = $chrCurrent;
 				else
 					$strKey = 'DEFAULT';
 
-				$intCommand = $arrStateMachine[$strKey][0];
-				$mixValue = $arrStateMachine[$strKey][1];
-				switch ($intCommand) {
-					case self::CommandSwitchState:
-						self::$objStateStack->Push($mixValue);
-						self::$objBufferStack->Push('');
-						break;
-					case self::CommandAddContent:
-						$strBuffer = self::$objBufferStack->Pop();
-						$strBuffer .= $mixValue;
-						self::$objBufferStack->Push($strBuffer);
-						break;
-					case self::CommandAddSelf:
-						$strBuffer = self::$objBufferStack->Pop();
-						$strBuffer .= $chrCurrent;
-						self::$objBufferStack->Push($strBuffer);
-						break;
-					case self::CommandCallMethod:
-						self::CallMethod($mixValue, $chrCurrent);
-						break;
-					default:
-						exit('OOPS 2');
+				for ($intIndex = 0; $intIndex < count($arrStateMachine[$strKey]); $intIndex++) {
+//print $intIndex . ' - ' . $arrStateMachine[$strKey][$intIndex] . '<br/>';
+					switch ($arrStateMachine[$strKey][$intIndex]) {
+						case self::CommandStatePush:
+							$mixValue = $arrStateMachine[$strKey][$intIndex + 1];
+							$intIndex++;
+							self::$objStateStack->Push($mixValue);
+							self::$objBufferStack->Push('');
+							break;
+						case self::CommandStatePop:
+							self::$objStateStack->Pop();
+							$strBuffer = self::$objBufferStack->Pop();
+							break;
+						case self::CommandContentPop:
+							$strContent = substr($strContent, 1);
+							break;
+						case self::CommandBufferAdd:
+							$mixValue = $arrStateMachine[$strKey][$intIndex + 1];
+							$intIndex++;
+							$strBuffer = self::$objBufferStack->Pop();
+							$strBuffer .= $mixValue;
+							self::$objBufferStack->Push($strBuffer);
+							break;
+						case self::CommandBufferAddFromContent:
+							$strBuffer = self::$objBufferStack->Pop();
+							$strBuffer .= $chrCurrent;
+							self::$objBufferStack->Push($strBuffer);
+							break;
+						case self::CommandCallMethod:
+							$mixValue = $arrStateMachine[$strKey][$intIndex + 1];
+							$intIndex++;
+							self::CallMethod($mixValue, $chrCurrent);
+							break;
+						default:
+							exit('OOPS 2');
+					}
 				}
-				
-				$strContent = substr($strContent, 1);
 			}
 
-			while (self::$objStateStack->Size() > 1) {
-				self::CallMethod(self::$StateMachineArray[self::$objStateStack->PeekLast()]['END'][1]);
-			}
-
-			return self::$objBufferStack->Pop();
+			return $strBuffer;
 		}
 
-		protected static function FinishStateEndQuote($chrCurrent) {
-			self::$objBufferStack->Pop();
-			self::$objStateStack->Pop();
-			
-			$strBuffer = '&ldquo;' . self::$objBufferStack->Pop() . '&rdquo;' . $chrCurrent;
-			self::$objStateStack->Pop();
-
-			self::$objBufferStack->Push(self::$objBufferStack->Pop() . $strBuffer);
-		}
+//		protected static function FinishStateEndQuote($chrCurrent) {
+//			self::$objBufferStack->Pop();
+//			self::$objStateStack->Pop();
+//			
+//			$strBuffer = '&ldquo;' . self::$objBufferStack->Pop() . '&rdquo;' . $chrCurrent;
+//			self::$objStateStack->Pop();
+//
+//			self::$objBufferStack->Push(self::$objBufferStack->Pop() . $strBuffer);
+//		}
 	}
 
 //	class MyOwnVersion extends QTextStyle {
