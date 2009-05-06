@@ -1,7 +1,7 @@
 <?php
 	require(dirname(__FILE__) . '/includes/prepend.inc.php');
 	set_time_limit(3);
-	define('DEBUG', 1);
+	define('DEBUG', 0);
 	
 	class QTextStyleBlock extends QBaseClass {
 		
@@ -336,7 +336,7 @@
 			}
 
 			if ($blnFoundStartQuote) {
-				while (self::$objStateStack->PeekLast() != self::StateStartQuote) {
+				while ((self::$objStateStack->PeekLast() != self::StateStartQuote) && (self::$objStateStack->PeekLast() != self::StateStartQuoteStartQuote)) {
 					$strContent = self::$objBufferStack->Pop() . $strContent;
 					self::$objStateStack->Pop();
 				}
@@ -357,6 +357,12 @@
 			self::$objBufferStack->AppendStringToTop('&ldquo;' . $strContent);
 		}
 
+		protected static function ProcessStartQuoteStartQuote() {
+			self::$objStateStack->Pop();
+			$strContent = self::$objBufferStack->Pop();
+			self::$objBufferStack->AppendStringToTop('&rdquo;' . $strContent);
+		}
+
 		protected static function ProcessText() {
 			self::$objStateStack->Pop();
 			$strContent = self::$objBufferStack->Pop();
@@ -365,12 +371,14 @@
 
 		protected static $StateMachineArray = array(
 			self::StateStart => array(
+				'"' => array(self::CommandStatePush, self::StateText, self::CommandStatePush, self::StateStartQuote, self::CommandContentPop),
 				'DEFAULT' => array(self::CommandStatePush, self::StateText),
 				'END' => array(self::CommandStatePop)
 			),
 			self::StateText => array(
-				' ' => array(self::CommandBufferAddFromContent, self::CommandStatePush, self::StateSpace, self::CommandContentPop),
 				'"' => array(self::CommandStatePush, self::StateEndQuote, self::CommandContentPop),
+				' ' => array(self::CommandBufferAddFromContent, self::CommandStatePush, self::StateSpace, self::CommandContentPop),
+				"\n" => array(self::CommandBufferAdd, '<br/>', self::CommandStatePush, self::StateLineBreak, self::CommandContentPop),
 				'DEFAULT' => array(self::CommandBufferAddFromContent, self::CommandContentPop),
 				'END' => array(self::CommandCallMethod, 'ProcessText')
 			),
@@ -379,10 +387,20 @@
 				'DEFAULT' => array(self::CommandStatePop),
 				'END' => array(self::CommandStatePop)
 			),
+			self::StateLineBreak => array(
+				'"' => array(self::CommandStatePop, self::CommandStatePush, self::StateStartQuote, self::CommandContentPop),
+				'DEFAULT' => array(self::CommandStatePop),
+				'END' => array(self::CommandStatePop)
+			),
 			self::StateStartQuote => array(
-				'"' => array(self::CommandStatePush, self::StateStartQuote, self::CommandContentPop),
+				'"' => array(self::CommandStatePush, self::StateStartQuoteStartQuote, self::CommandContentPop),
 				'DEFAULT' => array(self::CommandStatePush, self::StateText),
 				'END' => array(self::CommandCallMethod, 'ProcessStartQuote')
+			),
+			self::StateStartQuoteStartQuote => array(
+				'"' => array(self::CommandStatePush, self::StateStartQuoteStartQuote, self::CommandContentPop),
+				'DEFAULT' => array(self::CommandStatePush, self::StateText),
+				'END' => array(self::CommandCallMethod, 'ProcessStartQuoteStartQuote')
 			),
 			self::StateEndQuote => array(
 				'"' => array(self::CommandCallMethod, 'ProcessEndQuote', self::CommandStatePush, self::StateEndQuote, self::CommandContentPop),
