@@ -1,6 +1,8 @@
 <?php
 	require(dirname(__FILE__) . '/includes/prepend.inc.php');
-
+	set_time_limit(3);
+	define('DEBUG', 1);
+	
 	class QTextStyleBlock extends QBaseClass {
 		
 	}
@@ -31,7 +33,13 @@
 
 
 		// This is the logic
+		/**
+		 * @var QStack
+		 */
 		protected static $objStateStack;
+		/**
+		 * @var QStack
+		 */
 		protected static $objBufferStack;
 		
 		protected static $strContent;
@@ -271,38 +279,119 @@
 			return $strToReturn;
 		}
 
-		const CommandStatePush = 1;
-		const CommandStatePop = 2;
-		const CommandContentPop = 3;
-		const CommandBufferAdd = 4;
-		const CommandBufferAddFromContent = 5;
-		const CommandCallMethod = 6;
+		const CommandStatePush = 'CommandStatePush';
+		const CommandStatePop = 'CommandStatePop';
+		const CommandContentPop = 'CommandContentPop';
+		const CommandBufferAdd = 'CommandBufferAdd';
+		const CommandBufferAddFromContent = 'CommandBufferAddFromContent';
+		const CommandCallMethod = 'CommandCallMethod';
 
-		const StateStart = 1;
-		const StateText = 2;
-		const StateSpace = 3;
-		const StateLineBreak = 4;
-		const StateStartQuote = 5;
-		const StateStartQuote2 = 6;
-		const StateEndQuote = 7;
-		const StateColon = 8;
-		const StateCode = 9;
-		const StateImage = 10;
-		const StateStrong = 11;
-		const StateEmphasis = 12;
+		const StateStart = 'StateStart';
+		const StateText = 'StateText';
+		const StateSpace = 'StateSpace';
+		const StateLineBreak = 'StateLineBreak';
+		const StateStartQuote = 'StateStartQuote';
+		const StateStartQuoteStartQuote = 'StateStartQuoteStartQuote';
+		const StateEndQuote = 'StateEndQuote';
+		const StateColon = 'StateColon';
+		const StateCode = 'StateCode';
+		const StateImage = 'StateImage';
+		const StateStrong = 'StateStrong';
+		const StateEmphasis = 'StateEmphasis';
+
+		protected static function DumpStack($strTitle = null, $blnExit = false) {
+			if ($strTitle) $strTitle = ' - ' . str_replace(' ', '&nbsp;', htmlentities($strTitle));
+
+			$strColor = '#' . chr(rand(ord('a'), ord('f'))) . chr(rand(ord('a'), ord('f'))) . chr(rand(ord('a'), ord('f')));
+
+			print '<div style="font: 12px arial; font-weight: bold; color: ' . $strColor . '; background-color: black; padding: 5px;">STACK' . $strTitle . '</div>';
+			
+			print '<div style="padding: 5px; background-color: ' . $strColor . '; border: 2px solid black; margin-bottom: 12px;">';
+		
+			for ($intIndex = 0; $intIndex < self::$objStateStack->Size(); $intIndex++) {
+				print '<div style="font: 12px arial; font-weight: bold; float: left; width: 150px; border-bottom: 1px solid #333; height: 16px;">';
+				print self::$objStateStack->Peek($intIndex);
+				print '</div>';
+				print '<div style="float: left; font: 11px lucida console; border-bottom: 1px solid #333; height: 16px; width: 500px;">';
+				$strData = nl2br(str_replace(' ', '&nbsp;', htmlentities(self::$objBufferStack->Peek($intIndex))));
+				if (!$strData) print '<span style="color: #666;">n/a</span>'; else print $strData;
+				print '</div><br clear="all"/>';
+			}
+			
+			print '</div>';
+//			print('<div style="height: 12px; background-color: black; padding: 4px; font: 12px arial; color: white; font-weight: bold; ">END OF STACK</div>');
+			if ($blnExit) exit();
+		}
+
+		protected static function ProcessEndQuote() {
+			$strContent = '&rdquo;';
+
+			// Can we find a matching StartQuote?
+			$blnFoundStartQuote = false;
+			for ($intStartQuotePosition = self::$objStateStack->Size() - 1; ($intStartQuotePosition >= 0 && !$blnFoundStartQuote); $intStartQuotePosition--) {
+				if ((self::$objStateStack->Peek($intStartQuotePosition) == self::StateStartQuote) ||
+					(self::$objStateStack->Peek($intStartQuotePosition) == self::StateStartQuoteStartQuote)) {
+					$blnFoundStartQuote = true;
+				}
+			}
+
+			if ($blnFoundStartQuote) {
+				while (self::$objStateStack->PeekLast() != self::StateStartQuote) {
+					$strContent = self::$objBufferStack->Pop() . $strContent;
+					self::$objStateStack->Pop();
+				}
+			}
+
+			self::$objStateStack->Pop();
+			$strContent = self::$objBufferStack->Pop() . $strContent;
+
+			if ($blnFoundStartQuote)
+				$strContent = '&ldquo;' . $strContent;
+
+			self::$objBufferStack->AppendStringToTop($strContent);
+		}
+
+		protected static function ProcessStartQuote() {
+			self::$objStateStack->Pop();
+			$strContent = self::$objBufferStack->Pop();
+			self::$objBufferStack->AppendStringToTop('&ldquo;' . $strContent);
+		}
+
+		protected static function ProcessText() {
+			self::$objStateStack->Pop();
+			$strContent = self::$objBufferStack->Pop();
+			self::$objBufferStack->AppendStringToTop($strContent);
+		}
 
 		protected static $StateMachineArray = array(
 			self::StateStart => array(
-				'DEFAULT' => array(self::CommandStatePop, self::CommandStatePush, self::StateText),
+				'DEFAULT' => array(self::CommandStatePush, self::StateText),
 				'END' => array(self::CommandStatePop)
 			),
 			self::StateText => array(
+				' ' => array(self::CommandBufferAddFromContent, self::CommandStatePush, self::StateSpace, self::CommandContentPop),
+				'"' => array(self::CommandStatePush, self::StateEndQuote, self::CommandContentPop),
 				'DEFAULT' => array(self::CommandBufferAddFromContent, self::CommandContentPop),
+				'END' => array(self::CommandCallMethod, 'ProcessText')
+			),
+			self::StateSpace => array(
+				'"' => array(self::CommandStatePop, self::CommandStatePush, self::StateStartQuote, self::CommandContentPop),
+				'DEFAULT' => array(self::CommandStatePop),
 				'END' => array(self::CommandStatePop)
+			),
+			self::StateStartQuote => array(
+				'"' => array(self::CommandStatePush, self::StateStartQuote, self::CommandContentPop),
+				'DEFAULT' => array(self::CommandStatePush, self::StateText),
+				'END' => array(self::CommandCallMethod, 'ProcessStartQuote')
+			),
+			self::StateEndQuote => array(
+				'"' => array(self::CommandCallMethod, 'ProcessEndQuote', self::CommandStatePush, self::StateEndQuote, self::CommandContentPop),
+				'DEFAULT' => array(self::CommandCallMethod, 'ProcessEndQuote'),
+				'END' => array(self::CommandCallMethod, 'ProcessEndQuote')
 			)
 			//			self::StateStart => array(
 //				'"' => array(self::CommandStatePush, self::StateStartQuote, self::CommandContentPop),
-//				'DEFAULT' => array(self::CommandStatePush, self::StateText),
+//				'DEFAifULT' => array(self::CommandStatePush, self::StateText),
 //				'END' => array(self::CommandStatePop)
 //			),
 //			self::StateSpace => array(
@@ -339,7 +428,7 @@
 		);
 
 		protected static function ProcessLine($strContent) {
-//print ('<hr/>');
+if (DEBUG == 2) print ('<hr/>');
 			// Reset teh stacks
 			self::$objStateStack = new QStack();
 			self::$objStateStack->Push(self::StateStart);
@@ -348,10 +437,10 @@
 			self::$objBufferStack->Push('');
 
 			while (self::$objStateStack->Size()) {
-//print ($strContent . ' - PeekLast State ' . self::$objStateStack->PeekLast() . '<br/>');
 				$arrStateMachine = self::$StateMachineArray[self::$objStateStack->PeekLast()];
 				$chrCurrent = QString::FirstCharacter($strContent);
-
+if (DEBUG) self::DumpStack($strContent);
+				
 				if (!strlen($strContent))
 					$strKey = 'END';
 				else if (array_key_exists($chrCurrent, $arrStateMachine))
@@ -360,7 +449,7 @@
 					$strKey = 'DEFAULT';
 
 				for ($intIndex = 0; $intIndex < count($arrStateMachine[$strKey]); $intIndex++) {
-//print $intIndex . ' - ' . $arrStateMachine[$strKey][$intIndex] . '<br/>';
+if (DEBUG == 2) print $intIndex . ' - ' . $arrStateMachine[$strKey][$intIndex] . '<br/>';
 					switch ($arrStateMachine[$strKey][$intIndex]) {
 						case self::CommandStatePush:
 							$mixValue = $arrStateMachine[$strKey][$intIndex + 1];
