@@ -306,7 +306,7 @@
 
 			print '<div style="font: 12px arial; font-weight: bold; color: ' . $strColor . '; background-color: black; padding: 5px;">STACK' . $strTitle . '</div>';
 			
-			print '<div style="padding: 5px; background-color: ' . $strColor . '; border: 2px solid black; margin-bottom: 12px;">';
+			print '<div style="padding: 5px; background-color: ' . $strColor . '; border: 1px solid #666; margin-bottom: 12px;">';
 		
 			for ($intIndex = 0; $intIndex < self::$objStateStack->Size(); $intIndex++) {
 				print '<div style="font: 12px arial; font-weight: bold; float: left; width: 150px; border-bottom: 1px solid #333; height: 16px;">';
@@ -368,6 +368,22 @@
 			self::$objStateStack->Pop();
 			$strContent = self::$objBufferStack->Pop();
 			self::$objBufferStack->AppendStringToTop($strContent);
+		}
+
+		protected static function ProcessColon() {
+			self::$objStateStack->Pop();
+			$strContent = ':' . self::$objBufferStack->Pop();
+
+			self::$objStateStack->Push(self::StateText);
+			self::$objBufferStack->Push($strContent);
+		}
+
+		protected static function ProcessUrl() {
+			self::$objStateStack->Pop();
+			$strContent = ':' . self::$objBufferStack->Pop();
+
+			self::$objStateStack->Push(self::StateText);
+			self::$objBufferStack->Push($strContent);
 		}
 
 		protected static $StateMachineArray = array(
@@ -453,16 +469,7 @@
 //			),
 		);
 
-		protected static function ProcessColon($strContent) {
-			self::$objStateStack->Pop();
-			$strContent = ':' . self::$objBufferStack->Pop() . $strContent;
-
-			self::$objStateStack->Push(self::StateText);
-			self::$objBufferStack->Push($strContent);
-		}
-		
 		protected static function ProcessLine($strContent) {
-if (DEBUG == 2) print ('<hr/>');
 			// Reset teh stacks
 			self::$objStateStack = new QStack();
 			self::$objStateStack->Push(self::StateStart);
@@ -490,7 +497,6 @@ if (DEBUG == 2) print ('<hr/>');
 
 				for ($intIndex = 0; $intIndex < count($arrStateMachine[$strKey]); $intIndex++) {
 if (DEBUG) self::DumpStack($strContent . ' - [' . $chrCurrent . '] - Command(' . $strKey . ', ' . $intIndex . ') - ' . $arrStateMachine[$strKey][$intIndex]);
-//if (DEBUG == 2) print $intIndex . ' - ' . $arrStateMachine[$strKey][$intIndex] . '<br/>';
 					switch ($arrStateMachine[$strKey][$intIndex]) {
 						case self::CommandStatePush:
 							$mixValue = $arrStateMachine[$strKey][$intIndex + 1];
@@ -549,22 +555,43 @@ if (DEBUG) self::DumpStack($strContent . ' - [' . $chrCurrent . '] - Command(' .
 //			return self::CallMethod('Run', $strContent);
 //		}
 //	}
-
-	if (array_key_exists('sample', $_POST))
-		$strContent = $_POST['sample'];
-	else
-		$strContent = file_get_contents(dirname(__FILE__) . '/textism_sample.txt');
-
-	$strHtml = QTextStyle::DisplayAsHtml($strContent);
-//	$strHtml = QTextStyle::DisplayAsHtml('h2{font-size: 55px;}. asjdkfalksdf');
 ?>
 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>QTextStyle Development Harness</title>
 <style>
+	body { font: 11px arial; }
 	div.code { background-color: #dfe; padding: 1px 12px; margin-left: 25px; overflow: auto; width: 700px; }
 	h3 {margin: 0;}
 	.box { font: 11px lucida console; border: 1px solid black; overflow: auto; width: 450px; height: 500px; padding: 10px; margin-bottom: 12px;}
 	textarea.box {padding: 0; width: 800px; height: 150px;}
 </style>
+</head>
+<body>
+
+<h3 style="float: left;">Debug Stack</h3>
+<div style="float: right; font-size: 10px; font-weight: normal;">
+	<a href="#" onclick="document.getElementById('stack').style.height='500px'; return false;">Grow</a>
+	&nbsp;|&nbsp;
+	<a href="#" onclick="document.getElementById('stack').style.height='200px'; return false;">Shrink</a>
+</div>
+<br clear="all"/>
+<div id="stack" style="height: 200px; overflow: auto; padding: 30px; border: 1px solid black; background-color: #ddd; margin-bottom: 12px; ">
+<?php 
+	if (array_key_exists('sample', $_GET))
+		$strContent = $_GET['sample'];
+	else if (array_key_exists('sample', $_POST))
+		$strContent = $_POST['sample'];
+	else
+		$strContent = file_get_contents(dirname(__FILE__) . '/textism_sample.txt');
+
+	$strHtml = QTextStyle::DisplayAsHtml($strContent);
+?>
+</div>
 
 <form method="post" action="/qtextstyle.php">
 	<h3>Original</h3>
