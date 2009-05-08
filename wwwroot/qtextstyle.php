@@ -1,7 +1,7 @@
 <?php
 	require(dirname(__FILE__) . '/includes/prepend.inc.php');
 	set_time_limit(3);
-	define('DEBUG', 0);
+	define('DEBUG', 1);
 	
 	class QTextStyleBlock extends QBaseClass {
 		
@@ -324,8 +324,6 @@
 		}
 
 		protected static function ProcessEndQuote() {
-			$strContent = '&rdquo;';
-
 			// Can we find a matching StartQuote?
 			$blnFoundStartQuote = false;
 			for ($intStartQuotePosition = self::$objStateStack->Size() - 1; ($intStartQuotePosition >= 0 && !$blnFoundStartQuote); $intStartQuotePosition--) {
@@ -335,10 +333,13 @@
 				}
 			}
 
+			self::$objStateStack->Pop();
+			$strContent = '&rdquo;' . self::$objBufferStack->Pop();
+
 			if ($blnFoundStartQuote) {
 				while ((self::$objStateStack->PeekLast() != self::StateStartQuote) && (self::$objStateStack->PeekLast() != self::StateStartQuoteStartQuote)) {
-					$strContent = self::$objBufferStack->Pop() . $strContent;
 					self::$objStateStack->Pop();
+					$strContent = self::$objBufferStack->Pop() . $strContent;
 				}
 			}
 
@@ -404,8 +405,15 @@
 			),
 			self::StateEndQuote => array(
 				'"' => array(self::CommandCallMethod, 'ProcessEndQuote', self::CommandStatePush, self::StateEndQuote, self::CommandContentPop),
+				':' => array(self::CommandStatePush, self::StateColon, self::CommandContentPop),
 				'DEFAULT' => array(self::CommandCallMethod, 'ProcessEndQuote'),
 				'END' => array(self::CommandCallMethod, 'ProcessEndQuote')
+			),
+			self::StateColon => array(
+				':' => array(self::CommandCallMethod, 'ProcessUrl', self::CommandContentPop),
+				'ALPHA' => array(self::CommandBufferAddFromContent, self::CommandContentPop),
+				'DEFAULT' => array(self::CommandCallMethod, 'ProcessColon'),
+				'END' => array(self::CommandCallMethod, 'ProcessColon')
 			)
 			//			self::StateStart => array(
 //				'"' => array(self::CommandStatePush, self::StateStartQuote, self::CommandContentPop),
@@ -445,6 +453,14 @@
 //			),
 		);
 
+		protected static function ProcessColon($strContent) {
+			self::$objStateStack->Pop();
+			$strContent = ':' . self::$objBufferStack->Pop() . $strContent;
+
+			self::$objStateStack->Push(self::StateText);
+			self::$objBufferStack->Push($strContent);
+		}
+		
 		protected static function ProcessLine($strContent) {
 if (DEBUG == 2) print ('<hr/>');
 			// Reset teh stacks
@@ -457,17 +473,24 @@ if (DEBUG == 2) print ('<hr/>');
 			while (self::$objStateStack->Size()) {
 				$arrStateMachine = self::$StateMachineArray[self::$objStateStack->PeekLast()];
 				$chrCurrent = QString::FirstCharacter($strContent);
-if (DEBUG) self::DumpStack($strContent);
-				
+
 				if (!strlen($strContent))
 					$strKey = 'END';
 				else if (array_key_exists($chrCurrent, $arrStateMachine))
 					$strKey = $chrCurrent;
+				else if (array_key_exists('ALPHA', $arrStateMachine) && preg_match('/[A-Za-z]/', $chrCurrent))
+					$strKey = 'ALPHA';
+				else if (array_key_exists('NUMERIC', $arrStateMachine) && preg_match('/[0-9]/', $chrCurrent))
+					$strKey = 'NUMERIC';
+				else if (array_key_exists('ALPHANUMERIC', $arrStateMachine) && preg_match('/[A-Za-z0-9]/', $chrCurrent))
+					$strKey = 'ALPHANUMERIC';
 				else
 					$strKey = 'DEFAULT';
 
+
 				for ($intIndex = 0; $intIndex < count($arrStateMachine[$strKey]); $intIndex++) {
-if (DEBUG == 2) print $intIndex . ' - ' . $arrStateMachine[$strKey][$intIndex] . '<br/>';
+if (DEBUG) self::DumpStack($strContent . ' - [' . $chrCurrent . '] - Command(' . $strKey . ', ' . $intIndex . ') - ' . $arrStateMachine[$strKey][$intIndex]);
+//if (DEBUG == 2) print $intIndex . ' - ' . $arrStateMachine[$strKey][$intIndex] . '<br/>';
 					switch ($arrStateMachine[$strKey][$intIndex]) {
 						case self::CommandStatePush:
 							$mixValue = $arrStateMachine[$strKey][$intIndex + 1];
