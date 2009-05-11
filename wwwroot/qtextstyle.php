@@ -573,14 +573,17 @@ if (DEBUG) self::DumpStack($strContent . ' - [' . $chrCurrent . '] - Command(' .
 </head>
 <body>
 
-<h3 style="float: left;">Debug Stack</h3>
-<div style="float: right; font-size: 10px; font-weight: normal;">
-	<a href="#" onclick="document.getElementById('stack').style.height='500px'; return false;">Grow</a>
-	&nbsp;|&nbsp;
-	<a href="#" onclick="document.getElementById('stack').style.height='200px'; return false;">Shrink</a>
-</div>
-<br clear="all"/>
-<div id="stack" style="height: 200px; overflow: auto; padding: 30px; border: 1px solid black; background-color: #ddd; margin-bottom: 12px; ">
+<?php if (DEBUG) { ?>
+	<h3 style="float: left;">Debug Stack</h3>
+	<div style="float: right; font-size: 10px; font-weight: normal;">
+		<a href="#" onclick="document.getElementById('stack').style.height='500px'; return false;">Grow</a>
+		&nbsp;|&nbsp;
+		<a href="#" onclick="document.getElementById('stack').style.height='200px'; return false;">Shrink</a>
+	</div>
+	<br clear="all"/>
+	<div id="stack" style="height: 200px; overflow: auto; padding: 30px; border: 1px solid black; background-color: #ddd; margin-bottom: 12px; ">
+<?php } ?>
+
 <?php 
 	if (array_key_exists('sample', $_GET))
 		$strContent = $_GET['sample'];
@@ -591,7 +594,10 @@ if (DEBUG) self::DumpStack($strContent . ' - [' . $chrCurrent . '] - Command(' .
 
 	$strHtml = QTextStyle::DisplayAsHtml($strContent);
 ?>
-</div>
+
+<?php if (DEBUG) { ?>
+	</div>
+<?php } ?>
 
 <form method="post" action="/qtextstyle.php">
 	<h3>Original</h3>
