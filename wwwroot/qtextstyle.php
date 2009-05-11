@@ -244,6 +244,26 @@
 			return self::ProcessListRecursion($strBlockContent, $strBlockIdentifier, $strStyle, $strOptions);
 		}
 
+		public static function StringReversePosition($strHaystack, &$strNeedle, $intOffset = null) {
+			if ((strlen($strNeedle) >= 3) &&
+				(QString::FirstCharacter($strNeedle) == '/') &&
+				(QString::LastCharacter($strNeedle) == '/')) {
+				$arrMatches = array();
+				preg_match_all($strNeedle, $strHaystack, $arrMatches);
+				$arrMatches = $arrMatches[0];
+				if (count($arrMatches)) {
+					$strNeedle = $arrMatches[count($arrMatches) - 1];
+				} else
+					return false;
+			}
+			
+			if (is_null($intOffset)) {
+				return strrpos($strHaystack, $strNeedle);
+			} else {
+				return strrpos($strHaystack, $strNeedle, $intOffset);
+			}
+		}
+
 		protected static function ProcessListRecursion($strBlockContent, $strBlockIdentifier, $strStyle = null, $strOptions = null) {
 			if (QString::FirstCharacter($strBlockIdentifier) == '#') $strTag = 'ol';
 			else $strTag = 'ul';
@@ -294,6 +314,8 @@
 		const StateStartQuoteStartQuote = 'StateStartQuoteStartQuote';
 		const StateEndQuote = 'StateEndQuote';
 		const StateColon = 'StateColon';
+		const StateUrlProtocol = 'StateUrlProtocol';
+		const StateUrlLocation = 'StateUrlLocation';
 		const StateCode = 'StateCode';
 		const StateImage = 'StateImage';
 		const StateStrong = 'StateStrong';
@@ -378,12 +400,56 @@
 			self::$objBufferStack->Push($strContent);
 		}
 
+		protected static $UrlProtocolArray = array(
+			'http' => true,
+			'https' => true,
+			'ftp' => true);
+
 		protected static function ProcessUrl() {
 			self::$objStateStack->Pop();
-			$strContent = ':' . self::$objBufferStack->Pop();
+			$strContent = self::$objBufferStack->Pop();
 
-			self::$objStateStack->Push(self::StateText);
-			self::$objBufferStack->Push($strContent);
+			if (array_key_exists(strtolower($strContent), self::$UrlProtocolArray) &&
+				self::$UrlProtocolArray[strtolower($strContent)]) {
+				self::$objStateStack->Push(self::StateUrlProtocol);
+				self::$objBufferStack->Push(strtolower($strContent));
+
+				self::$objStateStack->Push(self::StateUrlLocation);
+				self::$objBufferStack->Push('');
+			} else {
+				self::$objStateStack->Push(self::StateText);
+				self::$objBufferStack->Push(':' . $strContent);
+			}
+		}
+		
+		protected static function ProcessUrlLocation() {
+			// Pop off UrlLocation
+			self::$objStateStack->Pop();
+			$strLocation = self::$objBufferStack->Pop();
+
+			// Pop off UrlProtocol
+			self::$objStateStack->Pop();
+			$strProtocol = self::$objBufferStack->Pop();
+
+			// Pop off End Quote
+			self::$objStateStack->Pop();
+			self::$objBufferStack->Pop();
+
+			// Pop off Text
+			self::$objStateStack->Pop();
+			$strContent = self::$objBufferStack->Pop();
+
+			// Pop off Start Quote
+			self::$objStateStack->Pop();
+			$strContent .= self::$objBufferStack->Pop();
+
+			// Calculate end-of-location
+			$strNeedle = '/[A-Za-z0-9\\&\\=\\/]/';
+			$intValue = self::StringReversePosition($strLocation, $strNeedle);
+			
+			// Process as link
+			$strUrlLink = sprintf('<a href="%s:%s">%s</a>', $strProtocol, substr($strLocation, 0, $intValue + 1), $strContent);
+			self::$objBufferStack->AppendStringToTop($strUrlLink . substr($strLocation, $intValue + 1));
 		}
 
 		protected static $StateMachineArray = array(
@@ -430,8 +496,14 @@
 				'ALPHA' => array(self::CommandBufferAddFromContent, self::CommandContentPop),
 				'DEFAULT' => array(self::CommandCallMethod, 'ProcessColon'),
 				'END' => array(self::CommandCallMethod, 'ProcessColon')
+			),
+			self::StateUrlLocation => array(
+				' ' => array(self::CommandCallMethod, 'ProcessUrlLocation'),
+				"\n" => array(self::CommandCallMethod, 'ProcessUrlLocation'),
+				'DEFAULT' => array(self::CommandBufferAddFromContent, self::CommandContentPop),
+				'END' => array(self::CommandCallMethod, 'ProcessUrlLocation')
 			)
-			//			self::StateStart => array(
+//			self::StateStart => array(
 //				'"' => array(self::CommandStatePush, self::StateStartQuote, self::CommandContentPop),
 //				'DEFAifULT' => array(self::CommandStatePush, self::StateText),
 //				'END' => array(self::CommandStatePop)
