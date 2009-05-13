@@ -75,7 +75,7 @@
 			self::StateText => array(
 				'"' => array(
 					array('CommandStatePush', self::StateEndQuote),
-					array('CommandStatePop')),
+					array('CommandContentPop')),
 				' ' => array(
 					array('CommandBufferAddFromContent'),
 					array('CommandStatePush', self::StateSpace),

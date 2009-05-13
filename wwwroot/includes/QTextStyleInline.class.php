@@ -147,8 +147,8 @@
 			// Can we find a matching StartQuote?
 			$blnFoundStartQuote = false;
 			for ($intStartQuotePosition = self::$objStateStack->Size() - 1; ($intStartQuotePosition >= 0 && !$blnFoundStartQuote); $intStartQuotePosition--) {
-				if ((self::$objStateStack->Peek($intStartQuotePosition) == self::StateStartQuote) ||
-					(self::$objStateStack->Peek($intStartQuotePosition) == self::StateStartQuoteStartQuote)) {
+				if ((self::$objStateStack->Peek($intStartQuotePosition) == QTextStyle::StateStartQuote) ||
+					(self::$objStateStack->Peek($intStartQuotePosition) == QTextStyle::StateStartQuoteStartQuote)) {
 					$blnFoundStartQuote = true;
 				}
 			}
@@ -157,7 +157,7 @@
 			$strContent = '&rdquo;' . $objState->Buffer;
 
 			if ($blnFoundStartQuote) {
-				while ((self::$objStateStack->PeekLast()->State != self::StateStartQuote) && (self::$objStateStack->PeekLast()->State != self::StateStartQuoteStartQuote)) {
+				while ((self::$objStateStack->PeekLast()->State != QTextStyle::StateStartQuote) && (self::$objStateStack->PeekLast()->State != QTextStyle::StateStartQuoteStartQuote)) {
 					$objState = self::$objStateStack->Pop();
 					$strContent = $objState->Buffer . $strContent;
 				}
@@ -188,58 +188,50 @@
 		}
 
 		protected static function ProcessColon() {
-			self::$objStateStack->Pop();
-			$strContent = ':' . self::$objBufferStack->Pop();
-
-			self::$objStateStack->Push(self::StateText);
-			self::$objBufferStack->Push($strContent);
+			$objState = self::$objStateStack->Pop();
+			self::$objStateStack->Push(QTextStyle::StateText, ':' . $objState->Buffer);
 		}
 
 		protected static function ProcessUrl() {
-			self::$objStateStack->Pop();
-			$strContent = self::$objBufferStack->Pop();
+			$objState = self::$objStateStack->Pop();
+			$strContent = $objState->Buffer;
 
-			if (array_key_exists(strtolower($strContent), self::$UrlProtocolArray) &&
-				self::$UrlProtocolArray[strtolower($strContent)]) {
-				self::$objStateStack->Push(self::StateUrlProtocol);
-				self::$objBufferStack->Push(strtolower($strContent));
-
-				self::$objStateStack->Push(self::StateUrlLocation);
-				self::$objBufferStack->Push('');
+			if (array_key_exists(strtolower($strContent), QTextStyle::$UrlProtocolArray) &&
+				QTextStyle::$UrlProtocolArray[strtolower($strContent)]) {
+				self::$objStateStack->Push(QTextStyle::StateUrlProtocol, strtolower($strContent));
+				self::$objStateStack->Push(QTextStyle::StateUrlLocation);
 			} else {
-				self::$objStateStack->Push(self::StateText);
-				self::$objBufferStack->Push(':' . $strContent);
+				self::$objStateStack->Push(QTextStyle::StateText, ':' . $strContent);
 			}
 		}
 		
 		protected static function ProcessUrlLocation() {
 			// Pop off UrlLocation
-			self::$objStateStack->Pop();
-			$strLocation = self::$objBufferStack->Pop();
+			$objState = self::$objStateStack->Pop();
+			$strLocation = $objState->Buffer;
 
 			// Pop off UrlProtocol
-			self::$objStateStack->Pop();
-			$strProtocol = self::$objBufferStack->Pop();
+			$objState = self::$objStateStack->Pop();
+			$strProtocol = $objState->Buffer;
 
 			// Pop off End Quote
 			self::$objStateStack->Pop();
-			self::$objBufferStack->Pop();
 
 			// Pop off Text
-			self::$objStateStack->Pop();
-			$strContent = self::$objBufferStack->Pop();
+			$objState = self::$objStateStack->Pop();
+			$strContent = $objState->Buffer;
 
 			// Pop off Start Quote
-			self::$objStateStack->Pop();
-			$strContent .= self::$objBufferStack->Pop();
+			$objState = self::$objStateStack->Pop();
+			$strContent .= $objState->Buffer;
 
 			// Calculate end-of-location
 			$strNeedle = '/[A-Za-z0-9\\&\\=\\/]/';
-			$intValue = self::StringReversePosition($strLocation, $strNeedle);
+			$intValue = QString::StringReversePosition($strLocation, $strNeedle);
 			
 			// Process as link
 			$strUrlLink = sprintf('<a href="%s:%s">%s</a>', $strProtocol, substr($strLocation, 0, $intValue + 1), $strContent);
-			self::$objBufferStack->AppendStringToTop($strUrlLink . substr($strLocation, $intValue + 1));
+			self::$objStateStack->AddToTopBuffer($strUrlLink . substr($strLocation, $intValue + 1));
 		}
 	}
 

@@ -195,7 +195,7 @@
 			preg_match($strPattern, $strListItemContent, $strMatches);
 			if (count($strMatches) >= 1) {
 				$intPosition = strpos($strListItemContent, $strMatches[0]);
-				$strToReturn .= QTextStyle::ProceessInline(substr($strListItemContent, 0, $intPosition));
+				$strToReturn .= QTextStyleInline::Process(substr($strListItemContent, 0, $intPosition));
 				$strListItemContent = substr($strListItemContent, $intPosition + strlen($strMatches[0]));
 
 				$strToReturn .= QTextStyleBlock::ListBlockRecursion($strListItemContent, $strMatches[1]);
