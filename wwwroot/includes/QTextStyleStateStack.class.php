@@ -30,7 +30,7 @@
 				throw new QIndexOutOfRangeException($intIndex, "Index on stack does not exist");
 		}
 
-		public function PeekLast() {
+		public function PeekTop() {
 			if ($intCount = count($this->intStateArray))
 				return $this->Peek($intCount - 1);
 			else

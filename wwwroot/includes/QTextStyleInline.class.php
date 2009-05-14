@@ -19,7 +19,7 @@
 			// Continue iterating while there are items on the stack
 			while (!QTextStyleInline::$objStateStack->IsEmpty()) {
 				// Pull out the StateRules for the top-most stack's state
-				$arrStateRules = QTextStyle::$StateRulesArray[QTextStyleInline::$objStateStack->PeekLast()->State];
+				$arrStateRules = QTextStyle::$StateRulesArray[QTextStyleInline::$objStateStack->PeekTop()->State];
 
 				// Figure out the current character we are attempting to parse with
 				$chrCurrent = QString::FirstCharacter($strContent);
@@ -170,18 +170,18 @@
 
 			// If we found a start quote, add all the content between here and the start quote to the buffer.
 			if ($blnFoundStartQuote) {
-				while ((self::$objStateStack->PeekLast()->State != QTextStyle::StateStartQuote) && (self::$objStateStack->PeekLast()->State != QTextStyle::StateStartQuoteStartQuote)) {
+				while ((self::$objStateStack->PeekTop()->State != QTextStyle::StateStartQuote) && (self::$objStateStack->PeekTop()->State != QTextStyle::StateStartQuoteStartQuote)) {
 					$objState = self::$objStateStack->Pop();
 					$strContent = $objState->Buffer . $strContent;
 				}
 				
-				// ANd finally, add the content of the startquotestate buffer, itself
+				// And finally, add the content of the startquotestate buffer, itself
 				$objState = self::$objStateStack->Pop();
-				$strContent = $objState->Buffer . $strContent;
+				$strContent = '&ldquo;' . $objState->Buffer . $strContent;
 
-				if ($blnFoundStartQuote)
-					$strContent = '&ldquo;' . $strContent;
-				
+				// If we currently aren't a Text state (because we're at, for example, another start quote), let's add it
+				if (self::$objStateStack->PeekTop()->State != QTextStyle::StateText)
+					self::$objStateStack->Push(QTextStyle::StateText);
 			}
 
 			self::$objStateStack->AddToTopBuffer($strContent);
@@ -255,7 +255,7 @@
 			// Pop off Text
 			$objState = self::$objStateStack->Pop();
 			if ($objState->State != QTextStyle::StateText)
-				throw new Exception('Could not find In-LinkContent Text State');
+				throw new Exception('Could not find In-LinkContent Text State, instead found: ' . $objState->State);
 			$strContent = $objState->Buffer;
 
 			// Pop off Start Quote
