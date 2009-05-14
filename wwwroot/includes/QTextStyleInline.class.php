@@ -51,7 +51,11 @@
 					}
 
 					if (QTextStyleInline::$OutputDebugMessages) {
-						QTextStyleInline::DumpStack($strContent . ' - [' . $chrCurrent . '] - Key(' . $strKey . ') - Command(' . $strCommand . ')');
+						if (is_array($mixRule))
+							$strDisplayCommand = implode(', ', $mixRule);
+						else
+							$strDisplayCommand = $strCommand;
+						QTextStyleInline::DumpStack($strContent . ' - [' . $chrCurrent . '] - Key(' . $strKey . ') - Command(' . $strDisplayCommand . ')');
 					}
 
 					$strCommandReturn = QTextStyleInline::$strCommand($strContent, $chrCurrent, $strParameterArray);
@@ -70,13 +74,20 @@
 		 * @return unknown_type
 		 */
 		protected static function DumpStack($strTitle = null, $blnExit = false) {
-			if ($strTitle) $strTitle = ' - ' . str_replace(' ', '&nbsp;', QApplication::HtmlEntities($strTitle));
+			if ($strTitle) {
+				$strTitle = sprintf('<a name="%s"><a href="#%s">STACK</a></a> - %s',
+					md5($strTitle),
+					md5($strTitle),
+					str_replace(' ', '&nbsp;', QApplication::HtmlEntities($strTitle)));
+			} else {
+				$strTitle = 'STACK';
+			}
 
 			// Randomize a Background Color
 			$strColor = '#' . chr(rand(ord('a'), ord('f'))) . chr(rand(ord('a'), ord('f'))) . chr(rand(ord('a'), ord('f')));
 
 			// Print Title Line
-			print '<div style="font: 12px arial; font-weight: bold; color: ' . $strColor . '; background-color: black; padding: 5px;">STACK' . $strTitle . '</div>';
+			print '<div style="font: 12px arial; font-weight: bold; color: ' . $strColor . '; background-color: black; padding: 5px;">' . $strTitle . '</div>';
 
 			// Print Stack Contents
 			print '<div style="padding: 5px; background-color: ' . $strColor . '; border: 1px solid #666; margin-bottom: 12px;">';
@@ -85,7 +96,7 @@
 				$objState = QTextStyleInline::$objStateStack->Peek($intIndex);
 				$strBuffer = nl2br(str_replace(' ', '&nbsp;', QApplication::HtmlEntities($objState->Buffer)));
 
-				print '<div style="font: 12px arial; font-weight: bold; float: left; width: 150px; border-bottom: 1px solid #333; height: 16px;">';
+				print '<div style="font: 12px arial; font-weight: bold; float: left; width: 180px; border-bottom: 1px solid #333; height: 16px;">';
 				print $objState->State;
 				print '</div>';
 				print '<div style="float: left; font: 11px lucida console; border-bottom: 1px solid #333; height: 16px; width: 500px;">';
@@ -147,8 +158,8 @@
 			// Can we find a matching StartQuote?
 			$blnFoundStartQuote = false;
 			for ($intStartQuotePosition = self::$objStateStack->Size() - 1; ($intStartQuotePosition >= 0 && !$blnFoundStartQuote); $intStartQuotePosition--) {
-				if ((self::$objStateStack->Peek($intStartQuotePosition) == QTextStyle::StateStartQuote) ||
-					(self::$objStateStack->Peek($intStartQuotePosition) == QTextStyle::StateStartQuoteStartQuote)) {
+				if ((self::$objStateStack->Peek($intStartQuotePosition)->State == QTextStyle::StateStartQuote) ||
+					(self::$objStateStack->Peek($intStartQuotePosition)->State == QTextStyle::StateStartQuoteStartQuote)) {
 					$blnFoundStartQuote = true;
 				}
 			}
@@ -223,7 +234,7 @@
 
 			// Pop off Start Quote
 			$objState = self::$objStateStack->Pop();
-			$strContent .= $objState->Buffer;
+			$strContent = $objState->Buffer . $strContent;
 
 			// Calculate end-of-location
 			$strNeedle = '/[A-Za-z0-9\\&\\=\\/]/';
