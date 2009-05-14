@@ -11,7 +11,7 @@
 		public static $OutputDebugMessages = false;
 
 
-		public static function Process($strContent) {
+		public static function Process($strInlineContent) {
 			// Reset the stack
 			QTextStyleInline::$objStateStack = new QTextStyleStateStack();
 			QTextStyleInline::$objStateStack->Push(QTextStyle::StateStart);
@@ -22,10 +22,10 @@
 				$arrStateRules = QTextStyle::$StateRulesArray[QTextStyleInline::$objStateStack->PeekTop()->State];
 
 				// Figure out the current character we are attempting to parse with
-				$chrCurrent = QString::FirstCharacter($strContent);
+				$chrCurrent = QString::FirstCharacter($strInlineContent);
 
 				// Figure out the StateRule key to use based on the current character
-				if (!strlen($strContent))
+				if (!strlen($strInlineContent))
 					$strKey = QTextStyle::KeyEnd;
 				else if (array_key_exists($chrCurrent, $arrStateRules))
 					$strKey = $chrCurrent;
@@ -55,10 +55,10 @@
 							$strDisplayCommand = implode(', ', $mixRule);
 						else
 							$strDisplayCommand = $strCommand;
-						QTextStyleInline::DumpStack($strContent . ' - [' . $chrCurrent . '] - Key(' . $strKey . ') - Command(' . $strDisplayCommand . ')');
+						QTextStyleInline::DumpStack($strInlineContent . ' - [' . $chrCurrent . '] - Key(' . $strKey . ') - Command(' . $strDisplayCommand . ')');
 					}
 
-					$strCommandReturn = QTextStyleInline::$strCommand($strContent, $chrCurrent, $strParameterArray);
+					$strCommandReturn = QTextStyleInline::$strCommand($strInlineContent, $chrCurrent, $strParameterArray);
 				}
 			}
 			
@@ -116,33 +116,33 @@
 		// Rule Commands
 		////////////////
 
-		protected static function CommandStatePush(&$strContent, $chrCurrent, $strParameterArray) {
+		protected static function CommandStatePush(&$strInlineContent, $chrCurrent, $strParameterArray) {
 			self::$objStateStack->Push($strParameterArray[0]);
 		}
 
-		protected static function CommandStatePop(&$strContent, $chrCurrent, $strParameterArray) {
+		protected static function CommandStatePop(&$strInlineContent, $chrCurrent, $strParameterArray) {
 			$objState = self::$objStateStack->Pop();
 			return $objState->Buffer;
 		}
 
-		protected static function CommandContentPop(&$strContent, $chrCurrent, $strParameterArray) {
-			$strContent = substr($strContent, 1);
+		protected static function CommandContentPop(&$strInlineContent, $chrCurrent, $strParameterArray) {
+			$strInlineContent = substr($strInlineContent, 1);
 		}
 
-		protected static function CommandBufferAdd(&$strContent, $chrCurrent, $strParameterArray) {
+		protected static function CommandBufferAdd(&$strInlineContent, $chrCurrent, $strParameterArray) {
 			self::$objStateStack->AddToTopBuffer($strParameterArray[0]);
 		}
 
-		protected static function CommandBufferAddFromContent(&$strContent, $chrCurrent, $strParameterArray) {
+		protected static function CommandBufferAddFromContent(&$strInlineContent, $chrCurrent, $strParameterArray) {
 			self::$objStateStack->AddToTopBuffer($chrCurrent);
 		}
 
-		protected static function CommandCallProcessor(&$strContent, $chrCurrent, $strParameterArray) {
+		protected static function CommandCallProcessor(&$strInlineContent, $chrCurrent, $strParameterArray) {
 			$strProcessorMethod = $strParameterArray[0];
-			QTextStyleInline::$strProcessorMethod($chrCurrent);
+			QTextStyleInline::$strProcessorMethod($strInlineContent, $chrCurrent);
 		}
 
-		protected static function CommandStatePushIfStateExists(&$strContent, $chrCurrent, $strParameterArray) {
+		protected static function CommandStatePushIfStateExists(&$strInlineContent, $chrCurrent, $strParameterArray) {
 			$intStateToCheckIfExists = $strParameterArray[0];
 			$intStateToPush = $strParameterArray[1];
 			exit('HERE');
@@ -154,7 +154,7 @@
 		// Inline-Specific Processors
 		/////////////////////////////
 
-		protected static function ProcessEndQuote() {
+		protected static function ProcessEndQuote(&$strInlineContent, $chrCurrent) {
 			// First, see if we can find a matching StartQuote?
 			$blnFoundStartQuote = false;
 			for ($intStartQuotePosition = self::$objStateStack->Size() - 1; ($intStartQuotePosition >= 0 && !$blnFoundStartQuote); $intStartQuotePosition--) {
@@ -187,27 +187,27 @@
 			self::$objStateStack->AddToTopBuffer($strContent);
 		}
 
-		protected static function ProcessStartQuote() {
+		protected static function ProcessStartQuote(&$strInlineContent, $chrCurrent) {
 			$objState = self::$objStateStack->Pop();
 			self::$objStateStack->AddToTopBuffer('&ldquo;' . $objState->Buffer);
 		}
 
-		protected static function ProcessStartQuoteStartQuote() {
+		protected static function ProcessStartQuoteStartQuote(&$strInlineContent, $chrCurrent) {
 			$objState = self::$objStateStack->Pop();
 			self::$objStateStack->AddToTopBuffer('&rdquo;' . $objState->Buffer);
 		}
 
-		protected static function ProcessText() {
+		protected static function ProcessText(&$strInlineContent, $chrCurrent) {
 			$objState = self::$objStateStack->Pop();
 			self::$objStateStack->AddToTopBuffer($objState->Buffer);
 		}
 
-		protected static function ProcessColon() {
+		protected static function ProcessColon(&$strInlineContent, $chrCurrent) {
 			$objState = self::$objStateStack->Pop();
 			self::$objStateStack->Push(QTextStyle::StateText, ':' . $objState->Buffer);
 		}
 
-		protected static function ProcessLink() {
+		protected static function ProcessLink(&$strInlineContent, $chrCurrent) {
 			$objState = self::$objStateStack->Pop();
 			$strContent = $objState->Buffer;
 
@@ -219,7 +219,7 @@
 			}
 		}
 		
-		protected static function ProcessLinkLocation() {
+		protected static function ProcessLinkLocation(&$strInlineContent, $chrCurrent) {
 			// Delegate the Processing based on the LinkProtocol Used
 			
 			// Figure out the LinkProtocol
@@ -232,13 +232,13 @@
 
 			if (array_key_exists($objLinkProtocolState->Buffer, QTextStyle::$LinkProtocolArray)) {
 				$strProcessorCommand = QTextStyle::$LinkProtocolArray[$objLinkProtocolState->Buffer];
-				self::$strProcessorCommand();
+				self::$strProcessorCommand($strInlineContent, $chrCurrent);
 			} else {
 				throw new Exception('Could not determine a valid Link Protocol');
 			}
 		}
 		
-		protected static function ProcessLinkLocationUrl() {
+		protected static function ProcessLinkLocationUrl(&$strInlineContent, $chrCurrent) {
 			// Pop off LinkLocation
 			$objState = self::$objStateStack->Pop();
 			$strLocation = $objState->Buffer;
@@ -272,10 +272,16 @@
 
 				// Process as a URL-based link
 				$strUrlLink = sprintf('<a href="%s:%s">%s</a>', $strProtocol, substr($strLocation, 0, $intValue + 1), $strContent);
-				self::$objStateStack->AddToTopBuffer($strUrlLink . substr($strLocation, $intValue + 1));
+				self::$objStateStack->AddToTopBuffer($strUrlLink);
+
+				// Add any tail/unprocessed stuff back to the content stack
+				$strInlineContent = substr($strLocation, $intValue + 1) . $strInlineContent;
 			} else {
 				// Process as just regular text all throughout
-				self::$objStateStack->AddToTopBuffer('&ldquo;' . $strContent . '&rdquo;:' . $strProtocol . $strLocation);
+				self::$objStateStack->AddToTopBuffer('&ldquo;' . $strContent . '&rdquo;' . ':');
+
+				// Add any tail/unprocessed stuff back to the content stack
+				$strInlineContent = $strProtocol . $strLocation . $strInlineContent;
 			}
 		}
 	}

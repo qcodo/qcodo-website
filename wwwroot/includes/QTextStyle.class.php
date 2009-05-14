@@ -9,6 +9,7 @@
 		const StateStart = 'StateStart';
 		const StateText = 'StateText';
 		const StateSpace = 'StateSpace';
+		const StateWordStartHint = 'StateWordStartHint';
 		const StateLineBreak = 'StateLineBreak';
 		const StateStartQuote = 'StateStartQuote';
 		const StateStartQuoteStartQuote = 'StateStartQuoteStartQuote';
@@ -63,12 +64,9 @@
 
 		public static $StateRulesArray = array(
 			self::StateStart => array(
-				'"' => array(
-					array('CommandStatePush', self::StateText),
-					array('CommandStatePush', self::StateStartQuote),
-					array('CommandContentPop')),
 				QTextStyle::KeyDefault => array(
-					array('CommandStatePush', self::StateText)),
+					array('CommandStatePush', self::StateText),
+					array('CommandStatePush', self::StateWordStartHint)),
 				QTextStyle::KeyEnd => array(
 					array('CommandStatePop'))
 			),
@@ -82,13 +80,21 @@
 				'>' => array(
 					array('CommandBufferAdd', '&gt;'),
 					array('CommandContentPop')),
+				'&' => array(
+					array('CommandBufferAdd', '&amp;'),
+					array('CommandContentPop')),
 				' ' => array(
 					array('CommandBufferAddFromContent'),
+					array('CommandStatePush', self::StateWordStartHint),
 					array('CommandStatePush', self::StateSpace),
 					array('CommandContentPop')),
 				"\n" => array(
 					array('CommandBufferAdd', '<br/>'),
-					array('CommandStatePush', self::StateLineBreak),
+					array('CommandStatePush', self::StateWordStartHint),
+					array('CommandContentPop')),
+				"(" => array(
+					array('CommandBufferAddFromContent'),
+					array('CommandStatePush', self::StateWordStartHint),
 					array('CommandContentPop')),
 				QTextStyle::KeyDefault => array(
 					array('CommandBufferAddFromContent'),
@@ -99,18 +105,16 @@
 			self::StateSpace => array(
 				' ' => array(
 					array('CommandStatePop'),
-					array('CommandBufferAdd', '&nbsp;'),
-					array('CommandContentPop')),
-				'"' => array(
 					array('CommandStatePop'),
-					array('CommandStatePush', self::StateStartQuote),
+					array('CommandBufferAdd', '&nbsp;'),
+					array('CommandStatePush', self::StateWordStartHint),
 					array('CommandContentPop')),
 				QTextStyle::KeyDefault => array(
 					array('CommandStatePop')),
 				QTextStyle::KeyEnd => array(
 					array('CommandStatePop'))
 			),
-			self::StateLineBreak => array(
+			self::StateWordStartHint => array(
 				'"' => array(
 					array('CommandStatePop'),
 					array('CommandStatePush', self::StateStartQuote),
@@ -175,52 +179,6 @@
 					array('CommandCallProcessor', 'ProcessLinkLocation'))
 			)
 		);
-//			self::StateStart => array(
-//				'"' => array(self::CommandStatePush, self::StateStartQuote, self::CommandContentPop),
-//				'DEFAifULT' => array(self::CommandStatePush, self::StateText),
-//				'END' => array(self::CommandStatePop)
-//			),
-//			self::StateSpace => array(
-//				'"' => array(self::CommandStatePush, self::StateStartQuote, self::CommandContentPop),
-//				'DEFAULT' => array(self::CommandStatePush, self::StateText),
-//				'END' => array(self::CommandStatePop)
-//			),
-//			self::StateLineBreak => array(
-//				'"' => array(self::CommandStatePush, self::StateStartQuote, self::CommandContentPop),
-//				'DEFAULT' => array(self::CommandStatePush, self::StateText),
-//				'END' => array(self::CommandStatePop)
-//			),
-//			self::StateText => array(
-//				'"' => array(self::CommandStatePush, self::StateEndQuote, self::CommandContentPop),
-//				'<' => array(self::CommandBufferAdd, '&lt;', self::CommandContentPop),
-//				'>' => array(self::CommandBufferAdd, '&gt;', self::CommandContentPop),
-//				"\n" => array(self::CommandStatePush, self::StateLineBreak, self::CommandContentPop),
-//				' ' =>  array(self::CommandStatePush, self::StateSpace, self::CommandContentPop),
-//				'DEFAULT' => array(self::CommandBufferAddFromContent, self::CommandContentPop),
-//				'END' => array(self::CommandStatePop)
-//			),
-//			self::StateStartQuote => array(
-//				'"' => array(self::CommandStatePush, self::StateStartQuote2, self::CommandContentPop),
-//				'<' => array(self::CommandBufferAdd, '&lt;', self::CommandContentPop),
-//				'>' => array(self::CommandBufferAdd, '&gt;', self::CommandContentPop),
-//				"\n" =>  array(self::CommandBufferAdd, '<br/>'),
-//				'DEFAULT' => array(self::CommandBufferAddFromContent, self::CommandContentPop),
-//				'END' => array(self::CommandStatePop)
-//			),
-//			self::StateEndQuote => array(
-//				'DEFAULT' => array(self::CommandBufferAddFromContent, self::CommandContentPop),
-//				'END' => array(self::CommandStatePop)
-//			),
-	//		protected static function FinishStateEndQuote($chrCurrent) {
-//			self::$objBufferStack->Pop();
-//			self::$objStateStack->Pop();
-//			
-//			$strBuffer = '&ldquo;' . self::$objBufferStack->Pop() . '&rdquo;' . $chrCurrent;
-//			self::$objStateStack->Pop();
-//
-//			self::$objBufferStack->Push(self::$objBufferStack->Pop() . $strBuffer);
-//		}
-//		);
 
 		public static function DisplayAsHtml($strContent) {
 			// Let's get started
