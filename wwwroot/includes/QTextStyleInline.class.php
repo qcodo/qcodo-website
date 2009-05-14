@@ -155,7 +155,7 @@
 		/////////////////////////////
 
 		protected static function ProcessEndQuote() {
-			// Can we find a matching StartQuote?
+			// First, see if we can find a matching StartQuote?
 			$blnFoundStartQuote = false;
 			for ($intStartQuotePosition = self::$objStateStack->Size() - 1; ($intStartQuotePosition >= 0 && !$blnFoundStartQuote); $intStartQuotePosition--) {
 				if ((self::$objStateStack->Peek($intStartQuotePosition)->State == QTextStyle::StateStartQuote) ||
@@ -164,21 +164,25 @@
 				}
 			}
 
+			// Pop off this end quote state and pull the buffer.
 			$objState = self::$objStateStack->Pop();
 			$strContent = '&rdquo;' . $objState->Buffer;
 
+			// If we found a start quote, add all the content between here and the start quote to the buffer.
 			if ($blnFoundStartQuote) {
 				while ((self::$objStateStack->PeekLast()->State != QTextStyle::StateStartQuote) && (self::$objStateStack->PeekLast()->State != QTextStyle::StateStartQuoteStartQuote)) {
 					$objState = self::$objStateStack->Pop();
 					$strContent = $objState->Buffer . $strContent;
 				}
+				
+				// ANd finally, add the content of the startquotestate buffer, itself
+				$objState = self::$objStateStack->Pop();
+				$strContent = $objState->Buffer . $strContent;
+
+				if ($blnFoundStartQuote)
+					$strContent = '&ldquo;' . $strContent;
+				
 			}
-
-			$objState = self::$objStateStack->Pop();
-			$strContent = $objState->Buffer . $strContent;
-
-			if ($blnFoundStartQuote)
-				$strContent = '&ldquo;' . $strContent;
 
 			self::$objStateStack->AddToTopBuffer($strContent);
 		}
@@ -203,46 +207,76 @@
 			self::$objStateStack->Push(QTextStyle::StateText, ':' . $objState->Buffer);
 		}
 
-		protected static function ProcessUrl() {
+		protected static function ProcessLink() {
 			$objState = self::$objStateStack->Pop();
 			$strContent = $objState->Buffer;
 
-			if (array_key_exists(strtolower($strContent), QTextStyle::$UrlProtocolArray) &&
-				QTextStyle::$UrlProtocolArray[strtolower($strContent)]) {
-				self::$objStateStack->Push(QTextStyle::StateUrlProtocol, strtolower($strContent));
-				self::$objStateStack->Push(QTextStyle::StateUrlLocation);
+			if (array_key_exists(strtolower($strContent), QTextStyle::$LinkProtocolArray)) {
+				self::$objStateStack->Push(QTextStyle::StateLinkProtocol, strtolower($strContent));
+				self::$objStateStack->Push(QTextStyle::StateLinkLocation);
 			} else {
 				self::$objStateStack->Push(QTextStyle::StateText, ':' . $strContent);
 			}
 		}
 		
-		protected static function ProcessUrlLocation() {
-			// Pop off UrlLocation
+		protected static function ProcessLinkLocation() {
+			// Delegate the Processing based on the LinkProtocol Used
+			
+			// Figure out the LinkProtocol
+			// Top of Stack is the Link Location, so we need to get the 2nd-Top
+			$intPosition = self::$objStateStack->Size() - 2;
+			$objLinkProtocolState = self::$objStateStack->Peek($intPosition);
+
+			if ($objLinkProtocolState->State != QTextStyle::StateLinkProtocol)
+				throw new Exception('Could not find LinkProtocol State');
+
+			if (array_key_exists($objLinkProtocolState->Buffer, QTextStyle::$LinkProtocolArray)) {
+				$strProcessorCommand = QTextStyle::$LinkProtocolArray[$objLinkProtocolState->Buffer];
+				self::$strProcessorCommand();
+			} else {
+				throw new Exception('Could not determine a valid Link Protocol');
+			}
+		}
+		
+		protected static function ProcessLinkLocationUrl() {
+			// Pop off LinkLocation
 			$objState = self::$objStateStack->Pop();
 			$strLocation = $objState->Buffer;
 
-			// Pop off UrlProtocol
+			// Pop off LinkProtocol
 			$objState = self::$objStateStack->Pop();
 			$strProtocol = $objState->Buffer;
 
 			// Pop off End Quote
-			self::$objStateStack->Pop();
+			$objState = self::$objStateStack->Pop();
+			if ($objState->State != QTextStyle::StateEndQuote)
+				throw new Exception('Could not find In-LinkContent EndQuote State');
 
 			// Pop off Text
 			$objState = self::$objStateStack->Pop();
+			if ($objState->State != QTextStyle::StateText)
+				throw new Exception('Could not find In-LinkContent Text State');
 			$strContent = $objState->Buffer;
 
 			// Pop off Start Quote
 			$objState = self::$objStateStack->Pop();
+			if (($objState->State != QTextStyle::StateStartQuote) && ($objState->State != QTextStyle::StateStartQuoteStartQuote))
+				throw new Exception('Could not find In-LinkContent StartQuote State');
 			$strContent = $objState->Buffer . $strContent;
 
-			// Calculate end-of-location
-			$strNeedle = '/[A-Za-z0-9\\&\\=\\/]/';
-			$intValue = QString::StringReversePosition($strLocation, $strNeedle);
-			
-			// Process as link
-			$strUrlLink = sprintf('<a href="%s:%s">%s</a>', $strProtocol, substr($strLocation, 0, $intValue + 1), $strContent);
-			self::$objStateStack->AddToTopBuffer($strUrlLink . substr($strLocation, $intValue + 1));
+			// A Valid URL?
+			if (substr($strLocation, 0, 2) == '//') {
+				// Calculate end-of-location
+				$strNeedle = '/[A-Za-z0-9\\&\\=\\/]/';
+				$intValue = QString::StringReversePosition($strLocation, $strNeedle);
+
+				// Process as a URL-based link
+				$strUrlLink = sprintf('<a href="%s:%s">%s</a>', $strProtocol, substr($strLocation, 0, $intValue + 1), $strContent);
+				self::$objStateStack->AddToTopBuffer($strUrlLink . substr($strLocation, $intValue + 1));
+			} else {
+				// Process as just regular text all throughout
+				self::$objStateStack->AddToTopBuffer('&ldquo;' . $strContent . '&rdquo;:' . $strProtocol . $strLocation);
+			}
 		}
 	}
 

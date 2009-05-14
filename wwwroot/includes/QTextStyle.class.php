@@ -14,8 +14,8 @@
 		const StateStartQuoteStartQuote = 'StateStartQuoteStartQuote';
 		const StateEndQuote = 'StateEndQuote';
 		const StateColon = 'StateColon';
-		const StateUrlProtocol = 'StateUrlProtocol';
-		const StateUrlLocation = 'StateUrlLocation';
+		const StateLinkProtocol = 'StateLinkProtocol';
+		const StateLinkLocation = 'StateLinkLocation';
 		const StateCode = 'StateCode';
 		const StateImage = 'StateImage';
 		const StateStrong = 'StateStrong';
@@ -56,10 +56,10 @@
 
 
 
-		public static $UrlProtocolArray = array(
-			'http' => true,
-			'https' => true,
-			'ftp' => true);
+		public static $LinkProtocolArray = array(
+			'http' => 'ProcessLinkLocationUrl',
+			'https' => 'ProcessLinkLocationUrl',
+			'ftp' => 'ProcessLinkLocationUrl',);
 
 		public static $StateRulesArray = array(
 			self::StateStart => array(
@@ -76,6 +76,12 @@
 				'"' => array(
 					array('CommandStatePush', self::StateEndQuote),
 					array('CommandContentPop')),
+				'<' => array(
+					array('CommandBufferAdd', '&lt;'),
+					array('CommandContentPop')),
+				'>' => array(
+					array('CommandBufferAdd', '&gt;'),
+					array('CommandContentPop')),
 				' ' => array(
 					array('CommandBufferAddFromContent'),
 					array('CommandStatePush', self::StateSpace),
@@ -91,6 +97,10 @@
 					array('CommandCallProcessor', 'ProcessText'))
 			),
 			self::StateSpace => array(
+				' ' => array(
+					array('CommandStatePop'),
+					array('CommandBufferAdd', '&nbsp;'),
+					array('CommandContentPop')),
 				'"' => array(
 					array('CommandStatePop'),
 					array('CommandStatePush', self::StateStartQuote),
@@ -117,7 +127,7 @@
 				QTextStyle::KeyDefault => array(
 					array('CommandStatePush', self::StateText)),
 				QTextStyle::KeyEnd => array(
-					array('CommandCallProcessor', 'ProcessEndQuote'))
+					array('CommandCallProcessor', 'ProcessStartQuote'))
 			),
 			self::StateStartQuoteStartQuote => array(
 				'"' => array(
@@ -143,7 +153,7 @@
 			),
 			self::StateColon => array(
 				':' => array(
-					array('CommandCallProcessor', 'ProcessUrl'),
+					array('CommandCallProcessor', 'ProcessLink'),
 					array('CommandContentPop')),
 				QTextStyle::KeyAlpha => array(
 					array('CommandBufferAddFromContent'),
@@ -153,16 +163,16 @@
 				QTextStyle::KeyEnd => array(
 					array('CommandCallProcessor', 'ProcessColon'))
 			),
-			self::StateUrlLocation => array(
+			self::StateLinkLocation => array(
 				' ' => array(
-					array('CommandCallProcessor', 'ProcessUrlLocation')),
+					array('CommandCallProcessor', 'ProcessLinkLocation')),
 				"\n" => array(
-					array('CommandCallProcessor', 'ProcessUrlLocation')),
+					array('CommandCallProcessor', 'ProcessLinkLocation')),
 				QTextStyle::KeyDefault => array(
 					array('CommandBufferAddFromContent'),
 					array('CommandContentPop')),
 				QTextStyle::KeyEnd => array(
-					array('CommandCallProcessor', 'ProcessUrlLocation'))
+					array('CommandCallProcessor', 'ProcessLinkLocation'))
 			)
 		);
 //			self::StateStart => array(

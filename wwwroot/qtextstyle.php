@@ -4,7 +4,7 @@
 	//////////////////////////////////
 	// For purposes of the Dev Harness
 	set_time_limit(3);
-	QTextStyleInline::$OutputDebugMessages = true;
+//	QTextStyleInline::$OutputDebugMessages = true;
 	//////////////////////////////////
 ?>
 
