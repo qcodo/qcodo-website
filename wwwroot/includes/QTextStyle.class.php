@@ -153,6 +153,16 @@
 				'"' => array(
 					array('CommandStatePush', self::StateStartQuoteStartQuote),
 					array('CommandContentPop')),
+				' ' => array(
+					array('CommandStatePop'),
+					array('CommandStatePop'),
+					array('CommandStatePush', self::StateText),
+					array('CommandBufferAdd', '&ldquo;&rdquo;')),
+				"\n" => array(
+					array('CommandStatePop'),
+					array('CommandStatePop'),
+					array('CommandStatePush', self::StateText),
+					array('CommandBufferAdd', '&ldquo;&rdquo;')),
 				QTextStyle::KeyDefault => array(
 					array('CommandStatePush', self::StateText)),
 				QTextStyle::KeyEnd => array(
