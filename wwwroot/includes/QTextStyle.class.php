@@ -72,10 +72,11 @@
 			),
 			self::StateText => array(
 				'"' => array(
-					array('CommandStatePush', self::StateEndQuote),
+					array('CommandIfStateExistsStatePushElseBufferAdd', self::StateStartQuote, self::StateEndQuote, '&rdquo;'),
 					array('CommandContentPop')),
 				'<' => array(
 					array('CommandBufferAdd', '&lt;'),
+					array('CommandStatePush', self::StateWordStartHint),
 					array('CommandContentPop')),
 				'>' => array(
 					array('CommandBufferAdd', '&gt;'),
@@ -93,6 +94,18 @@
 					array('CommandStatePush', self::StateWordStartHint),
 					array('CommandContentPop')),
 				"(" => array(
+					array('CommandBufferAddFromContent'),
+					array('CommandStatePush', self::StateWordStartHint),
+					array('CommandContentPop')),
+				"[" => array(
+					array('CommandBufferAddFromContent'),
+					array('CommandStatePush', self::StateWordStartHint),
+					array('CommandContentPop')),
+				"{" => array(
+					array('CommandBufferAddFromContent'),
+					array('CommandStatePush', self::StateWordStartHint),
+					array('CommandContentPop')),
+				"=" => array(
 					array('CommandBufferAddFromContent'),
 					array('CommandStatePush', self::StateWordStartHint),
 					array('CommandContentPop')),
@@ -128,6 +141,9 @@
 				'"' => array(
 					array('CommandStatePush', self::StateStartQuoteStartQuote),
 					array('CommandContentPop')),
+				' ' => array(
+					array('CommandStatePop'),
+					array('CommandBufferAdd', '&quot;')),
 				QTextStyle::KeyDefault => array(
 					array('CommandStatePush', self::StateText)),
 				QTextStyle::KeyEnd => array(
@@ -143,10 +159,6 @@
 					array('CommandCallProcessor', 'ProcessStartQuoteStartQuote'))
 			),
 			self::StateEndQuote => array(
-				'"' => array(
-					array('CommandCallProcessor', 'ProcessEndQuote'),
-					array('CommandStatePush', self::StateEndQuote),
-					array('CommandContentPop')),
 				':' => array(
 					array('CommandStatePush', self::StateColon),
 					array('CommandContentPop')),

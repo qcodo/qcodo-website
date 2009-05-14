@@ -142,12 +142,17 @@
 			QTextStyleInline::$strProcessorMethod($strInlineContent, $chrCurrent);
 		}
 
-		protected static function CommandStatePushIfStateExists(&$strInlineContent, $chrCurrent, $strParameterArray) {
+		protected static function CommandIfStateExistsStatePushElseBufferAdd(&$strInlineContent, $chrCurrent, $strParameterArray) {
 			$intStateToCheckIfExists = $strParameterArray[0];
 			$intStateToPush = $strParameterArray[1];
-			exit('HERE');
+			$strBufferToAdd = $strParameterArray[2];
+			
+			if (self::$objStateStack->GetStackPosition($intStateToCheckIfExists)) {
+				self::$objStateStack->Push($intStateToPush);
+			} else {
+				self::$objStateStack->AddToTopBuffer($strBufferToAdd);
+			}
 		}
-
 
 
 		/////////////////////////////
@@ -155,34 +160,22 @@
 		/////////////////////////////
 
 		protected static function ProcessEndQuote(&$strInlineContent, $chrCurrent) {
-			// First, see if we can find a matching StartQuote?
-			$blnFoundStartQuote = false;
-			for ($intStartQuotePosition = self::$objStateStack->Size() - 1; ($intStartQuotePosition >= 0 && !$blnFoundStartQuote); $intStartQuotePosition--) {
-				if ((self::$objStateStack->Peek($intStartQuotePosition)->State == QTextStyle::StateStartQuote) ||
-					(self::$objStateStack->Peek($intStartQuotePosition)->State == QTextStyle::StateStartQuoteStartQuote)) {
-					$blnFoundStartQuote = true;
-				}
-			}
-
 			// Pop off this end quote state and pull the buffer.
 			$objState = self::$objStateStack->Pop();
 			$strContent = '&rdquo;' . $objState->Buffer;
 
-			// If we found a start quote, add all the content between here and the start quote to the buffer.
-			if ($blnFoundStartQuote) {
-				while ((self::$objStateStack->PeekTop()->State != QTextStyle::StateStartQuote) && (self::$objStateStack->PeekTop()->State != QTextStyle::StateStartQuoteStartQuote)) {
-					$objState = self::$objStateStack->Pop();
-					$strContent = $objState->Buffer . $strContent;
-				}
-				
-				// And finally, add the content of the startquotestate buffer, itself
+			while ((self::$objStateStack->PeekTop()->State != QTextStyle::StateStartQuote) && (self::$objStateStack->PeekTop()->State != QTextStyle::StateStartQuoteStartQuote)) {
 				$objState = self::$objStateStack->Pop();
-				$strContent = '&ldquo;' . $objState->Buffer . $strContent;
-
-				// If we currently aren't a Text state (because we're at, for example, another start quote), let's add it
-				if (self::$objStateStack->PeekTop()->State != QTextStyle::StateText)
-					self::$objStateStack->Push(QTextStyle::StateText);
+				$strContent = $objState->Buffer . $strContent;
 			}
+
+			// And finally, add the content of the startquotestate buffer, itself
+			$objState = self::$objStateStack->Pop();
+			$strContent = '&ldquo;' . $objState->Buffer . $strContent;
+
+			// If we currently aren't a Text state (because we're at, for example, another start quote), let's add it
+			if (self::$objStateStack->PeekTop()->State != QTextStyle::StateText)
+				self::$objStateStack->Push(QTextStyle::StateText);
 
 			self::$objStateStack->AddToTopBuffer($strContent);
 		}
@@ -281,7 +274,7 @@
 				self::$objStateStack->AddToTopBuffer('&ldquo;' . $strContent . '&rdquo;' . ':');
 
 				// Add any tail/unprocessed stuff back to the content stack
-				$strInlineContent = $strProtocol . $strLocation . $strInlineContent;
+				$strInlineContent = $strProtocol . ':' . $strLocation . $strInlineContent;
 			}
 		}
 	}

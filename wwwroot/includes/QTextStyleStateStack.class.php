@@ -12,6 +12,32 @@
 			$this->strBufferArray[count($this->strBufferArray) - 1] .= $strContent;
 		}
 
+		/**
+		 * Looks up the top-most stack position for the given state or states
+		 * @param mixed $mixState can either be a state or an array of states
+		 * @return integer representing the position of the Stack where the state exists, or false if none
+		 */
+		public function GetStackPosition($mixState) {
+			if (is_array($mixState)) {
+				for ($intPosition = $this->Size() - 1; $intPosition >= 0; $intPosition--) {
+					foreach ($mixState as $intState) {
+						if ($this->Peek($intPosition)->State == $intState)
+							return $intPosition;
+					}
+				}
+			} else {
+				$intState = $mixState;
+
+				for ($intPosition = $this->Size() - 1; $intPosition >= 0; $intPosition--) {
+					if ($this->Peek($intPosition)->State == $intState)
+						return $intPosition;
+				}
+			}
+
+			// If we're here, the state wasn't found on the stack.
+			return false;
+		}
+
 		public function Pop() {
 			if (!$this->IsEmpty()) {
 				$intState = array_pop($this->intStateArray);
