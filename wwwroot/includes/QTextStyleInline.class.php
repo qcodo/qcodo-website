@@ -14,20 +14,19 @@
 		public static function Process($strInlineContent) {
 			// Reset the stack
 			QTextStyleInline::$objStateStack = new QTextStyleStateStack();
-			QTextStyleInline::$objStateStack->Push(QTextStyle::StateStart);
+			QTextStyleInline::$objStateStack->Push(QTextStyle::StateText);
+			QTextStyleInline::$objStateStack->Push(QTextStyle::StateWordStartHint);
 
-			// Continue iterating while there are items on the stack
-			while (!QTextStyleInline::$objStateStack->IsEmpty()) {
-				// Pull out the StateRules for the top-most stack's state
-				$arrStateRules = QTextStyle::$StateRulesArray[QTextStyleInline::$objStateStack->PeekTop()->State];
-
+			// Continue iterating while there is content to parse are items on the stack
+			while (strlen($strInlineContent)) {
 				// Figure out the current character we are attempting to parse with
 				$chrCurrent = QString::FirstCharacter($strInlineContent);
 
+				// Pull out the StateRules for the top-most stack's state
+				$arrStateRules = QTextStyle::$StateRulesArray[QTextStyleInline::$objStateStack->PeekTop()->State];
+
 				// Figure out the StateRule key to use based on the current character
-				if (!strlen($strInlineContent))
-					$strKey = QTextStyle::KeyEnd;
-				else if (array_key_exists($chrCurrent, $arrStateRules))
+				if (array_key_exists($chrCurrent, $arrStateRules))
 					$strKey = $chrCurrent;
 				else if (array_key_exists(QTextStyle::KeyAlpha, $arrStateRules) && preg_match('/[A-Za-z]/', $chrCurrent))
 					$strKey = QTextStyle::KeyAlpha;
@@ -50,6 +49,7 @@
 						$strCommand = $mixRule;
 					}
 
+					// Dump the stack to the output buffer (if requested)
 					if (QTextStyleInline::$OutputDebugMessages) {
 						if (is_array($mixRule))
 							$strDisplayCommand = implode(', ', $mixRule);
@@ -58,13 +58,33 @@
 						QTextStyleInline::DumpStack($strInlineContent . ' - [' . $chrCurrent . '] - Key(' . $strKey . ') - Command(' . $strDisplayCommand . ')');
 					}
 
-					$strCommandReturn = QTextStyleInline::$strCommand($strInlineContent, $chrCurrent, $strParameterArray);
+					QTextStyleInline::$strCommand($strInlineContent, $chrCurrent, $strParameterArray);
 				}
 			}
-			
-			return $strCommandReturn;
+
+			// There is no more InlineContent to process
+			// Call the cancel method for all the states on the stack
+			while (!QTextStyleInline::$objStateStack->IsEmpty()) {
+				// Call the cancel method -- store any return vaue
+				// If it is the last state on the stack, the return value will be returned
+				$strToReturn = QTextStyleInline::CancelTopState();
+			}
+
+			return $strToReturn;
 		}
 
+		protected static function CancelTopState() {
+			$objState = self::$objStateStack->PeekTop();
+
+			// Dump the stack to the output buffer (if requested)
+			if (QTextStyleInline::$OutputDebugMessages) {
+				QTextStyleInline::DumpStack('CancelTopState(' . $objState->State . ')');
+			}
+
+			$strCancelMethodName = QTextStyle::$CancelStateArray[$objState->State];
+
+			return self::$strCancelMethodName();
+		}
 
 
 		/**
@@ -155,9 +175,59 @@
 		}
 
 
+
 		/////////////////////////////
 		// Inline-Specific Processors
 		/////////////////////////////
+
+		protected static function ProcessLineBreak(&$strInlineContent, $chrCurrent) {
+			// Call Cancel on all state items up the stack, except for the bottom-most Text state
+			while (self::$objStateStack->Size() > 1)
+				QTextStyleInline::CancelTopState();
+
+			$strInlineContent = substr($strInlineContent, 1);
+			self::$objStateStack->AddToTopBuffer("<br/>\n");
+			self::$objStateStack->Push(QTextStyle::StateWordStartHint);
+		}
+
+
+
+		/////////////////////////////
+		// Cancel-State Processors
+		/////////////////////////////
+
+		protected static function CancelStateText() {
+			$objState = self::$objStateStack->Pop();
+
+			// Return the buffer if the already the final state on the stack
+			if (self::$objStateStack->IsEmpty())
+				return $objState->Buffer;
+
+			// Otherwise, add state to the next-state item
+			else
+				self::$objStateStack->AddToTopBuffer($objState->Buffer);
+		}
+
+		protected static function CancelStateSpace() {
+			$objState = self::$objStateStack->Pop();
+			self::$objStateStack->AddToTopBuffer($objState->Buffer);
+		}
+
+		protected static function CancelStateWordStartHint() {
+			$objState = self::$objStateStack->Pop();
+			self::$objStateStack->AddToTopBuffer($objState->Buffer);
+		}
+
+		protected static function CancelStateStartQuote() {
+			$objState = self::$objStateStack->Pop();
+			self::$objStateStack->AddToTopBuffer('&ldquo;' . $objState->Buffer);
+		}
+
+		protected static function CancelStateEndQuote() {
+			$objState = self::$objStateStack->Pop();
+			self::$objStateStack->AddToTopBuffer($objState->Buffer . '&rdquo;');
+		}
+		
 
 		protected static function ProcessEndQuote(&$strInlineContent, $chrCurrent) {
 			// Pop off this end quote state and pull the buffer.
@@ -190,10 +260,6 @@
 			self::$objStateStack->AddToTopBuffer('&rdquo;' . $objState->Buffer);
 		}
 
-		protected static function ProcessText(&$strInlineContent, $chrCurrent) {
-			$objState = self::$objStateStack->Pop();
-			self::$objStateStack->AddToTopBuffer($objState->Buffer);
-		}
 
 		protected static function ProcessColon(&$strInlineContent, $chrCurrent) {
 			$objState = self::$objStateStack->Pop();

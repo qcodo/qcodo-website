@@ -1,12 +1,10 @@
 <?php 
 	class QTextStyleBase extends QBaseClass {
 		const KeyDefault = 'default';
-		const KeyEnd = 'end';
 		const KeyAlpha = 'alpha';
 		const KeyNumeric = 'numeric';
 		const KeyAlphaNumeric = 'alphanumeric';
 
-		const StateStart = 'StateStart';
 		const StateText = 'StateText';
 		const StateSpace = 'StateSpace';
 		const StateWordStartHint = 'StateWordStartHint';
@@ -21,6 +19,23 @@
 		const StateImage = 'StateImage';
 		const StateStrong = 'StateStrong';
 		const StateEmphasis = 'StateEmphasis';
+		
+		public static $CancelStateArray = array(
+			self::StateText => 'CancelStateText',
+			self::StateSpace => 'CancelStateSpace',
+			self::StateWordStartHint => 'CancelStateWordStartHint',
+			self::StateLineBreak => 'CancelStateLineBreak',
+			self::StateStartQuote => 'CancelStateStartQuote',
+			self::StateStartQuoteStartQuote => 'CancelStateStartQuoteStartQuote',
+			self::StateEndQuote => 'CancelStateEndQuote',
+			self::StateColon => 'CancelStateColon',
+			self::StateLinkProtocol => 'CancelStateLinkProtocol',
+			self::StateLinkLocation => 'CancelStateLinkLocation',
+			self::StateCode => 'CancelStateCode',
+			self::StateImage => 'CancelStateImage',
+			self::StateStrong => 'CancelStateStrong',
+			self::StateEmphasis => 'CancelStateEmphasis'
+		);
 
 		//                              ([A-Za-z][A-Za-z0-9]*)  -  start of the pattern -- any block of text must be identified
 		//                                                         with a code (e.g. p, h1, h3, bq, etc.)
@@ -63,14 +78,9 @@
 			'ftp' => 'ProcessLinkLocationUrl',);
 
 		public static $StateRulesArray = array(
-			self::StateStart => array(
-				QTextStyle::KeyDefault => array(
-					array('CommandStatePush', self::StateText),
-					array('CommandStatePush', self::StateWordStartHint)),
-				QTextStyle::KeyEnd => array(
-					array('CommandStatePop'))
-			),
 			self::StateText => array(
+				"\n" => array(
+					array('CommandCallProcessor', 'ProcessLineBreak')),
 				'"' => array(
 					array('CommandIfStateExistsStatePushElseBufferAdd', self::StateStartQuote, self::StateEndQuote, '&rdquo;'),
 					array('CommandContentPop')),
@@ -88,10 +98,6 @@
 					array('CommandBufferAddFromContent'),
 					array('CommandStatePush', self::StateWordStartHint),
 					array('CommandStatePush', self::StateSpace),
-					array('CommandContentPop')),
-				"\n" => array(
-					array('CommandBufferAdd', '<br/>'),
-					array('CommandStatePush', self::StateWordStartHint),
 					array('CommandContentPop')),
 				"(" => array(
 					array('CommandBufferAddFromContent'),
@@ -112,8 +118,6 @@
 				QTextStyle::KeyDefault => array(
 					array('CommandBufferAddFromContent'),
 					array('CommandContentPop')),
-				QTextStyle::KeyEnd => array(
-					array('CommandCallProcessor', 'ProcessText'))
 			),
 			self::StateSpace => array(
 				' ' => array(
@@ -124,8 +128,6 @@
 					array('CommandContentPop')),
 				QTextStyle::KeyDefault => array(
 					array('CommandStatePop')),
-				QTextStyle::KeyEnd => array(
-					array('CommandStatePop'))
 			),
 			self::StateWordStartHint => array(
 				'"' => array(
@@ -134,8 +136,6 @@
 					array('CommandContentPop')),
 				QTextStyle::KeyDefault => array(
 					array('CommandStatePop')),
-				QTextStyle::KeyEnd => array(
-					array('CommandStatePop'))
 			),
 			self::StateStartQuote => array(
 				'"' => array(
@@ -146,8 +146,6 @@
 					array('CommandBufferAdd', '&quot;')),
 				QTextStyle::KeyDefault => array(
 					array('CommandStatePush', self::StateText)),
-				QTextStyle::KeyEnd => array(
-					array('CommandCallProcessor', 'ProcessStartQuote'))
 			),
 			self::StateStartQuoteStartQuote => array(
 				'"' => array(
@@ -165,8 +163,6 @@
 					array('CommandBufferAdd', '&ldquo;&rdquo;')),
 				QTextStyle::KeyDefault => array(
 					array('CommandStatePush', self::StateText)),
-				QTextStyle::KeyEnd => array(
-					array('CommandCallProcessor', 'ProcessStartQuoteStartQuote'))
 			),
 			self::StateEndQuote => array(
 				':' => array(
@@ -174,8 +170,6 @@
 					array('CommandContentPop')),
 				QTextStyle::KeyDefault => array(
 					array('CommandCallProcessor', 'ProcessEndQuote')),
-				QTextStyle::KeyEnd => array(
-					array('CommandCallProcessor', 'ProcessEndQuote'))
 			),
 			self::StateColon => array(
 				':' => array(
@@ -186,8 +180,6 @@
 					array('CommandContentPop')),
 				QTextStyle::KeyDefault => array(
 					array('CommandCallProcessor', 'ProcessColon')),
-				QTextStyle::KeyEnd => array(
-					array('CommandCallProcessor', 'ProcessColon'))
 			),
 			self::StateLinkLocation => array(
 				' ' => array(
@@ -197,8 +189,6 @@
 				QTextStyle::KeyDefault => array(
 					array('CommandBufferAddFromContent'),
 					array('CommandContentPop')),
-				QTextStyle::KeyEnd => array(
-					array('CommandCallProcessor', 'ProcessLinkLocation'))
 			)
 		);
 
