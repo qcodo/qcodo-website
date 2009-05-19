@@ -10,7 +10,6 @@
 		const StateWordStartHint = 'StateWordStartHint';
 		const StateLineBreak = 'StateLineBreak';
 		const StateStartQuote = 'StateStartQuote';
-		const StateStartQuoteStartQuote = 'StateStartQuoteStartQuote';
 		const StateEndQuote = 'StateEndQuote';
 		const StateColon = 'StateColon';
 		const StateLinkProtocol = 'StateLinkProtocol';
@@ -26,7 +25,6 @@
 			self::StateWordStartHint => 'CancelStateWordStartHint',
 			self::StateLineBreak => 'CancelStateLineBreak',
 			self::StateStartQuote => 'CancelStateStartQuote',
-			self::StateStartQuoteStartQuote => 'CancelStateStartQuoteStartQuote',
 			self::StateEndQuote => 'CancelStateEndQuote',
 			self::StateColon => 'CancelStateColon',
 			self::StateLinkProtocol => 'CancelStateLinkProtocol',
@@ -139,7 +137,8 @@
 			),
 			self::StateStartQuote => array(
 				'"' => array(
-					array('CommandStatePush', self::StateStartQuoteStartQuote),
+					array('CommandStatePush', self::StateText),
+					array('CommandStatePush', self::StateStartQuote),
 					array('CommandContentPop')),
 				' ' => array(
 					array('CommandStatePop'),
@@ -147,23 +146,23 @@
 				QTextStyle::KeyDefault => array(
 					array('CommandStatePush', self::StateText)),
 			),
-			self::StateStartQuoteStartQuote => array(
-				'"' => array(
-					array('CommandStatePush', self::StateStartQuoteStartQuote),
-					array('CommandContentPop')),
-				' ' => array(
-					array('CommandStatePop'),
-					array('CommandStatePop'),
-					array('CommandStatePush', self::StateText),
-					array('CommandBufferAdd', '&ldquo;&rdquo;')),
-				"\n" => array(
-					array('CommandStatePop'),
-					array('CommandStatePop'),
-					array('CommandStatePush', self::StateText),
-					array('CommandBufferAdd', '&ldquo;&rdquo;')),
-				QTextStyle::KeyDefault => array(
-					array('CommandStatePush', self::StateText)),
-			),
+//			self::StateStartQuoteStartQuote => array(
+//				'"' => array(
+//					array('CommandStatePush', self::StateStartQuoteStartQuote),
+//					array('CommandContentPop')),
+//				' ' => array(
+//					array('CommandStatePop'),
+//					array('CommandStatePop'),
+//					array('CommandStatePush', self::StateText),
+//					array('CommandBufferAdd', '&ldquo;&rdquo;')),
+//				"\n" => array(
+//					array('CommandStatePop'),
+//					array('CommandStatePop'),
+//					array('CommandStatePush', self::StateText),
+//					array('CommandBufferAdd', '&ldquo;&rdquo;')),
+//				QTextStyle::KeyDefault => array(
+//					array('CommandStatePush', self::StateText)),
+//			),
 			self::StateEndQuote => array(
 				':' => array(
 					array('CommandStatePush', self::StateColon),
@@ -179,7 +178,7 @@
 					array('CommandBufferAddFromContent'),
 					array('CommandContentPop')),
 				QTextStyle::KeyDefault => array(
-					array('CommandCallProcessor', 'ProcessColon')),
+					array('CommandCallProcessor', 'CancelStateColon')),
 			),
 			self::StateLinkLocation => array(
 				' ' => array(
