@@ -175,14 +175,35 @@
 			$intStateToPush = $strParameterArray[1];
 			$strBufferToAdd = $strParameterArray[2];
 			
-			if (self::$objStateStack->GetStackPosition($intStateToCheckIfExists)) {
+			if (self::$objStateStack->GetStackPosition($intStateToCheckIfExists) !== false) {
 				self::$objStateStack->Push($intStateToPush);
 			} else {
 				self::$objStateStack->AddToTopBuffer($strBufferToAdd);
 			}
 		}
 
+		protected static function CommandPushStateIfDoesNotExistElseBufferAdd($chrCurrent, $strParameterArray) {
+			$intState = $strParameterArray[0];
+			$strBufferToAdd = $strParameterArray[1];
 
+			if (self::$objStateStack->GetStackPosition($intState) !== false) {
+				self::$objStateStack->AddToTopBuffer($strBufferToAdd);
+			} else {
+				self::$objStateStack->Push($intState);
+			}
+		}
+
+		protected static function CommandIfStateExistsCallProcessorElseBufferAdd($chrCurrent, $strParameterArray) {
+			$intStateToCheckIfExists = $strParameterArray[0];
+			$strProcessorToCall = $strParameterArray[1];
+			$strBufferToAdd = $strParameterArray[2];
+
+			if (self::$objStateStack->GetStackPosition($intStateToCheckIfExists) !== false) {
+				self::$strProcessorToCall($chrCurrent);
+			} else {
+				self::$objStateStack->AddToTopBuffer($strBufferToAdd);
+			}
+		}
 
 		/////////////////////////////
 		// Inline-Specific Processors
@@ -200,6 +221,12 @@
 
 		protected static function ProcessEndQuote($chrCurrent = null) {
 			self::CancelThroughState(QTextStyle::StateStartQuote);
+		}
+		
+		protected static function ProcessStrong($chrCurrent = null) {
+			self::CancelToState(QTextStyle::StateStrong);
+			$objState = self::$objStateStack->Pop();
+			self::$objStateStack->AddToTopBuffer('<strong>' .$objState->Buffer . '</strong>');
 		}
 
 		protected static function ProcessLink($chrCurrent = null) {
@@ -329,6 +356,11 @@
 		protected static function CancelStateLinkProtocol() {
 			$objState = self::$objStateStack->Pop();
 			self::$objStateStack->AddToTopBuffer(':' . $objState->Buffer);
+		}
+
+		protected static function CancelStateStrong() {
+			$objState = self::$objStateStack->Pop();
+			self::$objStateStack->AddToTopBuffer('*' . $objState->Buffer);
 		}
 
 		//////////

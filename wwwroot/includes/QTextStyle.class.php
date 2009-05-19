@@ -18,7 +18,7 @@
 		const StateImage = 'StateImage';
 		const StateStrong = 'StateStrong';
 		const StateEmphasis = 'StateEmphasis';
-		
+
 		public static $CancelStateArray = array(
 			self::StateText => 'CancelStateText',
 			self::StateSpace => 'CancelStateSpace',
@@ -82,6 +82,9 @@
 				'"' => array(
 					array('CommandIfStateExistsStatePushElseBufferAdd', self::StateStartQuote, self::StateEndQuote, '&rdquo;'),
 					array('CommandContentPop')),
+				'*' => array(
+					array('CommandIfStateExistsCallProcessorElseBufferAdd', self::StateStrong, 'ProcessStrong', '*'),
+					array('CommandContentPop')),
 				'<' => array(
 					array('CommandBufferAdd', '&lt;'),
 					array('CommandStatePush', self::StateWordStartHint),
@@ -130,8 +133,12 @@
 			self::StateWordStartHint => array(
 				'"' => array(
 					array('CommandStatePop'),
-					array('CommandStatePush', self::StateStartQuote),
-					array('CommandContentPop')),
+					array('CommandContentPop'),
+					array('CommandStatePush', self::StateStartQuote)),
+				'*' => array(
+					array('CommandStatePop'),
+					array('CommandContentPop'),
+					array('CommandPushStateIfDoesNotExistElseBufferAdd', self::StateStrong, '*')),
 				QTextStyle::KeyDefault => array(
 					array('CommandStatePop')),
 			),
@@ -145,6 +152,14 @@
 					array('CommandBufferAdd', '&quot;')),
 				QTextStyle::KeyDefault => array(
 					array('CommandStatePush', self::StateText)),
+			),
+			self::StateStrong => array(
+				' ' => array(
+					array('CommandStatePop'),
+					array('CommandBufferAdd', '*')),
+				QTextStyle::KeyDefault => array(
+					array('CommandStatePush', self::StateText),
+					array('CommandStatePush', self::StateWordStartHint)),
 			),
 //			self::StateStartQuoteStartQuote => array(
 //				'"' => array(
