@@ -14,10 +14,23 @@
 		const StateColon = 'StateColon';
 		const StateLinkProtocol = 'StateLinkProtocol';
 		const StateLinkLocation = 'StateLinkLocation';
-		const StateCode = 'StateCode';
+
+		const StateStartStrong = 'StateStartStrong';
+		const StateEndStrong = 'StateEndStrong';
+
+		const StateStartCode = 'StateStartCode';
+		const StateEndCode = 'StateEndCode';
+
+		const StateStartEmphasis = 'StateStartEmphasis';
+		const StateEndEmphasis = 'StateEndEmphasis';
+
+		const StateStartUnderline = 'StateStartUnderline';
+		const StateEndUnderline = 'StateEndUnderline';
+
+		const StateStartStrike = 'StateStartStrike';
+		const StateEndStrike = 'StateEndStrike';
+
 		const StateImage = 'StateImage';
-		const StateStrong = 'StateStrong';
-		const StateEmphasis = 'StateEmphasis';
 
 		public static $CancelStateArray = array(
 			self::StateText => 'CancelStateText',
@@ -29,10 +42,15 @@
 			self::StateColon => 'CancelStateColon',
 			self::StateLinkProtocol => 'CancelStateLinkProtocol',
 			self::StateLinkLocation => 'CancelStateLinkLocation',
-			self::StateCode => 'CancelStateCode',
-			self::StateImage => 'CancelStateImage',
-			self::StateStrong => 'CancelStateStrong',
-			self::StateEmphasis => 'CancelStateEmphasis'
+
+			self::StateStartStrong => 'CancelStateStartStrong',
+			self::StateEndStrong => 'ProcessEndStrong',
+			self::StateStartCode => 'CancelStateStartCode',
+			self::StateStartEmphasis => 'CancelStateStartEmphasis',
+			self::StateStartUnderline => 'CancelStateStartUnderline',
+			self::StateStartStrike => 'CancelStateStartStrike',
+
+			self::StateImage => 'CancelStateImage'
 		);
 
 		//                              ([A-Za-z][A-Za-z0-9]*)  -  start of the pattern -- any block of text must be identified
@@ -83,7 +101,7 @@
 					array('CommandIfStateExistsStatePushElseBufferAdd', self::StateStartQuote, self::StateEndQuote, '&rdquo;'),
 					array('CommandContentPop')),
 				'*' => array(
-					array('CommandIfStateExistsCallProcessorElseBufferAdd', self::StateStrong, 'ProcessStrong', '*'),
+					array('CommandIfStateExistsPushElseBufferAdd', self::StateStartStrong, self::StateEndStrong, '*'),
 					array('CommandContentPop')),
 				'<' => array(
 					array('CommandBufferAdd', '&lt;'),
@@ -138,7 +156,7 @@
 				'*' => array(
 					array('CommandStatePop'),
 					array('CommandContentPop'),
-					array('CommandPushStateIfDoesNotExistElseBufferAdd', self::StateStrong, '*')),
+					array('CommandPushStateIfDoesNotExistElseBufferAdd', self::StateStartStrong, '*')),
 				QTextStyle::KeyDefault => array(
 					array('CommandStatePop')),
 			),
@@ -154,7 +172,7 @@
 					array('CommandStatePush', self::StateText),
 					array('CommandStatePush', self::StateWordStartHint)),
 			),
-			self::StateStrong => array(
+			self::StateStartStrong => array(
 				' ' => array(
 					array('CommandStatePop'),
 					array('CommandBufferAdd', '*')),
@@ -162,7 +180,15 @@
 					array('CommandStatePush', self::StateText),
 					array('CommandStatePush', self::StateWordStartHint)),
 			),
-//			self::StateStartQuoteStartQuote => array(
+
+			self::StateEndStrong => array(
+				QTextStyle::KeyAlphaNumeric => array(
+					array('CommandStatePop'),
+					array('CommandBufferAdd', '*')),
+				QTextStyle::KeyDefault => array(
+					array('CommandCallProcessor', 'ProcessEndStrong')),
+			),
+			//			self::StateStartQuoteStartQuote => array(
 //				'"' => array(
 //					array('CommandStatePush', self::StateStartQuoteStartQuote),
 //					array('CommandContentPop')),
