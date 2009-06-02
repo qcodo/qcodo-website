@@ -4,3 +4,4 @@
 .buildpath
 .DS_Store
 wwwroot/images/gen
+wwwroot/images/cached
