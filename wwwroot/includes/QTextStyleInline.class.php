@@ -195,18 +195,6 @@
 			}
 		}
 
-		protected static function CommandIfStateExistsPushElseBufferAdd($chrCurrent, $strParameterArray) {
-			$intStateToCheckIfExists = $strParameterArray[0];
-			$intStateToPush = $strParameterArray[1];
-			$strBufferToAdd = $strParameterArray[2];
-
-			if (self::$objStateStack->GetStackPosition($intStateToCheckIfExists) !== false) {
-				self::$objStateStack->Push($intStateToPush);
-			} else {
-				self::$objStateStack->AddToTopBuffer($strBufferToAdd);
-			}
-		}
-
 //		protected static function CommandIfStateExistsCallProcessorElseBufferAdd($chrCurrent, $strParameterArray) {
 //			$intStateToCheckIfExists = $strParameterArray[0];
 //			$strProcessorToCall = $strParameterArray[1];
@@ -238,12 +226,48 @@
 		}
 		
 		protected static function ProcessEndStrong($chrCurrent = null) {
-			// Pop off the StateEndStrong off the stack, and pop off the closing * from the contnet
+			// Pop off the StateEnd off the stack, and pop off the closing mark from the contnet
 			self::$objStateStack->Pop();
 
 			self::CancelToState(QTextStyle::StateStartStrong);
 			$objState = self::$objStateStack->Pop();
 			self::$objStateStack->AddToTopBuffer('<strong>' .$objState->Buffer . '</strong>');
+		}
+
+		protected static function ProcessEndCode($chrCurrent = null) {
+			// Pop off the StateEnd off the stack, and pop off the closing mark from the contnet
+			self::$objStateStack->Pop();
+
+			self::CancelToState(QTextStyle::StateStartCode);
+			$objState = self::$objStateStack->Pop();
+			self::$objStateStack->AddToTopBuffer('<code>' .$objState->Buffer . '</code>');
+		}
+
+		protected static function ProcessEndEmphasis($chrCurrent = null) {
+			// Pop off the StateEnd off the stack, and pop off the closing mark from the contnet
+			self::$objStateStack->Pop();
+
+			self::CancelToState(QTextStyle::StateStartEmphasis);
+			$objState = self::$objStateStack->Pop();
+			self::$objStateStack->AddToTopBuffer('<em>' .$objState->Buffer . '</em>');
+		}
+
+		protected static function ProcessEndUnderline($chrCurrent = null) {
+			// Pop off the StateEnd off the stack, and pop off the closing mark from the contnet
+			self::$objStateStack->Pop();
+
+			self::CancelToState(QTextStyle::StateStartUnderline);
+			$objState = self::$objStateStack->Pop();
+			self::$objStateStack->AddToTopBuffer('<span style="text-decoration: underline;">' .$objState->Buffer . '</span>');
+		}
+
+		protected static function ProcessEndStrike($chrCurrent = null) {
+			// Pop off the StateEnd off the stack, and pop off the closing mark from the contnet
+			self::$objStateStack->Pop();
+
+			self::CancelToState(QTextStyle::StateStartStrike);
+			$objState = self::$objStateStack->Pop();
+			self::$objStateStack->AddToTopBuffer('<span style="text-decoration: line-through;">' .$objState->Buffer . '</span>');
 		}
 
 		protected static function ProcessLink($chrCurrent = null) {

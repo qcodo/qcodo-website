@@ -46,9 +46,13 @@
 			self::StateStartStrong => 'CancelStateStartStrong',
 			self::StateEndStrong => 'ProcessEndStrong',
 			self::StateStartCode => 'CancelStateStartCode',
+			self::StateEndCode => 'ProcessEndCode',
 			self::StateStartEmphasis => 'CancelStateStartEmphasis',
+			self::StateEndEmphasis => 'ProcessEndEmphasis',
 			self::StateStartUnderline => 'CancelStateStartUnderline',
+			self::StateEndUnderline => 'ProcessEndUnderline',
 			self::StateStartStrike => 'CancelStateStartStrike',
+			self::StateEndStrike => 'ProcessEndStrike',
 
 			self::StateImage => 'CancelStateImage'
 		);
@@ -101,7 +105,19 @@
 					array('CommandIfStateExistsStatePushElseBufferAdd', self::StateStartQuote, self::StateEndQuote, '&rdquo;'),
 					array('CommandContentPop')),
 				'*' => array(
-					array('CommandIfStateExistsPushElseBufferAdd', self::StateStartStrong, self::StateEndStrong, '*'),
+					array('CommandIfStateExistsStatePushElseBufferAdd', self::StateStartStrong, self::StateEndStrong, '*'),
+					array('CommandContentPop')),
+				'@' => array(
+					array('CommandIfStateExistsStatePushElseBufferAdd', self::StateStartCode, self::StateEndCode, '@'),
+					array('CommandContentPop')),
+				'+' => array(
+					array('CommandIfStateExistsStatePushElseBufferAdd', self::StateStartEmphasis, self::StateEndEmphasis, '+'),
+					array('CommandContentPop')),
+				'_' => array(
+					array('CommandIfStateExistsStatePushElseBufferAdd', self::StateStartUnderline, self::StateEndUnderline, '_'),
+					array('CommandContentPop')),
+				'-' => array(
+					array('CommandIfStateExistsStatePushElseBufferAdd', self::StateStartStrike, self::StateEndStrike, '-'),
 					array('CommandContentPop')),
 				'<' => array(
 					array('CommandBufferAdd', '&lt;'),
@@ -157,6 +173,22 @@
 					array('CommandStatePop'),
 					array('CommandContentPop'),
 					array('CommandPushStateIfDoesNotExistElseBufferAdd', self::StateStartStrong, '*')),
+				'@' => array(
+					array('CommandStatePop'),
+					array('CommandContentPop'),
+					array('CommandPushStateIfDoesNotExistElseBufferAdd', self::StateStartCode, '@')),
+				'+' => array(
+					array('CommandStatePop'),
+					array('CommandContentPop'),
+					array('CommandPushStateIfDoesNotExistElseBufferAdd', self::StateStartEmphasis, '+')),
+				'_' => array(
+					array('CommandStatePop'),
+					array('CommandContentPop'),
+					array('CommandPushStateIfDoesNotExistElseBufferAdd', self::StateStartUnderline, '_')),
+				'-' => array(
+					array('CommandStatePop'),
+					array('CommandContentPop'),
+					array('CommandPushStateIfDoesNotExistElseBufferAdd', self::StateStartStrike, '-')),
 				QTextStyle::KeyDefault => array(
 					array('CommandStatePop')),
 			),
@@ -172,6 +204,7 @@
 					array('CommandStatePush', self::StateText),
 					array('CommandStatePush', self::StateWordStartHint)),
 			),
+
 			self::StateStartStrong => array(
 				' ' => array(
 					array('CommandStatePop'),
@@ -180,13 +213,76 @@
 					array('CommandStatePush', self::StateText),
 					array('CommandStatePush', self::StateWordStartHint)),
 			),
-
 			self::StateEndStrong => array(
 				QTextStyle::KeyAlphaNumeric => array(
 					array('CommandStatePop'),
 					array('CommandBufferAdd', '*')),
 				QTextStyle::KeyDefault => array(
 					array('CommandCallProcessor', 'ProcessEndStrong')),
+			),
+
+			self::StateStartCode => array(
+				' ' => array(
+					array('CommandStatePop'),
+					array('CommandBufferAdd', '@')),
+				QTextStyle::KeyDefault => array(
+					array('CommandStatePush', self::StateText),
+					array('CommandStatePush', self::StateWordStartHint)),
+			),
+			self::StateEndCode => array(
+				QTextStyle::KeyAlphaNumeric => array(
+					array('CommandStatePop'),
+					array('CommandBufferAdd', '@')),
+				QTextStyle::KeyDefault => array(
+					array('CommandCallProcessor', 'ProcessEndCode')),
+			),
+
+			self::StateStartEmphasis => array(
+				' ' => array(
+					array('CommandStatePop'),
+					array('CommandBufferAdd', '+')),
+				QTextStyle::KeyDefault => array(
+					array('CommandStatePush', self::StateText),
+					array('CommandStatePush', self::StateWordStartHint)),
+			),
+			self::StateEndEmphasis => array(
+				QTextStyle::KeyAlphaNumeric => array(
+					array('CommandStatePop'),
+					array('CommandBufferAdd', '+')),
+				QTextStyle::KeyDefault => array(
+					array('CommandCallProcessor', 'ProcessEndEmphasis')),
+			),
+
+			self::StateStartUnderline => array(
+				' ' => array(
+					array('CommandStatePop'),
+					array('CommandBufferAdd', '_')),
+				QTextStyle::KeyDefault => array(
+					array('CommandStatePush', self::StateText),
+					array('CommandStatePush', self::StateWordStartHint)),
+			),
+			self::StateEndUnderline => array(
+				QTextStyle::KeyAlphaNumeric => array(
+					array('CommandStatePop'),
+					array('CommandBufferAdd', '_')),
+				QTextStyle::KeyDefault => array(
+					array('CommandCallProcessor', 'ProcessEndUnderline')),
+			),
+
+			self::StateStartStrike => array(
+				' ' => array(
+					array('CommandStatePop'),
+					array('CommandBufferAdd', '-')),
+				QTextStyle::KeyDefault => array(
+					array('CommandStatePush', self::StateText),
+					array('CommandStatePush', self::StateWordStartHint)),
+			),
+			self::StateEndStrike => array(
+				QTextStyle::KeyAlphaNumeric => array(
+					array('CommandStatePop'),
+					array('CommandBufferAdd', '-')),
+				QTextStyle::KeyDefault => array(
+					array('CommandCallProcessor', 'ProcessEndStrike')),
 			),
 			//			self::StateStartQuoteStartQuote => array(
 //				'"' => array(
