@@ -414,6 +414,26 @@
 			self::$objStateStack->AddToTopBuffer('*' . $objState->Buffer);
 		}
 
+		protected static function CancelStateStartCode() {
+			$objState = self::$objStateStack->Pop();
+			self::$objStateStack->AddToTopBuffer('@' . $objState->Buffer);
+		}
+
+		protected static function CancelStateStartEmphasis() {
+			$objState = self::$objStateStack->Pop();
+			self::$objStateStack->AddToTopBuffer('+' . $objState->Buffer);
+		}
+
+		protected static function CancelStateStartUnderline() {
+			$objState = self::$objStateStack->Pop();
+			self::$objStateStack->AddToTopBuffer('_' . $objState->Buffer);
+		}
+
+		protected static function CancelStateStartStrike() {
+			$objState = self::$objStateStack->Pop();
+			self::$objStateStack->AddToTopBuffer('-' . $objState->Buffer);
+		}
+
 		//////////
 		// Helpers
 		//////////
