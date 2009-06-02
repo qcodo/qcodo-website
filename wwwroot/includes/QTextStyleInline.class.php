@@ -25,60 +25,62 @@
 			QTextStyleInline::$objStateStack->Push(QTextStyle::StateText);
 			QTextStyleInline::$objStateStack->Push(QTextStyle::StateWordStartHint);
 
-			// Continue iterating while there is content to parse are items on the stack
-			while (strlen(QTextStyleInline::$strInlineContent)) {
-				// Figure out the current character we are attempting to parse with
-				$chrCurrent = QString::FirstCharacter(QTextStyleInline::$strInlineContent);
+			// Continue iterating while there is content to parse and items on the stack
+			while (strlen(QTextStyleInline::$strInlineContent) || (!QTextStyleInline::$objStateStack->IsEmpty())) {
+				
+				// If there is content, parse it!
+				if (strlen(QTextStyleInline::$strInlineContent)) {
+					// Figure out the current character we are attempting to parse with
+					$chrCurrent = QString::FirstCharacter(QTextStyleInline::$strInlineContent);
 
-				// Pull out the StateRules for the top-most stack's state
-				$arrStateRules = QTextStyle::$StateRulesArray[QTextStyleInline::$objStateStack->PeekTop()->State];
+					// Pull out the StateRules for the top-most stack's state
+					$arrStateRules = QTextStyle::$StateRulesArray[QTextStyleInline::$objStateStack->PeekTop()->State];
 
-				// Figure out the StateRule key to use based on the current character
-				if (array_key_exists($chrCurrent, $arrStateRules))
-					$strKey = $chrCurrent;
-				else if (array_key_exists(QTextStyle::KeyAlpha, $arrStateRules) && preg_match('/[A-Za-z]/', $chrCurrent))
-					$strKey = QTextStyle::KeyAlpha;
-				else if (array_key_exists(QTextStyle::KeyNumeric, $arrStateRules) && preg_match('/[0-9]/', $chrCurrent))
-					$strKey = QTextStyle::KeyNumeric;
-				else if (array_key_exists(QTextStyle::KeyAlphaNumeric, $arrStateRules) && preg_match('/[A-Za-z0-9]/', $chrCurrent))
-					$strKey = QTextStyle::KeyAlphaNumeric;
-				else
-					$strKey = QTextStyle::KeyDefault;
+					// Figure out the StateRule key to use based on the current character
+					if (array_key_exists($chrCurrent, $arrStateRules))
+						$strKey = $chrCurrent;
+					else if (array_key_exists(QTextStyle::KeyAlpha, $arrStateRules) && preg_match('/[A-Za-z]/', $chrCurrent))
+						$strKey = QTextStyle::KeyAlpha;
+					else if (array_key_exists(QTextStyle::KeyNumeric, $arrStateRules) && preg_match('/[0-9]/', $chrCurrent))
+						$strKey = QTextStyle::KeyNumeric;
+					else if (array_key_exists(QTextStyle::KeyAlphaNumeric, $arrStateRules) && preg_match('/[A-Za-z0-9]/', $chrCurrent))
+						$strKey = QTextStyle::KeyAlphaNumeric;
+					else
+						$strKey = QTextStyle::KeyDefault;
 
-				// Go through the rules for our current state and key
-				foreach ($arrStateRules[$strKey] as $mixRule) {
-					// Pull the Command and the parameters for the commad (if any)
-					if (is_array($mixRule)) {
-						$strCommand = $mixRule[0];
-						$strParameterArray = $mixRule;
-						array_shift($strParameterArray);
-					} else {
-						$strParameterArray = array();
-						$strCommand = $mixRule;
+					// Go through the rules for our current state and key
+					foreach ($arrStateRules[$strKey] as $mixRule) {
+						// Pull the Command and the parameters for the commad (if any)
+						if (is_array($mixRule)) {
+							$strCommand = $mixRule[0];
+							$strParameterArray = $mixRule;
+							array_shift($strParameterArray);
+						} else {
+							$strParameterArray = array();
+							$strCommand = $mixRule;
+						}
+
+						// Dump the stack to the output buffer (if requested)
+						if (QTextStyleInline::$OutputDebugMessages) {
+							if (is_array($mixRule))
+								$strDisplayCommand = implode(', ', $mixRule);
+							else
+								$strDisplayCommand = $strCommand;
+							QTextStyleInline::DumpStack(QTextStyleInline::$strInlineContent . ' - [' . $chrCurrent . '] - Key(' . $strKey . ') - Command(' . $strDisplayCommand . ')');
+						}
+
+						QTextStyleInline::$strCommand($chrCurrent, $strParameterArray);
 					}
 
-					// Dump the stack to the output buffer (if requested)
-					if (QTextStyleInline::$OutputDebugMessages) {
-						if (is_array($mixRule))
-							$strDisplayCommand = implode(', ', $mixRule);
-						else
-							$strDisplayCommand = $strCommand;
-						QTextStyleInline::DumpStack(QTextStyleInline::$strInlineContent . ' - [' . $chrCurrent . '] - Key(' . $strKey . ') - Command(' . $strDisplayCommand . ')');
-					}
-
-					QTextStyleInline::$strCommand($chrCurrent, $strParameterArray);
+				// There is no Inline Content to process -- go ahead and call cancel on the top-most state
+				} else {
+					// Call the cancel method -- store any return vaue
+					// If it is the last state on the stack, the return value will be returned
+					$strToReturn = QTextStyleInline::CancelTopState();
 				}
 			}
 
-			// There is no more InlineContent to process
-			// Call the cancel method for all the states on the stack
-			while (!QTextStyleInline::$objStateStack->IsEmpty()) {
-				// Call the cancel method -- store any return vaue
-				// If it is the last state on the stack, the return value will be returned
-				$strToReturn = QTextStyleInline::CancelTopState();
-			}
-
-			return $strToReturn . QTextStyleInline::$strInlineContent;
+			return $strToReturn;
 		}
 
 		protected static function CancelTopState() {
@@ -232,6 +234,16 @@
 		protected static function ProcessLink($chrCurrent = null) {
 			$objColonState = self::$objStateStack->PeekTop();
 			$strContent = $objColonState->Buffer;
+			
+			// Check the text for this state to see if there is already a </a>
+			$objTextState = self::$objStateStack->Peek(self::$objStateStack->Size() - 3);
+			if ($objTextState->State != QTextStyle::StateText) throw new Exception('Expecting StateText but is instead ' . $objTextState->State);
+			
+			if (strpos($objTextState->Buffer, '</a>') !== false) {
+				self::$objStateStack->AddToTopBuffer(':');
+				self::CancelThroughState(QTextStyle::StateStartQuote);
+				return;
+			}
 
 			if (array_key_exists(strtolower($strContent), QTextStyle::$LinkProtocolArray)) {
 				self::$objStateStack->Pop();

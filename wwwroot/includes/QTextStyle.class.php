@@ -151,7 +151,8 @@
 					array('CommandStatePop'),
 					array('CommandBufferAdd', '&quot;')),
 				QTextStyle::KeyDefault => array(
-					array('CommandStatePush', self::StateText)),
+					array('CommandStatePush', self::StateText),
+					array('CommandStatePush', self::StateWordStartHint)),
 			),
 			self::StateStrong => array(
 				' ' => array(
@@ -199,6 +200,8 @@
 				' ' => array(
 					array('CommandCallProcessor', 'ProcessLinkLocation')),
 				"\n" => array(
+					array('CommandCallProcessor', 'ProcessLinkLocation')),
+				'"' => array(
 					array('CommandCallProcessor', 'ProcessLinkLocation')),
 				QTextStyle::KeyDefault => array(
 					array('CommandBufferAddFromContent'),
