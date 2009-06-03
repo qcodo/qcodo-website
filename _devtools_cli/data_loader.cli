@@ -60,9 +60,9 @@
 		$objTopic->Save();
 	}
 
-	QDataGen::DisplayForEachTaskStart('Generating Forum Messages for Topics', 500);
+	QDataGen::DisplayForEachTaskStart($strTopics = 'Generating Forum Messages for Topics', 500);
 	foreach (Topic::LoadAll() as $objTopic) {
-		$intStep = QDataGen::DisplayForEachTaskNext();
+		$intStep = QDataGen::DisplayForEachTaskNext($strTopics);
 
 		// Randomly Select a Number of Messages for this Forum Topic
 		$intMessageCount = rand(1, 80);
@@ -70,12 +70,17 @@
 		if (rand(0, 1)) $intMessageCount = round($intMessageCount / 2);
 		if (rand(0, 1)) $intMessageCount = round($intMessageCount / 2);
 		if (rand(0, 1)) $intMessageCount = round($intMessageCount / 2);
-
-		for ($intIndex = 0; $intIndex < $intMessageCount; $intIndex++) {
+		if (rand(0, 1)) $intMessageCount = round($intMessageCount / 2);
+		if (rand(0, 1)) $intMessageCount = round($intMessageCount / 2);
+		
+		$blnFirstMessage = true;
+		while (QDataGen::DisplayWhileTask(' - Generating Messages for Topic #' . $objTopic->Id, $intMessageCount, true)) {
 			$objMessage = new Message();
 			$objMessage->Forum = $objTopic->Forum;
 			$objMessage->Topic = $objTopic;
-			if ($intIndex == 0) {
+
+			if ($blnFirstMessage) {
+				$blnFirstMessage = false;
 				// The "First Message" should be posted by the topic's post person and have the topic's post date
 				$objMessage->Person = $objTopic->Person;
 				$objMessage->PostDate = $objTopic->LastPostDate;
@@ -83,6 +88,7 @@
 				$objMessage->PersonId = rand(1, $intMaxPersonId);
 				$objMessage->PostDate = QDataGen::GenerateDateTime($objTopic->LastPostDate, QDateTime::Now());
 			}
+
 			$objMessage->Message = QDataGen::GenerateContent(rand(1, 5));
 			$objMessage->RefreshCompiledHtml();
 			$objMessage->Save();
@@ -91,7 +97,7 @@
 		// Finally, Refresh this topic's last post date and message count so that it matches the truly post date of the most recently posted message
 		$objTopic->RefreshStats();
 	}
-	QDataGen::DisplayForEachTaskEnd();
+	QDataGen::DisplayForEachTaskEnd($strTopics);
 
 	// Refresh each Forum's Last Post Date and Counts as well
 	foreach (Forum::LoadAll() as $objForum) {

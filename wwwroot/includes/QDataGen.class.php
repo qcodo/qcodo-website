@@ -49,7 +49,7 @@
 			return $mixArray[rand(0, count($mixArray) - 1)];
 		}
 
-		static protected $ForEachTaskStep;
+		static protected $ForEachTaskStep = array();
 
 		/**
 		 * Displays CLI status information, given a description of what is happening and the total number of steps to be iterated.
@@ -60,30 +60,40 @@
 		 * @return void
 		 */
 		static public function DisplayForEachTaskStart($strDescription, $intTotal) {
-			print trim($strDescription) . ' (' . $intTotal . ')... [0]';
-			QDataGen::$ForEachTaskStep = 0;
+			print $strDescription . ' (' . $intTotal . ')... [0]';
+			QDataGen::$ForEachTaskStep[$strDescription] = 0;
 		}
 
 		/**
 		 * Updates CLI status information, iterating to the next step number
 		 * @return integer the next step number
 		 */
-		static public function DisplayForEachTaskNext() {
-			print str_repeat(chr(8), strlen(QDataGen::$ForEachTaskStep) + 1);
-			QDataGen::$ForEachTaskStep++;
-			print QDataGen::$ForEachTaskStep . ']';
-			return QDataGen::$ForEachTaskStep;
+		static public function DisplayForEachTaskNext($strDescription) {
+			print str_repeat(chr(8), strlen(QDataGen::$ForEachTaskStep[$strDescription]) + 1);
+			QDataGen::$ForEachTaskStep[$strDescription]++;
+			print QDataGen::$ForEachTaskStep[$strDescription] . ']';
+			return QDataGen::$ForEachTaskStep[$strDescription];
 		}
 		
 		/**
 		 * Updates CLI status information, specifying that the current task is done.
 		 * @return void
 		 */
-		static public function DisplayForEachTaskEnd() {
-			print " Done.\r\n";
+		static public function DisplayForEachTaskEnd($strDescription, $blnClearText = false) {
+			if ($blnClearText) {
+				$intToClear = strlen(QDataGen::$ForEachTaskStep[$strDescription]) + 2; // Number and Brackets
+				$intToClear += strlen(QDataGen::$ForEachTaskStep[$strDescription]) + 2; // Total and Parens
+				$intToClear += 5; // spaces and elipses
+				$intToClear += strlen($strDescription);
+				print str_repeat(chr(8) . ' ' . chr(8), $intToClear);
+			} else {
+				print " Done.\r\n";
+			}
+			
+			unset(QDataGen::$ForEachTaskStep[$strDescription]);
 		}
 
-		static protected $WhileTaskStep = null;
+		static protected $WhileTaskStep = array();
 
 		/**
 		 * Displays and manages a while loop, displaying the description and status to the CLI output.
@@ -93,28 +103,36 @@
 		 * @param $intTotal the total number of iterations
 		 * @return boolean true/false return value to be used within a while() statement
 		 */
-		static public function DisplayWhileTask($strDescription, $intTotal) {
-			if (is_null(QDataGen::$WhileTaskStep)) {
+		static public function DisplayWhileTask($strDescription, $intTotal, $blnClearText = false) {
+			if (!array_key_exists($strDescription, QDataGen::$WhileTaskStep)) {
 				// Display the Start of the Task, and begin the iteration
-				print trim($strDescription) . ' (' . $intTotal . ')... [0]';
-				QDataGen::$WhileTaskStep = 0;
+				print $strDescription . ' (' . $intTotal . ')... [0]';
+				QDataGen::$WhileTaskStep[$strDescription] = 0;
 				return true;
 
 			} else {
 
 				// Update the Status and Increment the Step
-				print str_repeat(chr(8), strlen(QDataGen::$WhileTaskStep) + 1);
-				QDataGen::$WhileTaskStep++;
-				print QDataGen::$WhileTaskStep . ']';
+				print str_repeat(chr(8), strlen(QDataGen::$WhileTaskStep[$strDescription]) + 1);
+				QDataGen::$WhileTaskStep[$strDescription]++;
+				print QDataGen::$WhileTaskStep[$strDescription] . ']';
 
 				// Continue the Loop if applicable
-				if (QDataGen::$WhileTaskStep < $intTotal) {
+				if (QDataGen::$WhileTaskStep[$strDescription] < $intTotal) {
 					return true;
 
 				// Otherwise, stop the loop and clear the loop state
 				} else {
-					QDataGen::$WhileTaskStep = null;
-					print " Done.\r\n";
+					if ($blnClearText) {
+						$intToClear = strlen(QDataGen::$WhileTaskStep[$strDescription]) + 2; // Number and Brackets
+						$intToClear += strlen($intTotal) + 2; // Total and Parens
+						$intToClear += 5; // spaces and elipses
+						$intToClear += strlen($strDescription);
+						print str_repeat(chr(8) . ' ' . chr(8), $intToClear);
+					} else {
+						print " Done.\r\n";
+					}
+					unset(QDataGen::$WhileTaskStep[$strDescription]);
 					return false;
 				}
 			}
