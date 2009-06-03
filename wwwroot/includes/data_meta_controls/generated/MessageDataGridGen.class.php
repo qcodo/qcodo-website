@@ -281,6 +281,7 @@
 				case 'PersonId': return QQN::Message()->PersonId;
 				case 'Person': return QQN::Message()->Person;
 				case 'Message': return QQN::Message()->Message;
+				case 'CompiledHtml': return QQN::Message()->CompiledHtml;
 				case 'ReplyNumber': return QQN::Message()->ReplyNumber;
 				case 'PostDate': return QQN::Message()->PostDate;
 				default: throw new QCallerException('Simple Property not found in MessageDataGrid content: ' . $mixContent);

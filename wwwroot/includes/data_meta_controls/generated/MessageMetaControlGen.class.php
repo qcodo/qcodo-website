@@ -26,6 +26,8 @@
 	 * property-read QLabel $PersonIdLabel
 	 * property QTextBox $MessageControl
 	 * property-read QLabel $MessageLabel
+	 * property QTextBox $CompiledHtmlControl
+	 * property-read QLabel $CompiledHtmlLabel
 	 * property QIntegerTextBox $ReplyNumberControl
 	 * property-read QLabel $ReplyNumberLabel
 	 * property QDateTimePicker $PostDateControl
@@ -47,6 +49,7 @@
 		protected $lstTopic;
 		protected $lstPerson;
 		protected $txtMessage;
+		protected $txtCompiledHtml;
 		protected $txtReplyNumber;
 		protected $calPostDate;
 
@@ -55,6 +58,7 @@
 		protected $lblTopicId;
 		protected $lblPersonId;
 		protected $lblMessage;
+		protected $lblCompiledHtml;
 		protected $lblReplyNumber;
 		protected $lblPostDate;
 
@@ -298,6 +302,31 @@
 		}
 
 		/**
+		 * Create and setup QTextBox txtCompiledHtml
+		 * @param string $strControlId optional ControlId to use
+		 * @return QTextBox
+		 */
+		public function txtCompiledHtml_Create($strControlId = null) {
+			$this->txtCompiledHtml = new QTextBox($this->objParentObject, $strControlId);
+			$this->txtCompiledHtml->Name = QApplication::Translate('Compiled Html');
+			$this->txtCompiledHtml->Text = $this->objMessage->CompiledHtml;
+			$this->txtCompiledHtml->TextMode = QTextMode::MultiLine;
+			return $this->txtCompiledHtml;
+		}
+
+		/**
+		 * Create and setup QLabel lblCompiledHtml
+		 * @param string $strControlId optional ControlId to use
+		 * @return QLabel
+		 */
+		public function lblCompiledHtml_Create($strControlId = null) {
+			$this->lblCompiledHtml = new QLabel($this->objParentObject, $strControlId);
+			$this->lblCompiledHtml->Name = QApplication::Translate('Compiled Html');
+			$this->lblCompiledHtml->Text = $this->objMessage->CompiledHtml;
+			return $this->lblCompiledHtml;
+		}
+
+		/**
 		 * Create and setup QIntegerTextBox txtReplyNumber
 		 * @param string $strControlId optional ControlId to use
 		 * @return QIntegerTextBox
@@ -412,6 +441,9 @@
 			if ($this->txtMessage) $this->txtMessage->Text = $this->objMessage->Message;
 			if ($this->lblMessage) $this->lblMessage->Text = $this->objMessage->Message;
 
+			if ($this->txtCompiledHtml) $this->txtCompiledHtml->Text = $this->objMessage->CompiledHtml;
+			if ($this->lblCompiledHtml) $this->lblCompiledHtml->Text = $this->objMessage->CompiledHtml;
+
 			if ($this->txtReplyNumber) $this->txtReplyNumber->Text = $this->objMessage->ReplyNumber;
 			if ($this->lblReplyNumber) $this->lblReplyNumber->Text = $this->objMessage->ReplyNumber;
 
@@ -445,6 +477,7 @@
 				if ($this->lstTopic) $this->objMessage->TopicId = $this->lstTopic->SelectedValue;
 				if ($this->lstPerson) $this->objMessage->PersonId = $this->lstPerson->SelectedValue;
 				if ($this->txtMessage) $this->objMessage->Message = $this->txtMessage->Text;
+				if ($this->txtCompiledHtml) $this->objMessage->CompiledHtml = $this->txtCompiledHtml->Text;
 				if ($this->txtReplyNumber) $this->objMessage->ReplyNumber = $this->txtReplyNumber->Text;
 				if ($this->calPostDate) $this->objMessage->PostDate = $this->calPostDate->DateTime;
 
@@ -519,6 +552,12 @@
 				case 'MessageLabel':
 					if (!$this->lblMessage) return $this->lblMessage_Create();
 					return $this->lblMessage;
+				case 'CompiledHtmlControl':
+					if (!$this->txtCompiledHtml) return $this->txtCompiledHtml_Create();
+					return $this->txtCompiledHtml;
+				case 'CompiledHtmlLabel':
+					if (!$this->lblCompiledHtml) return $this->lblCompiledHtml_Create();
+					return $this->lblCompiledHtml;
 				case 'ReplyNumberControl':
 					if (!$this->txtReplyNumber) return $this->txtReplyNumber_Create();
 					return $this->txtReplyNumber;
@@ -563,6 +602,8 @@
 						return ($this->lstPerson = QType::Cast($mixValue, 'QControl'));
 					case 'MessageControl':
 						return ($this->txtMessage = QType::Cast($mixValue, 'QControl'));
+					case 'CompiledHtmlControl':
+						return ($this->txtCompiledHtml = QType::Cast($mixValue, 'QControl'));
 					case 'ReplyNumberControl':
 						return ($this->txtReplyNumber = QType::Cast($mixValue, 'QControl'));
 					case 'PostDateControl':

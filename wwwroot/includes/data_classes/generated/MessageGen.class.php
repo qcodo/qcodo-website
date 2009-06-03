@@ -20,6 +20,7 @@
 	 * @property integer $TopicId the value for intTopicId (Not Null)
 	 * @property integer $PersonId the value for intPersonId (Not Null)
 	 * @property string $Message the value for strMessage 
+	 * @property string $CompiledHtml the value for strCompiledHtml 
 	 * @property integer $ReplyNumber the value for intReplyNumber 
 	 * @property QDateTime $PostDate the value for dttPostDate (Not Null)
 	 * @property Forum $Forum the value for the Forum object referenced by intForumId (Not Null)
@@ -71,6 +72,14 @@
 		 */
 		protected $strMessage;
 		const MessageDefault = null;
+
+
+		/**
+		 * Protected member variable that maps to the database column message.compiled_html
+		 * @var string strCompiledHtml
+		 */
+		protected $strCompiledHtml;
+		const CompiledHtmlDefault = null;
 
 
 		/**
@@ -409,6 +418,7 @@
 			$objBuilder->AddSelectItem($strTableName, 'topic_id', $strAliasPrefix . 'topic_id');
 			$objBuilder->AddSelectItem($strTableName, 'person_id', $strAliasPrefix . 'person_id');
 			$objBuilder->AddSelectItem($strTableName, 'message', $strAliasPrefix . 'message');
+			$objBuilder->AddSelectItem($strTableName, 'compiled_html', $strAliasPrefix . 'compiled_html');
 			$objBuilder->AddSelectItem($strTableName, 'reply_number', $strAliasPrefix . 'reply_number');
 			$objBuilder->AddSelectItem($strTableName, 'post_date', $strAliasPrefix . 'post_date');
 		}
@@ -452,6 +462,8 @@
 			$objToReturn->intPersonId = $objDbRow->GetColumn($strAliasName, 'Integer');
 			$strAliasName = array_key_exists($strAliasPrefix . 'message', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'message'] : $strAliasPrefix . 'message';
 			$objToReturn->strMessage = $objDbRow->GetColumn($strAliasName, 'Blob');
+			$strAliasName = array_key_exists($strAliasPrefix . 'compiled_html', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'compiled_html'] : $strAliasPrefix . 'compiled_html';
+			$objToReturn->strCompiledHtml = $objDbRow->GetColumn($strAliasName, 'Blob');
 			$strAliasName = array_key_exists($strAliasPrefix . 'reply_number', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'reply_number'] : $strAliasPrefix . 'reply_number';
 			$objToReturn->intReplyNumber = $objDbRow->GetColumn($strAliasName, 'Integer');
 			$strAliasName = array_key_exists($strAliasPrefix . 'post_date', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'post_date'] : $strAliasPrefix . 'post_date';
@@ -677,6 +689,7 @@
 							`topic_id`,
 							`person_id`,
 							`message`,
+							`compiled_html`,
 							`reply_number`,
 							`post_date`
 						) VALUES (
@@ -684,6 +697,7 @@
 							' . $objDatabase->SqlVariable($this->intTopicId) . ',
 							' . $objDatabase->SqlVariable($this->intPersonId) . ',
 							' . $objDatabase->SqlVariable($this->strMessage) . ',
+							' . $objDatabase->SqlVariable($this->strCompiledHtml) . ',
 							' . $objDatabase->SqlVariable($this->intReplyNumber) . ',
 							' . $objDatabase->SqlVariable($this->dttPostDate) . '
 						)
@@ -705,6 +719,7 @@
 							`topic_id` = ' . $objDatabase->SqlVariable($this->intTopicId) . ',
 							`person_id` = ' . $objDatabase->SqlVariable($this->intPersonId) . ',
 							`message` = ' . $objDatabase->SqlVariable($this->strMessage) . ',
+							`compiled_html` = ' . $objDatabase->SqlVariable($this->strCompiledHtml) . ',
 							`reply_number` = ' . $objDatabase->SqlVariable($this->intReplyNumber) . ',
 							`post_date` = ' . $objDatabase->SqlVariable($this->dttPostDate) . '
 						WHERE
@@ -789,6 +804,7 @@
 			$this->TopicId = $objReloaded->TopicId;
 			$this->PersonId = $objReloaded->PersonId;
 			$this->strMessage = $objReloaded->strMessage;
+			$this->strCompiledHtml = $objReloaded->strCompiledHtml;
 			$this->intReplyNumber = $objReloaded->intReplyNumber;
 			$this->dttPostDate = $objReloaded->dttPostDate;
 		}
@@ -845,6 +861,13 @@
 					 * @return string
 					 */
 					return $this->strMessage;
+
+				case 'CompiledHtml':
+					/**
+					 * Gets the value for strCompiledHtml 
+					 * @return string
+					 */
+					return $this->strCompiledHtml;
 
 				case 'ReplyNumber':
 					/**
@@ -989,6 +1012,19 @@
 					 */
 					try {
 						return ($this->strMessage = QType::Cast($mixValue, QType::String));
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
+				case 'CompiledHtml':
+					/**
+					 * Sets the value for strCompiledHtml 
+					 * @param string $mixValue
+					 * @return string
+					 */
+					try {
+						return ($this->strCompiledHtml = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
 						$objExc->IncrementOffset();
 						throw $objExc;
@@ -1162,6 +1198,7 @@
 			$strToReturn .= '<element name="Topic" type="xsd1:Topic"/>';
 			$strToReturn .= '<element name="Person" type="xsd1:Person"/>';
 			$strToReturn .= '<element name="Message" type="xsd:string"/>';
+			$strToReturn .= '<element name="CompiledHtml" type="xsd:string"/>';
 			$strToReturn .= '<element name="ReplyNumber" type="xsd:int"/>';
 			$strToReturn .= '<element name="PostDate" type="xsd:dateTime"/>';
 			$strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
@@ -1202,6 +1239,8 @@
 				$objToReturn->Person = Person::GetObjectFromSoapObject($objSoapObject->Person);
 			if (property_exists($objSoapObject, 'Message'))
 				$objToReturn->strMessage = $objSoapObject->Message;
+			if (property_exists($objSoapObject, 'CompiledHtml'))
+				$objToReturn->strCompiledHtml = $objSoapObject->CompiledHtml;
 			if (property_exists($objSoapObject, 'ReplyNumber'))
 				$objToReturn->intReplyNumber = $objSoapObject->ReplyNumber;
 			if (property_exists($objSoapObject, 'PostDate'))
@@ -1274,6 +1313,8 @@
 					return new QQNodePerson('person_id', 'Person', 'integer', $this);
 				case 'Message':
 					return new QQNode('message', 'Message', 'string', $this);
+				case 'CompiledHtml':
+					return new QQNode('compiled_html', 'CompiledHtml', 'string', $this);
 				case 'ReplyNumber':
 					return new QQNode('reply_number', 'ReplyNumber', 'integer', $this);
 				case 'PostDate':
@@ -1314,6 +1355,8 @@
 					return new QQNodePerson('person_id', 'Person', 'integer', $this);
 				case 'Message':
 					return new QQNode('message', 'Message', 'string', $this);
+				case 'CompiledHtml':
+					return new QQNode('compiled_html', 'CompiledHtml', 'string', $this);
 				case 'ReplyNumber':
 					return new QQNode('reply_number', 'ReplyNumber', 'integer', $this);
 				case 'PostDate':

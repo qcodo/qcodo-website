@@ -7,7 +7,8 @@
 	// open the index
 	$objIndex = new Zend_Search_Lucene('/tmp/feeds_index');
 
-	$query = 'testing';
+	if ($_SERVER['argc'] != 2) exit("error: specify a search term\r\n");
+	$query = $_SERVER['argv'][1];
 
 	$hits = $objIndex->find($query);
 

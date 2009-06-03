@@ -84,6 +84,7 @@
 				$objMessage->PostDate = QDataGen::GenerateDateTime($objTopic->LastPostDate, QDateTime::Now());
 			}
 			$objMessage->Message = QDataGen::GenerateContent(rand(1, 5));
+			$objMessage->RefreshCompiledHtml();
 			$objMessage->Save();
 		}
 		
