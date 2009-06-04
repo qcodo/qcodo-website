@@ -26,6 +26,7 @@
 	define ('__URL_REWRITE__', 'none');
 	
 	define('QCODO_EMAILER', 'Qcodo.com Message <not_moderated@qcodo.com>');
+	define('__SEARCH_INDEXES__', __DOCROOT__ . '/../search_indexes');
 
 	define ('__DEVTOOLS_CLI__', __DOCROOT__ . __SUBDIRECTORY__ . '/../_devtools_cli');
 	define ('__INCLUDES__', __DOCROOT__ .  __SUBDIRECTORY__ . '/includes');

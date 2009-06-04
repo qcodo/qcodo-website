@@ -103,6 +103,59 @@
 			}
 		}
 
+		/**
+		 * Creates the Search Index for all topics
+		 * @return Zend_Search_Lucene
+		 */
+		public static function CreateSearchIndex() {
+			if (is_dir(__SEARCH_INDEXES__ . '/forum_topics'))
+				throw new QCallerException('Cannot call Topic::CreateSearchIndex() - Index directory exists');
+			$objIndex = new Zend_Search_Lucene(__SEARCH_INDEXES__ . '/forum_topics', true);
+			return $objIndex;
+		}
+
+		/**
+		 * This will refresh the search index for this topic (for all message content under this topic)
+		 * @param Zend_Search_Lucene $objIndex should be null if we are updating just one -- but for bulk index updates, you can pass in an already loaded index file
+		 * @return void
+		 */
+		public function RefreshSearchIndex($objIndex = null) {
+			if (!$objIndex) {
+				$objIndex = new Zend_Search_Lucene(__SEARCH_INDEXES__ . '/forum_topics');
+				$blnIndexProvided = false;
+			} else {
+				$blnIndexProvided = true;
+			}
+
+			// Retrievew the Index Documents (if applicable) to delete them from the index
+			$objSearchTerm = new Zend_Search_Lucene_Index_Term($this->Id, 'id');
+			foreach ($objIndex->termDocs($objSearchTerm) as $intDocId) {
+				$objIndex->delete($intDocId);
+			}
+
+			// Create the Message Contents for this Topic
+			$strContents = null;
+			foreach ($this->GetMessageArray(QQ::OrderBy(QQN::Message()->ReplyNumber)) as $objMessage) {
+				$strMessage = strip_tags(trim($objMessage->CompiledHtml));
+				$strMessage = html_entity_decode($strMessage, ENT_QUOTES, 'UTF-8');
+				$strContents .= $strMessage . "\r\n\r\n";
+			}
+
+			// Create the Document
+			$objDocument = new Zend_Search_Lucene_Document();
+			$objDocument->addField(Zend_Search_Lucene_Field::Keyword('id', $this->Id));
+			$objDocument->addField(Zend_Search_Lucene_Field::Text('title', $this->Name));
+			$objDocument->addField(Zend_Search_Lucene_Field::Unstored('contents', trim($strContents)));
+
+			// Add Document to Index
+			$objIndex->addDocument($objDocument);
+
+			// Only call commit on the index if it was provided for us
+			if (!$blnIndexProvided) $objIndex->commit();
+		}
+
+
+
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...
 		// but feel free to use these as a starting point)
