@@ -118,9 +118,19 @@
 			foreach ($objHits as $objHit) {
 				$intIdArray[] = $objHit->db_id;
 			}
-			
-			$objTopicArray = Topic::QueryArray(QQ::In(QQN::Topic()->Id, $intIdArray));
-			
+
+			$objTopicArrayById = array(); 
+			$objResult = Topic::GetDatabase()->Query('SELECT * FROM topic WHERE id IN(' . implode(',', $intIdArray) . ');');
+			while ($objRow = $objResult->GetNextRow()) {
+				$objTopic = Topic::InstantiateDbRow($objRow);
+				$objTopicArrayById[$objTopic->Id] = $objTopic;
+			}
+
+			$objTopicArray = array(); // Topic::QueryArray(QQ::In(QQN::Topic()->Id, $intIdArray));
+			foreach ($objHits as $objHit) {
+				$objTopicArray[] = $objTopicArrayById[intval($objHit->db_id)];
+			}
+
 			return $objTopicArray;
 		}
 
