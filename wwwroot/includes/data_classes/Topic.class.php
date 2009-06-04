@@ -115,6 +115,8 @@
 			$intIdArray = array();
 			$objHits = $objIndex->find($strSearchQuery);
 
+			if (!count($objHits)) return array();
+
 			foreach ($objHits as $objHit) {
 				$intIdArray[] = $objHit->db_id;
 				// note: do we want to do anything with $objHit->score (?)
@@ -160,7 +162,7 @@
 			}
 
 			// Retrievew the Index Documents (if applicable) to delete them from the index
-			$objSearchTerm = new Zend_Search_Lucene_Index_Term($this->Id, 'id');
+			$objSearchTerm = new Zend_Search_Lucene_Index_Term($this->Id, 'db_id');
 			foreach ($objIndex->termDocs($objSearchTerm) as $intDocId) {
 				$objIndex->delete($intDocId);
 			}

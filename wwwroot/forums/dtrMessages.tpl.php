@@ -27,5 +27,5 @@
 	</div>
 </div>
 <div class="messageBody <?php if ($_CONTROL->CurrentItemIndex % 2) print 'messageBodyAlternate'; ?>">
-	<?php _p(QTextStyle::DisplayAsHtml($_ITEM->Message), false); ?>
+	<?php _p($_ITEM->CompiledHtml, false); ?>
 </div>

@@ -21,7 +21,7 @@
 		
 		protected $objForum;
 		public $objTopic;
-		protected $objFirstMessage;
+		protected $strPostStartedLinkText;
 
 		protected $dtrMessages;
 		protected $dtrTopics;
@@ -201,10 +201,14 @@
 				if ($this->objTopic->ForumId != $this->objForum->Id)
 					$this->objTopic = null;
 				else {
-					$this->objFirstMessage = Message::QuerySingle(
+					$objFirstMessage = Message::QuerySingle(
 						QQ::Equal(QQN::Message()->TopicId, $this->objTopic->Id),
 						QQ::OrderBy(QQN::Message()->Id)
 					);
+
+					$dttLocalize = QApplication::LocalizeDateTime($objFirstMessage->PostDate);
+					$this->strPostStartedLinkText = strtolower($dttLocalize->__toString('DDDD, MMMM D, YYYY, h:mm z ')) .
+						strtolower(QApplication::DisplayTimezoneLink($dttLocalize, false));
 				}
 
 				$this->MarkTopicViewed($this->objTopic);

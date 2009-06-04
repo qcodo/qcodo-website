@@ -269,11 +269,13 @@
 			}
 			
 			public static function LocalizeDateTime(QDateTime $dttDateTime) {
-				$dttToReturn = new QDateTime($dttDateTime);
 				if (QApplication::$Person && QApplication::$Person->Timezone) {
+					$dttToReturn = new QDateTime($dttDateTime);
 					$dttToReturn->ConvertToTimezone(QApplication::$Person->Timezone->Name);
+					return $dttToReturn;
+				} else {
+					return $dttDateTime;
 				}
-				return $dttToReturn;
 			}
 
 			/**

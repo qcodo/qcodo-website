@@ -41,8 +41,11 @@
 			}
 
 			$this->mctMessage->SaveMessage();
+			$this->mctMessage->Message->RefreshCompiledHtml();
+			$this->mctMessage->SaveMessage();
 
 			$this->mctMessage->Message->Topic->RefreshStats();
+			$this->mctMessage->Message->Topic->RefreshSearchIndex();
 			$this->mctMessage->Message->Forum->RefreshStats();
 
 			$this->objForm->CloseMessageDialog(true, !$this->blnEditMode);
