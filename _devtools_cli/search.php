@@ -16,9 +16,4 @@
 	foreach ($objTopicArray as $objTopic) {
 		print '[' . $objTopic->Id . '] - ' . $objTopic->Name . "\r\n";
 	}
-//	foreach ($hits as $hit) {
-//		echo $hit->title."\n";
-//		echo "\tScore: ".sprintf('%.2f', $hit->score)."\n";
-//		echo "\t".$hit->id."\n\n";
-//	}
 ?>

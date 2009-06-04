@@ -102,7 +102,7 @@
 				$intNumber++;
 			}
 		}
-		
+
 		/**
 		 * Searches using the search index for applicable topics, and returns topics as an array
 		 * @param string $strSearchQuery
@@ -117,6 +117,7 @@
 
 			foreach ($objHits as $objHit) {
 				$intIdArray[] = $objHit->db_id;
+				// note: do we want to do anything with $objHit->score (?)
 			}
 
 			$objTopicArrayById = array(); 
@@ -126,7 +127,7 @@
 				$objTopicArrayById[$objTopic->Id] = $objTopic;
 			}
 
-			$objTopicArray = array(); // Topic::QueryArray(QQ::In(QQN::Topic()->Id, $intIdArray));
+			$objTopicArray = array();
 			foreach ($objHits as $objHit) {
 				$objTopicArray[] = $objTopicArrayById[intval($objHit->db_id)];
 			}
