@@ -102,6 +102,27 @@
 				$intNumber++;
 			}
 		}
+		
+		/**
+		 * Searches using the search index for applicable topics, and returns topics as an array
+		 * @param string $strSearchQuery
+		 * @return Topic[]
+		 */
+		public static function LoadArrayBySearch($strSearchQuery) {
+			// open the index
+			$objIndex = new Zend_Search_Lucene(__SEARCH_INDEXES__ . '/forum_topics');
+
+			$intIdArray = array();
+			$objHits = $objIndex->find($strSearchQuery);
+
+			foreach ($objHits as $objHit) {
+				$intIdArray[] = $objHit->db_id;
+			}
+			
+			$objTopicArray = Topic::QueryArray(QQ::In(QQN::Topic()->Id, $intIdArray));
+			
+			return $objTopicArray;
+		}
 
 		/**
 		 * Creates the Search Index for all topics
@@ -143,7 +164,7 @@
 
 			// Create the Document
 			$objDocument = new Zend_Search_Lucene_Document();
-			$objDocument->addField(Zend_Search_Lucene_Field::Keyword('id', $this->Id));
+			$objDocument->addField(Zend_Search_Lucene_Field::Keyword('db_id', $this->Id));
 			$objDocument->addField(Zend_Search_Lucene_Field::Text('title', $this->Name));
 			$objDocument->addField(Zend_Search_Lucene_Field::Unstored('contents', trim($strContents)));
 

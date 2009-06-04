@@ -1,24 +1,24 @@
 #!/usr/local/bin/php
 <?php
 	require(dirname(__FILE__) . '/cli_prepend.inc.php');
-	ini_set('include_path', __INCLUDES__);
-	require('Zend/Search/Lucene.php');
 
-	// open the index
-	$objIndex = new Zend_Search_Lucene('/tmp/feeds_index');
-
+	// report the index
+	$objIndex = new Zend_Search_Lucene(__SEARCH_INDEXES__ . '/forum_topics');
+	print "Index contains " . $objIndex->count() . " documents.\r\n\r\n";
+	
 	if ($_SERVER['argc'] != 2) exit("error: specify a search term\r\n");
-	$query = $_SERVER['argv'][1];
+	$strSearchQuery = $_SERVER['argv'][1];
+	
+	$objTopicArray = Topic::LoadArrayBySearch($strSearchQuery);
 
-	$hits = $objIndex->find($query);
+	print 'Search for "' . $strSearchQuery . '" returned ' . count($objTopicArray) . " topics\r\n\r\n";
 
-	echo "Index contains ".$objIndex->count()." documents.\n\n";
-
-	echo "Search for '".$query."' returned " .count($hits). " hits\n\n";
-
-	foreach ($hits as $hit) {
-		echo $hit->title."\n";
-		echo "\tScore: ".sprintf('%.2f', $hit->score)."\n";
-		echo "\t".$hit->id."\n\n";
+	foreach ($objTopicArray as $objTopic) {
+		print '[' . $objTopic->Id . '] - ' . $objTopic->Name . "\r\n";
 	}
+//	foreach ($hits as $hit) {
+//		echo $hit->title."\n";
+//		echo "\tScore: ".sprintf('%.2f', $hit->score)."\n";
+//		echo "\t".$hit->id."\n\n";
+//	}
 ?>
