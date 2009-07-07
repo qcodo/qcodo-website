@@ -22,17 +22,19 @@
 		 */
 		public function GetControlHtml() {
 			// Pull any Attributes
-			$strAttributes = $this->GetAttributes();
+			$strAttributes = $this->GetAttributes(true, false);
+			$strActions = $this->GetActionAttributes();
 
 			// Pull any styles
 			if ($strStyle = $this->GetStyleAttributes())
 				$strStyle = 'style="' . $strStyle . '"';
 
-			$strToReturn = sprintf('<a href="%s" id="%s" %s%s><div class="a">.</div><div class="b">.</div><div class="c">.</div><div class="d">.</div><div class="e">.</div><div class="f">%s</div><div class="e">.</div><div class="d">.</div><div class="c">.</div><div class="b">.</div><div class="a">.</div></a>',
-				$this->strLinkUrl,
-				$this->strControlId,
-				$strAttributes,
+			$strToReturn = sprintf('<div %s %s id="%s"><a href="%s" %s>%s</a></div>',
 				$strStyle,
+				$strAttributes,
+				$this->strControlId,
+				$this->strLinkUrl,
+				$strActions,
 				($this->blnHtmlEntities) ? 
 					QApplication::HtmlEntities($this->strText) :
 					$this->strText);

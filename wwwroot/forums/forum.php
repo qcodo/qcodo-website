@@ -19,9 +19,13 @@
 		protected $btnMarkAsViewed1;
 		protected $btnMarkAsViewed2;
 		
+		protected $btnSearchAll;
+		protected $btnSearchThis;
+		
 		protected $objForum;
 		public $objTopic;
 		protected $strPostStartedLinkText;
+		protected $strSearchTerm;
 
 		protected $dtrMessages;
 		protected $dtrTopics;
@@ -37,21 +41,26 @@
 				if (!array_key_exists('intViewedTopicArray', $_SESSION))
 					$_SESSION['intViewedTopicArray'] = array();
 			}
-
+			
 			$this->objForum = Forum::Load(QApplication::PathInfo(0));
-			if (!$this->objForum) QApplication::Redirect('/forums/');
 
-			if ($this->objForum) {
-				$this->SelectTopic(QApplication::PathInfo(1));
+			if (strlen($strSearchTerm = trim(QApplication::QueryString('search')))) {
+				$this->strSearchTerm = $strSearchTerm;
+			} else {
+				if (!$this->objForum) QApplication::Redirect('/forums/');
 			}
+
+			$this->SelectTopic(QApplication::PathInfo(1));
 
 			$this->lstSearch = new QListBox($this);
 			$this->lstSearch->AddItem('- All Forums -', null);
 			foreach (Forum::LoadAll(QQ::OrderBy(QQN::Forum()->OrderNumber)) as $objForum)
 				$this->lstSearch->AddItem($objForum->Name, $objForum->Id);
 
-			$this->txtSearch = new QTextBox($this, 'txtSearch');
-			$this->txtSearch->AddAction(new QEnterKeyEvent(0, "qc.getControl('txtSearch').value != ''"), new QServerAction('btnSearch_Click'));
+			$this->txtSearch = new SearchTextBox($this, 'txtSearch');
+			$this->txtSearch->Text = QApplication::QueryString('search');
+			$this->txtSearch->AddAction(new QChangeEvent(), new QServerAction('txtSearch_Change'));
+			$this->txtSearch->AddAction(new QEnterKeyEvent(0, "qc.getControl('txtSearch').value != ''"), new QServerAction('txtSearch_Change'));
 			$this->txtSearch->AddAction(new QEnterKeyEvent(), new QTerminateAction());
 
 			$this->dtrMessages = new QDataRepeater($this, 'dtrMessages');
@@ -119,9 +128,39 @@
 			$this->pxyEditMessage->AddAction(new QClickEvent(), new QAjaxAction('pxyEditMessage_Click'));
 			$this->pxyEditMessage->AddAction(new QClickEvent(), new QTerminateAction());
 			
+			// Search Stuff
+			$this->btnSearchAll = new RoundedLinkButton($this);
+			$this->btnSearchAll->Text = 'All Forums';
+			$this->btnSearchAll->CssClass = 'searchOption';
+
+			$this->btnSearchThis = new RoundedLinkButton($this);
+			$this->btnSearchThis->CssClass = 'searchOption';
+			if ($this->objForum) {
+				$this->btnSearchThis->Text = '"' . $this->objForum->Name . '"';
+			} else {
+				$this->btnSearchThis->Visible = false;
+			}
+
+			if (strlen(trim(QApplication::QueryString('search')))) {
+				if ($this->objForum->Id == QApplication::PathInfo(0)) {
+					$this->btnSearchThis->AddCssClass('searchOptionActive');
+				} else {
+					$this->btnSearchAll->AddCssClass('searchOptionActive');
+				}
+			} else {
+				$this->btnSearchAll->Display = false;
+				$this->btnSearchThis->Display = false;
+			}
+
+			$this->btnSearchThis->AddAction(new QClickEvent(), new QAlertAction('Hello!'));
+
 			// Update Button State
 			$this->UpdateNotifyButtons();
 			$this->UpdateMarkAsViewedButtons();
+		}
+
+		protected function txtSearch_Change() {
+			QApplication::Redirect('/forums/forum.php/' . QApplication::PathInfo(0) . '/?search=' . urlencode(trim($this->txtSearch->Text)));
 		}
 
 		protected function btnNotify_Click() {
@@ -216,8 +255,14 @@
 		}
 
 		public function dtrTopics_Bind() {
-			$this->dtrTopics->TotalItemCount = $this->objForum->TopicCount;
-			$this->dtrTopics->DataSource = Topic::LoadArrayByForumId($this->objForum->Id, QQ::Clause(QQ::OrderBy(QQN::Topic()->LastPostDate, false), $this->dtrTopics->LimitClause));
+			if (!is_null($this->strSearchTerm)) {
+				$intIdArray = Topic::GetIdArrayForSearch($this->strSearchTerm);
+				$this->dtrTopics->TotalItemCount = count($intIdArray);
+				$this->dtrTopics->DataSource = Topic::LoadArrayBySearchResultArray($intIdArray, $this->dtrTopics->LimitInfo);
+			} else {
+				$this->dtrTopics->TotalItemCount = $this->objForum->TopicCount;
+				$this->dtrTopics->DataSource = Topic::LoadArrayByForumId($this->objForum->Id, QQ::Clause(QQ::OrderBy(QQN::Topic()->LastPostDate, false), $this->dtrTopics->LimitClause));
+			}
 		}
 
 		public function dtrMessages_Bind() {

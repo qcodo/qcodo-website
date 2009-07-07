@@ -1,16 +1,31 @@
 <?php require(__INCLUDES__ . '/header.inc.php'); ?>
 
+	<style type="text/css">
+		div.searchBar { background-color: #393939; -moz-border-radius: 8px 8px 0 0; height: 22px; padding: 4px 14px 0 14px; border: 1px solid #222; }
+		div.searchBar div.title { float: left; font-family: arial; font-size: 16px; font-weight: bold; color: #efe; }
+		div.searchBar div.right { float: right; padding-top: 1px; margin-left: 10px;}
+
+		div.searchTextBox { width: 196px; height: 16px; padding: 0 0 0 4px; margin: 0; font-size: 1px; -moz-border-radius: 7px; background-color: #eee; }
+			div.searchTextBox img { position: relative; top: 2px; border: 0; }
+			div.searchTextBox input { background-color: #eee; border: 0; height: 14px; width: 165px; padding: 1px 0 0 0; font: 12px arial; font-weight: bold; color: #333; margin: 0 3px 0 3px;}
+			div.searchTextBox input.none { background: url(/images/search_blank.png) no-repeat; }
+	</style>
+
 <!-- <div style="background-color: #e9e9f0; -moz-border-radius: 8px 8px 0 0; height: 22px; font-size: 16px; font-weight: bold; padding: 4px 0 0 14px; border: 1px solid #ccd;">  -->	
-	<div style="background-color: #393939; -moz-border-radius: 8px 8px 0 0; height: 22px; font-size: 16px; font-weight: bold; padding: 4px 14px 0 14px; border: 1px solid #222; color: #efe">
-		<div style="float: left">
+	<div class="searchBar">
+		<div class="title">
+			<span style="font-weight: normal; font-size: 12px;">Forums: </span>
 			<?php _p($this->objForum->Name); ?>
+			
 		</div>
-		<div style="float: right; padding-top: 1px;">
-			<div style="width: 196px; height: 16px; padding: 0 0 0 4px; margin: 0; font-size: 1px; -moz-border-radius: 7px; background-color: #eee;">
-				<a href="#" onclick="document.getElementById('search').select(); return false;"><img src="/images/search.png" style="position: relative; top: 2px; border: 0;"/></a>
-				<input type="text" value="search" id="search" style="background-color: #eee; border: 0; height: 14px; width: 165px; margin: 0; padding: 1px 0 0 0; font: 12px arial; font-weight: bold; color: #999;"/>
-				<a href="#" onclick="document.getElementById('search').select(); return false;"><img src="/images/search_cancel.png" style="position: relative; top: 2px; border: 0;"/></a>
-			</div>
+		<div class="right">
+			<?php $this->txtSearch->Render(); ?>
+		</div>
+		<div class="right">
+			<?php $this->btnSearchAll->Render(); ?>
+		</div>
+		<div class="right">
+			<?php $this->btnSearchThis->Render(); ?>
 		</div>
 	</div>
 	

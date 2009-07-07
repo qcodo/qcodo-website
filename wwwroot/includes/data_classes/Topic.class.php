@@ -104,7 +104,63 @@
 		}
 
 		/**
+		 * Given a search term, this will return the List of Topic IDs as an IdArray
+		 * ordered by highest rank first
+		 * 
+		 * @param $strSearchQuery
+		 * @return integer[]
+		 */
+		public static function GetIdArrayForSearch($strSearchQuery) {
+			// open the index
+			$objIndex = new Zend_Search_Lucene(__SEARCH_INDEXES__ . '/forum_topics');
+
+			$intIdArray = array();
+			$objHits = $objIndex->find($strSearchQuery);
+
+			if (!count($objHits)) return array();
+
+			foreach ($objHits as $objHit) {
+				$intIdArray[] = $objHit->db_id;
+				// note: do we want to do anything with $objHit->score (?)
+			}
+
+			return $intIdArray;
+		}
+
+		/**
+		 * Given an ordered ID Array and Limit information, this will return
+		 * an array of Topics
+		 * @param integer[] $intIdArray
+		 * @param string $strLimitInfo
+		 * @return Topic[]
+		 */
+		public static function LoadArrayBySearchResultArray($intIdArray, $strLimitInfo) {
+			// Calculate Offset and ItemsPerPage
+			$strTokens = explode(',', $strLimitInfo);
+			$intOffset = intval($strTokens[0]);
+			$intItemsPerPage = intval($strTokens[1]);
+
+			// Perform the Offset and LImit
+			$intIdArray = array_slice($intIdArray, $intOffset, $intItemsPerPage);
+			
+			$strQuery = 'SELECT * FROM topic WHERE id IN(' . implode(',', $intIdArray) . ')';
+			$objResult = Topic::GetDatabase()->Query($strQuery);
+			while ($objRow = $objResult->GetNextRow()) {
+				$objTopic = Topic::InstantiateDbRow($objRow);
+				$objTopicArrayById[$objTopic->Id] = $objTopic;
+			}
+
+			$objTopicArray = array();
+			foreach ($intIdArray as $intId) {
+				$objTopicArray[] = $objTopicArrayById[$intId];
+			}
+
+			return $objTopicArray;
+		}
+
+		/**
 		 * Searches using the search index for applicable topics, and returns topics as an array
+		 * Note that this will return ALL topics for the search.  No limit / pagination can be applied.
 		 * @param string $strSearchQuery
 		 * @return Topic[]
 		 */
@@ -122,7 +178,6 @@
 				// note: do we want to do anything with $objHit->score (?)
 			}
 
-			$objTopicArrayById = array(); 
 			$objResult = Topic::GetDatabase()->Query('SELECT * FROM topic WHERE id IN(' . implode(',', $intIdArray) . ');');
 			while ($objRow = $objResult->GetNextRow()) {
 				$objTopic = Topic::InstantiateDbRow($objRow);
