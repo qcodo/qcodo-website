@@ -13,11 +13,7 @@
 
 <!-- <div style="background-color: #e9e9f0; -moz-border-radius: 8px 8px 0 0; height: 22px; font-size: 16px; font-weight: bold; padding: 4px 0 0 14px; border: 1px solid #ccd;">  -->	
 	<div class="searchBar">
-		<div class="title">
-			<span style="font-weight: normal; font-size: 12px;">Forums: </span>
-			<?php _p($this->objForum->Name); ?>
-			
-		</div>
+		<div class="title"><?php $this->lblHeader->Render(); ?></div>
 		<div class="right">
 			<?php $this->txtSearch->Render(); ?>
 		</div>
@@ -32,8 +28,7 @@
 	<div class="topicsShell">
 <!-- <div class="topicsBorder"><div class="a">&nbsp;</div><div class="b">&nbsp;</div><div class="c">&nbsp;</div><div class="d">&nbsp;</div><div class="e">&nbsp;</div></div> --> 	
 	<div class="topics" style="border-top: 0; border-color: #ccd; ">
-<!-- 	<div class="name"><?php _p($this->objForum->Name); ?></div> -->
-	 	<div class="description"><?php _p($this->objForum->Description); ?></div>
+		<?php $this->lblDescription->Render(); ?>
 	 	<div class="paginator"><?php $this->dtrTopics->Paginator->Render(); ?></div>
 		<?php $this->dtrTopics->Render(); ?>
 	</div>

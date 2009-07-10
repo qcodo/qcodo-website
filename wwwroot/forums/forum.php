@@ -7,26 +7,29 @@
 		protected $intNavBarIndex = QApplication::NavCommunity;
 		protected $intSubNavIndex = QApplication::NavCommunityForums;
 
-		protected $lstSearch;
-		protected $txtSearch;
-		
+		protected $objForum;
+		public $objTopic;
+		protected $intViewState;
+
 		protected $lblTopicInfo;
-		
+
 		protected $btnRespond1;
 		protected $btnRespond2;
 		protected $btnNotify1;
 		protected $btnNotify2;
 		protected $btnMarkAsViewed1;
 		protected $btnMarkAsViewed2;
-		
+
+		protected $txtSearch;
 		protected $btnSearchAll;
 		protected $btnSearchThis;
-		
-		protected $objForum;
-		public $objTopic;
+
 		protected $strPostStartedLinkText;
 		protected $strSearchTerm;
 
+		protected $lblHeader;
+		protected $lblDescription;
+		
 		protected $dtrMessages;
 		protected $dtrTopics;
 		
@@ -41,27 +44,67 @@
 				if (!array_key_exists('intViewedTopicArray', $_SESSION))
 					$_SESSION['intViewedTopicArray'] = array();
 			}
-			
+
+
+			/* Figure out which "View State" we are in, depending on how this page is queried or accessed.
+			 * 
+			 * Various states:
+			 * 	1) Viewing a FORUM		NO Topic		NO Search
+			 *  2) Viewing a forum		Topic			NO Search
+			 *  3) Viewing a SEARCH RESULT for a "Search All" - NO Forum, NO Topic
+			 *  4) Viewing a SEARCH RESULT for a "Search All" - Forum derived from the Topic selected
+			 *  5) Viewing a SEARCH RESULT within a Forum - Forum, but NO Topic
+			 *  6) Viewing a SEARCH RESULT within a Forum - Forum AND Topic
+			 */
+
 			$this->objForum = Forum::Load(QApplication::PathInfo(0));
+			$this->SelectTopic(QApplication::PathInfo(1));
 
 			if (strlen($strSearchTerm = trim(QApplication::QueryString('search')))) {
 				$this->strSearchTerm = $strSearchTerm;
+				if (!$this->objForum) {
+					// State 3 or State 4
+					$strHeaderSmall = 'Search Results';
+					$strHeaderLarge = 'All Forums';
+					$this->intViewState = ($this->objTopic) ? 4 : 3;
+				} else {
+					// State 5 or State 6
+					$strHeaderSmall = 'Search Results';
+					$strHeaderLarge = QApplication::HtmlEntities($this->objForum->Name);
+					$this->intViewState = ($this->objTopic) ? 6 : 5;
+				}
 			} else {
+				// State 1 or State 2
 				if (!$this->objForum) QApplication::Redirect('/forums/');
+				if ($this->objTopic && ($this->objTopic->ForumId != $this->objForum->Id)) QApplication::Redirect('/forums/');
+				$strHeaderSmall = 'Forum';
+				$strHeaderLarge = QApplication::HtmlEntities($this->objForum->Name);
+				$this->intViewState = ($this->objTopic) ? 2 : 1;
 			}
 
-			$this->SelectTopic(QApplication::PathInfo(1));
+			$this->lblHeader = new QLabel($this);
+			$this->lblHeader->HtmlEntities = false;
+			$this->lblHeader->Text = sprintf('<span style="font-weight: normal; font-size: 12px;">%s: </span> %s', $strHeaderSmall, $strHeaderLarge);
 
-			$this->lstSearch = new QListBox($this);
-			$this->lstSearch->AddItem('- All Forums -', null);
-			foreach (Forum::LoadAll(QQ::OrderBy(QQN::Forum()->OrderNumber)) as $objForum)
-				$this->lstSearch->AddItem($objForum->Name, $objForum->Id);
+			$this->lblDescription = new QLabel($this);
+			$this->lblDescription->CssClass = 'description';
+			$this->lblDescription->TagName = 'div';
+			switch ($this->intViewState) {
+				case 1:
+				case 2:
+					$this->lblDescription->Text = $this->objForum->Description;
+					break;
+				default:
+					$this->lblDescription->Visible = false;
+					break;
+			}
 
 			$this->txtSearch = new SearchTextBox($this, 'txtSearch');
 			$this->txtSearch->Text = QApplication::QueryString('search');
-			$this->txtSearch->AddAction(new QChangeEvent(), new QServerAction('txtSearch_Change'));
-			$this->txtSearch->AddAction(new QEnterKeyEvent(0, "qc.getControl('txtSearch').value != ''"), new QServerAction('txtSearch_Change'));
+			$this->txtSearch->AddAction(new QChangeEvent(), new QAjaxAction('ExecuteSearch'));
+			$this->txtSearch->AddAction(new QEnterKeyEvent(), new QAjaxAction('ExecuteSearch'));
 			$this->txtSearch->AddAction(new QEnterKeyEvent(), new QTerminateAction());
+			$this->txtSearch->ActionParameter = (($this->intViewState == 5) || ($this->intViewState == 6));
 
 			$this->dtrMessages = new QDataRepeater($this, 'dtrMessages');
 			$this->dtrMessages->Template = 'dtrMessages.tpl.php';
@@ -142,7 +185,7 @@
 			}
 
 			if (strlen(trim(QApplication::QueryString('search')))) {
-				if ($this->objForum->Id == QApplication::PathInfo(0)) {
+				if ($this->objForum && ($this->objForum->Id == QApplication::PathInfo(0))) {
 					$this->btnSearchThis->AddCssClass('searchOptionActive');
 				} else {
 					$this->btnSearchAll->AddCssClass('searchOptionActive');
@@ -152,15 +195,61 @@
 				$this->btnSearchThis->Display = false;
 			}
 
-			$this->btnSearchThis->AddAction(new QClickEvent(), new QAlertAction('Hello!'));
-
+			$this->btnSearchThis->AddAction(new QClickEvent(), new QAjaxAction('ExecuteSearch'));
+			$this->btnSearchThis->ActionParameter = true;
+			$this->btnSearchAll->AddAction(new QClickEvent(), new QAjaxAction('ExecuteSearch'));
+			$this->btnSearchAll->ActionParameter = false;
+			
 			// Update Button State
 			$this->UpdateNotifyButtons();
 			$this->UpdateMarkAsViewedButtons();
 		}
 
-		protected function txtSearch_Change() {
-			QApplication::Redirect('/forums/forum.php/' . QApplication::PathInfo(0) . '/?search=' . urlencode(trim($this->txtSearch->Text)));
+		/**
+		 * Perform a redirect to execute a search command
+		 * @param string $strFormId
+		 * @param string $strControlId
+		 * @param string $strParameter a true/false value where:
+		 * 		If Parameter is TRUE, then operate a "Search This Forum" type of search
+		 * 		If Parameter is FALSE, then operate a "Search All Forums" type of search
+		 * @return unknown_type
+		 */
+		protected function ExecuteSearch($strFormId, $strControlId, $strParameter) {
+			$strSearchTerm = trim($this->txtSearch->Text);
+
+			// First, let's figure out what viewing or searching "This Forum" means
+			// If we are viewing a topic, then "This Forum" is the forum that this topic belongs to
+			// Otherwise, we can try and discern what "This Forum" is by looking at the PathInfo(0)
+			$intThisForumId = ($this->objTopic) ? $this->objTopic->ForumId : QApplication::PathInfo(0);  
+
+			// Are we removing the search term (e.g. "Cancel" search)
+			if (!strlen($strSearchTerm)) {
+				// Maintain View to Topic if Applicable
+				if ($this->objTopic)
+					QApplication::Redirect('/forums/forum.php/' . $this->objTopic->ForumId . '/' . $this->objTopic->Id);
+				else
+					QApplication::Redirect('/forums/forum.php/' . $intThisForumId);
+			}
+
+
+			// Are we executing a NEW kind of search?
+			if ($strSearchTerm != QApplication::QueryString('search')) {
+				// Yes
+				$strUrl = sprintf('/forums/forum.php/%s%s?search=%s',
+					($strParameter) ? $intThisForumId : '0',
+					($this->objTopic) ? '/' . $this->objTopic->Id : null,
+					urlencode($strSearchTerm));
+				QApplication::Redirect($strUrl);
+			}
+
+
+			// If we are here, then we're NOT executing a new search.  The Search term is teh same
+			// Therefore, keep "Topic" result if at all possible
+			$strUrl = sprintf('/forums/forum.php/%s%s?search=%s',
+				($strParameter) ? $intThisForumId : '0',
+				($this->objTopic) ? '/' . $this->objTopic->Id : null,
+				urlencode($strSearchTerm));
+			QApplication::Redirect($strUrl);
 		}
 
 		protected function btnNotify_Click() {
@@ -237,18 +326,14 @@
 		public function SelectTopic($intTopicId) {
 			$this->objTopic = Topic::Load(QApplication::PathInfo(1));
 			if ($this->objTopic) {
-				if ($this->objTopic->ForumId != $this->objForum->Id)
-					$this->objTopic = null;
-				else {
-					$objFirstMessage = Message::QuerySingle(
-						QQ::Equal(QQN::Message()->TopicId, $this->objTopic->Id),
-						QQ::OrderBy(QQN::Message()->Id)
-					);
+				$objFirstMessage = Message::QuerySingle(
+					QQ::Equal(QQN::Message()->TopicId, $this->objTopic->Id),
+					QQ::OrderBy(QQN::Message()->Id)
+				);
 
-					$dttLocalize = QApplication::LocalizeDateTime($objFirstMessage->PostDate);
-					$this->strPostStartedLinkText = strtolower($dttLocalize->__toString('DDDD, MMMM D, YYYY, h:mm z ')) .
-						strtolower(QApplication::DisplayTimezoneLink($dttLocalize, false));
-				}
+				$dttLocalize = QApplication::LocalizeDateTime($objFirstMessage->PostDate);
+				$this->strPostStartedLinkText = strtolower($dttLocalize->__toString('DDDD, MMMM D, YYYY, h:mm z ')) .
+					strtolower(QApplication::DisplayTimezoneLink($dttLocalize, false));
 
 				$this->MarkTopicViewed($this->objTopic);
 			}
@@ -325,13 +410,6 @@
 			$this->dlgMessage->HideDialogBox();
 		}
 
-		protected function btnSearch_Click($strFormId, $strControlId, $strParameter) {
-			if ($this->lstSearch->SelectedValue)
-				QApplication::Redirect(sprintf('/forums/search.php/1/%s/?strSearch=%s', $this->lstSearch->SelectedValue, urlencode($this->txtSearch->Text)));
-			else
-				QApplication::Redirect(sprintf('/forums/search.php/1/?strSearch=%s', urlencode($this->txtSearch->Text)));
-		}
-		
 		/**
 		 * Specifies whether or not a given message is editable by the currently logged-in user
 		 * @param Message $objMessage
