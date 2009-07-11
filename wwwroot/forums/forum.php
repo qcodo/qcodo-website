@@ -9,7 +9,11 @@
 
 		protected $objForum;
 		public $objTopic;
+		
+		// Search-Related Stuff
+		protected $strSearchTerm;
 		protected $intViewState;
+		protected $objQueryHitArray;
 
 		protected $lblTopicInfo;
 
@@ -25,7 +29,6 @@
 		protected $btnSearchThis;
 
 		protected $strPostStartedLinkText;
-		protected $strSearchTerm;
 
 		protected $lblHeader;
 		protected $lblDescription;
@@ -52,34 +55,43 @@
 			 * 	1) Viewing a FORUM		NO Topic		NO Search
 			 *  2) Viewing a forum		Topic			NO Search
 			 *  3) Viewing a SEARCH RESULT for a "Search All" - NO Forum, NO Topic
+			 *  		NOTE: $objForum is NULL in this case
 			 *  4) Viewing a SEARCH RESULT for a "Search All" - Forum derived from the Topic selected
+			 *  		NOTE: $objForum is NULL in this case
 			 *  5) Viewing a SEARCH RESULT within a Forum - Forum, but NO Topic
 			 *  6) Viewing a SEARCH RESULT within a Forum - Forum AND Topic
 			 */
 
 			$this->objForum = Forum::Load(QApplication::PathInfo(0));
-			$this->SelectTopic(QApplication::PathInfo(1));
 
 			if (strlen($strSearchTerm = trim(QApplication::QueryString('search')))) {
 				$this->strSearchTerm = $strSearchTerm;
+				$strHeaderSmall = 'Search Results';
 				if (!$this->objForum) {
 					// State 3 or State 4
-					$strHeaderSmall = 'Search Results';
 					$strHeaderLarge = 'All Forums';
+					$this->objQueryHitArray = Topic::GetQueryHitArrayForSearch($this->strSearchTerm);
+
+					$this->SelectTopic(QApplication::PathInfo(1));
 					$this->intViewState = ($this->objTopic) ? 4 : 3;
+					if (!$this->objTopic && (strlen(QApplication::PathInfo(1)))) QApplication::Redirect('/forums/forum.php/0/?search=' . urlencode($this->strSearchTerm));
 				} else {
 					// State 5 or State 6
-					$strHeaderSmall = 'Search Results';
 					$strHeaderLarge = QApplication::HtmlEntities($this->objForum->Name);
+					$this->objQueryHitArray = Topic::GetQueryHitArrayForSearch($this->strSearchTerm, $this->objForum->Id);
+
+					$this->SelectTopic(QApplication::PathInfo(1));
 					$this->intViewState = ($this->objTopic) ? 6 : 5;
+					if (!$this->objTopic && (strlen(QApplication::PathInfo(1)))) QApplication::Redirect('/forums/forum.php/' . $this->objForum->Id . '/?search=' . urlencode($this->strSearchTerm));
 				}
 			} else {
 				// State 1 or State 2
 				if (!$this->objForum) QApplication::Redirect('/forums/');
-				if ($this->objTopic && ($this->objTopic->ForumId != $this->objForum->Id)) QApplication::Redirect('/forums/');
 				$strHeaderSmall = 'Forum';
 				$strHeaderLarge = QApplication::HtmlEntities($this->objForum->Name);
+				$this->SelectTopic(QApplication::PathInfo(1));
 				$this->intViewState = ($this->objTopic) ? 2 : 1;
+				if (!$this->objTopic && (strlen(QApplication::PathInfo(1)))) QApplication::Redirect('/forums/forum.php/' . $this->objForum->Id . '/');
 			}
 
 			$this->lblHeader = new QLabel($this);
@@ -122,19 +134,26 @@
 			$this->dtrTopics->Paginator = new ForumTopicsPaginator($this);
 			
 			$this->dtrTopics->ItemsPerPage = 20;
-			if ($this->objTopic) $this->dtrTopics->PageNumber = Topic::GetPageNumber($this->objTopic, 20);
 			$this->dtrTopics->UseAjax = true;
 
 			$this->lblTopicInfo = new QLabel($this);
 			$this->lblTopicInfo->TagName = 'div';
-			$this->lblTopicInfo->Template = dirname(__FILE__) . '/lblTopicInfo.tpl.php';
+			switch ($this->intViewState) {
+				case 3:
+				case 4:
+					$this->lblTopicInfo->Template = dirname(__FILE__) . '/lblTopicInfoWithForumName.tpl.php';
+					break;
+				default:
+					$this->lblTopicInfo->Template = dirname(__FILE__) . '/lblTopicInfo.tpl.php';
+					break;
+			}
 			
 			$this->btnRespond1 = new RoundedLinkButton($this);
 			$this->btnRespond1->Text = 'Respond';
-			$this->btnRespond1->ToolTip = 'Post a Response';
+			$this->btnRespond1->ToolTip = 'Post a response';
 			$this->btnRespond2 = new RoundedLinkButton($this);
 			$this->btnRespond2->Text = 'Respond';
-			$this->btnRespond2->ToolTip = 'Post a Response';
+			$this->btnRespond2->ToolTip = 'Post a response';
 			
 			$this->btnNotify1 = new RoundedLinkButton($this);
 			$this->btnNotify1->Text = 'Email Notification';
@@ -175,11 +194,16 @@
 			$this->btnSearchAll = new RoundedLinkButton($this);
 			$this->btnSearchAll->Text = 'All Forums';
 			$this->btnSearchAll->CssClass = 'searchOption';
+			$this->btnSearchAll->ToolTip = 'Search all forums';
 
 			$this->btnSearchThis = new RoundedLinkButton($this);
 			$this->btnSearchThis->CssClass = 'searchOption';
 			if ($this->objForum) {
 				$this->btnSearchThis->Text = '"' . $this->objForum->Name . '"';
+				$this->btnSearchThis->ToolTip = 'Search within ' . $this->btnSearchThis->Text . ' forum';
+			} else if ($this->objTopic) {
+				$this->btnSearchThis->Text = '"' . $this->objTopic->Forum->Name . '"';
+				$this->btnSearchThis->ToolTip = 'Search within ' . $this->btnSearchThis->Text . ' forum';
 			} else {
 				$this->btnSearchThis->Visible = false;
 			}
@@ -196,10 +220,21 @@
 			}
 
 			$this->btnSearchThis->AddAction(new QClickEvent(), new QAjaxAction('ExecuteSearch'));
+			$this->btnSearchThis->AddAction(new QClickEvent(), new QTerminateAction());
 			$this->btnSearchThis->ActionParameter = true;
 			$this->btnSearchAll->AddAction(new QClickEvent(), new QAjaxAction('ExecuteSearch'));
+			$this->btnSearchAll->AddAction(new QClickEvent(), new QTerminateAction());
 			$this->btnSearchAll->ActionParameter = false;
-			
+
+			switch ($this->intViewState) {
+				case 3:
+				case 4:
+					$this->txtSearch->ActionParameter = false;
+					break;
+				default:
+					$this->txtSearch->ActionParameter = true;
+					break;
+			}
 			// Update Button State
 			$this->UpdateNotifyButtons();
 			$this->UpdateMarkAsViewedButtons();
@@ -218,9 +253,15 @@
 			$strSearchTerm = trim($this->txtSearch->Text);
 
 			// First, let's figure out what viewing or searching "This Forum" means
-			// If we are viewing a topic, then "This Forum" is the forum that this topic belongs to
+			// If we are viewing a Forum, then "This Forum" is the forum.
+			// Otherwise, if we are viewing a Topic, then "This Forum" is the Forum that this topic belongs to
 			// Otherwise, we can try and discern what "This Forum" is by looking at the PathInfo(0)
-			$intThisForumId = ($this->objTopic) ? $this->objTopic->ForumId : QApplication::PathInfo(0);  
+			if ($this->objForum)
+				$intThisForumId = $this->objForum->Id;
+			else if ($this->objTopic)
+				$intThisForumId = $this->objTopic->ForumId;
+			else
+				$intThisForumId = QApplication::PathInfo(0);  
 
 			// Are we removing the search term (e.g. "Cancel" search)
 			if (!strlen($strSearchTerm)) {
@@ -232,22 +273,10 @@
 			}
 
 
-			// Are we executing a NEW kind of search?
-			if ($strSearchTerm != QApplication::QueryString('search')) {
-				// Yes
-				$strUrl = sprintf('/forums/forum.php/%s%s?search=%s',
-					($strParameter) ? $intThisForumId : '0',
-					($this->objTopic) ? '/' . $this->objTopic->Id : null,
-					urlencode($strSearchTerm));
-				QApplication::Redirect($strUrl);
-			}
-
-
-			// If we are here, then we're NOT executing a new search.  The Search term is teh same
-			// Therefore, keep "Topic" result if at all possible
-			$strUrl = sprintf('/forums/forum.php/%s%s?search=%s',
+			// We executing a NEW kind of search
+			$strUrl = sprintf('/forums/forum.php/%s/%s?search=%s',
 				($strParameter) ? $intThisForumId : '0',
-				($this->objTopic) ? '/' . $this->objTopic->Id : null,
+				($this->objTopic) ? $this->objTopic->Id . '/' : null,
 				urlencode($strSearchTerm));
 			QApplication::Redirect($strUrl);
 		}
@@ -325,6 +354,26 @@
 		 */
 		public function SelectTopic($intTopicId) {
 			$this->objTopic = Topic::Load(QApplication::PathInfo(1));
+
+			// Validate the Topic, Itself
+			if (!$this->objTopic) return;
+
+			// For Search Queries: needs to be in the QueryHitArray
+			if ($this->objQueryHitArray) {
+				$blnFound = false;
+				foreach ($this->objQueryHitArray as $objHit) {
+					if ($objHit->db_id == $this->objTopic->Id) $blnFound = true;
+				}
+				if (!$blnFound)
+					$this->objTopic = null;
+
+			// For Forum View: Topic must be part of the Forum
+			} else {
+				if ($this->objTopic->ForumId != $this->objForum->Id)
+					$this->objTopic = null;
+			}
+
+			// Go ahead and set up other stuff if the Topic is set
 			if ($this->objTopic) {
 				$objFirstMessage = Message::QuerySingle(
 					QQ::Equal(QQN::Message()->TopicId, $this->objTopic->Id),
@@ -340,16 +389,60 @@
 		}
 
 		public function dtrTopics_Bind() {
-			if (!is_null($this->strSearchTerm)) {
-				$intIdArray = Topic::GetIdArrayForSearch($this->strSearchTerm);
-				$this->dtrTopics->TotalItemCount = count($intIdArray);
-				$this->dtrTopics->DataSource = Topic::LoadArrayBySearchResultArray($intIdArray, $this->dtrTopics->LimitInfo);
-			} else {
-				$this->dtrTopics->TotalItemCount = $this->objForum->TopicCount;
-				$this->dtrTopics->DataSource = Topic::LoadArrayByForumId($this->objForum->Id, QQ::Clause(QQ::OrderBy(QQN::Topic()->LastPostDate, false), $this->dtrTopics->LimitClause));
+			$intForumId = null;
+			switch ($this->intViewState) {
+				case 5:
+				case 6:
+					$intForumId = $this->objForum->Id;
+				case 3:
+				case 4:
+					if (!$this->objQueryHitArray) $this->objQueryHitArray = Topic::GetQueryHitArrayForSearch($this->strSearchTerm, $intForumId);
+					$this->dtrTopics->TotalItemCount = count($this->objQueryHitArray);
+
+					// If First Time (on FormCreate), pre-set the Page Number
+					if (($this->strCallType == QCallType::None) && ($this->objTopic)) 
+						$this->dtrTopics->PageNumber = $this->GetPageNumber($this->objTopic, $this->dtrTopics->ItemsPerPage, $this->objQueryHitArray);
+
+					$this->dtrTopics->DataSource = Topic::LoadArrayBySearchResultArray($this->objQueryHitArray, $this->dtrTopics->LimitInfo);
+					$this->objQueryHitArray = null;
+					break;
+
+				default:
+					$this->dtrTopics->TotalItemCount = $this->objForum->TopicCount;
+
+					// If First Time (on FormCreate), pre-set the Page Number
+					if (($this->strCallType == QCallType::None) && ($this->objTopic)) 
+						$this->dtrTopics->PageNumber = $this->GetPageNumber($this->objTopic, $this->dtrTopics->ItemsPerPage);
+
+					$this->dtrTopics->DataSource = Topic::LoadArrayByForumId($this->objForum->Id, QQ::Clause(QQ::OrderBy(QQN::Topic()->LastPostDate, false), $this->dtrTopics->LimitClause));
+					break;
 			}
 		}
 
+		public function RenderTopicLink(Topic $objTopic) {
+			switch ($this->intViewState) {
+				case 1:
+				case 2:
+					$strQueryString = null;
+					$intForumId = $this->objForum->Id;
+					break;
+
+				case 3:
+				case 4:
+					$strQueryString = sprintf('?search=%s', urlencode($this->strSearchTerm));
+					$intForumId = 0;
+					break;
+
+				case 5:
+				case 6:
+					$strQueryString = sprintf('?search=%s', urlencode($this->strSearchTerm));
+					$intForumId = $this->objForum->Id;
+					break;
+			}
+
+			return sprintf('/forums/forum.php/%s/%s/%s', $intForumId, $objTopic->Id, $strQueryString);
+		}
+		
 		public function dtrMessages_Bind() {
 			if ($this->objTopic) {
 				$this->dtrMessages->TotalItemCount = $this->objTopic->MessageCount;
@@ -477,6 +570,39 @@
 				$_SESSION['intViewedTopicArray'][$objTopic->Id] = false;
 				unset($_SESSION['intViewedTopicArray'][$objTopic->Id]);
 			}
+		}
+
+		/**
+		 * Given a Topic and the number of items in a "page", this will
+		 * return the page number that the topic shows up in
+		 * when listing all topics for the Topic's forum, assuming
+		 * the list of topics is ordered by reverse last_post_date
+		 * @param Topic $objTopic the topic to search for
+		 * @param integer $intItemsPerPage
+		 * @param Zend_Search_Lucene_Search_QueryHit[] $objQueryHitArray a predefined set of topics to search through
+		 * @return unknown_type
+		 */
+		public function GetPageNumber(Topic $objTopic, $intItemsPerPage, $objQueryHitArray = null) {
+			if (is_null($objQueryHitArray)) {
+				$objResult = Topic::GetDatabase()->Query('SELECT id FROM topic WHERE forum_id=' . $objTopic->ForumId . ' ORDER BY last_post_date DESC');
+				$intRecordNumber = 0;
+				while ($objRow = $objResult->GetNextRow()) {
+					$intRecordNumber++;
+					if ($objRow->GetColumn('id') == $objTopic->Id)
+						break;
+				}
+			} else {
+				$intRecordNumber = 0;
+				foreach ($objQueryHitArray as $objHit) {
+					$intRecordNumber++;
+					if ($objHit->db_id == $objTopic->Id)
+						break;
+				}
+			}
+	
+			$intPageNumber = floor($intRecordNumber / $intItemsPerPage);
+			if ($intRecordNumber % $intItemsPerPage) $intPageNumber++;
+			return $intPageNumber;
 		}
 	}
 

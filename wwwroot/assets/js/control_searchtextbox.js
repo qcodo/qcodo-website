@@ -19,6 +19,7 @@
 		// Setup Click Handlers
 		objWrapper.lnkSearch.onclick = function() {
 			this.wrapper.control.focus();
+			this.wrapper.control.select();
 			this.wrapper.control.onclick();
 			return false;
 		}

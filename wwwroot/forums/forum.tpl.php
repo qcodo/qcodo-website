@@ -24,7 +24,7 @@
 			<?php $this->btnSearchThis->Render(); ?>
 		</div>
 	</div>
-	
+
 	<div class="topicsShell">
 <!-- <div class="topicsBorder"><div class="a">&nbsp;</div><div class="b">&nbsp;</div><div class="c">&nbsp;</div><div class="d">&nbsp;</div><div class="e">&nbsp;</div></div> --> 	
 	<div class="topics" style="border-top: 0; border-color: #ccd; ">
@@ -34,13 +34,17 @@
 	</div>
 	</div>
 
-<?php if (!$this->objTopic) { ?>
+<?php
+	if (!$this->objTopic) {
+		$strMessage = ($this->dtrTopics->TotalItemCount) ? 'Please select a topic on the left' : 'No topics found<br/>Please try another search'; 
+?>
+		<div class="topic" style="margin-top: 12px;">
+			<h2><?php _p($strMessage, false); ?></h2>
+		</div>
 
-	<div class="topic" style="margin-top: 12px;">
-		<h2>Please select a topic on the left</h2>
-	</div>
-
-<?php } else { ?>
+<?php
+	} else {
+?>
 
 	<div class="topic" style="margin-top: 12px;">
 		<?php $this->lblTopicInfo->Render(); ?>

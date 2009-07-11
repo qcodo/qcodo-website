@@ -10,6 +10,11 @@
 
 <h1><?php _p($this->objTopic->Name); ?></h1>
 <h3>
+	forum:
+	<strong><?php _p(strtolower($this->objTopic->Forum->Name)); ?></strong>
+
+	<br/>
+
 	thread:
 	<strong><?php _p($this->objTopic->ReplyCount); ?></strong>
 	

@@ -48,29 +48,6 @@
 			}
 		}
 
-		/**
-		 * Given a Topic and the number of items in a "page", this will
-		 * return the page number that the topic shows up in
-		 * when listing all topics for the Topic's forum, assuming
-		 * the list of topics is ordered by reverse last_post_date
-		 * @param Topic $objTopic the topic to search for
-		 * @param integer $intItemsPerPage
-		 * @return unknown_type
-		 */
-		public static function GetPageNumber(Topic $objTopic, $intItemsPerPage) {
-			$objResult = Topic::GetDatabase()->Query('SELECT id FROM topic WHERE forum_id=' . $objTopic->ForumId . ' ORDER BY last_post_date DESC');
-			$intRecordNumber = 0;
-			while ($objRow = $objResult->GetNextRow()) {
-				$intRecordNumber++;
-				if ($objRow->GetColumn('id') == $objTopic->Id)
-					break;
-			}
-			
-			$intPageNumber = floor($intRecordNumber / $intItemsPerPage);
-			if ($intRecordNumber % $intItemsPerPage) $intPageNumber++;
-			return $intPageNumber;
-		}
-
 
 		/**
 		 * This will refresh all the stats (last post date, message count) and save the record to the database
@@ -107,52 +84,55 @@
 		 * Given a search term, this will return the List of Topic IDs as an IdArray
 		 * ordered by highest rank first
 		 * 
-		 * @param $strSearchQuery
-		 * @return integer[]
+		 * @param string $strSearchQuery
+		 * @param integer $intForumId optional parameter to restrict search to only within a specific Forum
+		 * @return Zend_Search_Lucene_Search_QueryHit[]
 		 */
-		public static function GetIdArrayForSearch($strSearchQuery) {
+		public static function GetQueryHitArrayForSearch($strSearchQuery, $intForumId = null) {
 			// open the index
 			$objIndex = new Zend_Search_Lucene(__SEARCH_INDEXES__ . '/forum_topics');
 
-			$intIdArray = array();
 			$objHits = $objIndex->find($strSearchQuery);
 
+			// No results
 			if (!count($objHits)) return array();
 
-			foreach ($objHits as $objHit) {
-				$intIdArray[] = $objHit->db_id;
-				// note: do we want to do anything with $objHit->score (?)
-			}
+			// Results for "All Forums" search
+			if (is_null($intForumId)) return $objHits;
 
-			return $intIdArray;
+			// Results for a specific Forum search
+			$objToReturnArray = array();
+			foreach ($objHits as $objHit) {
+				if ($objHit->forum_id == $intForumId) $objToReturnArray[] = $objHit;
+			}
+			return $objToReturnArray;
 		}
 
 		/**
 		 * Given an ordered ID Array and Limit information, this will return
 		 * an array of Topics
-		 * @param integer[] $intIdArray
+		 * @param Zend_Search_Lucene_Search_QueryHit[] $objQueryHitArray
 		 * @param string $strLimitInfo
 		 * @return Topic[]
 		 */
-		public static function LoadArrayBySearchResultArray($intIdArray, $strLimitInfo) {
+		public static function LoadArrayBySearchResultArray($objQueryHitArray, $strLimitInfo) {
 			// Calculate Offset and ItemsPerPage
 			$strTokens = explode(',', $strLimitInfo);
 			$intOffset = intval($strTokens[0]);
 			$intItemsPerPage = intval($strTokens[1]);
 
 			// Perform the Offset and LImit
-			$intIdArray = array_slice($intIdArray, $intOffset, $intItemsPerPage);
-			
-			$strQuery = 'SELECT * FROM topic WHERE id IN(' . implode(',', $intIdArray) . ')';
-			$objResult = Topic::GetDatabase()->Query($strQuery);
-			while ($objRow = $objResult->GetNextRow()) {
-				$objTopic = Topic::InstantiateDbRow($objRow);
-				$objTopicArrayById[$objTopic->Id] = $objTopic;
-			}
+			$objQueryHitArray = array_slice($objQueryHitArray, $intOffset, $intItemsPerPage);
 
 			$objTopicArray = array();
-			foreach ($intIdArray as $intId) {
-				$objTopicArray[] = $objTopicArrayById[$intId];
+			foreach ($objQueryHitArray as $objHit) {
+				$objTopic = new Topic();
+				$objTopic->intId = $objHit->db_id;
+				$objTopic->intForumId = $objHit->forum_id;
+				$objTopic->strName = $objHit->title;
+				$objTopic->dttLastPostDate = QDateTime::FromTimestamp($objHit->last_post_date);
+				$objTopic->intMessageCount = $objHit->message_count;
+				$objTopicArray[] = $objTopic;
 			}
 
 			return $objTopicArray;
@@ -233,8 +213,11 @@
 			// Create the Document
 			$objDocument = new Zend_Search_Lucene_Document();
 			$objDocument->addField(Zend_Search_Lucene_Field::Keyword('db_id', $this->Id));
+			$objDocument->addField(Zend_Search_Lucene_Field::UnIndexed('forum_id', $this->ForumId));
+			$objDocument->addField(Zend_Search_Lucene_Field::UnIndexed('message_count', $this->MessageCount));
+			$objDocument->addField(Zend_Search_Lucene_Field::UnIndexed('last_post_date', $this->LastPostDate->Timestamp));
 			$objDocument->addField(Zend_Search_Lucene_Field::Text('title', $this->Name));
-			$objDocument->addField(Zend_Search_Lucene_Field::Unstored('contents', trim($strContents)));
+			$objDocument->addField(Zend_Search_Lucene_Field::UnStored('contents', trim($strContents)));
 
 			// Add Document to Index
 			$objIndex->addDocument($objDocument);
