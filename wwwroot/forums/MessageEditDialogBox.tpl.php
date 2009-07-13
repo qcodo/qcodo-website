@@ -1,6 +1,15 @@
-	<h3 style="margin: 0;">Reply to "<?php _p($_FORM->objTopic ? $_FORM->objTopic->Name : null); ?>"</h3>
+	<?php $_CONTROL->lblHeading->Render(); ?>
 	<br/>
 
+	<strong style="font-size: 10px;">FORUM</strong><br/>
+	<?php $_CONTROL->lstForum->Render('Width=400px'); ?>
+	<br/><br/>
+
+	<strong style="font-size: 10px;">TOPIC TITLE</strong><br/>
+	<?php $_CONTROL->txtTopicName->Render('CssClass=forumTopicName textbox'); ?>
+	<br/><br/>
+
+	<strong style="font-size: 10px;">MESSAGE CONTENT</strong><br/>
 	<?php $_CONTROL->txtMessage->Render('CssClass=forumMessage'); ?>
 	<br/><br/>
 

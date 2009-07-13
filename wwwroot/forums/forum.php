@@ -108,6 +108,20 @@
 			$this->btnPost = new RoundedLinkButton($this->lblDescription);
 			$this->btnPost->Text = 'Post New Topic';
 			$this->btnPost->AddCssClass('roundedLinkGray');
+			$this->btnPost->AddAction(new QClickEvent(), new QAjaxAction('btnPost_Click'));
+			$this->btnPost->AddAction(new QClickEvent(), new QTerminateAction());
+			switch ($this->intViewState) {
+				case 1:
+				case 2:
+					if (QApplication::$Person)
+						$this->btnPost->Visible = ($this->objForum->CanUserPost(QApplication::$Person));
+					else
+						$this->btnPost->Visible = true;
+					break;
+				default:
+					$this->btnPost->Visible = false;
+					break;
+			}
 			
 			switch ($this->intViewState) {
 				case 1:
@@ -485,6 +499,28 @@
 				$objMessage->Topic = $this->objTopic;
 				$objMessage->Person = QApplication::$Person;
 				$objMessage->ReplyNumber = $this->objTopic->MessageCount;
+				$this->dlgMessage->EditMessage($objMessage);
+			} else
+				QApplication::Redirect('/login/');
+		}
+
+		public function btnPost_Click($strFormId, $strControlId, $strParameter) {
+			// Only when NOT performing a search
+			switch ($this->intViewState) {
+				case 1:
+				case 2:
+					break;
+				default:
+					return;
+			}
+
+			$this->btnPost->RemoveCssClass('roundedLinkGray');
+
+			if (QApplication::$Person) {
+				$objMessage = new Message();
+				$objMessage->Forum = $this->objForum;
+				$objMessage->Person = QApplication::$Person;
+				$objMessage->ReplyNumber = null;
 				$this->dlgMessage->EditMessage($objMessage);
 			} else
 				QApplication::Redirect('/login/');

@@ -161,7 +161,8 @@
 			div.topic div.controlBar div.paginator { float: right; margin-top: 1px; }
 
 
-		.forumMessage { background-color:#efe; font-family: 'Lucida Console' 'Courier New' 'Courier' 'monospaced'; font-size: 11px; width: 400px; height: 200px; border: 1px solid #aba; }
+		input.forumTopicName { background-color: #efe; width: 400px; border: 1px solid #aba; padding: 2px;}
+		textarea.forumMessage { background-color:#efe; font-family: 'Lucida Console' 'Courier New' 'Courier' 'monospaced'; font-size: 11px; width: 400px; height: 200px; border: 1px solid #aba; }
 		.forum_code { background-color: #ddddff; padding: 10px; margin-left: 20px; font-family: 'Lucida Console' 'Courier New' 'Courier' 'monospaced'; font-size: 11px; line-height: 13px; overflow: auto; width: auto;}
 
 		div#dtrMessages { }

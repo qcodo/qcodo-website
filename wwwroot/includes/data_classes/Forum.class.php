@@ -41,6 +41,18 @@
 			$this->Save();
 		}
 
+		/**
+		 * Can the user post to this forum?
+		 * @param Person $objPerson
+		 * @return boolean
+		 */
+		public function CanUserPost(Person $objPerson) {
+			if ($this->blnAnnounceOnlyFlag)
+				return ($objPerson->PersonTypeId == PersonType::Administrator);
+			else
+				return true;
+		}
+
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...
 		// but feel free to use these as a starting point)
