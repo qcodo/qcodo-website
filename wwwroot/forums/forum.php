@@ -17,6 +17,8 @@
 
 		protected $lblTopicInfo;
 
+		protected $btnPost;
+		
 		protected $btnRespond1;
 		protected $btnRespond2;
 		protected $btnNotify1;
@@ -101,13 +103,26 @@
 			$this->lblDescription = new QLabel($this);
 			$this->lblDescription->CssClass = 'description';
 			$this->lblDescription->TagName = 'div';
+			$this->lblDescription->HtmlEntities = false;
+			
+			$this->btnPost = new RoundedLinkButton($this->lblDescription);
+			$this->btnPost->Text = 'Post New Topic';
+			$this->btnPost->AddCssClass('roundedLinkGray');
+			
 			switch ($this->intViewState) {
 				case 1:
 				case 2:
-					$this->lblDescription->Text = $this->objForum->Description;
+					$this->lblDescription->Template = dirname(__FILE__) . '/lblDescription.tpl.php';
 					break;
-				default:
-					$this->lblDescription->Visible = false;
+				case 3:
+				case 4:
+					$this->lblDescription->Text = sprintf('The following are topics that resulted from the search for <strong>%s</strong> from all forums.',
+						QApplication::HtmlEntities($this->strSearchTerm));
+					break;
+				case 5:
+				case 6:
+					$this->lblDescription->Text = sprintf('The following are topics that resulted from the search for <strong>%s</strong> from the "%s" forum.',
+						QApplication::HtmlEntities($this->strSearchTerm), QApplication::HtmlEntities($this->objForum->Name));
 					break;
 			}
 
