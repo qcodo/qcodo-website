@@ -101,8 +101,6 @@
 			$this->ShowDialogBox();
 
 			if ($objMessage->TopicId) {
-				$this->lblHeading->Text = 'Respond to Current Message';
-
 				$this->lstForum->RemoveAllItems();
 				$this->lstForum->AddItem($objMessage->Forum->Name);
 				$this->lstForum->Enabled = false;
@@ -111,9 +109,11 @@
 				$this->txtTopicName->Enabled = false;
 
 				if ($objMessage->Id) {
+					$this->lblHeading->Text = 'Edit My Existing Post';
 					$this->blnEditMode = true;
 					$this->btnOkay->Text = 'Update My Reply';
 				} else {
+					$this->lblHeading->Text = 'Post Response to Current Topic';
 					$this->blnEditMode = false;
 					$this->btnOkay->Text = 'Post My Reply';
 				}
