@@ -130,13 +130,13 @@
 					break;
 				case 3:
 				case 4:
-					$this->lblDescription->Text = sprintf('The following are topics that resulted from the search for <strong>%s</strong> from all forums.',
-						QApplication::HtmlEntities($this->strSearchTerm));
+					$this->lblDescription->Text = sprintf('Search results for <strong>%s</strong> from all forums.',
+						QApplication::HtmlEntities(strtoupper($this->strSearchTerm)));
 					break;
 				case 5:
 				case 6:
-					$this->lblDescription->Text = sprintf('The following are topics that resulted from the search for <strong>%s</strong> from the "%s" forum.',
-						QApplication::HtmlEntities($this->strSearchTerm), QApplication::HtmlEntities($this->objForum->Name));
+					$this->lblDescription->Text = sprintf('Search results for <strong>%s</strong> from the "%s" forum.',
+						QApplication::HtmlEntities(strtoupper($this->strSearchTerm)), QApplication::HtmlEntities($this->objForum->Name));
 					break;
 			}
 
@@ -388,7 +388,7 @@
 			if (!$this->objTopic) return;
 
 			// For Search Queries: needs to be in the QueryHitArray
-			if ($this->objQueryHitArray) {
+			if (is_array($this->objQueryHitArray)) {
 				$blnFound = false;
 				foreach ($this->objQueryHitArray as $objHit) {
 					if ($objHit->db_id == $this->objTopic->Id) $blnFound = true;
