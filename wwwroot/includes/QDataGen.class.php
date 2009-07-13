@@ -160,6 +160,14 @@
 		}
 
 		/**
+		 * Generates and returns a random Middle Initial
+		 * @return string
+		 */
+		static public function GenerateMiddleInitial() {
+			return chr(rand(ord('A'), ord('Z')));
+		}
+
+		/**
 		 * Generates and returns a random Male First Name
 		 * @return string
 		 */
@@ -181,6 +189,31 @@
 		 */
 		static public function GenerateCity() {
 			return QDataGen::$CityArray[rand(0, count(QDataGen::$CityArray) - 1)];
+		}
+				
+		/**
+		 * Generates and returns a random Street Address
+		 * @return string the randomly-generated street address
+		 */
+		static public function GenerateStreetAddress() {
+			return rand(100, 99999) . ' ' . QDataGen::$CityArray[rand(0, count(QDataGen::$CityArray) - 1)] . ' ' .
+				QDataGen::$StreetTypeArray[rand(0, count(QDataGen::$StreetTypeArray) - 1)];
+		}
+
+		/**
+		 * Generates and returns a random Address 2 line
+		 * @return string the randomly-generated Address 2 line
+		 */
+		static public function GenerateAddressLine2() {
+			return QDataGen::$Address2UnitTypeArray[rand(0, count(QDataGen::$Address2UnitTypeArray) - 1)] . ' ' . rand(100, 9999);
+		}
+
+		/**
+		 * Generates and returns a random US State 2-letter abbreviation
+		 * @return string the randomly-generated US State
+		 */
+		static public function GenerateUsState() {
+			return QDataGen::$UsStateArray[rand(0, count(QDataGen::$UsStateArray) - 1)];
 		}
 
 		/**
@@ -1054,5 +1087,11 @@
 			'West Hollywood', 'West Sacramento', 'Westlake Village', 'Westminster', 'Westmorland', 'Wheatland', 'Whittier', 'Williams', 'Willits', 'Willows',
 			'Windsor', 'Winters', 'Woodlake', 'Woodland', 'Woodside', 'Yorba Linda', 'Yountville', 'Yreka', 'Yuba City', 'Yucaipa',
 			'Yucca Valley');
+
+		static protected $StreetTypeArray = array('Road', 'Way', 'Blvd.', 'Ave.', 'St.', 'Terrace', 'Dr.');
+		static protected $Address2UnitTypeArray = array('Apt.', 'Suite', 'Unit');
+		static protected $UsStateArray = array('AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA', 'GU', 'HI', 'ID',
+			'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MH', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC',
+			'ND', 'MP', 'OH', 'OK', 'OR', 'PW', 'PA', 'PR', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY');
 	}
 ?>
