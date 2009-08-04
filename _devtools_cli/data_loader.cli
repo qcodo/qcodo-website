@@ -2,12 +2,28 @@
 <?php
 	require(dirname(__FILE__) . '/cli_prepend.inc.php');
 
+	// Example optional IssueFieldOption values for optional IssueFields loaded from data.sql
+	$strOperatingSystemArray = array('CentOS 4', 'CentOS 5', 'CentOS 5.1', 'CentOS 5.2', 'CentOS 5.3',
+		'Mac OS X 10.4', 'Mac OS X 10.5', 'Mac OS X 10.6',
+		'RHEL 4', 'RHEL 5', 'RHEL 5.1', 'RHEL 5.2', 'RHEL 5.3',
+		'Windows 2000', 'Windows XP / 2003', ' Windows Vista', 'Windows 7',
+		'Ubuntu 7.04', 'Ubuntu 7.10', 'Ubuntu 8.04', 'Ubuntu 8.10', 'Ubuntu 9.04', 'Ubuntu 9.10'); 
+	$strBrowserArray = array('Chrome 1', 'Chrome 2', 'Chrome 3',
+		'Firefox 2', 'Firefox 3', 'Firefox 3.5',
+		'Microsoft IE 6', 'Microsoft IE 7', 'Microsoft IE 8',
+		'Safari 2', 'Safari 3', 'Safari 4'
+	);
+	$strServerArray = array('Apache 1.x', 'Apache 2.x', 'IIS 4', 'IIS 5', 'IIS 5.1', 'IIS 6', 'IIS 7', 'IIS 7.5');
+	$strDatabaseArray = array('MySQL 4.x', 'MySQL 5.0', 'MySQL 5.1', 'MySQL 6.0', 'PostgreSQL 8.x', 'SQL Server 2000', 'SQL Server 2005', 'SQL Server 2008', 'SQLite 3.x');
+
 	$intMaxCountryId = Country::CountAll();
 	$intMaxTimeZoneId = Timezone::CountAll();
 	$intMinForumId = Forum::QuerySingle(QQ::All(), QQ::OrderBy(QQN::Forum()->Id))->Id;
 	$intMaxForumId = Forum::QuerySingle(QQ::All(), QQ::OrderBy(QQN::Forum()->Id, false))->Id;
 
 	$dttStartDate = new QDateTime('2005-01-01 00:00:00');
+
+
 
 	while (QDataGen::DisplayWhileTask('Generating Person records', 200)) {
 		$objPerson = new Person();
