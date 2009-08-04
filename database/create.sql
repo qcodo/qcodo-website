@@ -23,6 +23,7 @@ CREATE TABLE `issue_field`
 (
 `id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
 `name` VARCHAR(255),
+`order_number` INTEGER unsigned,
 `required_flag` BOOLEAN,
 `mutable_flag` BOOLEAN,
 `active_flag` BOOLEAN,
@@ -202,15 +203,6 @@ PRIMARY KEY (`id`)
 
 
 
-CREATE TABLE `email_topic_person_assn`
-(
-`topic_id` INTEGER unsigned  NOT NULL,
-`person_id` INTEGER unsigned  NOT NULL,
-PRIMARY KEY (`topic_id`,`person_id`)
-) ENGINE=InnoDB;
-
-
-
 CREATE TABLE `topic`
 (
 `id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
@@ -221,6 +213,15 @@ CREATE TABLE `topic`
 `message_count` INTEGER unsigned,
 `view_count` INTEGER unsigned,
 PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+
+
+
+CREATE TABLE `email_topic_person_assn`
+(
+`topic_id` INTEGER unsigned  NOT NULL,
+`person_id` INTEGER unsigned  NOT NULL,
+PRIMARY KEY (`topic_id`,`person_id`)
 ) ENGINE=InnoDB;
 
 
@@ -340,14 +341,14 @@ CREATE INDEX `download_category_id_idx`  ON `download`(`download_category_id`);
 ALTER TABLE `download` ADD FOREIGN KEY download_category_id_idxfk(`download_category_id`) REFERENCES `download_category`(`id`);
 CREATE INDEX `download_person_id_idx`  ON `download`(`person_id`);
 ALTER TABLE `download` ADD FOREIGN KEY person_id_idxfk(`person_id`) REFERENCES `person`(`id`);
-CREATE INDEX `email_topic_person_assn_topic_id_idxfk`  ON `email_topic_person_assn`(`topic_id`);
-ALTER TABLE `email_topic_person_assn` ADD FOREIGN KEY topic_id_idxfk(`topic_id`) REFERENCES `topic`(`id`);
-CREATE INDEX `email_topic_person_assn_person_id_idxfk`  ON `email_topic_person_assn`(`person_id`);
-ALTER TABLE `email_topic_person_assn` ADD FOREIGN KEY person_id_idxfk(`person_id`) REFERENCES `person`(`id`);
 CREATE INDEX `topic_forum_id_idx`  ON `topic`(`forum_id`);
 ALTER TABLE `topic` ADD FOREIGN KEY forum_id_idxfk(`forum_id`) REFERENCES `forum`(`id`);
 CREATE INDEX `topic_person_id_idx`  ON `topic`(`person_id`);
 ALTER TABLE `topic` ADD FOREIGN KEY person_id_idxfk(`person_id`) REFERENCES `person`(`id`);
+CREATE INDEX `email_topic_person_assn_topic_id_idxfk`  ON `email_topic_person_assn`(`topic_id`);
+ALTER TABLE `email_topic_person_assn` ADD FOREIGN KEY topic_id_idxfk(`topic_id`) REFERENCES `topic`(`id`);
+CREATE INDEX `email_topic_person_assn_person_id_idxfk`  ON `email_topic_person_assn`(`person_id`);
+ALTER TABLE `email_topic_person_assn` ADD FOREIGN KEY person_id_idxfk(`person_id`) REFERENCES `person`(`id`);
 CREATE INDEX `read_once_topic_person_assn_topic_id_idxfk`  ON `read_once_topic_person_assn`(`topic_id`);
 ALTER TABLE `read_once_topic_person_assn` ADD FOREIGN KEY topic_id_idxfk(`topic_id`) REFERENCES `topic`(`id`);
 CREATE INDEX `read_once_topic_person_assn_person_id_idxfk`  ON `read_once_topic_person_assn`(`person_id`);

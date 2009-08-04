@@ -34,3 +34,38 @@ INSERT INTO issue_status_type(id, name) VALUES (NULL, 'Closed - Fixed');
 INSERT INTO issue_status_type(id, name) VALUES (NULL, 'Closed - Won\'t Fix');
 INSERT INTO issue_status_type(id, name) VALUES (NULL, 'Closed - Duplicate');
 INSERT INTO issue_status_type(id, name) VALUES (NULL, 'Closed - Cannot Replicate');
+
+INSERT INTO issue_field(id, name, order_number, required_flag, mutable_flag, active_flag) VALUES (1, 'Qcodo Version', 1, true, false, true);
+INSERT INTO issue_field(id, name, order_number, required_flag, mutable_flag, active_flag) VALUES (2, 'PHP Version', 2, true, true, true);
+INSERT INTO issue_field(id, name, order_number, required_flag, mutable_flag, active_flag) VALUES (3, 'Category', 3, true, false, true);
+
+INSERT INTO issue_field(id, name, order_number, required_flag, mutable_flag, active_flag) VALUES (4, 'Browser', 101, false, true, true);
+INSERT INTO issue_field(id, name, order_number, required_flag, mutable_flag, active_flag) VALUES (5, 'Web Server', 102, false, true, true);
+INSERT INTO issue_field(id, name, order_number, required_flag, mutable_flag, active_flag) VALUES (6, 'Database', 103, false, true, true);
+INSERT INTO issue_field(id, name, order_number, required_flag, mutable_flag, active_flag) VALUES (7, 'Operating System', 104, false, true, true);
+
+INSERT INTO issue_field_option(issue_field_id, name, token, order_number, active_flag) VALUES (1, '0.3.43 (Development)', '0343development', 1, true);
+INSERT INTO issue_field_option(issue_field_id, name, token, order_number, active_flag) VALUES (1, '0.3.42 (Development)', '0342development', 2, true);
+INSERT INTO issue_field_option(issue_field_id, name, token, order_number, active_flag) VALUES (1, '0.3.41 (Development)', '0341development', 3, true);
+INSERT INTO issue_field_option(issue_field_id, name, token, order_number, active_flag) VALUES (1, '0.3.40 (Development)', '0340development', 4, true);
+INSERT INTO issue_field_option(issue_field_id, name, token, order_number, active_flag) VALUES (1, '0.3.39 (Stable)', '0339stable', 5, true);
+INSERT INTO issue_field_option(issue_field_id, name, token, order_number, active_flag) VALUES (1, '0.3.38 (Development)', '0339development', 6, true);
+
+INSERT INTO issue_field_option(issue_field_id, name, token, order_number, active_flag) VALUES (2, '5.3.0', '530', 1, true);
+INSERT INTO issue_field_option(issue_field_id, name, token, order_number, active_flag) VALUES (2, '5.3 (RC2)', '53rc2', 2, true);
+INSERT INTO issue_field_option(issue_field_id, name, token, order_number, active_flag) VALUES (2, '5.3 (RC1)', '53rc1', 3, true);
+INSERT INTO issue_field_option(issue_field_id, name, token, order_number, active_flag) VALUES (2, '5.2.10', '5210', 4, true);
+INSERT INTO issue_field_option(issue_field_id, name, token, order_number, active_flag) VALUES (2, '5.2.9', '529', 5, true);
+INSERT INTO issue_field_option(issue_field_id, name, token, order_number, active_flag) VALUES (2, '5.2.8', '528', 6, true);
+INSERT INTO issue_field_option(issue_field_id, name, token, order_number, active_flag) VALUES (2, '5.2.7', '527', 7, true);
+
+INSERT INTO issue_field_option(issue_field_id, name, token, order_number, active_flag) VALUES (3, 'General Framework', 'generalframework', 1, true);
+INSERT INTO issue_field_option(issue_field_id, name, token, order_number, active_flag) VALUES (3, 'Code Generator', 'codegenerator', 2, true);
+INSERT INTO issue_field_option(issue_field_id, name, token, order_number, active_flag) VALUES (3, 'QForm / QControls (PHP)', 'qformqcontrolsphp', 3, true);
+INSERT INTO issue_field_option(issue_field_id, name, token, order_number, active_flag) VALUES (3, 'QForm / QControls (JavaScript)', 'qformqcontrolsjavascript', 4, true);
+INSERT INTO issue_field_option(issue_field_id, name, token, order_number, active_flag) VALUES (3, 'Command Line Tools (CLI)', 'commandlinetoolscli', 5, true);
+INSERT INTO issue_field_option(issue_field_id, name, token, order_number, active_flag) VALUES (3, 'Configuration / Installation', 'configurationinstallation', 6, true);
+INSERT INTO issue_field_option(issue_field_id, name, token, order_number, active_flag) VALUES (3, 'Web Services', 'webservices', 7, true);
+INSERT INTO issue_field_option(issue_field_id, name, token, order_number, active_flag) VALUES (3, 'Internationalization', 'internationalization', 8, true);
+INSERT INTO issue_field_option(issue_field_id, name, token, order_number, active_flag) VALUES (3, 'Email Services', 'emailservices', 9, true);
+INSERT INTO issue_field_option(issue_field_id, name, token, order_number, active_flag) VALUES (3, 'Qcodo.com Website / Documentation / Examples', 'qcodocomwebsitedocumentationexamples', 10, true);
