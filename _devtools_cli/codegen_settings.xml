@@ -34,7 +34,7 @@
 			<manualQuery support="false"/>
 
 			<relationships/>
-			<relationshipsScript filepath="/var/www/qcodo-website/database/create.sql" format="sql"/>
+			<relationshipsScript filepath="" format="sql"/>
 		</database>
 	</dataSources>
 </codegen>

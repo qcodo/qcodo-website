@@ -26,7 +26,7 @@ INSERT INTO article_section VALUES(3,'Advanced Topics');
 INSERT INTO person(person_type_id, username, first_name, last_name, email, password, display_real_name_flag, display_email_flag, opt_in_flag, donated_flag, location, country_id, url, registration_date) VALUES
 (1, 'mikeho', 'Mike', 'Ho', 'mike@quasidea.com', '67a1e09bb1f83f5007dc119c14d663aa', 1, 1, 1, 0, 'Sunnyvale, CA', 230, 'http://www.quasidea.com/', '2000-01-01 00:00:00');
 
-INSERT INTO issue_status_type(id, name) VALUES (NULL, 'New');
+INSERT INTO issue_status_type(id, name) VALUES (NULL, 'New Issue');
 INSERT INTO issue_status_type(id, name) VALUES (NULL, 'Open');
 INSERT INTO issue_status_type(id, name) VALUES (NULL, 'Assigned');
 INSERT INTO issue_status_type(id, name) VALUES (NULL, 'Fixed');

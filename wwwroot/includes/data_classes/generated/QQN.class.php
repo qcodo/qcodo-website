@@ -55,6 +55,42 @@
 			return new QQNodeForum('forum', null, null);
 		}
 		/**
+		 * @return QQNodeIssue
+		 */
+		static public function Issue() {
+			return new QQNodeIssue('issue', null, null);
+		}
+		/**
+		 * @return QQNodeIssueField
+		 */
+		static public function IssueField() {
+			return new QQNodeIssueField('issue_field', null, null);
+		}
+		/**
+		 * @return QQNodeIssueFieldOption
+		 */
+		static public function IssueFieldOption() {
+			return new QQNodeIssueFieldOption('issue_field_option', null, null);
+		}
+		/**
+		 * @return QQNodeIssueFieldValue
+		 */
+		static public function IssueFieldValue() {
+			return new QQNodeIssueFieldValue('issue_field_value', null, null);
+		}
+		/**
+		 * @return QQNodeIssueMessage
+		 */
+		static public function IssueMessage() {
+			return new QQNodeIssueMessage('issue_message', null, null);
+		}
+		/**
+		 * @return QQNodeIssueVote
+		 */
+		static public function IssueVote() {
+			return new QQNodeIssueVote('issue_vote', null, null);
+		}
+		/**
 		 * @return QQNodeLoginTicket
 		 */
 		static public function LoginTicket() {

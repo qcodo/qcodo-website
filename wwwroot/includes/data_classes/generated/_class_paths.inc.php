@@ -62,6 +62,48 @@
 		QApplicationBase::$ClassFile['forummetacontrol'] = __DATA_META_CONTROLS__ . '/ForumMetaControl.class.php';
 		QApplicationBase::$ClassFile['forumdatagrid'] = __DATA_META_CONTROLS__ . '/ForumDataGrid.class.php';
 
+	// ClassPaths for the Issue class
+		QApplicationBase::$ClassFile['issue'] = __DATA_CLASSES__ . '/Issue.class.php';
+		QApplicationBase::$ClassFile['qqnodeissue'] = __DATA_CLASSES__ . '/Issue.class.php';
+		QApplicationBase::$ClassFile['qqreversereferencenodeissue'] = __DATA_CLASSES__ . '/Issue.class.php';
+		QApplicationBase::$ClassFile['issuemetacontrol'] = __DATA_META_CONTROLS__ . '/IssueMetaControl.class.php';
+		QApplicationBase::$ClassFile['issuedatagrid'] = __DATA_META_CONTROLS__ . '/IssueDataGrid.class.php';
+
+	// ClassPaths for the IssueField class
+		QApplicationBase::$ClassFile['issuefield'] = __DATA_CLASSES__ . '/IssueField.class.php';
+		QApplicationBase::$ClassFile['qqnodeissuefield'] = __DATA_CLASSES__ . '/IssueField.class.php';
+		QApplicationBase::$ClassFile['qqreversereferencenodeissuefield'] = __DATA_CLASSES__ . '/IssueField.class.php';
+		QApplicationBase::$ClassFile['issuefieldmetacontrol'] = __DATA_META_CONTROLS__ . '/IssueFieldMetaControl.class.php';
+		QApplicationBase::$ClassFile['issuefielddatagrid'] = __DATA_META_CONTROLS__ . '/IssueFieldDataGrid.class.php';
+
+	// ClassPaths for the IssueFieldOption class
+		QApplicationBase::$ClassFile['issuefieldoption'] = __DATA_CLASSES__ . '/IssueFieldOption.class.php';
+		QApplicationBase::$ClassFile['qqnodeissuefieldoption'] = __DATA_CLASSES__ . '/IssueFieldOption.class.php';
+		QApplicationBase::$ClassFile['qqreversereferencenodeissuefieldoption'] = __DATA_CLASSES__ . '/IssueFieldOption.class.php';
+		QApplicationBase::$ClassFile['issuefieldoptionmetacontrol'] = __DATA_META_CONTROLS__ . '/IssueFieldOptionMetaControl.class.php';
+		QApplicationBase::$ClassFile['issuefieldoptiondatagrid'] = __DATA_META_CONTROLS__ . '/IssueFieldOptionDataGrid.class.php';
+
+	// ClassPaths for the IssueFieldValue class
+		QApplicationBase::$ClassFile['issuefieldvalue'] = __DATA_CLASSES__ . '/IssueFieldValue.class.php';
+		QApplicationBase::$ClassFile['qqnodeissuefieldvalue'] = __DATA_CLASSES__ . '/IssueFieldValue.class.php';
+		QApplicationBase::$ClassFile['qqreversereferencenodeissuefieldvalue'] = __DATA_CLASSES__ . '/IssueFieldValue.class.php';
+		QApplicationBase::$ClassFile['issuefieldvaluemetacontrol'] = __DATA_META_CONTROLS__ . '/IssueFieldValueMetaControl.class.php';
+		QApplicationBase::$ClassFile['issuefieldvaluedatagrid'] = __DATA_META_CONTROLS__ . '/IssueFieldValueDataGrid.class.php';
+
+	// ClassPaths for the IssueMessage class
+		QApplicationBase::$ClassFile['issuemessage'] = __DATA_CLASSES__ . '/IssueMessage.class.php';
+		QApplicationBase::$ClassFile['qqnodeissuemessage'] = __DATA_CLASSES__ . '/IssueMessage.class.php';
+		QApplicationBase::$ClassFile['qqreversereferencenodeissuemessage'] = __DATA_CLASSES__ . '/IssueMessage.class.php';
+		QApplicationBase::$ClassFile['issuemessagemetacontrol'] = __DATA_META_CONTROLS__ . '/IssueMessageMetaControl.class.php';
+		QApplicationBase::$ClassFile['issuemessagedatagrid'] = __DATA_META_CONTROLS__ . '/IssueMessageDataGrid.class.php';
+
+	// ClassPaths for the IssueVote class
+		QApplicationBase::$ClassFile['issuevote'] = __DATA_CLASSES__ . '/IssueVote.class.php';
+		QApplicationBase::$ClassFile['qqnodeissuevote'] = __DATA_CLASSES__ . '/IssueVote.class.php';
+		QApplicationBase::$ClassFile['qqreversereferencenodeissuevote'] = __DATA_CLASSES__ . '/IssueVote.class.php';
+		QApplicationBase::$ClassFile['issuevotemetacontrol'] = __DATA_META_CONTROLS__ . '/IssueVoteMetaControl.class.php';
+		QApplicationBase::$ClassFile['issuevotedatagrid'] = __DATA_META_CONTROLS__ . '/IssueVoteDataGrid.class.php';
+
 	// ClassPaths for the LoginTicket class
 		QApplicationBase::$ClassFile['loginticket'] = __DATA_CLASSES__ . '/LoginTicket.class.php';
 		QApplicationBase::$ClassFile['qqnodeloginticket'] = __DATA_CLASSES__ . '/LoginTicket.class.php';

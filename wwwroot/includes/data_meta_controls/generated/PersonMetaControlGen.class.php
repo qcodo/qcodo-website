@@ -50,6 +50,8 @@
 	 * property-read QLabel $TimezoneIdLabel
 	 * property QDateTimePicker $RegistrationDateControl
 	 * property-read QLabel $RegistrationDateLabel
+	 * property QListBox $IssueAsEmailControl
+	 * property-read QLabel $IssueAsEmailLabel
 	 * property QListBox $TopicAsEmailControl
 	 * property-read QLabel $TopicAsEmailLabel
 	 * property QListBox $TopicAsReadOnceControl
@@ -105,11 +107,13 @@
 		protected $lblRegistrationDate;
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
+		protected $lstIssuesAsEmail;
 		protected $lstTopicsAsEmail;
 		protected $lstTopicsAsReadOnce;
 		protected $lstTopicsAsRead;
 
 		// QLabel Controls (if applicable) to view Unique ReverseReferences and ManyToMany References
+		protected $lblIssuesAsEmail;
 		protected $lblTopicsAsEmail;
 		protected $lblTopicsAsReadOnce;
 		protected $lblTopicsAsRead;
@@ -646,6 +650,46 @@
 		protected $strRegistrationDateDateTimeFormat;
 
 		/**
+		 * Create and setup QListBox lstIssuesAsEmail
+		 * @param string $strControlId optional ControlId to use
+		 * @return QListBox
+		 */
+		public function lstIssuesAsEmail_Create($strControlId = null) {
+			$this->lstIssuesAsEmail = new QListBox($this->objParentObject, $strControlId);
+			$this->lstIssuesAsEmail->Name = QApplication::Translate('Issues As Email');
+			$this->lstIssuesAsEmail->SelectionMode = QSelectionMode::Multiple;
+			$objAssociatedArray = $this->objPerson->GetIssueAsEmailArray();
+			$objIssueArray = Issue::LoadAll();
+			if ($objIssueArray) foreach ($objIssueArray as $objIssue) {
+				$objListItem = new QListItem($objIssue->__toString(), $objIssue->Id);
+				foreach ($objAssociatedArray as $objAssociated) {
+					if ($objAssociated->Id == $objIssue->Id)
+						$objListItem->Selected = true;
+				}
+				$this->lstIssuesAsEmail->AddItem($objListItem);
+			}
+			return $this->lstIssuesAsEmail;
+		}
+
+		/**
+		 * Create and setup QLabel lblIssuesAsEmail
+		 * @param string $strControlId optional ControlId to use
+		 * @param string $strGlue glue to display in between each associated object
+		 * @return QLabel
+		 */
+		public function lblIssuesAsEmail_Create($strControlId = null, $strGlue = ', ') {
+			$this->lblIssuesAsEmail = new QLabel($this->objParentObject, $strControlId);
+			$this->lstIssuesAsEmail->Name = QApplication::Translate('Issues As Email');
+			
+			$objAssociatedArray = $this->objPerson->GetIssueAsEmailArray();
+			$strItems = array();
+			foreach ($objAssociatedArray as $objAssociated)
+				$strItems[] = $objAssociated->__toString();
+			$this->lblIssuesAsEmail->Text = implode($strGlue, $strItems);
+			return $this->lblIssuesAsEmail;
+		}
+
+		/**
 		 * Create and setup QListBox lstTopicsAsEmail
 		 * @param string $strControlId optional ControlId to use
 		 * @return QListBox
@@ -846,6 +890,27 @@
 			if ($this->calRegistrationDate) $this->calRegistrationDate->DateTime = $this->objPerson->RegistrationDate;
 			if ($this->lblRegistrationDate) $this->lblRegistrationDate->Text = sprintf($this->objPerson->RegistrationDate) ? $this->objPerson->__toString($this->strRegistrationDateDateTimeFormat) : null;
 
+			if ($this->lstIssuesAsEmail) {
+				$this->lstIssuesAsEmail->RemoveAllItems();
+				$objAssociatedArray = $this->objPerson->GetIssueAsEmailArray();
+				$objIssueArray = Issue::LoadAll();
+				if ($objIssueArray) foreach ($objIssueArray as $objIssue) {
+					$objListItem = new QListItem($objIssue->__toString(), $objIssue->Id);
+					foreach ($objAssociatedArray as $objAssociated) {
+						if ($objAssociated->Id == $objIssue->Id)
+							$objListItem->Selected = true;
+					}
+					$this->lstIssuesAsEmail->AddItem($objListItem);
+				}
+			}
+			if ($this->lblIssuesAsEmail) {
+				$objAssociatedArray = $this->objPerson->GetIssueAsEmailArray();
+				$strItems = array();
+				foreach ($objAssociatedArray as $objAssociated)
+					$strItems[] = $objAssociated->__toString();
+				$this->lblIssuesAsEmail->Text = implode($strGlue, $strItems);
+			}
+
 			if ($this->lstTopicsAsEmail) {
 				$this->lstTopicsAsEmail->RemoveAllItems();
 				$objAssociatedArray = $this->objPerson->GetTopicAsEmailArray();
@@ -917,6 +982,16 @@
 		// PROTECTED UPDATE METHODS for ManyToManyReferences (if any)
 		///////////////////////////////////////////////
 
+		protected function lstIssuesAsEmail_Update() {
+			if ($this->lstIssuesAsEmail) {
+				$this->objPerson->UnassociateAllIssuesAsEmail();
+				$objSelectedListItems = $this->lstIssuesAsEmail->SelectedItems;
+				if ($objSelectedListItems) foreach ($objSelectedListItems as $objListItem) {
+					$this->objPerson->AssociateIssueAsEmail(Issue::Load($objListItem->Value));
+				}
+			}
+		}
+
 		protected function lstTopicsAsEmail_Update() {
 			if ($this->lstTopicsAsEmail) {
 				$this->objPerson->UnassociateAllTopicsAsEmail();
@@ -985,6 +1060,7 @@
 				$this->objPerson->Save();
 
 				// Finally, update any ManyToManyReferences (if any)
+				$this->lstIssuesAsEmail_Update();
 				$this->lstTopicsAsEmail_Update();
 				$this->lstTopicsAsReadOnce_Update();
 				$this->lstTopicsAsRead_Update();
@@ -999,6 +1075,7 @@
 		 * It will also unassociate itself from any ManyToManyReferences.
 		 */
 		public function DeletePerson() {
+			$this->objPerson->UnassociateAllIssuesAsEmail();
 			$this->objPerson->UnassociateAllTopicsAsEmail();
 			$this->objPerson->UnassociateAllTopicsAsReadOnce();
 			$this->objPerson->UnassociateAllTopicsAsRead();
@@ -1128,6 +1205,12 @@
 				case 'RegistrationDateLabel':
 					if (!$this->lblRegistrationDate) return $this->lblRegistrationDate_Create();
 					return $this->lblRegistrationDate;
+				case 'IssueAsEmailControl':
+					if (!$this->lstIssuesAsEmail) return $this->lstIssuesAsEmail_Create();
+					return $this->lstIssuesAsEmail;
+				case 'IssueAsEmailLabel':
+					if (!$this->lblIssuesAsEmail) return $this->lblIssuesAsEmail_Create();
+					return $this->lblIssuesAsEmail;
 				case 'TopicAsEmailControl':
 					if (!$this->lstTopicsAsEmail) return $this->lstTopicsAsEmail_Create();
 					return $this->lstTopicsAsEmail;
@@ -1202,6 +1285,8 @@
 						return ($this->lstTimezone = QType::Cast($mixValue, 'QControl'));
 					case 'RegistrationDateControl':
 						return ($this->calRegistrationDate = QType::Cast($mixValue, 'QControl'));
+					case 'IssueAsEmailControl':
+						return ($this->lstIssuesAsEmail = QType::Cast($mixValue, 'QControl'));
 					case 'TopicAsEmailControl':
 						return ($this->lstTopicsAsEmail = QType::Cast($mixValue, 'QControl'));
 					case 'TopicAsReadOnceControl':
