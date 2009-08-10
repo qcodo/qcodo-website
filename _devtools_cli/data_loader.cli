@@ -141,7 +141,50 @@
 				$objIssue->SetFieldOption(QDataGen::GenerateFromArray($objIssueFieldOptionArray[$objIssueField->Id]));
 			}
 		}
+
+		// Add Votes
+		$intCount = rand(0, 25);
+		if (rand(0, 1)) $intCount = round($intCount / 2);
+		if (rand(0, 1)) $intCount = round($intCount / 2);
+		for ($intIndex = 0; $intIndex < $intCount; $intIndex++) {
+			$objIssue->SetVote(Person::Load(rand(1, $intMaxPersonId)));
+		}
+
+		// Add Trackers
+		$objIssue->AssociatePersonAsEmail($objIssue->PostedByPerson);
+		$intCount = rand(0, 25);
+		if (rand(0, 1)) $intCount = round($intCount / 2);
+		if (rand(0, 1)) $intCount = round($intCount / 2);
+		for ($intIndex = 0; $intIndex < $intCount; $intIndex++) {
+			$objRandomPerson = Person::Load(rand(1, $intMaxPersonId));
+			if (!$objIssue->IsPersonAsEmailAssociated($objRandomPerson))
+				$objIssue->AssociatePersonAsEmail($objRandomPerson);
+		}
 	}
+
+	// Generate Issues, themselves
+	QDataGen::DisplayForEachTaskStart($strTitle = 'Generating Messages for Issues', Issue::CountAll());
+	foreach (Issue::LoadAll() as $objIssue) {
+		$intStep = QDataGen::DisplayForEachTaskNext($strTitle);
+		$intCount = rand(1, 25);
+		if (rand(0, 1)) $intCount = round($intCount / 2);
+		if (rand(0, 1)) $intCount = round($intCount / 2);
+		if (rand(0, 1)) $intCount = round($intCount / 2);
+		$dttPostDate = $objIssue->PostDate;
+		for ($intIndex = 0; $intIndex < $intCount; $intIndex++) {
+			// If first message, the person who posted is the one who posts the first message
+			$objPerson = ($intIndex == 0) ? $objIssue->PostedByPerson : Person::Load(rand(1, $intMaxPersonId));
+
+			// Get a random Message PostDate relatively close to the current dttpostdate we're iterating through
+			$dttEndRange = QDataGen::GenerateDateTime($dttPostDate, QDateTime::Now());
+			$dttEndRange = QDataGen::GenerateDateTime($dttPostDate, $dttEndRange);
+			$dttEndRange = QDataGen::GenerateDateTime($dttPostDate, $dttEndRange);
+			$dttPostDate = ($intIndex == 0) ? new QDateTime($objIssue->PostDate) : QDataGen::GenerateDateTime($dttPostDate, $dttEndRange);
+
+			$objIssue->PostMessage(QDataGen::GenerateContent(rand(1, 3), 10, 30), $objPerson, $dttPostDate);
+		}
+	}
+	QDataGen::DisplayForEachTaskEnd($strTitle);
 	exit(0);
 
 	//////////////////////
@@ -164,7 +207,7 @@
 	// Forum Messages
 	//////////////////////
 
-	QDataGen::DisplayForEachTaskStart($strTopics = 'Generating Forum Messages for Topics', 500);
+	QDataGen::DisplayForEachTaskStart($strTopics = 'Generating Forum Messages for Topics', Topic::CountAll());
 	foreach (Topic::LoadAll() as $objTopic) {
 		$intStep = QDataGen::DisplayForEachTaskNext($strTopics);
 

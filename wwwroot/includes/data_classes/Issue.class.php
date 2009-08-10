@@ -58,6 +58,61 @@
 				return null;
 		}
 
+		/**
+		 * Sets a vote for a person and updates the vote_count value for this issue.
+		 * If already voted OR if person is the poster, the vote will NOT count.
+		 * @param Person $objPerson the person who is voting "yes" to this issue
+		 * @param QDateTime $dttVoteDate the optional datetime value of the date (or NOW() if none specified)
+		 * @return void
+		 */
+		public function SetVote(Person $objPerson, QDateTime $dttVoteDate = null) {
+			$objVote = IssueVote::LoadByIssueIdPersonId($this->intId, $objPerson->Id);
+			if (!$objVote &&
+				($objPerson->Id != $this->PostedByPersonId)) {
+				$objVote = new IssueVote();
+				$objVote->Issue = $this;
+				$objVote->Person = $objPerson;
+				$objVote->VoteDate = ($dttVoteDate) ? new QDateTime($dttVoteDate) : QDateTime::Now();
+				$objVote->Save(); 
+			}
+			$this->intVoteCount = IssueVote::CountByIssueId($this->intId);
+			$this->Save();
+		}
+
+		/**
+		 * Specifies whether or not a given person has voted "Yes" for this Issue
+		 * @param Person $objPerson
+		 * @return boolean
+		 */
+		public function IsPersonVoted(Person $objPerson) {
+			if (IssueVote::LoadByIssueIdPersonId($this->intId, $objPerson->Id))
+				return true;
+			else
+				return false;
+		}
+
+
+		/**
+		 * Posts a new message/comment for this Issue.  If no person is specified, then it is assumed
+		 * that this is a "System Message" for this Issue.  This will update the last_update_date on this
+		 * issue.
+		 * @param string $strMessageText the text of the message, itself
+		 * @param Person $objPerson optional person who posted this message, or "System" if none
+		 * @param QDateTime $dttPostDate
+		 * @return void
+		 */
+		public function PostMessage($strMessageText, Person $objPerson = null, QDateTime $dttPostDate = null) {
+			$objIssueMessage = new IssueMessage();
+			$objIssueMessage->Issue = $this;
+			if ($objPerson) $objIssueMessage->Person = $objPerson;
+			$objIssueMessage->Message = $strMessageText;
+			$objIssueMessage->ReplyNumber = IssueMessage::CountByIssueId($this->intId) + 1;
+			$objIssueMessage->PostDate = ($dttPostDate) ? new QDateTime($dttPostDate) : QDateTime::Now();
+			$objIssueMessage->Save();
+		}
+
+
+
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...
 		// but feel free to use these as a starting point)
