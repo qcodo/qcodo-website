@@ -280,6 +280,7 @@
 				case 'FirstName': return QQN::Person()->FirstName;
 				case 'LastName': return QQN::Person()->LastName;
 				case 'Email': return QQN::Person()->Email;
+				case 'DisplayName': return QQN::Person()->DisplayName;
 				case 'PasswordResetFlag': return QQN::Person()->PasswordResetFlag;
 				case 'DisplayRealNameFlag': return QQN::Person()->DisplayRealNameFlag;
 				case 'DisplayEmailFlag': return QQN::Person()->DisplayEmailFlag;

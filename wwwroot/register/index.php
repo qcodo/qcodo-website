@@ -122,6 +122,8 @@
 			$this->mctPerson->Person->SetPassword($this->txtPassword->Text);
 			$this->mctPerson->SavePerson();
 
+			$this->mctPerson->Person->RefreshDisplayName();
+
 			QApplication::LoginPerson($this->mctPerson->Person);
 			QApplication::Redirect('/register/confirmed.php');
 		}

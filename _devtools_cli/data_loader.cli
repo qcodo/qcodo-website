@@ -82,6 +82,11 @@
 
 		// Save
 		$objPerson->Save();
+
+		// Set the DisplayName
+		$objPerson->RefreshDisplayName();
+
+		// Update the MaxId count
 		$intMaxPersonId = $objPerson->Id;
 	}
 

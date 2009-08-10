@@ -76,7 +76,7 @@
 					array('Wiki', '/test.php/4/2', 60),
 					array('Other Projects', '/test.php/4/3', 98))),
 				array('Development', '/test.php/5', 135, array(
-					array('Bug Tracking', '/test.php/5/1', 90),
+					array('Bug Tracking', '/issues/', 90),
 					array('Contribute', '/test.php/5/2', 80),
 					array('Donate', '/test.php/5/3', 60)))
 				);

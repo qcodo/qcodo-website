@@ -30,6 +30,8 @@
 	 * property-read QLabel $LastNameLabel
 	 * property QTextBox $EmailControl
 	 * property-read QLabel $EmailLabel
+	 * property QTextBox $DisplayNameControl
+	 * property-read QLabel $DisplayNameLabel
 	 * property QCheckBox $PasswordResetFlagControl
 	 * property-read QLabel $PasswordResetFlagLabel
 	 * property QCheckBox $DisplayRealNameFlagControl
@@ -77,6 +79,7 @@
 		protected $txtFirstName;
 		protected $txtLastName;
 		protected $txtEmail;
+		protected $txtDisplayName;
 		protected $chkPasswordResetFlag;
 		protected $chkDisplayRealNameFlag;
 		protected $chkDisplayEmailFlag;
@@ -95,6 +98,7 @@
 		protected $lblFirstName;
 		protected $lblLastName;
 		protected $lblEmail;
+		protected $lblDisplayName;
 		protected $lblPasswordResetFlag;
 		protected $lblDisplayRealNameFlag;
 		protected $lblDisplayEmailFlag;
@@ -384,6 +388,31 @@
 			$this->lblEmail->Text = $this->objPerson->Email;
 			$this->lblEmail->Required = true;
 			return $this->lblEmail;
+		}
+
+		/**
+		 * Create and setup QTextBox txtDisplayName
+		 * @param string $strControlId optional ControlId to use
+		 * @return QTextBox
+		 */
+		public function txtDisplayName_Create($strControlId = null) {
+			$this->txtDisplayName = new QTextBox($this->objParentObject, $strControlId);
+			$this->txtDisplayName->Name = QApplication::Translate('Display Name');
+			$this->txtDisplayName->Text = $this->objPerson->DisplayName;
+			$this->txtDisplayName->MaxLength = Person::DisplayNameMaxLength;
+			return $this->txtDisplayName;
+		}
+
+		/**
+		 * Create and setup QLabel lblDisplayName
+		 * @param string $strControlId optional ControlId to use
+		 * @return QLabel
+		 */
+		public function lblDisplayName_Create($strControlId = null) {
+			$this->lblDisplayName = new QLabel($this->objParentObject, $strControlId);
+			$this->lblDisplayName->Name = QApplication::Translate('Display Name');
+			$this->lblDisplayName->Text = $this->objPerson->DisplayName;
+			return $this->lblDisplayName;
 		}
 
 		/**
@@ -840,6 +869,9 @@
 			if ($this->txtEmail) $this->txtEmail->Text = $this->objPerson->Email;
 			if ($this->lblEmail) $this->lblEmail->Text = $this->objPerson->Email;
 
+			if ($this->txtDisplayName) $this->txtDisplayName->Text = $this->objPerson->DisplayName;
+			if ($this->lblDisplayName) $this->lblDisplayName->Text = $this->objPerson->DisplayName;
+
 			if ($this->chkPasswordResetFlag) $this->chkPasswordResetFlag->Checked = $this->objPerson->PasswordResetFlag;
 			if ($this->lblPasswordResetFlag) $this->lblPasswordResetFlag->Text = ($this->objPerson->PasswordResetFlag) ? QApplication::Translate('Yes') : QApplication::Translate('No');
 
@@ -1043,6 +1075,7 @@
 				if ($this->txtFirstName) $this->objPerson->FirstName = $this->txtFirstName->Text;
 				if ($this->txtLastName) $this->objPerson->LastName = $this->txtLastName->Text;
 				if ($this->txtEmail) $this->objPerson->Email = $this->txtEmail->Text;
+				if ($this->txtDisplayName) $this->objPerson->DisplayName = $this->txtDisplayName->Text;
 				if ($this->chkPasswordResetFlag) $this->objPerson->PasswordResetFlag = $this->chkPasswordResetFlag->Checked;
 				if ($this->chkDisplayRealNameFlag) $this->objPerson->DisplayRealNameFlag = $this->chkDisplayRealNameFlag->Checked;
 				if ($this->chkDisplayEmailFlag) $this->objPerson->DisplayEmailFlag = $this->chkDisplayEmailFlag->Checked;
@@ -1145,6 +1178,12 @@
 				case 'EmailLabel':
 					if (!$this->lblEmail) return $this->lblEmail_Create();
 					return $this->lblEmail;
+				case 'DisplayNameControl':
+					if (!$this->txtDisplayName) return $this->txtDisplayName_Create();
+					return $this->txtDisplayName;
+				case 'DisplayNameLabel':
+					if (!$this->lblDisplayName) return $this->lblDisplayName_Create();
+					return $this->lblDisplayName;
 				case 'PasswordResetFlagControl':
 					if (!$this->chkPasswordResetFlag) return $this->chkPasswordResetFlag_Create();
 					return $this->chkPasswordResetFlag;
@@ -1265,6 +1304,8 @@
 						return ($this->txtLastName = QType::Cast($mixValue, 'QControl'));
 					case 'EmailControl':
 						return ($this->txtEmail = QType::Cast($mixValue, 'QControl'));
+					case 'DisplayNameControl':
+						return ($this->txtDisplayName = QType::Cast($mixValue, 'QControl'));
 					case 'PasswordResetFlagControl':
 						return ($this->chkPasswordResetFlag = QType::Cast($mixValue, 'QControl'));
 					case 'DisplayRealNameFlagControl':

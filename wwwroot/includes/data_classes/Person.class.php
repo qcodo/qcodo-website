@@ -61,13 +61,6 @@
 								
 							return $strToReturn;
 
-				case 'DisplayName':
-					if ($this->blnDisplayRealNameFlag)
-						$strToReturn = $this->strFirstName . ' ' . $this->strLastName;
-					else
-						$strToReturn = $this->strUsername;
-					return $strToReturn;
-
 				case 'ViewProfileUrl':
 					return '/profile/view.php/' . $this->strUsername;
 
@@ -83,7 +76,20 @@
 					}
 			}
 		}
-		
+
+		/**
+		 * Based on the preferences of this user, this will update the DisplayName property accordingly.
+		 * The DisplayName property is to be used throughout the application to display this user's display name.
+		 * @return void
+		 */
+		public function RefreshDisplayName() {
+			if ($this->blnDisplayRealNameFlag)
+				$this->strDisplayName = $this->strFirstName . ' ' . $this->strLastName;
+			else
+				$this->strDisplayName = $this->strUsername;
+			$this->Save();
+		}
+
 		/**
 		 * Returns whether or not the passed-in password is valid
 		 * @param string $strPassword

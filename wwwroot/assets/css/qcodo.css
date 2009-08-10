@@ -186,3 +186,21 @@
 		div#dtrMessages div.messageBarAlternate div.name { color: #484030; }
 		div#dtrMessages div.messageBarAlternate div.date { color: #484030; }
 		div#dtrMessages div.messageBodyAlternate { background-color: #ffe; border-color: #ba8;}
+
+		
+		
+	/* QDataGrid */
+	table.datagrid { border: 1px solid #aaf; }
+		table.datagrid caption, table.datagrid tfoot { padding-bottom: 4px; overflow: auto; }
+			table.datagrid span.left { float: left; font-size: 10px; display: block; }
+			table.datagrid span.right { float: right; font-size: 10px; display: block; }
+		table.datagrid tr { background-color: #fff; }
+			table.datagrid tr.alternate { background-color: #eef; }
+		table.datagrid th { background-color: #aaf; padding: 3px 5px 3px 5px; text-align: left; }
+			table.datagrid th a { color: #000; text-decoration: none; }
+			table.datagrid th a:hover { color: #000; text-decoration: underline;}
+		table.datagrid td { padding: 5px; }
+			table.datagrid td a { color: #000; }
+			table.datagrid td a:hover { color: #000; text-decoration: none; }
+		table.datagrid tfoot { border-top: 1px solid #aaf;} 
+		
