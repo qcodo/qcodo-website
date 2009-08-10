@@ -109,6 +109,10 @@
 			$objIssueMessage->ReplyNumber = IssueMessage::CountByIssueId($this->intId) + 1;
 			$objIssueMessage->PostDate = ($dttPostDate) ? new QDateTime($dttPostDate) : QDateTime::Now();
 			$objIssueMessage->Save();
+
+			// Update Last Update Date info in the issue itself
+			$this->dttLastUpdateDate = new QDateTime($objIssueMessage->PostDate);
+			$this->Save();
 		}
 
 

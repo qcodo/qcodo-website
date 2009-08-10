@@ -185,7 +185,7 @@
 		}
 	}
 	QDataGen::DisplayForEachTaskEnd($strTitle);
-	exit(0);
+
 
 	//////////////////////
 	// Forum Topics
