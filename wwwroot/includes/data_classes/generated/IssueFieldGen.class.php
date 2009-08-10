@@ -17,6 +17,7 @@
 	 * @subpackage GeneratedDataObjects
 	 * @property-read integer $Id the value for intId (Read-Only PK)
 	 * @property string $Name the value for strName 
+	 * @property integer $OrderNumber the value for intOrderNumber 
 	 * @property boolean $RequiredFlag the value for blnRequiredFlag 
 	 * @property boolean $MutableFlag the value for blnMutableFlag 
 	 * @property boolean $ActiveFlag the value for blnActiveFlag 
@@ -47,6 +48,14 @@
 		protected $strName;
 		const NameMaxLength = 255;
 		const NameDefault = null;
+
+
+		/**
+		 * Protected member variable that maps to the database column issue_field.order_number
+		 * @var integer intOrderNumber
+		 */
+		protected $intOrderNumber;
+		const OrderNumberDefault = null;
 
 
 		/**
@@ -392,6 +401,7 @@
 
 			$objBuilder->AddSelectItem($strTableName, 'id', $strAliasPrefix . 'id');
 			$objBuilder->AddSelectItem($strTableName, 'name', $strAliasPrefix . 'name');
+			$objBuilder->AddSelectItem($strTableName, 'order_number', $strAliasPrefix . 'order_number');
 			$objBuilder->AddSelectItem($strTableName, 'required_flag', $strAliasPrefix . 'required_flag');
 			$objBuilder->AddSelectItem($strTableName, 'mutable_flag', $strAliasPrefix . 'mutable_flag');
 			$objBuilder->AddSelectItem($strTableName, 'active_flag', $strAliasPrefix . 'active_flag');
@@ -476,6 +486,8 @@
 			$objToReturn->intId = $objDbRow->GetColumn($strAliasName, 'Integer');
 			$strAliasName = array_key_exists($strAliasPrefix . 'name', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'name'] : $strAliasPrefix . 'name';
 			$objToReturn->strName = $objDbRow->GetColumn($strAliasName, 'VarChar');
+			$strAliasName = array_key_exists($strAliasPrefix . 'order_number', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'order_number'] : $strAliasPrefix . 'order_number';
+			$objToReturn->intOrderNumber = $objDbRow->GetColumn($strAliasName, 'Integer');
 			$strAliasName = array_key_exists($strAliasPrefix . 'required_flag', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'required_flag'] : $strAliasPrefix . 'required_flag';
 			$objToReturn->blnRequiredFlag = $objDbRow->GetColumn($strAliasName, 'Bit');
 			$strAliasName = array_key_exists($strAliasPrefix . 'mutable_flag', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'mutable_flag'] : $strAliasPrefix . 'mutable_flag';
@@ -606,11 +618,13 @@
 					$objDatabase->NonQuery('
 						INSERT INTO `issue_field` (
 							`name`,
+							`order_number`,
 							`required_flag`,
 							`mutable_flag`,
 							`active_flag`
 						) VALUES (
 							' . $objDatabase->SqlVariable($this->strName) . ',
+							' . $objDatabase->SqlVariable($this->intOrderNumber) . ',
 							' . $objDatabase->SqlVariable($this->blnRequiredFlag) . ',
 							' . $objDatabase->SqlVariable($this->blnMutableFlag) . ',
 							' . $objDatabase->SqlVariable($this->blnActiveFlag) . '
@@ -630,6 +644,7 @@
 							`issue_field`
 						SET
 							`name` = ' . $objDatabase->SqlVariable($this->strName) . ',
+							`order_number` = ' . $objDatabase->SqlVariable($this->intOrderNumber) . ',
 							`required_flag` = ' . $objDatabase->SqlVariable($this->blnRequiredFlag) . ',
 							`mutable_flag` = ' . $objDatabase->SqlVariable($this->blnMutableFlag) . ',
 							`active_flag` = ' . $objDatabase->SqlVariable($this->blnActiveFlag) . '
@@ -712,6 +727,7 @@
 
 			// Update $this's local variables to match
 			$this->strName = $objReloaded->strName;
+			$this->intOrderNumber = $objReloaded->intOrderNumber;
 			$this->blnRequiredFlag = $objReloaded->blnRequiredFlag;
 			$this->blnMutableFlag = $objReloaded->blnMutableFlag;
 			$this->blnActiveFlag = $objReloaded->blnActiveFlag;
@@ -748,6 +764,13 @@
 					 * @return string
 					 */
 					return $this->strName;
+
+				case 'OrderNumber':
+					/**
+					 * Gets the value for intOrderNumber 
+					 * @return integer
+					 */
+					return $this->intOrderNumber;
 
 				case 'RequiredFlag':
 					/**
@@ -847,6 +870,19 @@
 					 */
 					try {
 						return ($this->strName = QType::Cast($mixValue, QType::String));
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
+				case 'OrderNumber':
+					/**
+					 * Sets the value for intOrderNumber 
+					 * @param integer $mixValue
+					 * @return integer
+					 */
+					try {
+						return ($this->intOrderNumber = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {
 						$objExc->IncrementOffset();
 						throw $objExc;
@@ -1234,6 +1270,7 @@
 			$strToReturn = '<complexType name="IssueField"><sequence>';
 			$strToReturn .= '<element name="Id" type="xsd:int"/>';
 			$strToReturn .= '<element name="Name" type="xsd:string"/>';
+			$strToReturn .= '<element name="OrderNumber" type="xsd:int"/>';
 			$strToReturn .= '<element name="RequiredFlag" type="xsd:boolean"/>';
 			$strToReturn .= '<element name="MutableFlag" type="xsd:boolean"/>';
 			$strToReturn .= '<element name="ActiveFlag" type="xsd:boolean"/>';
@@ -1263,6 +1300,8 @@
 				$objToReturn->intId = $objSoapObject->Id;
 			if (property_exists($objSoapObject, 'Name'))
 				$objToReturn->strName = $objSoapObject->Name;
+			if (property_exists($objSoapObject, 'OrderNumber'))
+				$objToReturn->intOrderNumber = $objSoapObject->OrderNumber;
 			if (property_exists($objSoapObject, 'RequiredFlag'))
 				$objToReturn->blnRequiredFlag = $objSoapObject->RequiredFlag;
 			if (property_exists($objSoapObject, 'MutableFlag'))
@@ -1311,6 +1350,8 @@
 					return new QQNode('id', 'Id', 'integer', $this);
 				case 'Name':
 					return new QQNode('name', 'Name', 'string', $this);
+				case 'OrderNumber':
+					return new QQNode('order_number', 'OrderNumber', 'integer', $this);
 				case 'RequiredFlag':
 					return new QQNode('required_flag', 'RequiredFlag', 'boolean', $this);
 				case 'MutableFlag':
@@ -1345,6 +1386,8 @@
 					return new QQNode('id', 'Id', 'integer', $this);
 				case 'Name':
 					return new QQNode('name', 'Name', 'string', $this);
+				case 'OrderNumber':
+					return new QQNode('order_number', 'OrderNumber', 'integer', $this);
 				case 'RequiredFlag':
 					return new QQNode('required_flag', 'RequiredFlag', 'boolean', $this);
 				case 'MutableFlag':

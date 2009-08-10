@@ -27,6 +27,36 @@
 			return sprintf('Issue Object %s',  $this->intId);
 		}
 
+		/**
+		 * Given a selected FieldOption, this will set the field's value for this Issue for the given option.
+		 * If a prior option was specified, that will be overwritten.
+		 * @param IssueFieldOption $objFieldOption
+		 * @return void
+		 */
+		public function SetFieldOption(IssueFieldOption $objFieldOption) {
+			$objFieldValue = IssueFieldValue::LoadByIssueIdIssueFieldId($this->intId, $objFieldOption->IssueFieldId);
+			if (!$objFieldValue) {
+				$objFieldValue = new IssueFieldValue();
+				$objFieldValue->Issue = $this;
+				$objFieldValue->IssueFieldId = $objFieldOption->IssueFieldId;
+			}
+			$objFieldValue->IssueFieldOption = $objFieldOption;
+			$objFieldValue->Save();
+		}
+
+		/**
+		 * This will return the selected FieldOption for a given IssueField for this issue, or NULL
+		 * if none was set.
+		 * @param IssueField $objIssueField
+		 * @return IssueFieldOption
+		 */
+		public function GetFieldOptionForIssueField(IssueField $objIssueField) {
+			$objFieldValue = IssueFieldValue::LoadByIssueIdIssueFieldId($this->intId, $objIssueField->Id);
+			if ($objFieldValue)
+				return $objFieldValue->IssueFieldOption;
+			else
+				return null;
+		}
 
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...

@@ -23,7 +23,26 @@
 
 	$dttStartDate = new QDateTime('2005-01-01 00:00:00');
 
+	function GenerateOptionsForField($strFieldName, $strOptionNameArray) {
+		$objIssueField = IssueField::QuerySingle(QQ::Equal(QQN::IssueField()->Name, $strFieldName));
+		$intOrderNumber = 0;
+		foreach ($strOptionNameArray as $strOptionName) {
+			$intOrderNumber++;
+			$objOption = new IssueFieldOption();
+			$objOption->IssueField = $objIssueField;
+			$objOption->Name = $strOptionName;
+			$objOption->SetToken();
+			$objOption->OrderNumber = $intOrderNumber;
+			$objOption->ActiveFlag = true;
+			$objOption->Save();
+		}
+	}
 
+
+
+	//////////////////////
+	// People
+	//////////////////////
 
 	while (QDataGen::DisplayWhileTask('Generating Person records', 200)) {
 		$objPerson = new Person();
@@ -66,6 +85,69 @@
 		$intMaxPersonId = $objPerson->Id;
 	}
 
+
+
+	//////////////////////
+	// Issue Tracker
+	//////////////////////
+
+	print 'Generating Issue Field Options...';
+	GenerateOptionsForField('Browser', $strBrowserArray);
+	GenerateOptionsForField('Web Server', $strServerArray);
+	GenerateOptionsForField('Database', $strDatabaseArray);
+	GenerateOptionsForField('Operating System', $strOperatingSystemArray);
+	print " Done.\r\n";
+
+	// Cache Field and Option Values
+	$objIssueFieldArray = IssueField::LoadAll();
+	$objIssueFieldOptionArray = array();
+	foreach ($objIssueFieldArray as $objIssueField) {
+		$objIssueFieldOptionArray[$objIssueField->Id] = array();
+		foreach ($objIssueField->GetIssueFieldOptionArray() as $objIssueFieldOption) {
+			$objIssueFieldOptionArray[$objIssueField->Id][] = $objIssueFieldOption;
+		}
+	}
+
+	// Generate Issues, themselves
+	while (QDataGen::DisplayWhileTask('Generating Issues', 500)) {
+		$objIssue = new Issue();
+		$objIssue->IssueStatusTypeId = rand(1, IssueStatusType::MaxId);
+		$objIssue->Title = QDataGen::GenerateTitle(2, 6);
+		$objIssue->ExampleCode = QDataGen::GenerateContent(rand(1, 3), 10, 30);
+		if (!rand(0, 2)) $objIssue->ExampleTemplate = QDataGen::GenerateContent(rand(1, 3), 10, 30);
+		if (!rand(0, 2)) $objIssue->ExampleData = QDataGen::GenerateContent(rand(1, 3), 10, 30);
+		if (!rand(0, 2)) $objIssue->ExpectedOutput = QDataGen::GenerateContent(rand(1, 3), 10, 30);
+		if (!rand(0, 2)) $objIssue->ActualOutput = QDataGen::GenerateContent(rand(1, 3), 10, 30);
+		$objIssue->PostedByPersonId = rand(1, $intMaxPersonId);
+		$objIssue->PostDate = QDataGen::GenerateDateTime($dttStartDate, QDateTime::Now());
+		
+		if (($objIssue->IssueStatusTypeId == IssueStatusType::Assigned) ||
+			($objIssue->IssueStatusTypeId == IssueStatusType::Fixed) ||
+			($objIssue->IssueStatusTypeId == IssueStatusType::ClosedFixed)) {
+			$objIssue->AssignedToPersonId = rand(1, $intMaxPersonId);
+			$objIssue->AssignedDate = QDataGen::GenerateDateTime($objIssue->PostDate, QDateTime::Now());
+
+			if ($objIssue->IssueStatusTypeId == IssueStatusType::Assigned) {
+				if (rand(0, 1))
+					$objIssue->DueDate = QDataGen::GenerateDateTime($objIssue->PostDate, QDateTime::Now());
+			}
+		}
+		$objIssue->LastUpdateDate = $objIssue->PostDate;
+		$objIssue->Save();
+
+		// Add Field Values
+		foreach ($objIssueFieldArray as $objIssueField) {
+			if ($objIssueField->RequiredFlag || rand(0, 1)) {
+				$objIssue->SetFieldOption(QDataGen::GenerateFromArray($objIssueFieldOptionArray[$objIssueField->Id]));
+			}
+		}
+	}
+	exit(0);
+
+	//////////////////////
+	// Forum Topics
+	//////////////////////
+
 	while (QDataGen::DisplayWhileTask('Generating Forum Topics', 500)) {
 		$objTopic = new Topic();
 		$objTopic->ForumId = rand($intMinForumId, $intMaxForumId);
@@ -75,6 +157,12 @@
 		$objTopic->ViewCount = rand(1000, 99999);
 		$objTopic->Save();
 	}
+
+
+
+	//////////////////////
+	// Forum Messages
+	//////////////////////
 
 	QDataGen::DisplayForEachTaskStart($strTopics = 'Generating Forum Messages for Topics', 500);
 	foreach (Topic::LoadAll() as $objTopic) {

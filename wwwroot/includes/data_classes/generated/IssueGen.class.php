@@ -26,8 +26,10 @@
 	 * @property integer $PostedByPersonId the value for intPostedByPersonId (Not Null)
 	 * @property integer $AssignedToPersonId the value for intAssignedToPersonId 
 	 * @property QDateTime $PostDate the value for dttPostDate (Not Null)
-	 * @property QDateTime $LastUpdateDate the value for dttLastUpdateDate 
+	 * @property QDateTime $AssignedDate the value for dttAssignedDate 
+	 * @property QDateTime $DueDate the value for dttDueDate 
 	 * @property integer $VoteCount the value for intVoteCount 
+	 * @property QDateTime $LastUpdateDate the value for dttLastUpdateDate (Not Null)
 	 * @property Person $PostedByPerson the value for the Person object referenced by intPostedByPersonId (Not Null)
 	 * @property Person $AssignedToPerson the value for the Person object referenced by intAssignedToPersonId 
 	 * @property-read Person $_PersonAsEmail the value for the private _objPersonAsEmail (Read-Only) if set due to an expansion on the email_issue_person_assn association table
@@ -136,11 +138,19 @@
 
 
 		/**
-		 * Protected member variable that maps to the database column issue.last_update_date
-		 * @var QDateTime dttLastUpdateDate
+		 * Protected member variable that maps to the database column issue.assigned_date
+		 * @var QDateTime dttAssignedDate
 		 */
-		protected $dttLastUpdateDate;
-		const LastUpdateDateDefault = null;
+		protected $dttAssignedDate;
+		const AssignedDateDefault = null;
+
+
+		/**
+		 * Protected member variable that maps to the database column issue.due_date
+		 * @var QDateTime dttDueDate
+		 */
+		protected $dttDueDate;
+		const DueDateDefault = null;
 
 
 		/**
@@ -149,6 +159,14 @@
 		 */
 		protected $intVoteCount;
 		const VoteCountDefault = null;
+
+
+		/**
+		 * Protected member variable that maps to the database column issue.last_update_date
+		 * @var QDateTime dttLastUpdateDate
+		 */
+		protected $dttLastUpdateDate;
+		const LastUpdateDateDefault = null;
 
 
 		/**
@@ -531,8 +549,10 @@
 			$objBuilder->AddSelectItem($strTableName, 'posted_by_person_id', $strAliasPrefix . 'posted_by_person_id');
 			$objBuilder->AddSelectItem($strTableName, 'assigned_to_person_id', $strAliasPrefix . 'assigned_to_person_id');
 			$objBuilder->AddSelectItem($strTableName, 'post_date', $strAliasPrefix . 'post_date');
-			$objBuilder->AddSelectItem($strTableName, 'last_update_date', $strAliasPrefix . 'last_update_date');
+			$objBuilder->AddSelectItem($strTableName, 'assigned_date', $strAliasPrefix . 'assigned_date');
+			$objBuilder->AddSelectItem($strTableName, 'due_date', $strAliasPrefix . 'due_date');
 			$objBuilder->AddSelectItem($strTableName, 'vote_count', $strAliasPrefix . 'vote_count');
+			$objBuilder->AddSelectItem($strTableName, 'last_update_date', $strAliasPrefix . 'last_update_date');
 		}
 
 
@@ -660,10 +680,14 @@
 			$objToReturn->intAssignedToPersonId = $objDbRow->GetColumn($strAliasName, 'Integer');
 			$strAliasName = array_key_exists($strAliasPrefix . 'post_date', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'post_date'] : $strAliasPrefix . 'post_date';
 			$objToReturn->dttPostDate = $objDbRow->GetColumn($strAliasName, 'DateTime');
-			$strAliasName = array_key_exists($strAliasPrefix . 'last_update_date', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'last_update_date'] : $strAliasPrefix . 'last_update_date';
-			$objToReturn->dttLastUpdateDate = $objDbRow->GetColumn($strAliasName, 'DateTime');
+			$strAliasName = array_key_exists($strAliasPrefix . 'assigned_date', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'assigned_date'] : $strAliasPrefix . 'assigned_date';
+			$objToReturn->dttAssignedDate = $objDbRow->GetColumn($strAliasName, 'DateTime');
+			$strAliasName = array_key_exists($strAliasPrefix . 'due_date', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'due_date'] : $strAliasPrefix . 'due_date';
+			$objToReturn->dttDueDate = $objDbRow->GetColumn($strAliasName, 'DateTime');
 			$strAliasName = array_key_exists($strAliasPrefix . 'vote_count', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'vote_count'] : $strAliasPrefix . 'vote_count';
 			$objToReturn->intVoteCount = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'last_update_date', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'last_update_date'] : $strAliasPrefix . 'last_update_date';
+			$objToReturn->dttLastUpdateDate = $objDbRow->GetColumn($strAliasName, 'DateTime');
 
 			// Instantiate Virtual Attributes
 			foreach ($objDbRow->GetColumnNameArray() as $strColumnName => $mixValue) {
@@ -884,6 +908,38 @@
 				QQ::Equal(QQN::Issue()->AssignedToPersonId, $intAssignedToPersonId)
 			);
 		}
+			
+		/**
+		 * Load an array of Issue objects,
+		 * by DueDate Index(es)
+		 * @param QDateTime $dttDueDate
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @return Issue[]
+		*/
+		public static function LoadArrayByDueDate($dttDueDate, $objOptionalClauses = null) {
+			// Call Issue::QueryArray to perform the LoadArrayByDueDate query
+			try {
+				return Issue::QueryArray(
+					QQ::Equal(QQN::Issue()->DueDate, $dttDueDate),
+					$objOptionalClauses);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+		}
+
+		/**
+		 * Count Issues
+		 * by DueDate Index(es)
+		 * @param QDateTime $dttDueDate
+		 * @return int
+		*/
+		public static function CountByDueDate($dttDueDate) {
+			// Call Issue::QueryCount to perform the CountByDueDate query
+			return Issue::QueryCount(
+				QQ::Equal(QQN::Issue()->DueDate, $dttDueDate)
+			);
+		}
 
 
 
@@ -956,8 +1012,10 @@
 							`posted_by_person_id`,
 							`assigned_to_person_id`,
 							`post_date`,
-							`last_update_date`,
-							`vote_count`
+							`assigned_date`,
+							`due_date`,
+							`vote_count`,
+							`last_update_date`
 						) VALUES (
 							' . $objDatabase->SqlVariable($this->intIssueStatusTypeId) . ',
 							' . $objDatabase->SqlVariable($this->strTitle) . ',
@@ -969,8 +1027,10 @@
 							' . $objDatabase->SqlVariable($this->intPostedByPersonId) . ',
 							' . $objDatabase->SqlVariable($this->intAssignedToPersonId) . ',
 							' . $objDatabase->SqlVariable($this->dttPostDate) . ',
-							' . $objDatabase->SqlVariable($this->dttLastUpdateDate) . ',
-							' . $objDatabase->SqlVariable($this->intVoteCount) . '
+							' . $objDatabase->SqlVariable($this->dttAssignedDate) . ',
+							' . $objDatabase->SqlVariable($this->dttDueDate) . ',
+							' . $objDatabase->SqlVariable($this->intVoteCount) . ',
+							' . $objDatabase->SqlVariable($this->dttLastUpdateDate) . '
 						)
 					');
 
@@ -996,8 +1056,10 @@
 							`posted_by_person_id` = ' . $objDatabase->SqlVariable($this->intPostedByPersonId) . ',
 							`assigned_to_person_id` = ' . $objDatabase->SqlVariable($this->intAssignedToPersonId) . ',
 							`post_date` = ' . $objDatabase->SqlVariable($this->dttPostDate) . ',
-							`last_update_date` = ' . $objDatabase->SqlVariable($this->dttLastUpdateDate) . ',
-							`vote_count` = ' . $objDatabase->SqlVariable($this->intVoteCount) . '
+							`assigned_date` = ' . $objDatabase->SqlVariable($this->dttAssignedDate) . ',
+							`due_date` = ' . $objDatabase->SqlVariable($this->dttDueDate) . ',
+							`vote_count` = ' . $objDatabase->SqlVariable($this->intVoteCount) . ',
+							`last_update_date` = ' . $objDatabase->SqlVariable($this->dttLastUpdateDate) . '
 						WHERE
 							`id` = ' . $objDatabase->SqlVariable($this->intId) . '
 					');
@@ -1086,8 +1148,10 @@
 			$this->PostedByPersonId = $objReloaded->PostedByPersonId;
 			$this->AssignedToPersonId = $objReloaded->AssignedToPersonId;
 			$this->dttPostDate = $objReloaded->dttPostDate;
-			$this->dttLastUpdateDate = $objReloaded->dttLastUpdateDate;
+			$this->dttAssignedDate = $objReloaded->dttAssignedDate;
+			$this->dttDueDate = $objReloaded->dttDueDate;
 			$this->intVoteCount = $objReloaded->intVoteCount;
+			$this->dttLastUpdateDate = $objReloaded->dttLastUpdateDate;
 		}
 
 
@@ -1185,12 +1249,19 @@
 					 */
 					return $this->dttPostDate;
 
-				case 'LastUpdateDate':
+				case 'AssignedDate':
 					/**
-					 * Gets the value for dttLastUpdateDate 
+					 * Gets the value for dttAssignedDate 
 					 * @return QDateTime
 					 */
-					return $this->dttLastUpdateDate;
+					return $this->dttAssignedDate;
+
+				case 'DueDate':
+					/**
+					 * Gets the value for dttDueDate 
+					 * @return QDateTime
+					 */
+					return $this->dttDueDate;
 
 				case 'VoteCount':
 					/**
@@ -1198,6 +1269,13 @@
 					 * @return integer
 					 */
 					return $this->intVoteCount;
+
+				case 'LastUpdateDate':
+					/**
+					 * Gets the value for dttLastUpdateDate (Not Null)
+					 * @return QDateTime
+					 */
+					return $this->dttLastUpdateDate;
 
 
 				///////////////////
@@ -1460,14 +1538,27 @@
 						throw $objExc;
 					}
 
-				case 'LastUpdateDate':
+				case 'AssignedDate':
 					/**
-					 * Sets the value for dttLastUpdateDate 
+					 * Sets the value for dttAssignedDate 
 					 * @param QDateTime $mixValue
 					 * @return QDateTime
 					 */
 					try {
-						return ($this->dttLastUpdateDate = QType::Cast($mixValue, QType::DateTime));
+						return ($this->dttAssignedDate = QType::Cast($mixValue, QType::DateTime));
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
+				case 'DueDate':
+					/**
+					 * Sets the value for dttDueDate 
+					 * @param QDateTime $mixValue
+					 * @return QDateTime
+					 */
+					try {
+						return ($this->dttDueDate = QType::Cast($mixValue, QType::DateTime));
 					} catch (QCallerException $objExc) {
 						$objExc->IncrementOffset();
 						throw $objExc;
@@ -1481,6 +1572,19 @@
 					 */
 					try {
 						return ($this->intVoteCount = QType::Cast($mixValue, QType::Integer));
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
+				case 'LastUpdateDate':
+					/**
+					 * Sets the value for dttLastUpdateDate (Not Null)
+					 * @param QDateTime $mixValue
+					 * @return QDateTime
+					 */
+					try {
+						return ($this->dttLastUpdateDate = QType::Cast($mixValue, QType::DateTime));
 					} catch (QCallerException $objExc) {
 						$objExc->IncrementOffset();
 						throw $objExc;
@@ -2174,8 +2278,10 @@
 			$strToReturn .= '<element name="PostedByPerson" type="xsd1:Person"/>';
 			$strToReturn .= '<element name="AssignedToPerson" type="xsd1:Person"/>';
 			$strToReturn .= '<element name="PostDate" type="xsd:dateTime"/>';
-			$strToReturn .= '<element name="LastUpdateDate" type="xsd:dateTime"/>';
+			$strToReturn .= '<element name="AssignedDate" type="xsd:dateTime"/>';
+			$strToReturn .= '<element name="DueDate" type="xsd:dateTime"/>';
 			$strToReturn .= '<element name="VoteCount" type="xsd:int"/>';
+			$strToReturn .= '<element name="LastUpdateDate" type="xsd:dateTime"/>';
 			$strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
 			$strToReturn .= '</sequence></complexType>';
 			return $strToReturn;
@@ -2224,10 +2330,14 @@
 				$objToReturn->AssignedToPerson = Person::GetObjectFromSoapObject($objSoapObject->AssignedToPerson);
 			if (property_exists($objSoapObject, 'PostDate'))
 				$objToReturn->dttPostDate = new QDateTime($objSoapObject->PostDate);
-			if (property_exists($objSoapObject, 'LastUpdateDate'))
-				$objToReturn->dttLastUpdateDate = new QDateTime($objSoapObject->LastUpdateDate);
+			if (property_exists($objSoapObject, 'AssignedDate'))
+				$objToReturn->dttAssignedDate = new QDateTime($objSoapObject->AssignedDate);
+			if (property_exists($objSoapObject, 'DueDate'))
+				$objToReturn->dttDueDate = new QDateTime($objSoapObject->DueDate);
 			if (property_exists($objSoapObject, 'VoteCount'))
 				$objToReturn->intVoteCount = $objSoapObject->VoteCount;
+			if (property_exists($objSoapObject, 'LastUpdateDate'))
+				$objToReturn->dttLastUpdateDate = new QDateTime($objSoapObject->LastUpdateDate);
 			if (property_exists($objSoapObject, '__blnRestored'))
 				$objToReturn->__blnRestored = $objSoapObject->__blnRestored;
 			return $objToReturn;
@@ -2256,6 +2366,10 @@
 				$objObject->intAssignedToPersonId = null;
 			if ($objObject->dttPostDate)
 				$objObject->dttPostDate = $objObject->dttPostDate->__toString(QDateTime::FormatSoap);
+			if ($objObject->dttAssignedDate)
+				$objObject->dttAssignedDate = $objObject->dttAssignedDate->__toString(QDateTime::FormatSoap);
+			if ($objObject->dttDueDate)
+				$objObject->dttDueDate = $objObject->dttDueDate->__toString(QDateTime::FormatSoap);
 			if ($objObject->dttLastUpdateDate)
 				$objObject->dttLastUpdateDate = $objObject->dttLastUpdateDate->__toString(QDateTime::FormatSoap);
 			return $objObject;
@@ -2331,10 +2445,14 @@
 					return new QQNodePerson('assigned_to_person_id', 'AssignedToPerson', 'integer', $this);
 				case 'PostDate':
 					return new QQNode('post_date', 'PostDate', 'QDateTime', $this);
-				case 'LastUpdateDate':
-					return new QQNode('last_update_date', 'LastUpdateDate', 'QDateTime', $this);
+				case 'AssignedDate':
+					return new QQNode('assigned_date', 'AssignedDate', 'QDateTime', $this);
+				case 'DueDate':
+					return new QQNode('due_date', 'DueDate', 'QDateTime', $this);
 				case 'VoteCount':
 					return new QQNode('vote_count', 'VoteCount', 'integer', $this);
+				case 'LastUpdateDate':
+					return new QQNode('last_update_date', 'LastUpdateDate', 'QDateTime', $this);
 				case 'PersonAsEmail':
 					return new QQNodeIssuePersonAsEmail($this);
 				case 'IssueFieldValue':
@@ -2389,10 +2507,14 @@
 					return new QQNodePerson('assigned_to_person_id', 'AssignedToPerson', 'integer', $this);
 				case 'PostDate':
 					return new QQNode('post_date', 'PostDate', 'QDateTime', $this);
-				case 'LastUpdateDate':
-					return new QQNode('last_update_date', 'LastUpdateDate', 'QDateTime', $this);
+				case 'AssignedDate':
+					return new QQNode('assigned_date', 'AssignedDate', 'QDateTime', $this);
+				case 'DueDate':
+					return new QQNode('due_date', 'DueDate', 'QDateTime', $this);
 				case 'VoteCount':
 					return new QQNode('vote_count', 'VoteCount', 'integer', $this);
+				case 'LastUpdateDate':
+					return new QQNode('last_update_date', 'LastUpdateDate', 'QDateTime', $this);
 				case 'PersonAsEmail':
 					return new QQNodeIssuePersonAsEmail($this);
 				case 'IssueFieldValue':

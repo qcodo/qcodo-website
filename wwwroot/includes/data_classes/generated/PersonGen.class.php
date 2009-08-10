@@ -44,10 +44,10 @@
 	 * @property-read Topic[] $_TopicAsReadArray the value for the private _objTopicAsReadArray (Read-Only) if set due to an ExpandAsArray on the read_topic_person_assn association table
 	 * @property-read Download $_Download the value for the private _objDownload (Read-Only) if set due to an expansion on the download.person_id reverse relationship
 	 * @property-read Download[] $_DownloadArray the value for the private _objDownloadArray (Read-Only) if set due to an ExpandAsArray on the download.person_id reverse relationship
-	 * @property-read Issue $_IssueAsAssignedTo the value for the private _objIssueAsAssignedTo (Read-Only) if set due to an expansion on the issue.assigned_to_person_id reverse relationship
-	 * @property-read Issue[] $_IssueAsAssignedToArray the value for the private _objIssueAsAssignedToArray (Read-Only) if set due to an ExpandAsArray on the issue.assigned_to_person_id reverse relationship
 	 * @property-read Issue $_IssueAsPostedBy the value for the private _objIssueAsPostedBy (Read-Only) if set due to an expansion on the issue.posted_by_person_id reverse relationship
 	 * @property-read Issue[] $_IssueAsPostedByArray the value for the private _objIssueAsPostedByArray (Read-Only) if set due to an ExpandAsArray on the issue.posted_by_person_id reverse relationship
+	 * @property-read Issue $_IssueAsAssignedTo the value for the private _objIssueAsAssignedTo (Read-Only) if set due to an expansion on the issue.assigned_to_person_id reverse relationship
+	 * @property-read Issue[] $_IssueAsAssignedToArray the value for the private _objIssueAsAssignedToArray (Read-Only) if set due to an ExpandAsArray on the issue.assigned_to_person_id reverse relationship
 	 * @property-read IssueMessage $_IssueMessage the value for the private _objIssueMessage (Read-Only) if set due to an expansion on the issue_message.person_id reverse relationship
 	 * @property-read IssueMessage[] $_IssueMessageArray the value for the private _objIssueMessageArray (Read-Only) if set due to an ExpandAsArray on the issue_message.person_id reverse relationship
 	 * @property-read IssueVote $_IssueVote the value for the private _objIssueVote (Read-Only) if set due to an expansion on the issue_vote.person_id reverse relationship
@@ -290,22 +290,6 @@
 		private $_objDownloadArray = array();
 
 		/**
-		 * Private member variable that stores a reference to a single IssueAsAssignedTo object
-		 * (of type Issue), if this Person object was restored with
-		 * an expansion on the issue association table.
-		 * @var Issue _objIssueAsAssignedTo;
-		 */
-		private $_objIssueAsAssignedTo;
-
-		/**
-		 * Private member variable that stores a reference to an array of IssueAsAssignedTo objects
-		 * (of type Issue[]), if this Person object was restored with
-		 * an ExpandAsArray on the issue association table.
-		 * @var Issue[] _objIssueAsAssignedToArray;
-		 */
-		private $_objIssueAsAssignedToArray = array();
-
-		/**
 		 * Private member variable that stores a reference to a single IssueAsPostedBy object
 		 * (of type Issue), if this Person object was restored with
 		 * an expansion on the issue association table.
@@ -320,6 +304,22 @@
 		 * @var Issue[] _objIssueAsPostedByArray;
 		 */
 		private $_objIssueAsPostedByArray = array();
+
+		/**
+		 * Private member variable that stores a reference to a single IssueAsAssignedTo object
+		 * (of type Issue), if this Person object was restored with
+		 * an expansion on the issue association table.
+		 * @var Issue _objIssueAsAssignedTo;
+		 */
+		private $_objIssueAsAssignedTo;
+
+		/**
+		 * Private member variable that stores a reference to an array of IssueAsAssignedTo objects
+		 * (of type Issue[]), if this Person object was restored with
+		 * an ExpandAsArray on the issue association table.
+		 * @var Issue[] _objIssueAsAssignedToArray;
+		 */
+		private $_objIssueAsAssignedToArray = array();
 
 		/**
 		 * Private member variable that stores a reference to a single IssueMessage object
@@ -831,20 +831,6 @@
 					$blnExpandedViaArray = true;
 				}
 
-				$strAlias = $strAliasPrefix . 'issueasassignedto__id';
-				$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
-				if ((array_key_exists($strAlias, $strExpandAsArrayNodes)) &&
-					(!is_null($objDbRow->GetColumn($strAliasName)))) {
-					if ($intPreviousChildItemCount = count($objPreviousItem->_objIssueAsAssignedToArray)) {
-						$objPreviousChildItem = $objPreviousItem->_objIssueAsAssignedToArray[$intPreviousChildItemCount - 1];
-						$objChildItem = Issue::InstantiateDbRow($objDbRow, $strAliasPrefix . 'issueasassignedto__', $strExpandAsArrayNodes, $objPreviousChildItem, $strColumnAliasArray);
-						if ($objChildItem)
-							$objPreviousItem->_objIssueAsAssignedToArray[] = $objChildItem;
-					} else
-						$objPreviousItem->_objIssueAsAssignedToArray[] = Issue::InstantiateDbRow($objDbRow, $strAliasPrefix . 'issueasassignedto__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
-					$blnExpandedViaArray = true;
-				}
-
 				$strAlias = $strAliasPrefix . 'issueaspostedby__id';
 				$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
 				if ((array_key_exists($strAlias, $strExpandAsArrayNodes)) &&
@@ -856,6 +842,20 @@
 							$objPreviousItem->_objIssueAsPostedByArray[] = $objChildItem;
 					} else
 						$objPreviousItem->_objIssueAsPostedByArray[] = Issue::InstantiateDbRow($objDbRow, $strAliasPrefix . 'issueaspostedby__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+					$blnExpandedViaArray = true;
+				}
+
+				$strAlias = $strAliasPrefix . 'issueasassignedto__id';
+				$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+				if ((array_key_exists($strAlias, $strExpandAsArrayNodes)) &&
+					(!is_null($objDbRow->GetColumn($strAliasName)))) {
+					if ($intPreviousChildItemCount = count($objPreviousItem->_objIssueAsAssignedToArray)) {
+						$objPreviousChildItem = $objPreviousItem->_objIssueAsAssignedToArray[$intPreviousChildItemCount - 1];
+						$objChildItem = Issue::InstantiateDbRow($objDbRow, $strAliasPrefix . 'issueasassignedto__', $strExpandAsArrayNodes, $objPreviousChildItem, $strColumnAliasArray);
+						if ($objChildItem)
+							$objPreviousItem->_objIssueAsAssignedToArray[] = $objChildItem;
+					} else
+						$objPreviousItem->_objIssueAsAssignedToArray[] = Issue::InstantiateDbRow($objDbRow, $strAliasPrefix . 'issueasassignedto__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 					$blnExpandedViaArray = true;
 				}
 
@@ -1052,16 +1052,6 @@
 					$objToReturn->_objDownload = Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'download__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 			}
 
-			// Check for IssueAsAssignedTo Virtual Binding
-			$strAlias = $strAliasPrefix . 'issueasassignedto__id';
-			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
-			if (!is_null($objDbRow->GetColumn($strAliasName))) {
-				if (($strExpandAsArrayNodes) && (array_key_exists($strAlias, $strExpandAsArrayNodes)))
-					$objToReturn->_objIssueAsAssignedToArray[] = Issue::InstantiateDbRow($objDbRow, $strAliasPrefix . 'issueasassignedto__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
-				else
-					$objToReturn->_objIssueAsAssignedTo = Issue::InstantiateDbRow($objDbRow, $strAliasPrefix . 'issueasassignedto__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
-			}
-
 			// Check for IssueAsPostedBy Virtual Binding
 			$strAlias = $strAliasPrefix . 'issueaspostedby__id';
 			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
@@ -1070,6 +1060,16 @@
 					$objToReturn->_objIssueAsPostedByArray[] = Issue::InstantiateDbRow($objDbRow, $strAliasPrefix . 'issueaspostedby__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 				else
 					$objToReturn->_objIssueAsPostedBy = Issue::InstantiateDbRow($objDbRow, $strAliasPrefix . 'issueaspostedby__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+			}
+
+			// Check for IssueAsAssignedTo Virtual Binding
+			$strAlias = $strAliasPrefix . 'issueasassignedto__id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+			if (!is_null($objDbRow->GetColumn($strAliasName))) {
+				if (($strExpandAsArrayNodes) && (array_key_exists($strAlias, $strExpandAsArrayNodes)))
+					$objToReturn->_objIssueAsAssignedToArray[] = Issue::InstantiateDbRow($objDbRow, $strAliasPrefix . 'issueasassignedto__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+				else
+					$objToReturn->_objIssueAsAssignedTo = Issue::InstantiateDbRow($objDbRow, $strAliasPrefix . 'issueasassignedto__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 			}
 
 			// Check for IssueMessage Virtual Binding
@@ -1868,22 +1868,6 @@
 					 */
 					return (array) $this->_objDownloadArray;
 
-				case '_IssueAsAssignedTo':
-					/**
-					 * Gets the value for the private _objIssueAsAssignedTo (Read-Only)
-					 * if set due to an expansion on the issue.assigned_to_person_id reverse relationship
-					 * @return Issue
-					 */
-					return $this->_objIssueAsAssignedTo;
-
-				case '_IssueAsAssignedToArray':
-					/**
-					 * Gets the value for the private _objIssueAsAssignedToArray (Read-Only)
-					 * if set due to an ExpandAsArray on the issue.assigned_to_person_id reverse relationship
-					 * @return Issue[]
-					 */
-					return (array) $this->_objIssueAsAssignedToArray;
-
 				case '_IssueAsPostedBy':
 					/**
 					 * Gets the value for the private _objIssueAsPostedBy (Read-Only)
@@ -1899,6 +1883,22 @@
 					 * @return Issue[]
 					 */
 					return (array) $this->_objIssueAsPostedByArray;
+
+				case '_IssueAsAssignedTo':
+					/**
+					 * Gets the value for the private _objIssueAsAssignedTo (Read-Only)
+					 * if set due to an expansion on the issue.assigned_to_person_id reverse relationship
+					 * @return Issue
+					 */
+					return $this->_objIssueAsAssignedTo;
+
+				case '_IssueAsAssignedToArray':
+					/**
+					 * Gets the value for the private _objIssueAsAssignedToArray (Read-Only)
+					 * if set due to an ExpandAsArray on the issue.assigned_to_person_id reverse relationship
+					 * @return Issue[]
+					 */
+					return (array) $this->_objIssueAsAssignedToArray;
 
 				case '_IssueMessage':
 					/**
@@ -2464,156 +2464,6 @@
 
 			
 		
-		// Related Objects' Methods for IssueAsAssignedTo
-		//-------------------------------------------------------------------
-
-		/**
-		 * Gets all associated IssuesAsAssignedTo as an array of Issue objects
-		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
-		 * @return Issue[]
-		*/ 
-		public function GetIssueAsAssignedToArray($objOptionalClauses = null) {
-			if ((is_null($this->intId)))
-				return array();
-
-			try {
-				return Issue::LoadArrayByAssignedToPersonId($this->intId, $objOptionalClauses);
-			} catch (QCallerException $objExc) {
-				$objExc->IncrementOffset();
-				throw $objExc;
-			}
-		}
-
-		/**
-		 * Counts all associated IssuesAsAssignedTo
-		 * @return int
-		*/ 
-		public function CountIssuesAsAssignedTo() {
-			if ((is_null($this->intId)))
-				return 0;
-
-			return Issue::CountByAssignedToPersonId($this->intId);
-		}
-
-		/**
-		 * Associates a IssueAsAssignedTo
-		 * @param Issue $objIssue
-		 * @return void
-		*/ 
-		public function AssociateIssueAsAssignedTo(Issue $objIssue) {
-			if ((is_null($this->intId)))
-				throw new QUndefinedPrimaryKeyException('Unable to call AssociateIssueAsAssignedTo on this unsaved Person.');
-			if ((is_null($objIssue->Id)))
-				throw new QUndefinedPrimaryKeyException('Unable to call AssociateIssueAsAssignedTo on this Person with an unsaved Issue.');
-
-			// Get the Database Object for this Class
-			$objDatabase = Person::GetDatabase();
-
-			// Perform the SQL Query
-			$objDatabase->NonQuery('
-				UPDATE
-					`issue`
-				SET
-					`assigned_to_person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
-				WHERE
-					`id` = ' . $objDatabase->SqlVariable($objIssue->Id) . '
-			');
-		}
-
-		/**
-		 * Unassociates a IssueAsAssignedTo
-		 * @param Issue $objIssue
-		 * @return void
-		*/ 
-		public function UnassociateIssueAsAssignedTo(Issue $objIssue) {
-			if ((is_null($this->intId)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateIssueAsAssignedTo on this unsaved Person.');
-			if ((is_null($objIssue->Id)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateIssueAsAssignedTo on this Person with an unsaved Issue.');
-
-			// Get the Database Object for this Class
-			$objDatabase = Person::GetDatabase();
-
-			// Perform the SQL Query
-			$objDatabase->NonQuery('
-				UPDATE
-					`issue`
-				SET
-					`assigned_to_person_id` = null
-				WHERE
-					`id` = ' . $objDatabase->SqlVariable($objIssue->Id) . ' AND
-					`assigned_to_person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
-			');
-		}
-
-		/**
-		 * Unassociates all IssuesAsAssignedTo
-		 * @return void
-		*/ 
-		public function UnassociateAllIssuesAsAssignedTo() {
-			if ((is_null($this->intId)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateIssueAsAssignedTo on this unsaved Person.');
-
-			// Get the Database Object for this Class
-			$objDatabase = Person::GetDatabase();
-
-			// Perform the SQL Query
-			$objDatabase->NonQuery('
-				UPDATE
-					`issue`
-				SET
-					`assigned_to_person_id` = null
-				WHERE
-					`assigned_to_person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
-			');
-		}
-
-		/**
-		 * Deletes an associated IssueAsAssignedTo
-		 * @param Issue $objIssue
-		 * @return void
-		*/ 
-		public function DeleteAssociatedIssueAsAssignedTo(Issue $objIssue) {
-			if ((is_null($this->intId)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateIssueAsAssignedTo on this unsaved Person.');
-			if ((is_null($objIssue->Id)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateIssueAsAssignedTo on this Person with an unsaved Issue.');
-
-			// Get the Database Object for this Class
-			$objDatabase = Person::GetDatabase();
-
-			// Perform the SQL Query
-			$objDatabase->NonQuery('
-				DELETE FROM
-					`issue`
-				WHERE
-					`id` = ' . $objDatabase->SqlVariable($objIssue->Id) . ' AND
-					`assigned_to_person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
-			');
-		}
-
-		/**
-		 * Deletes all associated IssuesAsAssignedTo
-		 * @return void
-		*/ 
-		public function DeleteAllIssuesAsAssignedTo() {
-			if ((is_null($this->intId)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateIssueAsAssignedTo on this unsaved Person.');
-
-			// Get the Database Object for this Class
-			$objDatabase = Person::GetDatabase();
-
-			// Perform the SQL Query
-			$objDatabase->NonQuery('
-				DELETE FROM
-					`issue`
-				WHERE
-					`assigned_to_person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
-			');
-		}
-
-			
-		
 		// Related Objects' Methods for IssueAsPostedBy
 		//-------------------------------------------------------------------
 
@@ -2759,6 +2609,156 @@
 					`issue`
 				WHERE
 					`posted_by_person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+			');
+		}
+
+			
+		
+		// Related Objects' Methods for IssueAsAssignedTo
+		//-------------------------------------------------------------------
+
+		/**
+		 * Gets all associated IssuesAsAssignedTo as an array of Issue objects
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @return Issue[]
+		*/ 
+		public function GetIssueAsAssignedToArray($objOptionalClauses = null) {
+			if ((is_null($this->intId)))
+				return array();
+
+			try {
+				return Issue::LoadArrayByAssignedToPersonId($this->intId, $objOptionalClauses);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+		}
+
+		/**
+		 * Counts all associated IssuesAsAssignedTo
+		 * @return int
+		*/ 
+		public function CountIssuesAsAssignedTo() {
+			if ((is_null($this->intId)))
+				return 0;
+
+			return Issue::CountByAssignedToPersonId($this->intId);
+		}
+
+		/**
+		 * Associates a IssueAsAssignedTo
+		 * @param Issue $objIssue
+		 * @return void
+		*/ 
+		public function AssociateIssueAsAssignedTo(Issue $objIssue) {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call AssociateIssueAsAssignedTo on this unsaved Person.');
+			if ((is_null($objIssue->Id)))
+				throw new QUndefinedPrimaryKeyException('Unable to call AssociateIssueAsAssignedTo on this Person with an unsaved Issue.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Person::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				UPDATE
+					`issue`
+				SET
+					`assigned_to_person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+				WHERE
+					`id` = ' . $objDatabase->SqlVariable($objIssue->Id) . '
+			');
+		}
+
+		/**
+		 * Unassociates a IssueAsAssignedTo
+		 * @param Issue $objIssue
+		 * @return void
+		*/ 
+		public function UnassociateIssueAsAssignedTo(Issue $objIssue) {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateIssueAsAssignedTo on this unsaved Person.');
+			if ((is_null($objIssue->Id)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateIssueAsAssignedTo on this Person with an unsaved Issue.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Person::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				UPDATE
+					`issue`
+				SET
+					`assigned_to_person_id` = null
+				WHERE
+					`id` = ' . $objDatabase->SqlVariable($objIssue->Id) . ' AND
+					`assigned_to_person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+			');
+		}
+
+		/**
+		 * Unassociates all IssuesAsAssignedTo
+		 * @return void
+		*/ 
+		public function UnassociateAllIssuesAsAssignedTo() {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateIssueAsAssignedTo on this unsaved Person.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Person::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				UPDATE
+					`issue`
+				SET
+					`assigned_to_person_id` = null
+				WHERE
+					`assigned_to_person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+			');
+		}
+
+		/**
+		 * Deletes an associated IssueAsAssignedTo
+		 * @param Issue $objIssue
+		 * @return void
+		*/ 
+		public function DeleteAssociatedIssueAsAssignedTo(Issue $objIssue) {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateIssueAsAssignedTo on this unsaved Person.');
+			if ((is_null($objIssue->Id)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateIssueAsAssignedTo on this Person with an unsaved Issue.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Person::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				DELETE FROM
+					`issue`
+				WHERE
+					`id` = ' . $objDatabase->SqlVariable($objIssue->Id) . ' AND
+					`assigned_to_person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+			');
+		}
+
+		/**
+		 * Deletes all associated IssuesAsAssignedTo
+		 * @return void
+		*/ 
+		public function DeleteAllIssuesAsAssignedTo() {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateIssueAsAssignedTo on this unsaved Person.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Person::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				DELETE FROM
+					`issue`
+				WHERE
+					`assigned_to_person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 			');
 		}
 
@@ -4291,10 +4291,10 @@
 					return new QQNodePersonTopicAsRead($this);
 				case 'Download':
 					return new QQReverseReferenceNodeDownload($this, 'download', 'reverse_reference', 'person_id');
-				case 'IssueAsAssignedTo':
-					return new QQReverseReferenceNodeIssue($this, 'issueasassignedto', 'reverse_reference', 'assigned_to_person_id');
 				case 'IssueAsPostedBy':
 					return new QQReverseReferenceNodeIssue($this, 'issueaspostedby', 'reverse_reference', 'posted_by_person_id');
+				case 'IssueAsAssignedTo':
+					return new QQReverseReferenceNodeIssue($this, 'issueasassignedto', 'reverse_reference', 'assigned_to_person_id');
 				case 'IssueMessage':
 					return new QQReverseReferenceNodeIssueMessage($this, 'issuemessage', 'reverse_reference', 'person_id');
 				case 'IssueVote':
@@ -4373,10 +4373,10 @@
 					return new QQNodePersonTopicAsRead($this);
 				case 'Download':
 					return new QQReverseReferenceNodeDownload($this, 'download', 'reverse_reference', 'person_id');
-				case 'IssueAsAssignedTo':
-					return new QQReverseReferenceNodeIssue($this, 'issueasassignedto', 'reverse_reference', 'assigned_to_person_id');
 				case 'IssueAsPostedBy':
 					return new QQReverseReferenceNodeIssue($this, 'issueaspostedby', 'reverse_reference', 'posted_by_person_id');
+				case 'IssueAsAssignedTo':
+					return new QQReverseReferenceNodeIssue($this, 'issueasassignedto', 'reverse_reference', 'assigned_to_person_id');
 				case 'IssueMessage':
 					return new QQReverseReferenceNodeIssueMessage($this, 'issuemessage', 'reverse_reference', 'person_id');
 				case 'IssueVote':

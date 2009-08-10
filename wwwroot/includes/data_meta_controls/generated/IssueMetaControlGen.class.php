@@ -38,10 +38,14 @@
 	 * property-read QLabel $AssignedToPersonIdLabel
 	 * property QDateTimePicker $PostDateControl
 	 * property-read QLabel $PostDateLabel
-	 * property QDateTimePicker $LastUpdateDateControl
-	 * property-read QLabel $LastUpdateDateLabel
+	 * property QDateTimePicker $AssignedDateControl
+	 * property-read QLabel $AssignedDateLabel
+	 * property QDateTimePicker $DueDateControl
+	 * property-read QLabel $DueDateLabel
 	 * property QIntegerTextBox $VoteCountControl
 	 * property-read QLabel $VoteCountLabel
+	 * property QDateTimePicker $LastUpdateDateControl
+	 * property-read QLabel $LastUpdateDateLabel
 	 * property QListBox $PersonAsEmailControl
 	 * property-read QLabel $PersonAsEmailLabel
 	 * property-read string $TitleVerb a verb indicating whether or not this is being edited or created
@@ -67,8 +71,10 @@
 		protected $lstPostedByPerson;
 		protected $lstAssignedToPerson;
 		protected $calPostDate;
-		protected $calLastUpdateDate;
+		protected $calAssignedDate;
+		protected $calDueDate;
 		protected $txtVoteCount;
+		protected $calLastUpdateDate;
 
 		// Controls that allow the viewing of Issue's individual data fields
 		protected $lblIssueStatusTypeId;
@@ -81,8 +87,10 @@
 		protected $lblPostedByPersonId;
 		protected $lblAssignedToPersonId;
 		protected $lblPostDate;
-		protected $lblLastUpdateDate;
+		protected $lblAssignedDate;
+		protected $lblDueDate;
 		protected $lblVoteCount;
+		protected $lblLastUpdateDate;
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
 		protected $lstPeopleAsEmail;
@@ -472,33 +480,62 @@
 		protected $strPostDateDateTimeFormat;
 
 		/**
-		 * Create and setup QDateTimePicker calLastUpdateDate
+		 * Create and setup QDateTimePicker calAssignedDate
 		 * @param string $strControlId optional ControlId to use
 		 * @return QDateTimePicker
 		 */
-		public function calLastUpdateDate_Create($strControlId = null) {
-			$this->calLastUpdateDate = new QDateTimePicker($this->objParentObject, $strControlId);
-			$this->calLastUpdateDate->Name = QApplication::Translate('Last Update Date');
-			$this->calLastUpdateDate->DateTime = $this->objIssue->LastUpdateDate;
-			$this->calLastUpdateDate->DateTimePickerType = QDateTimePickerType::DateTime;
-			return $this->calLastUpdateDate;
+		public function calAssignedDate_Create($strControlId = null) {
+			$this->calAssignedDate = new QDateTimePicker($this->objParentObject, $strControlId);
+			$this->calAssignedDate->Name = QApplication::Translate('Assigned Date');
+			$this->calAssignedDate->DateTime = $this->objIssue->AssignedDate;
+			$this->calAssignedDate->DateTimePickerType = QDateTimePickerType::DateTime;
+			return $this->calAssignedDate;
 		}
 
 		/**
-		 * Create and setup QLabel lblLastUpdateDate
+		 * Create and setup QLabel lblAssignedDate
 		 * @param string $strControlId optional ControlId to use
 		 * @param string $strDateTimeFormat optional DateTimeFormat to use
 		 * @return QLabel
 		 */
-		public function lblLastUpdateDate_Create($strControlId = null, $strDateTimeFormat = null) {
-			$this->lblLastUpdateDate = new QLabel($this->objParentObject, $strControlId);
-			$this->lblLastUpdateDate->Name = QApplication::Translate('Last Update Date');
-			$this->strLastUpdateDateDateTimeFormat = $strDateTimeFormat;
-			$this->lblLastUpdateDate->Text = sprintf($this->objIssue->LastUpdateDate) ? $this->objIssue->LastUpdateDate->__toString($this->strLastUpdateDateDateTimeFormat) : null;
-			return $this->lblLastUpdateDate;
+		public function lblAssignedDate_Create($strControlId = null, $strDateTimeFormat = null) {
+			$this->lblAssignedDate = new QLabel($this->objParentObject, $strControlId);
+			$this->lblAssignedDate->Name = QApplication::Translate('Assigned Date');
+			$this->strAssignedDateDateTimeFormat = $strDateTimeFormat;
+			$this->lblAssignedDate->Text = sprintf($this->objIssue->AssignedDate) ? $this->objIssue->AssignedDate->__toString($this->strAssignedDateDateTimeFormat) : null;
+			return $this->lblAssignedDate;
 		}
 
-		protected $strLastUpdateDateDateTimeFormat;
+		protected $strAssignedDateDateTimeFormat;
+
+		/**
+		 * Create and setup QDateTimePicker calDueDate
+		 * @param string $strControlId optional ControlId to use
+		 * @return QDateTimePicker
+		 */
+		public function calDueDate_Create($strControlId = null) {
+			$this->calDueDate = new QDateTimePicker($this->objParentObject, $strControlId);
+			$this->calDueDate->Name = QApplication::Translate('Due Date');
+			$this->calDueDate->DateTime = $this->objIssue->DueDate;
+			$this->calDueDate->DateTimePickerType = QDateTimePickerType::DateTime;
+			return $this->calDueDate;
+		}
+
+		/**
+		 * Create and setup QLabel lblDueDate
+		 * @param string $strControlId optional ControlId to use
+		 * @param string $strDateTimeFormat optional DateTimeFormat to use
+		 * @return QLabel
+		 */
+		public function lblDueDate_Create($strControlId = null, $strDateTimeFormat = null) {
+			$this->lblDueDate = new QLabel($this->objParentObject, $strControlId);
+			$this->lblDueDate->Name = QApplication::Translate('Due Date');
+			$this->strDueDateDateTimeFormat = $strDateTimeFormat;
+			$this->lblDueDate->Text = sprintf($this->objIssue->DueDate) ? $this->objIssue->DueDate->__toString($this->strDueDateDateTimeFormat) : null;
+			return $this->lblDueDate;
+		}
+
+		protected $strDueDateDateTimeFormat;
 
 		/**
 		 * Create and setup QIntegerTextBox txtVoteCount
@@ -525,6 +562,37 @@
 			$this->lblVoteCount->Format = $strFormat;
 			return $this->lblVoteCount;
 		}
+
+		/**
+		 * Create and setup QDateTimePicker calLastUpdateDate
+		 * @param string $strControlId optional ControlId to use
+		 * @return QDateTimePicker
+		 */
+		public function calLastUpdateDate_Create($strControlId = null) {
+			$this->calLastUpdateDate = new QDateTimePicker($this->objParentObject, $strControlId);
+			$this->calLastUpdateDate->Name = QApplication::Translate('Last Update Date');
+			$this->calLastUpdateDate->DateTime = $this->objIssue->LastUpdateDate;
+			$this->calLastUpdateDate->DateTimePickerType = QDateTimePickerType::DateTime;
+			$this->calLastUpdateDate->Required = true;
+			return $this->calLastUpdateDate;
+		}
+
+		/**
+		 * Create and setup QLabel lblLastUpdateDate
+		 * @param string $strControlId optional ControlId to use
+		 * @param string $strDateTimeFormat optional DateTimeFormat to use
+		 * @return QLabel
+		 */
+		public function lblLastUpdateDate_Create($strControlId = null, $strDateTimeFormat = null) {
+			$this->lblLastUpdateDate = new QLabel($this->objParentObject, $strControlId);
+			$this->lblLastUpdateDate->Name = QApplication::Translate('Last Update Date');
+			$this->strLastUpdateDateDateTimeFormat = $strDateTimeFormat;
+			$this->lblLastUpdateDate->Text = sprintf($this->objIssue->LastUpdateDate) ? $this->objIssue->LastUpdateDate->__toString($this->strLastUpdateDateDateTimeFormat) : null;
+			$this->lblLastUpdateDate->Required = true;
+			return $this->lblLastUpdateDate;
+		}
+
+		protected $strLastUpdateDateDateTimeFormat;
 
 		/**
 		 * Create and setup QListBox lstPeopleAsEmail
@@ -630,11 +698,17 @@
 			if ($this->calPostDate) $this->calPostDate->DateTime = $this->objIssue->PostDate;
 			if ($this->lblPostDate) $this->lblPostDate->Text = sprintf($this->objIssue->PostDate) ? $this->objIssue->__toString($this->strPostDateDateTimeFormat) : null;
 
-			if ($this->calLastUpdateDate) $this->calLastUpdateDate->DateTime = $this->objIssue->LastUpdateDate;
-			if ($this->lblLastUpdateDate) $this->lblLastUpdateDate->Text = sprintf($this->objIssue->LastUpdateDate) ? $this->objIssue->__toString($this->strLastUpdateDateDateTimeFormat) : null;
+			if ($this->calAssignedDate) $this->calAssignedDate->DateTime = $this->objIssue->AssignedDate;
+			if ($this->lblAssignedDate) $this->lblAssignedDate->Text = sprintf($this->objIssue->AssignedDate) ? $this->objIssue->__toString($this->strAssignedDateDateTimeFormat) : null;
+
+			if ($this->calDueDate) $this->calDueDate->DateTime = $this->objIssue->DueDate;
+			if ($this->lblDueDate) $this->lblDueDate->Text = sprintf($this->objIssue->DueDate) ? $this->objIssue->__toString($this->strDueDateDateTimeFormat) : null;
 
 			if ($this->txtVoteCount) $this->txtVoteCount->Text = $this->objIssue->VoteCount;
 			if ($this->lblVoteCount) $this->lblVoteCount->Text = $this->objIssue->VoteCount;
+
+			if ($this->calLastUpdateDate) $this->calLastUpdateDate->DateTime = $this->objIssue->LastUpdateDate;
+			if ($this->lblLastUpdateDate) $this->lblLastUpdateDate->Text = sprintf($this->objIssue->LastUpdateDate) ? $this->objIssue->__toString($this->strLastUpdateDateDateTimeFormat) : null;
 
 			if ($this->lstPeopleAsEmail) {
 				$this->lstPeopleAsEmail->RemoveAllItems();
@@ -700,8 +774,10 @@
 				if ($this->lstPostedByPerson) $this->objIssue->PostedByPersonId = $this->lstPostedByPerson->SelectedValue;
 				if ($this->lstAssignedToPerson) $this->objIssue->AssignedToPersonId = $this->lstAssignedToPerson->SelectedValue;
 				if ($this->calPostDate) $this->objIssue->PostDate = $this->calPostDate->DateTime;
-				if ($this->calLastUpdateDate) $this->objIssue->LastUpdateDate = $this->calLastUpdateDate->DateTime;
+				if ($this->calAssignedDate) $this->objIssue->AssignedDate = $this->calAssignedDate->DateTime;
+				if ($this->calDueDate) $this->objIssue->DueDate = $this->calDueDate->DateTime;
 				if ($this->txtVoteCount) $this->objIssue->VoteCount = $this->txtVoteCount->Text;
+				if ($this->calLastUpdateDate) $this->objIssue->LastUpdateDate = $this->calLastUpdateDate->DateTime;
 
 				// Update any UniqueReverseReferences (if any) for controls that have been created for it
 
@@ -812,18 +888,30 @@
 				case 'PostDateLabel':
 					if (!$this->lblPostDate) return $this->lblPostDate_Create();
 					return $this->lblPostDate;
-				case 'LastUpdateDateControl':
-					if (!$this->calLastUpdateDate) return $this->calLastUpdateDate_Create();
-					return $this->calLastUpdateDate;
-				case 'LastUpdateDateLabel':
-					if (!$this->lblLastUpdateDate) return $this->lblLastUpdateDate_Create();
-					return $this->lblLastUpdateDate;
+				case 'AssignedDateControl':
+					if (!$this->calAssignedDate) return $this->calAssignedDate_Create();
+					return $this->calAssignedDate;
+				case 'AssignedDateLabel':
+					if (!$this->lblAssignedDate) return $this->lblAssignedDate_Create();
+					return $this->lblAssignedDate;
+				case 'DueDateControl':
+					if (!$this->calDueDate) return $this->calDueDate_Create();
+					return $this->calDueDate;
+				case 'DueDateLabel':
+					if (!$this->lblDueDate) return $this->lblDueDate_Create();
+					return $this->lblDueDate;
 				case 'VoteCountControl':
 					if (!$this->txtVoteCount) return $this->txtVoteCount_Create();
 					return $this->txtVoteCount;
 				case 'VoteCountLabel':
 					if (!$this->lblVoteCount) return $this->lblVoteCount_Create();
 					return $this->lblVoteCount;
+				case 'LastUpdateDateControl':
+					if (!$this->calLastUpdateDate) return $this->calLastUpdateDate_Create();
+					return $this->calLastUpdateDate;
+				case 'LastUpdateDateLabel':
+					if (!$this->lblLastUpdateDate) return $this->lblLastUpdateDate_Create();
+					return $this->lblLastUpdateDate;
 				case 'PersonAsEmailControl':
 					if (!$this->lstPeopleAsEmail) return $this->lstPeopleAsEmail_Create();
 					return $this->lstPeopleAsEmail;
@@ -874,10 +962,14 @@
 						return ($this->lstAssignedToPerson = QType::Cast($mixValue, 'QControl'));
 					case 'PostDateControl':
 						return ($this->calPostDate = QType::Cast($mixValue, 'QControl'));
-					case 'LastUpdateDateControl':
-						return ($this->calLastUpdateDate = QType::Cast($mixValue, 'QControl'));
+					case 'AssignedDateControl':
+						return ($this->calAssignedDate = QType::Cast($mixValue, 'QControl'));
+					case 'DueDateControl':
+						return ($this->calDueDate = QType::Cast($mixValue, 'QControl'));
 					case 'VoteCountControl':
 						return ($this->txtVoteCount = QType::Cast($mixValue, 'QControl'));
+					case 'LastUpdateDateControl':
+						return ($this->calLastUpdateDate = QType::Cast($mixValue, 'QControl'));
 					case 'PersonAsEmailControl':
 						return ($this->lstPeopleAsEmail = QType::Cast($mixValue, 'QControl'));
 					default:

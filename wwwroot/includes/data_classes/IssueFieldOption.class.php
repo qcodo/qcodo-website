@@ -27,6 +27,33 @@
 			return sprintf('IssueFieldOption Object %s',  $this->intId);
 		}
 
+		/**
+		 * Given a name, this will "tokenize" it for use as a token
+		 * @param string $strName
+		 * @return string
+		 */
+		public static function TokenizeName($strName) {
+			$strName = trim(strtolower($strName));
+			$strToken = null;
+
+			for ($intChar = 0 ; $intChar < strlen($strName); $intChar++) {
+				$strChar = $strName[$intChar];
+				if ((ord($strChar) >= ord('a')) && (ord($strChar) <= ord('z')))
+					$strToken .= $strChar;
+				else if ((ord($strChar) >= ord('0')) && (ord($strChar) <= ord('9')))
+					$strToken .= $strChar;
+			}
+
+			return $strToken;
+		}
+
+		/**
+		 * This will set the Token field of this object to the TokenizeName-d version of the Name field of this object.
+		 * @return void
+		 */
+		public function SetToken() {
+			$this->strToken = IssueFieldOption::TokenizeName($this->strName);
+		}
 
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...

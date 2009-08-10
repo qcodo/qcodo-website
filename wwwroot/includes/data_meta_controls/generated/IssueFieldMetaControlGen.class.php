@@ -20,6 +20,8 @@
 	 * property-read QLabel $IdLabel
 	 * property QTextBox $NameControl
 	 * property-read QLabel $NameLabel
+	 * property QIntegerTextBox $OrderNumberControl
+	 * property-read QLabel $OrderNumberLabel
 	 * property QCheckBox $RequiredFlagControl
 	 * property-read QLabel $RequiredFlagLabel
 	 * property QCheckBox $MutableFlagControl
@@ -40,12 +42,14 @@
 		// Controls that allow the editing of IssueField's individual data fields
 		protected $lblId;
 		protected $txtName;
+		protected $txtOrderNumber;
 		protected $chkRequiredFlag;
 		protected $chkMutableFlag;
 		protected $chkActiveFlag;
 
 		// Controls that allow the viewing of IssueField's individual data fields
 		protected $lblName;
+		protected $lblOrderNumber;
 		protected $lblRequiredFlag;
 		protected $lblMutableFlag;
 		protected $lblActiveFlag;
@@ -188,6 +192,32 @@
 		}
 
 		/**
+		 * Create and setup QIntegerTextBox txtOrderNumber
+		 * @param string $strControlId optional ControlId to use
+		 * @return QIntegerTextBox
+		 */
+		public function txtOrderNumber_Create($strControlId = null) {
+			$this->txtOrderNumber = new QIntegerTextBox($this->objParentObject, $strControlId);
+			$this->txtOrderNumber->Name = QApplication::Translate('Order Number');
+			$this->txtOrderNumber->Text = $this->objIssueField->OrderNumber;
+			return $this->txtOrderNumber;
+		}
+
+		/**
+		 * Create and setup QLabel lblOrderNumber
+		 * @param string $strControlId optional ControlId to use
+		 * @param string $strFormat optional sprintf format to use
+		 * @return QLabel
+		 */
+		public function lblOrderNumber_Create($strControlId = null, $strFormat = null) {
+			$this->lblOrderNumber = new QLabel($this->objParentObject, $strControlId);
+			$this->lblOrderNumber->Name = QApplication::Translate('Order Number');
+			$this->lblOrderNumber->Text = $this->objIssueField->OrderNumber;
+			$this->lblOrderNumber->Format = $strFormat;
+			return $this->lblOrderNumber;
+		}
+
+		/**
 		 * Create and setup QCheckBox chkRequiredFlag
 		 * @param string $strControlId optional ControlId to use
 		 * @return QCheckBox
@@ -275,6 +305,9 @@
 			if ($this->txtName) $this->txtName->Text = $this->objIssueField->Name;
 			if ($this->lblName) $this->lblName->Text = $this->objIssueField->Name;
 
+			if ($this->txtOrderNumber) $this->txtOrderNumber->Text = $this->objIssueField->OrderNumber;
+			if ($this->lblOrderNumber) $this->lblOrderNumber->Text = $this->objIssueField->OrderNumber;
+
 			if ($this->chkRequiredFlag) $this->chkRequiredFlag->Checked = $this->objIssueField->RequiredFlag;
 			if ($this->lblRequiredFlag) $this->lblRequiredFlag->Text = ($this->objIssueField->RequiredFlag) ? QApplication::Translate('Yes') : QApplication::Translate('No');
 
@@ -308,6 +341,7 @@
 			try {
 				// Update any fields for controls that have been created
 				if ($this->txtName) $this->objIssueField->Name = $this->txtName->Text;
+				if ($this->txtOrderNumber) $this->objIssueField->OrderNumber = $this->txtOrderNumber->Text;
 				if ($this->chkRequiredFlag) $this->objIssueField->RequiredFlag = $this->chkRequiredFlag->Checked;
 				if ($this->chkMutableFlag) $this->objIssueField->MutableFlag = $this->chkMutableFlag->Checked;
 				if ($this->chkActiveFlag) $this->objIssueField->ActiveFlag = $this->chkActiveFlag->Checked;
@@ -365,6 +399,12 @@
 				case 'NameLabel':
 					if (!$this->lblName) return $this->lblName_Create();
 					return $this->lblName;
+				case 'OrderNumberControl':
+					if (!$this->txtOrderNumber) return $this->txtOrderNumber_Create();
+					return $this->txtOrderNumber;
+				case 'OrderNumberLabel':
+					if (!$this->lblOrderNumber) return $this->lblOrderNumber_Create();
+					return $this->lblOrderNumber;
 				case 'RequiredFlagControl':
 					if (!$this->chkRequiredFlag) return $this->chkRequiredFlag_Create();
 					return $this->chkRequiredFlag;
@@ -409,6 +449,8 @@
 						return ($this->lblId = QType::Cast($mixValue, 'QControl'));
 					case 'NameControl':
 						return ($this->txtName = QType::Cast($mixValue, 'QControl'));
+					case 'OrderNumberControl':
+						return ($this->txtOrderNumber = QType::Cast($mixValue, 'QControl'));
 					case 'RequiredFlagControl':
 						return ($this->chkRequiredFlag = QType::Cast($mixValue, 'QControl'));
 					case 'MutableFlagControl':
