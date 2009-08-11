@@ -35,14 +35,14 @@ INSERT INTO issue_status_type(id, name) VALUES (NULL, 'Closed - Won\'t Fix');
 INSERT INTO issue_status_type(id, name) VALUES (NULL, 'Closed - Duplicate');
 INSERT INTO issue_status_type(id, name) VALUES (NULL, 'Closed - Cannot Replicate');
 
-INSERT INTO issue_field(id, name, order_number, required_flag, mutable_flag, active_flag) VALUES (1, 'Qcodo Version', 1, true, false, true);
-INSERT INTO issue_field(id, name, order_number, required_flag, mutable_flag, active_flag) VALUES (2, 'PHP Version', 2, true, true, true);
-INSERT INTO issue_field(id, name, order_number, required_flag, mutable_flag, active_flag) VALUES (3, 'Category', 3, true, false, true);
+INSERT INTO issue_field(id, name, order_number, required_flag, mutable_flag, active_flag, token) VALUES (1, 'Qcodo Version', 1, true, false, true, 'qcodo_version');
+INSERT INTO issue_field(id, name, order_number, required_flag, mutable_flag, active_flag, token) VALUES (2, 'PHP Version', 2, true, true, true, 'php_version');
+INSERT INTO issue_field(id, name, order_number, required_flag, mutable_flag, active_flag, token) VALUES (3, 'Category', 3, true, false, true, 'category');
 
-INSERT INTO issue_field(id, name, order_number, required_flag, mutable_flag, active_flag) VALUES (4, 'Browser', 101, false, true, true);
-INSERT INTO issue_field(id, name, order_number, required_flag, mutable_flag, active_flag) VALUES (5, 'Web Server', 102, false, true, true);
-INSERT INTO issue_field(id, name, order_number, required_flag, mutable_flag, active_flag) VALUES (6, 'Database', 103, false, true, true);
-INSERT INTO issue_field(id, name, order_number, required_flag, mutable_flag, active_flag) VALUES (7, 'Operating System', 104, false, true, true);
+INSERT INTO issue_field(id, name, order_number, required_flag, mutable_flag, active_flag, token) VALUES (4, 'Browser', 101, false, true, true, 'browser');
+INSERT INTO issue_field(id, name, order_number, required_flag, mutable_flag, active_flag, token) VALUES (5, 'Web Server', 102, false, true, true, 'web_server');
+INSERT INTO issue_field(id, name, order_number, required_flag, mutable_flag, active_flag, token) VALUES (6, 'Database', 103, false, true, true, 'database');
+INSERT INTO issue_field(id, name, order_number, required_flag, mutable_flag, active_flag, token) VALUES (7, 'Operating System', 104, false, true, true, 'os');
 
 INSERT INTO issue_field_option(issue_field_id, name, token, order_number, active_flag) VALUES (1, '0.3.43 (Development)', '0343development', 1, true);
 INSERT INTO issue_field_option(issue_field_id, name, token, order_number, active_flag) VALUES (1, '0.3.42 (Development)', '0342development', 2, true);

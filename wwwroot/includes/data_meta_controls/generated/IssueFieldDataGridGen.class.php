@@ -275,6 +275,7 @@
 			} else if (is_string($mixContent)) switch ($mixContent) {
 				case 'Id': return QQN::IssueField()->Id;
 				case 'Name': return QQN::IssueField()->Name;
+				case 'Token': return QQN::IssueField()->Token;
 				case 'OrderNumber': return QQN::IssueField()->OrderNumber;
 				case 'RequiredFlag': return QQN::IssueField()->RequiredFlag;
 				case 'MutableFlag': return QQN::IssueField()->MutableFlag;

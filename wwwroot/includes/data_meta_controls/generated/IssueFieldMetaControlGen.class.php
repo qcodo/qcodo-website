@@ -20,6 +20,8 @@
 	 * property-read QLabel $IdLabel
 	 * property QTextBox $NameControl
 	 * property-read QLabel $NameLabel
+	 * property QTextBox $TokenControl
+	 * property-read QLabel $TokenLabel
 	 * property QIntegerTextBox $OrderNumberControl
 	 * property-read QLabel $OrderNumberLabel
 	 * property QCheckBox $RequiredFlagControl
@@ -42,6 +44,7 @@
 		// Controls that allow the editing of IssueField's individual data fields
 		protected $lblId;
 		protected $txtName;
+		protected $txtToken;
 		protected $txtOrderNumber;
 		protected $chkRequiredFlag;
 		protected $chkMutableFlag;
@@ -49,6 +52,7 @@
 
 		// Controls that allow the viewing of IssueField's individual data fields
 		protected $lblName;
+		protected $lblToken;
 		protected $lblOrderNumber;
 		protected $lblRequiredFlag;
 		protected $lblMutableFlag;
@@ -192,6 +196,33 @@
 		}
 
 		/**
+		 * Create and setup QTextBox txtToken
+		 * @param string $strControlId optional ControlId to use
+		 * @return QTextBox
+		 */
+		public function txtToken_Create($strControlId = null) {
+			$this->txtToken = new QTextBox($this->objParentObject, $strControlId);
+			$this->txtToken->Name = QApplication::Translate('Token');
+			$this->txtToken->Text = $this->objIssueField->Token;
+			$this->txtToken->Required = true;
+			$this->txtToken->MaxLength = IssueField::TokenMaxLength;
+			return $this->txtToken;
+		}
+
+		/**
+		 * Create and setup QLabel lblToken
+		 * @param string $strControlId optional ControlId to use
+		 * @return QLabel
+		 */
+		public function lblToken_Create($strControlId = null) {
+			$this->lblToken = new QLabel($this->objParentObject, $strControlId);
+			$this->lblToken->Name = QApplication::Translate('Token');
+			$this->lblToken->Text = $this->objIssueField->Token;
+			$this->lblToken->Required = true;
+			return $this->lblToken;
+		}
+
+		/**
 		 * Create and setup QIntegerTextBox txtOrderNumber
 		 * @param string $strControlId optional ControlId to use
 		 * @return QIntegerTextBox
@@ -305,6 +336,9 @@
 			if ($this->txtName) $this->txtName->Text = $this->objIssueField->Name;
 			if ($this->lblName) $this->lblName->Text = $this->objIssueField->Name;
 
+			if ($this->txtToken) $this->txtToken->Text = $this->objIssueField->Token;
+			if ($this->lblToken) $this->lblToken->Text = $this->objIssueField->Token;
+
 			if ($this->txtOrderNumber) $this->txtOrderNumber->Text = $this->objIssueField->OrderNumber;
 			if ($this->lblOrderNumber) $this->lblOrderNumber->Text = $this->objIssueField->OrderNumber;
 
@@ -341,6 +375,7 @@
 			try {
 				// Update any fields for controls that have been created
 				if ($this->txtName) $this->objIssueField->Name = $this->txtName->Text;
+				if ($this->txtToken) $this->objIssueField->Token = $this->txtToken->Text;
 				if ($this->txtOrderNumber) $this->objIssueField->OrderNumber = $this->txtOrderNumber->Text;
 				if ($this->chkRequiredFlag) $this->objIssueField->RequiredFlag = $this->chkRequiredFlag->Checked;
 				if ($this->chkMutableFlag) $this->objIssueField->MutableFlag = $this->chkMutableFlag->Checked;
@@ -399,6 +434,12 @@
 				case 'NameLabel':
 					if (!$this->lblName) return $this->lblName_Create();
 					return $this->lblName;
+				case 'TokenControl':
+					if (!$this->txtToken) return $this->txtToken_Create();
+					return $this->txtToken;
+				case 'TokenLabel':
+					if (!$this->lblToken) return $this->lblToken_Create();
+					return $this->lblToken;
 				case 'OrderNumberControl':
 					if (!$this->txtOrderNumber) return $this->txtOrderNumber_Create();
 					return $this->txtOrderNumber;
@@ -449,6 +490,8 @@
 						return ($this->lblId = QType::Cast($mixValue, 'QControl'));
 					case 'NameControl':
 						return ($this->txtName = QType::Cast($mixValue, 'QControl'));
+					case 'TokenControl':
+						return ($this->txtToken = QType::Cast($mixValue, 'QControl'));
 					case 'OrderNumberControl':
 						return ($this->txtOrderNumber = QType::Cast($mixValue, 'QControl'));
 					case 'RequiredFlagControl':

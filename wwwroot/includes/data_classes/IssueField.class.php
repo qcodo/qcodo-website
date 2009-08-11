@@ -27,6 +27,13 @@
 			return sprintf('IssueField Object %s',  $this->intId);
 		}
 
+		/**
+		 * Gets the IssueField object for the Category field
+		 * @return IssueField
+		 */
+		public static function LoadCategoryFieldForCategory() {
+			return IssueField::LoadByToken('category');
+		}
 
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...
