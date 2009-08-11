@@ -126,7 +126,6 @@
 					QQ::Like(QQN::Issue()->AssignedToPerson->DisplayName, $this->txtAssignedTo->Text . '%')
 				);
 			}
-						
 
 			$this->dtgIssues->TotalItemCount = Issue::QueryCount($objCondition);
 
@@ -138,7 +137,7 @@
 
 			$this->dtgIssues->DataSource = Issue::QueryArray($objCondition, $objClauses);
 		}
-		
+
 		public function Refresh() {
 			$this->dtgIssues->PageNumber = 1;
 			$this->dtgIssues->Refresh();
@@ -189,10 +188,6 @@
 		public function RenderCategory(Issue $objIssue) {
 			if ($objFieldOption = $objIssue->GetFieldOptionForIssueField($this->objIssueFieldForCategory))
 				return $objFieldOption->Name;
-		}
-
-		protected function btnButton_Click($strFormId, $strControlId, $strParameter) {
-			$this->lblMessage->Text = 'Hello, World!';
 		}
 	}
 
