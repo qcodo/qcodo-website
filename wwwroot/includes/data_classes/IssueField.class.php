@@ -31,10 +31,26 @@
 		 * Gets the IssueField object for the Category field
 		 * @return IssueField
 		 */
-		public static function LoadCategoryFieldForCategory() {
+		public static function LoadIssueFieldForCategory() {
 			return IssueField::LoadByToken('category');
 		}
+		
+		/**
+		 * Gets the IssueField object for the PhpVersion field
+		 * @return IssueField
+		 */
+		public static function LoadIssueFieldForPhpVersion() {
+			return IssueField::LoadByToken('php_version');
+		}
 
+		/**
+		 * Gets the IssueField object for the QcodoVersion field
+		 * @return IssueField
+		 */
+		public static function LoadIssueFieldForQcodoVersion() {
+			return IssueField::LoadByToken('qcodo_version');
+		}
+		
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...
 		// but feel free to use these as a starting point)

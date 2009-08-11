@@ -204,7 +204,8 @@
 			table.datagrid td a:hover { color: #000; text-decoration: none; }
 		table.datagrid tfoot { border-top: 1px solid #aaf;} 
 
-	table.issuesDataGrid { font-size: 11px; }
+	table.issuesDataGrid { font-size: 11px; text-align: top; }
+		table.issuesDataGrid td { vertical-align: top; }
 		table.issuesDataGrid td.small { font-size: 10px; }
 		table.issuesDataGrid td.reverseLink a { text-decoration: none; }
 		table.issuesDataGrid td.reverseLink a:hover { text-decoration: underline; }
