@@ -1,9 +1,9 @@
 <?php
 	/**
 	 * This is the "Meta" DataGrid class for the List functionality
-	 * of the Message class.  This code-generated class
+	 * of the TopicLink class.  This code-generated class
 	 * contains a QDataGrid class which can be used by any QForm or QPanel,
-	 * listing a collection of Message objects.  It includes
+	 * listing a collection of TopicLink objects.  It includes
 	 * functionality to perform pagination and sorting on columns.
 	 *
 	 * To take advantage of some (or all) of these control objects, you
@@ -16,7 +16,7 @@
 	 * @subpackage MetaControls
 	 * 
 	 */
-	class MessageDataGridGen extends QDataGrid {
+	class TopicLinkDataGridGen extends QDataGrid {
 		/**
 		 * Standard DataGrid constructor which also pre-configures the DataBinder
 		 * to its own SimpleDataBinder.  Also pre-configures UseAjax to true.
@@ -33,9 +33,9 @@
 
 		/**
 		 * Given the description of the Column's contents, this is a simple, express
-		 * way of adding a column to this Message datagrid.  The description of a column's
+		 * way of adding a column to this TopicLink datagrid.  The description of a column's
 		 * content can be either a text string description of a simple field name
-		 * in the Message object, or it can be any QQNode extending from QQN::Message().
+		 * in the TopicLink object, or it can be any QQNode extending from QQN::TopicLink().
 		 * 
 		 * MetaAddColumn will automatically pre-configure the column with the name, html
 		 * and sort rules given the content being specified.
@@ -43,7 +43,7 @@
 		 * Any of these things can be overridden with OverrideParameters.
 		 * 
 		 * Finally, $mixContents can also be an array of contents, if displaying and/or
-		 * sorting using two fields from the Message object.
+		 * sorting using two fields from the TopicLink object.
 		 *
 		 * @param mixed $mixContents
 		 * @param string $objOverrideParameters[]
@@ -125,7 +125,7 @@
 		 * 
 		 * Also, $mixContent cannot be an array.  Only a single field can be specified.
 		 *
-		 * @param mixed $mixContent string or QQNode from Message
+		 * @param mixed $mixContent string or QQNode from TopicLink
 		 * @param string $strTypeClassName the name of the TypeClass to use $NameArray against
 		 * @param mixed $objOverrideParameters
 		 */
@@ -226,7 +226,7 @@
 		public function MetaDataBinder() {
 			// Remember!  We need to first set the TotalItemCount, which will affect the calcuation of LimitClause below
 			if ($this->Paginator) {
-				$this->TotalItemCount = Message::CountAll();
+				$this->TotalItemCount = TopicLink::CountAll();
 			}
 
 			// Setup the $objClauses Array
@@ -241,16 +241,16 @@
 			if ($objClause = $this->LimitClause)
 				array_push($objClauses, $objClause);
 
-			// Set the DataSource to be a Query result from Message, given the clauses above
-			$this->DataSource = Message::LoadAll($objClauses);
+			// Set the DataSource to be a Query result from TopicLink, given the clauses above
+			$this->DataSource = TopicLink::LoadAll($objClauses);
 		}
 
 
 		/**
 		 * Used internally by the Meta-based Add Column tools.
 		 *
-		 * Given a QQNode or a Text String, this will return a Message-based QQNode.
-		 * It will also verify that it is a proper Message-based QQNode, and will throw an exception otherwise.
+		 * Given a QQNode or a Text String, this will return a TopicLink-based QQNode.
+		 * It will also verify that it is a proper TopicLink-based QQNode, and will throw an exception otherwise.
 		 *
 		 * @param mixed $mixContent
 		 * @return QQNode
@@ -259,7 +259,7 @@
 			if ($mixContent instanceof QQNode) {
 				if (!$mixContent->_ParentNode)
 					throw new QCallerException('Content QQNode cannot be a Top Level Node');
-				if ($mixContent->_RootTableName == 'message') {
+				if ($mixContent->_RootTableName == 'topic_link') {
 					if (($mixContent instanceof QQReverseReferenceNode) && !($mixContent->_PropertyName))
 						throw new QCallerException('Content QQNode cannot go through any "To Many" association nodes.');
 					$objCurrentNode = $mixContent;
@@ -271,20 +271,18 @@
 					}
 					return $mixContent;
 				} else
-					throw new QCallerException('Content QQNode has a root table of "' . $mixContent->_RootTableName . '". Must be a root of "message".');
+					throw new QCallerException('Content QQNode has a root table of "' . $mixContent->_RootTableName . '". Must be a root of "topic_link".');
 			} else if (is_string($mixContent)) switch ($mixContent) {
-				case 'Id': return QQN::Message()->Id;
-				case 'TopicId': return QQN::Message()->TopicId;
-				case 'Topic': return QQN::Message()->Topic;
-				case 'TopicLinkId': return QQN::Message()->TopicLinkId;
-				case 'TopicLink': return QQN::Message()->TopicLink;
-				case 'PersonId': return QQN::Message()->PersonId;
-				case 'Person': return QQN::Message()->Person;
-				case 'Message': return QQN::Message()->Message;
-				case 'CompiledHtml': return QQN::Message()->CompiledHtml;
-				case 'ReplyNumber': return QQN::Message()->ReplyNumber;
-				case 'PostDate': return QQN::Message()->PostDate;
-				default: throw new QCallerException('Simple Property not found in MessageDataGrid content: ' . $mixContent);
+				case 'Id': return QQN::TopicLink()->Id;
+				case 'TopicLinkTypeId': return QQN::TopicLink()->TopicLinkTypeId;
+				case 'TopicCount': return QQN::TopicLink()->TopicCount;
+				case 'MessageCount': return QQN::TopicLink()->MessageCount;
+				case 'LastPostDate': return QQN::TopicLink()->LastPostDate;
+				case 'ForumId': return QQN::TopicLink()->ForumId;
+				case 'Forum': return QQN::TopicLink()->Forum;
+				case 'IssueId': return QQN::TopicLink()->IssueId;
+				case 'Issue': return QQN::TopicLink()->Issue;
+				default: throw new QCallerException('Simple Property not found in TopicLinkDataGrid content: ' . $mixContent);
 			} else if ($mixContent instanceof QQAssociationNode)
 				throw new QCallerException('Content QQNode cannot go through any "To Many" association nodes.');
 			else

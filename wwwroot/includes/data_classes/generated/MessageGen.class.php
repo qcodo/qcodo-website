@@ -16,16 +16,16 @@
 	 * @package Qcodo Website
 	 * @subpackage GeneratedDataObjects
 	 * @property-read integer $Id the value for intId (Read-Only PK)
-	 * @property integer $ForumId the value for intForumId (Not Null)
 	 * @property integer $TopicId the value for intTopicId (Not Null)
-	 * @property integer $PersonId the value for intPersonId (Not Null)
+	 * @property integer $TopicLinkId the value for intTopicLinkId (Not Null)
+	 * @property integer $PersonId the value for intPersonId 
 	 * @property string $Message the value for strMessage 
 	 * @property string $CompiledHtml the value for strCompiledHtml 
 	 * @property integer $ReplyNumber the value for intReplyNumber 
 	 * @property QDateTime $PostDate the value for dttPostDate (Not Null)
-	 * @property Forum $Forum the value for the Forum object referenced by intForumId (Not Null)
 	 * @property Topic $Topic the value for the Topic object referenced by intTopicId (Not Null)
-	 * @property Person $Person the value for the Person object referenced by intPersonId (Not Null)
+	 * @property TopicLink $TopicLink the value for the TopicLink object referenced by intTopicLinkId (Not Null)
+	 * @property Person $Person the value for the Person object referenced by intPersonId 
 	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
 	class MessageGen extends QBaseClass {
@@ -43,19 +43,19 @@
 
 
 		/**
-		 * Protected member variable that maps to the database column message.forum_id
-		 * @var integer intForumId
-		 */
-		protected $intForumId;
-		const ForumIdDefault = null;
-
-
-		/**
 		 * Protected member variable that maps to the database column message.topic_id
 		 * @var integer intTopicId
 		 */
 		protected $intTopicId;
 		const TopicIdDefault = null;
+
+
+		/**
+		 * Protected member variable that maps to the database column message.topic_link_id
+		 * @var integer intTopicLinkId
+		 */
+		protected $intTopicLinkId;
+		const TopicLinkIdDefault = null;
 
 
 		/**
@@ -122,16 +122,6 @@
 
 		/**
 		 * Protected member variable that contains the object pointed by the reference
-		 * in the database column message.forum_id.
-		 *
-		 * NOTE: Always use the Forum property getter to correctly retrieve this Forum object.
-		 * (Because this class implements late binding, this variable reference MAY be null.)
-		 * @var Forum objForum
-		 */
-		protected $objForum;
-
-		/**
-		 * Protected member variable that contains the object pointed by the reference
 		 * in the database column message.topic_id.
 		 *
 		 * NOTE: Always use the Topic property getter to correctly retrieve this Topic object.
@@ -139,6 +129,16 @@
 		 * @var Topic objTopic
 		 */
 		protected $objTopic;
+
+		/**
+		 * Protected member variable that contains the object pointed by the reference
+		 * in the database column message.topic_link_id.
+		 *
+		 * NOTE: Always use the TopicLink property getter to correctly retrieve this TopicLink object.
+		 * (Because this class implements late binding, this variable reference MAY be null.)
+		 * @var TopicLink objTopicLink
+		 */
+		protected $objTopicLink;
 
 		/**
 		 * Protected member variable that contains the object pointed by the reference
@@ -414,8 +414,8 @@
 			}
 
 			$objBuilder->AddSelectItem($strTableName, 'id', $strAliasPrefix . 'id');
-			$objBuilder->AddSelectItem($strTableName, 'forum_id', $strAliasPrefix . 'forum_id');
 			$objBuilder->AddSelectItem($strTableName, 'topic_id', $strAliasPrefix . 'topic_id');
+			$objBuilder->AddSelectItem($strTableName, 'topic_link_id', $strAliasPrefix . 'topic_link_id');
 			$objBuilder->AddSelectItem($strTableName, 'person_id', $strAliasPrefix . 'person_id');
 			$objBuilder->AddSelectItem($strTableName, 'message', $strAliasPrefix . 'message');
 			$objBuilder->AddSelectItem($strTableName, 'compiled_html', $strAliasPrefix . 'compiled_html');
@@ -454,10 +454,10 @@
 
 			$strAliasName = array_key_exists($strAliasPrefix . 'id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'id'] : $strAliasPrefix . 'id';
 			$objToReturn->intId = $objDbRow->GetColumn($strAliasName, 'Integer');
-			$strAliasName = array_key_exists($strAliasPrefix . 'forum_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'forum_id'] : $strAliasPrefix . 'forum_id';
-			$objToReturn->intForumId = $objDbRow->GetColumn($strAliasName, 'Integer');
 			$strAliasName = array_key_exists($strAliasPrefix . 'topic_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'topic_id'] : $strAliasPrefix . 'topic_id';
 			$objToReturn->intTopicId = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'topic_link_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'topic_link_id'] : $strAliasPrefix . 'topic_link_id';
+			$objToReturn->intTopicLinkId = $objDbRow->GetColumn($strAliasName, 'Integer');
 			$strAliasName = array_key_exists($strAliasPrefix . 'person_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'person_id'] : $strAliasPrefix . 'person_id';
 			$objToReturn->intPersonId = $objDbRow->GetColumn($strAliasName, 'Integer');
 			$strAliasName = array_key_exists($strAliasPrefix . 'message', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'message'] : $strAliasPrefix . 'message';
@@ -481,17 +481,17 @@
 			if (!$strAliasPrefix)
 				$strAliasPrefix = 'message__';
 
-			// Check for Forum Early Binding
-			$strAlias = $strAliasPrefix . 'forum_id__id';
-			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
-			if (!is_null($objDbRow->GetColumn($strAliasName)))
-				$objToReturn->objForum = Forum::InstantiateDbRow($objDbRow, $strAliasPrefix . 'forum_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
-
 			// Check for Topic Early Binding
 			$strAlias = $strAliasPrefix . 'topic_id__id';
 			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
 			if (!is_null($objDbRow->GetColumn($strAliasName)))
 				$objToReturn->objTopic = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topic_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+
+			// Check for TopicLink Early Binding
+			$strAlias = $strAliasPrefix . 'topic_link_id__id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+			if (!is_null($objDbRow->GetColumn($strAliasName)))
+				$objToReturn->objTopicLink = TopicLink::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topic_link_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 
 			// Check for Person Early Binding
 			$strAlias = $strAliasPrefix . 'person_id__id';
@@ -561,38 +561,6 @@
 			
 		/**
 		 * Load an array of Message objects,
-		 * by ForumId Index(es)
-		 * @param integer $intForumId
-		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
-		 * @return Message[]
-		*/
-		public static function LoadArrayByForumId($intForumId, $objOptionalClauses = null) {
-			// Call Message::QueryArray to perform the LoadArrayByForumId query
-			try {
-				return Message::QueryArray(
-					QQ::Equal(QQN::Message()->ForumId, $intForumId),
-					$objOptionalClauses);
-			} catch (QCallerException $objExc) {
-				$objExc->IncrementOffset();
-				throw $objExc;
-			}
-		}
-
-		/**
-		 * Count Messages
-		 * by ForumId Index(es)
-		 * @param integer $intForumId
-		 * @return int
-		*/
-		public static function CountByForumId($intForumId) {
-			// Call Message::QueryCount to perform the CountByForumId query
-			return Message::QueryCount(
-				QQ::Equal(QQN::Message()->ForumId, $intForumId)
-			);
-		}
-			
-		/**
-		 * Load an array of Message objects,
 		 * by TopicId Index(es)
 		 * @param integer $intTopicId
 		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
@@ -620,6 +588,38 @@
 			// Call Message::QueryCount to perform the CountByTopicId query
 			return Message::QueryCount(
 				QQ::Equal(QQN::Message()->TopicId, $intTopicId)
+			);
+		}
+			
+		/**
+		 * Load an array of Message objects,
+		 * by TopicLinkId Index(es)
+		 * @param integer $intTopicLinkId
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @return Message[]
+		*/
+		public static function LoadArrayByTopicLinkId($intTopicLinkId, $objOptionalClauses = null) {
+			// Call Message::QueryArray to perform the LoadArrayByTopicLinkId query
+			try {
+				return Message::QueryArray(
+					QQ::Equal(QQN::Message()->TopicLinkId, $intTopicLinkId),
+					$objOptionalClauses);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+		}
+
+		/**
+		 * Count Messages
+		 * by TopicLinkId Index(es)
+		 * @param integer $intTopicLinkId
+		 * @return int
+		*/
+		public static function CountByTopicLinkId($intTopicLinkId) {
+			// Call Message::QueryCount to perform the CountByTopicLinkId query
+			return Message::QueryCount(
+				QQ::Equal(QQN::Message()->TopicLinkId, $intTopicLinkId)
 			);
 		}
 			
@@ -685,16 +685,16 @@
 					// Perform an INSERT query
 					$objDatabase->NonQuery('
 						INSERT INTO `message` (
-							`forum_id`,
 							`topic_id`,
+							`topic_link_id`,
 							`person_id`,
 							`message`,
 							`compiled_html`,
 							`reply_number`,
 							`post_date`
 						) VALUES (
-							' . $objDatabase->SqlVariable($this->intForumId) . ',
 							' . $objDatabase->SqlVariable($this->intTopicId) . ',
+							' . $objDatabase->SqlVariable($this->intTopicLinkId) . ',
 							' . $objDatabase->SqlVariable($this->intPersonId) . ',
 							' . $objDatabase->SqlVariable($this->strMessage) . ',
 							' . $objDatabase->SqlVariable($this->strCompiledHtml) . ',
@@ -715,8 +715,8 @@
 						UPDATE
 							`message`
 						SET
-							`forum_id` = ' . $objDatabase->SqlVariable($this->intForumId) . ',
 							`topic_id` = ' . $objDatabase->SqlVariable($this->intTopicId) . ',
+							`topic_link_id` = ' . $objDatabase->SqlVariable($this->intTopicLinkId) . ',
 							`person_id` = ' . $objDatabase->SqlVariable($this->intPersonId) . ',
 							`message` = ' . $objDatabase->SqlVariable($this->strMessage) . ',
 							`compiled_html` = ' . $objDatabase->SqlVariable($this->strCompiledHtml) . ',
@@ -800,8 +800,8 @@
 			$objReloaded = Message::Load($this->intId);
 
 			// Update $this's local variables to match
-			$this->ForumId = $objReloaded->ForumId;
 			$this->TopicId = $objReloaded->TopicId;
+			$this->TopicLinkId = $objReloaded->TopicLinkId;
 			$this->PersonId = $objReloaded->PersonId;
 			$this->strMessage = $objReloaded->strMessage;
 			$this->strCompiledHtml = $objReloaded->strCompiledHtml;
@@ -834,13 +834,6 @@
 					 */
 					return $this->intId;
 
-				case 'ForumId':
-					/**
-					 * Gets the value for intForumId (Not Null)
-					 * @return integer
-					 */
-					return $this->intForumId;
-
 				case 'TopicId':
 					/**
 					 * Gets the value for intTopicId (Not Null)
@@ -848,9 +841,16 @@
 					 */
 					return $this->intTopicId;
 
+				case 'TopicLinkId':
+					/**
+					 * Gets the value for intTopicLinkId (Not Null)
+					 * @return integer
+					 */
+					return $this->intTopicLinkId;
+
 				case 'PersonId':
 					/**
-					 * Gets the value for intPersonId (Not Null)
+					 * Gets the value for intPersonId 
 					 * @return integer
 					 */
 					return $this->intPersonId;
@@ -887,20 +887,6 @@
 				///////////////////
 				// Member Objects
 				///////////////////
-				case 'Forum':
-					/**
-					 * Gets the value for the Forum object referenced by intForumId (Not Null)
-					 * @return Forum
-					 */
-					try {
-						if ((!$this->objForum) && (!is_null($this->intForumId)))
-							$this->objForum = Forum::Load($this->intForumId);
-						return $this->objForum;
-					} catch (QCallerException $objExc) {
-						$objExc->IncrementOffset();
-						throw $objExc;
-					}
-
 				case 'Topic':
 					/**
 					 * Gets the value for the Topic object referenced by intTopicId (Not Null)
@@ -915,9 +901,23 @@
 						throw $objExc;
 					}
 
+				case 'TopicLink':
+					/**
+					 * Gets the value for the TopicLink object referenced by intTopicLinkId (Not Null)
+					 * @return TopicLink
+					 */
+					try {
+						if ((!$this->objTopicLink) && (!is_null($this->intTopicLinkId)))
+							$this->objTopicLink = TopicLink::Load($this->intTopicLinkId);
+						return $this->objTopicLink;
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
 				case 'Person':
 					/**
-					 * Gets the value for the Person object referenced by intPersonId (Not Null)
+					 * Gets the value for the Person object referenced by intPersonId 
 					 * @return Person
 					 */
 					try {
@@ -962,20 +962,6 @@
 				///////////////////
 				// Member Variables
 				///////////////////
-				case 'ForumId':
-					/**
-					 * Sets the value for intForumId (Not Null)
-					 * @param integer $mixValue
-					 * @return integer
-					 */
-					try {
-						$this->objForum = null;
-						return ($this->intForumId = QType::Cast($mixValue, QType::Integer));
-					} catch (QCallerException $objExc) {
-						$objExc->IncrementOffset();
-						throw $objExc;
-					}
-
 				case 'TopicId':
 					/**
 					 * Sets the value for intTopicId (Not Null)
@@ -990,9 +976,23 @@
 						throw $objExc;
 					}
 
+				case 'TopicLinkId':
+					/**
+					 * Sets the value for intTopicLinkId (Not Null)
+					 * @param integer $mixValue
+					 * @return integer
+					 */
+					try {
+						$this->objTopicLink = null;
+						return ($this->intTopicLinkId = QType::Cast($mixValue, QType::Integer));
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
 				case 'PersonId':
 					/**
-					 * Sets the value for intPersonId (Not Null)
+					 * Sets the value for intPersonId 
 					 * @param integer $mixValue
 					 * @return integer
 					 */
@@ -1060,38 +1060,6 @@
 				///////////////////
 				// Member Objects
 				///////////////////
-				case 'Forum':
-					/**
-					 * Sets the value for the Forum object referenced by intForumId (Not Null)
-					 * @param Forum $mixValue
-					 * @return Forum
-					 */
-					if (is_null($mixValue)) {
-						$this->intForumId = null;
-						$this->objForum = null;
-						return null;
-					} else {
-						// Make sure $mixValue actually is a Forum object
-						try {
-							$mixValue = QType::Cast($mixValue, 'Forum');
-						} catch (QInvalidCastException $objExc) {
-							$objExc->IncrementOffset();
-							throw $objExc;
-						} 
-
-						// Make sure $mixValue is a SAVED Forum object
-						if (is_null($mixValue->Id))
-							throw new QCallerException('Unable to set an unsaved Forum for this Message');
-
-						// Update Local Member Variables
-						$this->objForum = $mixValue;
-						$this->intForumId = $mixValue->Id;
-
-						// Return $mixValue
-						return $mixValue;
-					}
-					break;
-
 				case 'Topic':
 					/**
 					 * Sets the value for the Topic object referenced by intTopicId (Not Null)
@@ -1124,9 +1092,41 @@
 					}
 					break;
 
+				case 'TopicLink':
+					/**
+					 * Sets the value for the TopicLink object referenced by intTopicLinkId (Not Null)
+					 * @param TopicLink $mixValue
+					 * @return TopicLink
+					 */
+					if (is_null($mixValue)) {
+						$this->intTopicLinkId = null;
+						$this->objTopicLink = null;
+						return null;
+					} else {
+						// Make sure $mixValue actually is a TopicLink object
+						try {
+							$mixValue = QType::Cast($mixValue, 'TopicLink');
+						} catch (QInvalidCastException $objExc) {
+							$objExc->IncrementOffset();
+							throw $objExc;
+						} 
+
+						// Make sure $mixValue is a SAVED TopicLink object
+						if (is_null($mixValue->Id))
+							throw new QCallerException('Unable to set an unsaved TopicLink for this Message');
+
+						// Update Local Member Variables
+						$this->objTopicLink = $mixValue;
+						$this->intTopicLinkId = $mixValue->Id;
+
+						// Return $mixValue
+						return $mixValue;
+					}
+					break;
+
 				case 'Person':
 					/**
-					 * Sets the value for the Person object referenced by intPersonId (Not Null)
+					 * Sets the value for the Person object referenced by intPersonId 
 					 * @param Person $mixValue
 					 * @return Person
 					 */
@@ -1194,8 +1194,8 @@
 		public static function GetSoapComplexTypeXml() {
 			$strToReturn = '<complexType name="Message"><sequence>';
 			$strToReturn .= '<element name="Id" type="xsd:int"/>';
-			$strToReturn .= '<element name="Forum" type="xsd1:Forum"/>';
 			$strToReturn .= '<element name="Topic" type="xsd1:Topic"/>';
+			$strToReturn .= '<element name="TopicLink" type="xsd1:TopicLink"/>';
 			$strToReturn .= '<element name="Person" type="xsd1:Person"/>';
 			$strToReturn .= '<element name="Message" type="xsd:string"/>';
 			$strToReturn .= '<element name="CompiledHtml" type="xsd:string"/>';
@@ -1209,8 +1209,8 @@
 		public static function AlterSoapComplexTypeArray(&$strComplexTypeArray) {
 			if (!array_key_exists('Message', $strComplexTypeArray)) {
 				$strComplexTypeArray['Message'] = Message::GetSoapComplexTypeXml();
-				Forum::AlterSoapComplexTypeArray($strComplexTypeArray);
 				Topic::AlterSoapComplexTypeArray($strComplexTypeArray);
+				TopicLink::AlterSoapComplexTypeArray($strComplexTypeArray);
 				Person::AlterSoapComplexTypeArray($strComplexTypeArray);
 			}
 		}
@@ -1228,12 +1228,12 @@
 			$objToReturn = new Message();
 			if (property_exists($objSoapObject, 'Id'))
 				$objToReturn->intId = $objSoapObject->Id;
-			if ((property_exists($objSoapObject, 'Forum')) &&
-				($objSoapObject->Forum))
-				$objToReturn->Forum = Forum::GetObjectFromSoapObject($objSoapObject->Forum);
 			if ((property_exists($objSoapObject, 'Topic')) &&
 				($objSoapObject->Topic))
 				$objToReturn->Topic = Topic::GetObjectFromSoapObject($objSoapObject->Topic);
+			if ((property_exists($objSoapObject, 'TopicLink')) &&
+				($objSoapObject->TopicLink))
+				$objToReturn->TopicLink = TopicLink::GetObjectFromSoapObject($objSoapObject->TopicLink);
 			if ((property_exists($objSoapObject, 'Person')) &&
 				($objSoapObject->Person))
 				$objToReturn->Person = Person::GetObjectFromSoapObject($objSoapObject->Person);
@@ -1263,14 +1263,14 @@
 		}
 
 		public static function GetSoapObjectFromObject($objObject, $blnBindRelatedObjects) {
-			if ($objObject->objForum)
-				$objObject->objForum = Forum::GetSoapObjectFromObject($objObject->objForum, false);
-			else if (!$blnBindRelatedObjects)
-				$objObject->intForumId = null;
 			if ($objObject->objTopic)
 				$objObject->objTopic = Topic::GetSoapObjectFromObject($objObject->objTopic, false);
 			else if (!$blnBindRelatedObjects)
 				$objObject->intTopicId = null;
+			if ($objObject->objTopicLink)
+				$objObject->objTopicLink = TopicLink::GetSoapObjectFromObject($objObject->objTopicLink, false);
+			else if (!$blnBindRelatedObjects)
+				$objObject->intTopicLinkId = null;
 			if ($objObject->objPerson)
 				$objObject->objPerson = Person::GetSoapObjectFromObject($objObject->objPerson, false);
 			else if (!$blnBindRelatedObjects)
@@ -1299,14 +1299,14 @@
 			switch ($strName) {
 				case 'Id':
 					return new QQNode('id', 'Id', 'integer', $this);
-				case 'ForumId':
-					return new QQNode('forum_id', 'ForumId', 'integer', $this);
-				case 'Forum':
-					return new QQNodeForum('forum_id', 'Forum', 'integer', $this);
 				case 'TopicId':
 					return new QQNode('topic_id', 'TopicId', 'integer', $this);
 				case 'Topic':
 					return new QQNodeTopic('topic_id', 'Topic', 'integer', $this);
+				case 'TopicLinkId':
+					return new QQNode('topic_link_id', 'TopicLinkId', 'integer', $this);
+				case 'TopicLink':
+					return new QQNodeTopicLink('topic_link_id', 'TopicLink', 'integer', $this);
 				case 'PersonId':
 					return new QQNode('person_id', 'PersonId', 'integer', $this);
 				case 'Person':
@@ -1341,14 +1341,14 @@
 			switch ($strName) {
 				case 'Id':
 					return new QQNode('id', 'Id', 'integer', $this);
-				case 'ForumId':
-					return new QQNode('forum_id', 'ForumId', 'integer', $this);
-				case 'Forum':
-					return new QQNodeForum('forum_id', 'Forum', 'integer', $this);
 				case 'TopicId':
 					return new QQNode('topic_id', 'TopicId', 'integer', $this);
 				case 'Topic':
 					return new QQNodeTopic('topic_id', 'Topic', 'integer', $this);
+				case 'TopicLinkId':
+					return new QQNode('topic_link_id', 'TopicLinkId', 'integer', $this);
+				case 'TopicLink':
+					return new QQNodeTopicLink('topic_link_id', 'TopicLink', 'integer', $this);
 				case 'PersonId':
 					return new QQNode('person_id', 'PersonId', 'integer', $this);
 				case 'Person':

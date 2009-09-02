@@ -26,12 +26,8 @@
 	 * property-read QLabel $AnnounceOnlyFlagLabel
 	 * property QTextBox $DescriptionControl
 	 * property-read QLabel $DescriptionLabel
-	 * property QDateTimePicker $LastPostDateControl
-	 * property-read QLabel $LastPostDateLabel
-	 * property QIntegerTextBox $MessageCountControl
-	 * property-read QLabel $MessageCountLabel
-	 * property QIntegerTextBox $TopicCountControl
-	 * property-read QLabel $TopicCountLabel
+	 * property QListBox $TopicLinkControl
+	 * property-read QLabel $TopicLinkLabel
 	 * property-read string $TitleVerb a verb indicating whether or not this is being edited or created
 	 * property-read boolean $EditMode a boolean indicating whether or not this is being edited or created
 	 */
@@ -49,22 +45,18 @@
 		protected $txtName;
 		protected $chkAnnounceOnlyFlag;
 		protected $txtDescription;
-		protected $calLastPostDate;
-		protected $txtMessageCount;
-		protected $txtTopicCount;
 
 		// Controls that allow the viewing of Forum's individual data fields
 		protected $lblOrderNumber;
 		protected $lblName;
 		protected $lblAnnounceOnlyFlag;
 		protected $lblDescription;
-		protected $lblLastPostDate;
-		protected $lblMessageCount;
-		protected $lblTopicCount;
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
+		protected $lstTopicLink;
 
 		// QLabel Controls (if applicable) to view Unique ReverseReferences and ManyToMany References
+		protected $lblTopicLink;
 
 
 		/**
@@ -277,84 +269,34 @@
 		}
 
 		/**
-		 * Create and setup QDateTimePicker calLastPostDate
+		 * Create and setup QListBox lstTopicLink
 		 * @param string $strControlId optional ControlId to use
-		 * @return QDateTimePicker
+		 * @return QListBox
 		 */
-		public function calLastPostDate_Create($strControlId = null) {
-			$this->calLastPostDate = new QDateTimePicker($this->objParentObject, $strControlId);
-			$this->calLastPostDate->Name = QApplication::Translate('Last Post Date');
-			$this->calLastPostDate->DateTime = $this->objForum->LastPostDate;
-			$this->calLastPostDate->DateTimePickerType = QDateTimePickerType::DateTime;
-			return $this->calLastPostDate;
+		public function lstTopicLink_Create($strControlId = null) {
+			$this->lstTopicLink = new QListBox($this->objParentObject, $strControlId);
+			$this->lstTopicLink->Name = QApplication::Translate('Topic Link');
+			$this->lstTopicLink->AddItem(QApplication::Translate('- Select One -'), null);
+			$objTopicLinkArray = TopicLink::LoadAll();
+			if ($objTopicLinkArray) foreach ($objTopicLinkArray as $objTopicLink) {
+				$objListItem = new QListItem($objTopicLink->__toString(), $objTopicLink->Id);
+				if ($objTopicLink->ForumId == $this->objForum->Id)
+					$objListItem->Selected = true;
+				$this->lstTopicLink->AddItem($objListItem);
+			}
+			return $this->lstTopicLink;
 		}
 
 		/**
-		 * Create and setup QLabel lblLastPostDate
+		 * Create and setup QLabel lblTopicLink
 		 * @param string $strControlId optional ControlId to use
-		 * @param string $strDateTimeFormat optional DateTimeFormat to use
 		 * @return QLabel
 		 */
-		public function lblLastPostDate_Create($strControlId = null, $strDateTimeFormat = null) {
-			$this->lblLastPostDate = new QLabel($this->objParentObject, $strControlId);
-			$this->lblLastPostDate->Name = QApplication::Translate('Last Post Date');
-			$this->strLastPostDateDateTimeFormat = $strDateTimeFormat;
-			$this->lblLastPostDate->Text = sprintf($this->objForum->LastPostDate) ? $this->objForum->LastPostDate->__toString($this->strLastPostDateDateTimeFormat) : null;
-			return $this->lblLastPostDate;
-		}
-
-		protected $strLastPostDateDateTimeFormat;
-
-		/**
-		 * Create and setup QIntegerTextBox txtMessageCount
-		 * @param string $strControlId optional ControlId to use
-		 * @return QIntegerTextBox
-		 */
-		public function txtMessageCount_Create($strControlId = null) {
-			$this->txtMessageCount = new QIntegerTextBox($this->objParentObject, $strControlId);
-			$this->txtMessageCount->Name = QApplication::Translate('Message Count');
-			$this->txtMessageCount->Text = $this->objForum->MessageCount;
-			return $this->txtMessageCount;
-		}
-
-		/**
-		 * Create and setup QLabel lblMessageCount
-		 * @param string $strControlId optional ControlId to use
-		 * @param string $strFormat optional sprintf format to use
-		 * @return QLabel
-		 */
-		public function lblMessageCount_Create($strControlId = null, $strFormat = null) {
-			$this->lblMessageCount = new QLabel($this->objParentObject, $strControlId);
-			$this->lblMessageCount->Name = QApplication::Translate('Message Count');
-			$this->lblMessageCount->Text = $this->objForum->MessageCount;
-			$this->lblMessageCount->Format = $strFormat;
-			return $this->lblMessageCount;
-		}
-
-		/**
-		 * Create and setup QIntegerTextBox txtTopicCount
-		 * @param string $strControlId optional ControlId to use
-		 * @return QIntegerTextBox
-		 */
-		public function txtTopicCount_Create($strControlId = null) {
-			$this->txtTopicCount = new QIntegerTextBox($this->objParentObject, $strControlId);
-			$this->txtTopicCount->Name = QApplication::Translate('Topic Count');
-			$this->txtTopicCount->Text = $this->objForum->TopicCount;
-			return $this->txtTopicCount;
-		}
-
-		/**
-		 * Create and setup QLabel lblTopicCount
-		 * @param string $strControlId optional ControlId to use
-		 * @param string $strFormat optional sprintf format to use
-		 * @return QLabel
-		 */
-		public function lblTopicCount_Create($strControlId = null, $strFormat = null) {
-			$this->lblTopicCount = new QLabel($this->objParentObject, $strControlId);
-			$this->lblTopicCount->Name = QApplication::Translate('Topic Count');
-			$this->lblTopicCount->Text = $this->objForum->TopicCount;
-			$this->lblTopicCount->Format = $strFormat;
-			return $this->lblTopicCount;
+		public function lblTopicLink_Create($strControlId = null) {
+			$this->lblTopicLink = new QLabel($this->objParentObject, $strControlId);
+			$this->lblTopicLink->Name = QApplication::Translate('Topic Link');
+			$this->lblTopicLink->Text = ($this->objForum->TopicLink) ? $this->objForum->TopicLink->__toString() : null;
+			return $this->lblTopicLink;
 		}
 
 
@@ -382,14 +324,18 @@
 			if ($this->txtDescription) $this->txtDescription->Text = $this->objForum->Description;
 			if ($this->lblDescription) $this->lblDescription->Text = $this->objForum->Description;
 
-			if ($this->calLastPostDate) $this->calLastPostDate->DateTime = $this->objForum->LastPostDate;
-			if ($this->lblLastPostDate) $this->lblLastPostDate->Text = sprintf($this->objForum->LastPostDate) ? $this->objForum->__toString($this->strLastPostDateDateTimeFormat) : null;
-
-			if ($this->txtMessageCount) $this->txtMessageCount->Text = $this->objForum->MessageCount;
-			if ($this->lblMessageCount) $this->lblMessageCount->Text = $this->objForum->MessageCount;
-
-			if ($this->txtTopicCount) $this->txtTopicCount->Text = $this->objForum->TopicCount;
-			if ($this->lblTopicCount) $this->lblTopicCount->Text = $this->objForum->TopicCount;
+			if ($this->lstTopicLink) {
+				$this->lstTopicLink->RemoveAllItems();
+				$this->lstTopicLink->AddItem(QApplication::Translate('- Select One -'), null);
+				$objTopicLinkArray = TopicLink::LoadAll();
+				if ($objTopicLinkArray) foreach ($objTopicLinkArray as $objTopicLink) {
+					$objListItem = new QListItem($objTopicLink->__toString(), $objTopicLink->Id);
+					if ($objTopicLink->ForumId == $this->objForum->Id)
+						$objListItem->Selected = true;
+					$this->lstTopicLink->AddItem($objListItem);
+				}
+			}
+			if ($this->lblTopicLink) $this->lblTopicLink->Text = ($this->objForum->TopicLink) ? $this->objForum->TopicLink->__toString() : null;
 
 		}
 
@@ -418,11 +364,9 @@
 				if ($this->txtName) $this->objForum->Name = $this->txtName->Text;
 				if ($this->chkAnnounceOnlyFlag) $this->objForum->AnnounceOnlyFlag = $this->chkAnnounceOnlyFlag->Checked;
 				if ($this->txtDescription) $this->objForum->Description = $this->txtDescription->Text;
-				if ($this->calLastPostDate) $this->objForum->LastPostDate = $this->calLastPostDate->DateTime;
-				if ($this->txtMessageCount) $this->objForum->MessageCount = $this->txtMessageCount->Text;
-				if ($this->txtTopicCount) $this->objForum->TopicCount = $this->txtTopicCount->Text;
 
 				// Update any UniqueReverseReferences (if any) for controls that have been created for it
+				if ($this->lstTopicLink) $this->objForum->TopicLink = TopicLink::Load($this->lstTopicLink->SelectedValue);
 
 				// Save the Forum object
 				$this->objForum->Save();
@@ -493,24 +437,12 @@
 				case 'DescriptionLabel':
 					if (!$this->lblDescription) return $this->lblDescription_Create();
 					return $this->lblDescription;
-				case 'LastPostDateControl':
-					if (!$this->calLastPostDate) return $this->calLastPostDate_Create();
-					return $this->calLastPostDate;
-				case 'LastPostDateLabel':
-					if (!$this->lblLastPostDate) return $this->lblLastPostDate_Create();
-					return $this->lblLastPostDate;
-				case 'MessageCountControl':
-					if (!$this->txtMessageCount) return $this->txtMessageCount_Create();
-					return $this->txtMessageCount;
-				case 'MessageCountLabel':
-					if (!$this->lblMessageCount) return $this->lblMessageCount_Create();
-					return $this->lblMessageCount;
-				case 'TopicCountControl':
-					if (!$this->txtTopicCount) return $this->txtTopicCount_Create();
-					return $this->txtTopicCount;
-				case 'TopicCountLabel':
-					if (!$this->lblTopicCount) return $this->lblTopicCount_Create();
-					return $this->lblTopicCount;
+				case 'TopicLinkControl':
+					if (!$this->lstTopicLink) return $this->lstTopicLink_Create();
+					return $this->lstTopicLink;
+				case 'TopicLinkLabel':
+					if (!$this->lblTopicLink) return $this->lblTopicLink_Create();
+					return $this->lblTopicLink;
 				default:
 					try {
 						return parent::__get($strName);
@@ -543,12 +475,8 @@
 						return ($this->chkAnnounceOnlyFlag = QType::Cast($mixValue, 'QControl'));
 					case 'DescriptionControl':
 						return ($this->txtDescription = QType::Cast($mixValue, 'QControl'));
-					case 'LastPostDateControl':
-						return ($this->calLastPostDate = QType::Cast($mixValue, 'QControl'));
-					case 'MessageCountControl':
-						return ($this->txtMessageCount = QType::Cast($mixValue, 'QControl'));
-					case 'TopicCountControl':
-						return ($this->txtTopicCount = QType::Cast($mixValue, 'QControl'));
+					case 'TopicLinkControl':
+						return ($this->lstTopicLink = QType::Cast($mixValue, 'QControl'));
 					default:
 						return parent::__set($strName, $mixValue);
 				}

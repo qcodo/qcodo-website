@@ -274,8 +274,8 @@
 					throw new QCallerException('Content QQNode has a root table of "' . $mixContent->_RootTableName . '". Must be a root of "topic".');
 			} else if (is_string($mixContent)) switch ($mixContent) {
 				case 'Id': return QQN::Topic()->Id;
-				case 'ForumId': return QQN::Topic()->ForumId;
-				case 'Forum': return QQN::Topic()->Forum;
+				case 'TopicLinkId': return QQN::Topic()->TopicLinkId;
+				case 'TopicLink': return QQN::Topic()->TopicLink;
 				case 'Name': return QQN::Topic()->Name;
 				case 'PersonId': return QQN::Topic()->PersonId;
 				case 'Person': return QQN::Topic()->Person;

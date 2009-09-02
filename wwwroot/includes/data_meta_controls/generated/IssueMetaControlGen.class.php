@@ -44,10 +44,8 @@
 	 * property-read QLabel $DueDateLabel
 	 * property QIntegerTextBox $VoteCountControl
 	 * property-read QLabel $VoteCountLabel
-	 * property QDateTimePicker $LastUpdateDateControl
-	 * property-read QLabel $LastUpdateDateLabel
-	 * property QListBox $PersonAsEmailControl
-	 * property-read QLabel $PersonAsEmailLabel
+	 * property QListBox $TopicLinkControl
+	 * property-read QLabel $TopicLinkLabel
 	 * property-read string $TitleVerb a verb indicating whether or not this is being edited or created
 	 * property-read boolean $EditMode a boolean indicating whether or not this is being edited or created
 	 */
@@ -74,7 +72,6 @@
 		protected $calAssignedDate;
 		protected $calDueDate;
 		protected $txtVoteCount;
-		protected $calLastUpdateDate;
 
 		// Controls that allow the viewing of Issue's individual data fields
 		protected $lblIssueStatusTypeId;
@@ -90,13 +87,12 @@
 		protected $lblAssignedDate;
 		protected $lblDueDate;
 		protected $lblVoteCount;
-		protected $lblLastUpdateDate;
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
-		protected $lstPeopleAsEmail;
+		protected $lstTopicLink;
 
 		// QLabel Controls (if applicable) to view Unique ReverseReferences and ManyToMany References
-		protected $lblPeopleAsEmail;
+		protected $lblTopicLink;
 
 
 		/**
@@ -564,74 +560,34 @@
 		}
 
 		/**
-		 * Create and setup QDateTimePicker calLastUpdateDate
-		 * @param string $strControlId optional ControlId to use
-		 * @return QDateTimePicker
-		 */
-		public function calLastUpdateDate_Create($strControlId = null) {
-			$this->calLastUpdateDate = new QDateTimePicker($this->objParentObject, $strControlId);
-			$this->calLastUpdateDate->Name = QApplication::Translate('Last Update Date');
-			$this->calLastUpdateDate->DateTime = $this->objIssue->LastUpdateDate;
-			$this->calLastUpdateDate->DateTimePickerType = QDateTimePickerType::DateTime;
-			$this->calLastUpdateDate->Required = true;
-			return $this->calLastUpdateDate;
-		}
-
-		/**
-		 * Create and setup QLabel lblLastUpdateDate
-		 * @param string $strControlId optional ControlId to use
-		 * @param string $strDateTimeFormat optional DateTimeFormat to use
-		 * @return QLabel
-		 */
-		public function lblLastUpdateDate_Create($strControlId = null, $strDateTimeFormat = null) {
-			$this->lblLastUpdateDate = new QLabel($this->objParentObject, $strControlId);
-			$this->lblLastUpdateDate->Name = QApplication::Translate('Last Update Date');
-			$this->strLastUpdateDateDateTimeFormat = $strDateTimeFormat;
-			$this->lblLastUpdateDate->Text = sprintf($this->objIssue->LastUpdateDate) ? $this->objIssue->LastUpdateDate->__toString($this->strLastUpdateDateDateTimeFormat) : null;
-			$this->lblLastUpdateDate->Required = true;
-			return $this->lblLastUpdateDate;
-		}
-
-		protected $strLastUpdateDateDateTimeFormat;
-
-		/**
-		 * Create and setup QListBox lstPeopleAsEmail
+		 * Create and setup QListBox lstTopicLink
 		 * @param string $strControlId optional ControlId to use
 		 * @return QListBox
 		 */
-		public function lstPeopleAsEmail_Create($strControlId = null) {
-			$this->lstPeopleAsEmail = new QListBox($this->objParentObject, $strControlId);
-			$this->lstPeopleAsEmail->Name = QApplication::Translate('People As Email');
-			$this->lstPeopleAsEmail->SelectionMode = QSelectionMode::Multiple;
-			$objAssociatedArray = $this->objIssue->GetPersonAsEmailArray();
-			$objPersonArray = Person::LoadAll();
-			if ($objPersonArray) foreach ($objPersonArray as $objPerson) {
-				$objListItem = new QListItem($objPerson->__toString(), $objPerson->Id);
-				foreach ($objAssociatedArray as $objAssociated) {
-					if ($objAssociated->Id == $objPerson->Id)
-						$objListItem->Selected = true;
-				}
-				$this->lstPeopleAsEmail->AddItem($objListItem);
+		public function lstTopicLink_Create($strControlId = null) {
+			$this->lstTopicLink = new QListBox($this->objParentObject, $strControlId);
+			$this->lstTopicLink->Name = QApplication::Translate('Topic Link');
+			$this->lstTopicLink->AddItem(QApplication::Translate('- Select One -'), null);
+			$objTopicLinkArray = TopicLink::LoadAll();
+			if ($objTopicLinkArray) foreach ($objTopicLinkArray as $objTopicLink) {
+				$objListItem = new QListItem($objTopicLink->__toString(), $objTopicLink->Id);
+				if ($objTopicLink->IssueId == $this->objIssue->Id)
+					$objListItem->Selected = true;
+				$this->lstTopicLink->AddItem($objListItem);
 			}
-			return $this->lstPeopleAsEmail;
+			return $this->lstTopicLink;
 		}
 
 		/**
-		 * Create and setup QLabel lblPeopleAsEmail
+		 * Create and setup QLabel lblTopicLink
 		 * @param string $strControlId optional ControlId to use
-		 * @param string $strGlue glue to display in between each associated object
 		 * @return QLabel
 		 */
-		public function lblPeopleAsEmail_Create($strControlId = null, $strGlue = ', ') {
-			$this->lblPeopleAsEmail = new QLabel($this->objParentObject, $strControlId);
-			$this->lstPeopleAsEmail->Name = QApplication::Translate('People As Email');
-			
-			$objAssociatedArray = $this->objIssue->GetPersonAsEmailArray();
-			$strItems = array();
-			foreach ($objAssociatedArray as $objAssociated)
-				$strItems[] = $objAssociated->__toString();
-			$this->lblPeopleAsEmail->Text = implode($strGlue, $strItems);
-			return $this->lblPeopleAsEmail;
+		public function lblTopicLink_Create($strControlId = null) {
+			$this->lblTopicLink = new QLabel($this->objParentObject, $strControlId);
+			$this->lblTopicLink->Name = QApplication::Translate('Topic Link');
+			$this->lblTopicLink->Text = ($this->objIssue->TopicLink) ? $this->objIssue->TopicLink->__toString() : null;
+			return $this->lblTopicLink;
 		}
 
 
@@ -707,29 +663,18 @@
 			if ($this->txtVoteCount) $this->txtVoteCount->Text = $this->objIssue->VoteCount;
 			if ($this->lblVoteCount) $this->lblVoteCount->Text = $this->objIssue->VoteCount;
 
-			if ($this->calLastUpdateDate) $this->calLastUpdateDate->DateTime = $this->objIssue->LastUpdateDate;
-			if ($this->lblLastUpdateDate) $this->lblLastUpdateDate->Text = sprintf($this->objIssue->LastUpdateDate) ? $this->objIssue->__toString($this->strLastUpdateDateDateTimeFormat) : null;
-
-			if ($this->lstPeopleAsEmail) {
-				$this->lstPeopleAsEmail->RemoveAllItems();
-				$objAssociatedArray = $this->objIssue->GetPersonAsEmailArray();
-				$objPersonArray = Person::LoadAll();
-				if ($objPersonArray) foreach ($objPersonArray as $objPerson) {
-					$objListItem = new QListItem($objPerson->__toString(), $objPerson->Id);
-					foreach ($objAssociatedArray as $objAssociated) {
-						if ($objAssociated->Id == $objPerson->Id)
-							$objListItem->Selected = true;
-					}
-					$this->lstPeopleAsEmail->AddItem($objListItem);
+			if ($this->lstTopicLink) {
+				$this->lstTopicLink->RemoveAllItems();
+				$this->lstTopicLink->AddItem(QApplication::Translate('- Select One -'), null);
+				$objTopicLinkArray = TopicLink::LoadAll();
+				if ($objTopicLinkArray) foreach ($objTopicLinkArray as $objTopicLink) {
+					$objListItem = new QListItem($objTopicLink->__toString(), $objTopicLink->Id);
+					if ($objTopicLink->IssueId == $this->objIssue->Id)
+						$objListItem->Selected = true;
+					$this->lstTopicLink->AddItem($objListItem);
 				}
 			}
-			if ($this->lblPeopleAsEmail) {
-				$objAssociatedArray = $this->objIssue->GetPersonAsEmailArray();
-				$strItems = array();
-				foreach ($objAssociatedArray as $objAssociated)
-					$strItems[] = $objAssociated->__toString();
-				$this->lblPeopleAsEmail->Text = implode($strGlue, $strItems);
-			}
+			if ($this->lblTopicLink) $this->lblTopicLink->Text = ($this->objIssue->TopicLink) ? $this->objIssue->TopicLink->__toString() : null;
 
 		}
 
@@ -738,16 +683,6 @@
 		///////////////////////////////////////////////
 		// PROTECTED UPDATE METHODS for ManyToManyReferences (if any)
 		///////////////////////////////////////////////
-
-		protected function lstPeopleAsEmail_Update() {
-			if ($this->lstPeopleAsEmail) {
-				$this->objIssue->UnassociateAllPeopleAsEmail();
-				$objSelectedListItems = $this->lstPeopleAsEmail->SelectedItems;
-				if ($objSelectedListItems) foreach ($objSelectedListItems as $objListItem) {
-					$this->objIssue->AssociatePersonAsEmail(Person::Load($objListItem->Value));
-				}
-			}
-		}
 
 
 
@@ -777,15 +712,14 @@
 				if ($this->calAssignedDate) $this->objIssue->AssignedDate = $this->calAssignedDate->DateTime;
 				if ($this->calDueDate) $this->objIssue->DueDate = $this->calDueDate->DateTime;
 				if ($this->txtVoteCount) $this->objIssue->VoteCount = $this->txtVoteCount->Text;
-				if ($this->calLastUpdateDate) $this->objIssue->LastUpdateDate = $this->calLastUpdateDate->DateTime;
 
 				// Update any UniqueReverseReferences (if any) for controls that have been created for it
+				if ($this->lstTopicLink) $this->objIssue->TopicLink = TopicLink::Load($this->lstTopicLink->SelectedValue);
 
 				// Save the Issue object
 				$this->objIssue->Save();
 
 				// Finally, update any ManyToManyReferences (if any)
-				$this->lstPeopleAsEmail_Update();
 			} catch (QCallerException $objExc) {
 				$objExc->IncrementOffset();
 				throw $objExc;
@@ -797,7 +731,6 @@
 		 * It will also unassociate itself from any ManyToManyReferences.
 		 */
 		public function DeleteIssue() {
-			$this->objIssue->UnassociateAllPeopleAsEmail();
 			$this->objIssue->Delete();
 		}		
 
@@ -906,18 +839,12 @@
 				case 'VoteCountLabel':
 					if (!$this->lblVoteCount) return $this->lblVoteCount_Create();
 					return $this->lblVoteCount;
-				case 'LastUpdateDateControl':
-					if (!$this->calLastUpdateDate) return $this->calLastUpdateDate_Create();
-					return $this->calLastUpdateDate;
-				case 'LastUpdateDateLabel':
-					if (!$this->lblLastUpdateDate) return $this->lblLastUpdateDate_Create();
-					return $this->lblLastUpdateDate;
-				case 'PersonAsEmailControl':
-					if (!$this->lstPeopleAsEmail) return $this->lstPeopleAsEmail_Create();
-					return $this->lstPeopleAsEmail;
-				case 'PersonAsEmailLabel':
-					if (!$this->lblPeopleAsEmail) return $this->lblPeopleAsEmail_Create();
-					return $this->lblPeopleAsEmail;
+				case 'TopicLinkControl':
+					if (!$this->lstTopicLink) return $this->lstTopicLink_Create();
+					return $this->lstTopicLink;
+				case 'TopicLinkLabel':
+					if (!$this->lblTopicLink) return $this->lblTopicLink_Create();
+					return $this->lblTopicLink;
 				default:
 					try {
 						return parent::__get($strName);
@@ -968,10 +895,8 @@
 						return ($this->calDueDate = QType::Cast($mixValue, 'QControl'));
 					case 'VoteCountControl':
 						return ($this->txtVoteCount = QType::Cast($mixValue, 'QControl'));
-					case 'LastUpdateDateControl':
-						return ($this->calLastUpdateDate = QType::Cast($mixValue, 'QControl'));
-					case 'PersonAsEmailControl':
-						return ($this->lstPeopleAsEmail = QType::Cast($mixValue, 'QControl'));
+					case 'TopicLinkControl':
+						return ($this->lstTopicLink = QType::Cast($mixValue, 'QControl'));
 					default:
 						return parent::__set($strName, $mixValue);
 				}

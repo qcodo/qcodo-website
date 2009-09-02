@@ -79,12 +79,6 @@
 			return new QQNodeIssueFieldValue('issue_field_value', null, null);
 		}
 		/**
-		 * @return QQNodeIssueMessage
-		 */
-		static public function IssueMessage() {
-			return new QQNodeIssueMessage('issue_message', null, null);
-		}
-		/**
 		 * @return QQNodeIssueVote
 		 */
 		static public function IssueVote() {
@@ -119,6 +113,12 @@
 		 */
 		static public function Topic() {
 			return new QQNodeTopic('topic', null, null);
+		}
+		/**
+		 * @return QQNodeTopicLink
+		 */
+		static public function TopicLink() {
+			return new QQNodeTopicLink('topic_link', null, null);
 		}
 	}
 ?>

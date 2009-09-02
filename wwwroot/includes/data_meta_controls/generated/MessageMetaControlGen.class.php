@@ -18,10 +18,10 @@
 	 * property-read Message $Message the actual Message data class being edited
 	 * property QLabel $IdControl
 	 * property-read QLabel $IdLabel
-	 * property QListBox $ForumIdControl
-	 * property-read QLabel $ForumIdLabel
 	 * property QListBox $TopicIdControl
 	 * property-read QLabel $TopicIdLabel
+	 * property QListBox $TopicLinkIdControl
+	 * property-read QLabel $TopicLinkIdLabel
 	 * property QListBox $PersonIdControl
 	 * property-read QLabel $PersonIdLabel
 	 * property QTextBox $MessageControl
@@ -45,8 +45,8 @@
 
 		// Controls that allow the editing of Message's individual data fields
 		protected $lblId;
-		protected $lstForum;
 		protected $lstTopic;
+		protected $lstTopicLink;
 		protected $lstPerson;
 		protected $txtMessage;
 		protected $txtCompiledHtml;
@@ -54,8 +54,8 @@
 		protected $calPostDate;
 
 		// Controls that allow the viewing of Message's individual data fields
-		protected $lblForumId;
 		protected $lblTopicId;
+		protected $lblTopicLinkId;
 		protected $lblPersonId;
 		protected $lblMessage;
 		protected $lblCompiledHtml;
@@ -175,40 +175,6 @@
 		}
 
 		/**
-		 * Create and setup QListBox lstForum
-		 * @param string $strControlId optional ControlId to use
-		 * @return QListBox
-		 */
-		public function lstForum_Create($strControlId = null) {
-			$this->lstForum = new QListBox($this->objParentObject, $strControlId);
-			$this->lstForum->Name = QApplication::Translate('Forum');
-			$this->lstForum->Required = true;
-			if (!$this->blnEditMode)
-				$this->lstForum->AddItem(QApplication::Translate('- Select One -'), null);
-			$objForumArray = Forum::LoadAll();
-			if ($objForumArray) foreach ($objForumArray as $objForum) {
-				$objListItem = new QListItem($objForum->__toString(), $objForum->Id);
-				if (($this->objMessage->Forum) && ($this->objMessage->Forum->Id == $objForum->Id))
-					$objListItem->Selected = true;
-				$this->lstForum->AddItem($objListItem);
-			}
-			return $this->lstForum;
-		}
-
-		/**
-		 * Create and setup QLabel lblForumId
-		 * @param string $strControlId optional ControlId to use
-		 * @return QLabel
-		 */
-		public function lblForumId_Create($strControlId = null) {
-			$this->lblForumId = new QLabel($this->objParentObject, $strControlId);
-			$this->lblForumId->Name = QApplication::Translate('Forum');
-			$this->lblForumId->Text = ($this->objMessage->Forum) ? $this->objMessage->Forum->__toString() : null;
-			$this->lblForumId->Required = true;
-			return $this->lblForumId;
-		}
-
-		/**
 		 * Create and setup QListBox lstTopic
 		 * @param string $strControlId optional ControlId to use
 		 * @return QListBox
@@ -243,6 +209,40 @@
 		}
 
 		/**
+		 * Create and setup QListBox lstTopicLink
+		 * @param string $strControlId optional ControlId to use
+		 * @return QListBox
+		 */
+		public function lstTopicLink_Create($strControlId = null) {
+			$this->lstTopicLink = new QListBox($this->objParentObject, $strControlId);
+			$this->lstTopicLink->Name = QApplication::Translate('Topic Link');
+			$this->lstTopicLink->Required = true;
+			if (!$this->blnEditMode)
+				$this->lstTopicLink->AddItem(QApplication::Translate('- Select One -'), null);
+			$objTopicLinkArray = TopicLink::LoadAll();
+			if ($objTopicLinkArray) foreach ($objTopicLinkArray as $objTopicLink) {
+				$objListItem = new QListItem($objTopicLink->__toString(), $objTopicLink->Id);
+				if (($this->objMessage->TopicLink) && ($this->objMessage->TopicLink->Id == $objTopicLink->Id))
+					$objListItem->Selected = true;
+				$this->lstTopicLink->AddItem($objListItem);
+			}
+			return $this->lstTopicLink;
+		}
+
+		/**
+		 * Create and setup QLabel lblTopicLinkId
+		 * @param string $strControlId optional ControlId to use
+		 * @return QLabel
+		 */
+		public function lblTopicLinkId_Create($strControlId = null) {
+			$this->lblTopicLinkId = new QLabel($this->objParentObject, $strControlId);
+			$this->lblTopicLinkId->Name = QApplication::Translate('Topic Link');
+			$this->lblTopicLinkId->Text = ($this->objMessage->TopicLink) ? $this->objMessage->TopicLink->__toString() : null;
+			$this->lblTopicLinkId->Required = true;
+			return $this->lblTopicLinkId;
+		}
+
+		/**
 		 * Create and setup QListBox lstPerson
 		 * @param string $strControlId optional ControlId to use
 		 * @return QListBox
@@ -250,9 +250,7 @@
 		public function lstPerson_Create($strControlId = null) {
 			$this->lstPerson = new QListBox($this->objParentObject, $strControlId);
 			$this->lstPerson->Name = QApplication::Translate('Person');
-			$this->lstPerson->Required = true;
-			if (!$this->blnEditMode)
-				$this->lstPerson->AddItem(QApplication::Translate('- Select One -'), null);
+			$this->lstPerson->AddItem(QApplication::Translate('- Select One -'), null);
 			$objPersonArray = Person::LoadAll();
 			if ($objPersonArray) foreach ($objPersonArray as $objPerson) {
 				$objListItem = new QListItem($objPerson->__toString(), $objPerson->Id);
@@ -272,7 +270,6 @@
 			$this->lblPersonId = new QLabel($this->objParentObject, $strControlId);
 			$this->lblPersonId->Name = QApplication::Translate('Person');
 			$this->lblPersonId->Text = ($this->objMessage->Person) ? $this->objMessage->Person->__toString() : null;
-			$this->lblPersonId->Required = true;
 			return $this->lblPersonId;
 		}
 
@@ -396,20 +393,6 @@
 
 			if ($this->lblId) if ($this->blnEditMode) $this->lblId->Text = $this->objMessage->Id;
 
-			if ($this->lstForum) {
-					$this->lstForum->RemoveAllItems();
-				if (!$this->blnEditMode)
-					$this->lstForum->AddItem(QApplication::Translate('- Select One -'), null);
-				$objForumArray = Forum::LoadAll();
-				if ($objForumArray) foreach ($objForumArray as $objForum) {
-					$objListItem = new QListItem($objForum->__toString(), $objForum->Id);
-					if (($this->objMessage->Forum) && ($this->objMessage->Forum->Id == $objForum->Id))
-						$objListItem->Selected = true;
-					$this->lstForum->AddItem($objListItem);
-				}
-			}
-			if ($this->lblForumId) $this->lblForumId->Text = ($this->objMessage->Forum) ? $this->objMessage->Forum->__toString() : null;
-
 			if ($this->lstTopic) {
 					$this->lstTopic->RemoveAllItems();
 				if (!$this->blnEditMode)
@@ -424,10 +407,23 @@
 			}
 			if ($this->lblTopicId) $this->lblTopicId->Text = ($this->objMessage->Topic) ? $this->objMessage->Topic->__toString() : null;
 
+			if ($this->lstTopicLink) {
+					$this->lstTopicLink->RemoveAllItems();
+				if (!$this->blnEditMode)
+					$this->lstTopicLink->AddItem(QApplication::Translate('- Select One -'), null);
+				$objTopicLinkArray = TopicLink::LoadAll();
+				if ($objTopicLinkArray) foreach ($objTopicLinkArray as $objTopicLink) {
+					$objListItem = new QListItem($objTopicLink->__toString(), $objTopicLink->Id);
+					if (($this->objMessage->TopicLink) && ($this->objMessage->TopicLink->Id == $objTopicLink->Id))
+						$objListItem->Selected = true;
+					$this->lstTopicLink->AddItem($objListItem);
+				}
+			}
+			if ($this->lblTopicLinkId) $this->lblTopicLinkId->Text = ($this->objMessage->TopicLink) ? $this->objMessage->TopicLink->__toString() : null;
+
 			if ($this->lstPerson) {
 					$this->lstPerson->RemoveAllItems();
-				if (!$this->blnEditMode)
-					$this->lstPerson->AddItem(QApplication::Translate('- Select One -'), null);
+				$this->lstPerson->AddItem(QApplication::Translate('- Select One -'), null);
 				$objPersonArray = Person::LoadAll();
 				if ($objPersonArray) foreach ($objPersonArray as $objPerson) {
 					$objListItem = new QListItem($objPerson->__toString(), $objPerson->Id);
@@ -473,8 +469,8 @@
 		public function SaveMessage() {
 			try {
 				// Update any fields for controls that have been created
-				if ($this->lstForum) $this->objMessage->ForumId = $this->lstForum->SelectedValue;
 				if ($this->lstTopic) $this->objMessage->TopicId = $this->lstTopic->SelectedValue;
+				if ($this->lstTopicLink) $this->objMessage->TopicLinkId = $this->lstTopicLink->SelectedValue;
 				if ($this->lstPerson) $this->objMessage->PersonId = $this->lstPerson->SelectedValue;
 				if ($this->txtMessage) $this->objMessage->Message = $this->txtMessage->Text;
 				if ($this->txtCompiledHtml) $this->objMessage->CompiledHtml = $this->txtCompiledHtml->Text;
@@ -528,18 +524,18 @@
 				case 'IdLabel':
 					if (!$this->lblId) return $this->lblId_Create();
 					return $this->lblId;
-				case 'ForumIdControl':
-					if (!$this->lstForum) return $this->lstForum_Create();
-					return $this->lstForum;
-				case 'ForumIdLabel':
-					if (!$this->lblForumId) return $this->lblForumId_Create();
-					return $this->lblForumId;
 				case 'TopicIdControl':
 					if (!$this->lstTopic) return $this->lstTopic_Create();
 					return $this->lstTopic;
 				case 'TopicIdLabel':
 					if (!$this->lblTopicId) return $this->lblTopicId_Create();
 					return $this->lblTopicId;
+				case 'TopicLinkIdControl':
+					if (!$this->lstTopicLink) return $this->lstTopicLink_Create();
+					return $this->lstTopicLink;
+				case 'TopicLinkIdLabel':
+					if (!$this->lblTopicLinkId) return $this->lblTopicLinkId_Create();
+					return $this->lblTopicLinkId;
 				case 'PersonIdControl':
 					if (!$this->lstPerson) return $this->lstPerson_Create();
 					return $this->lstPerson;
@@ -594,10 +590,10 @@
 					// Controls that point to Message fields
 					case 'IdControl':
 						return ($this->lblId = QType::Cast($mixValue, 'QControl'));
-					case 'ForumIdControl':
-						return ($this->lstForum = QType::Cast($mixValue, 'QControl'));
 					case 'TopicIdControl':
 						return ($this->lstTopic = QType::Cast($mixValue, 'QControl'));
+					case 'TopicLinkIdControl':
+						return ($this->lstTopicLink = QType::Cast($mixValue, 'QControl'));
 					case 'PersonIdControl':
 						return ($this->lstPerson = QType::Cast($mixValue, 'QControl'));
 					case 'MessageControl':

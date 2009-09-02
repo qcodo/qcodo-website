@@ -289,7 +289,8 @@
 				case 'AssignedDate': return QQN::Issue()->AssignedDate;
 				case 'DueDate': return QQN::Issue()->DueDate;
 				case 'VoteCount': return QQN::Issue()->VoteCount;
-				case 'LastUpdateDate': return QQN::Issue()->LastUpdateDate;
+				case 'TopicLink': return QQN::Issue()->TopicLink;
+
 				default: throw new QCallerException('Simple Property not found in IssueDataGrid content: ' . $mixContent);
 			} else if ($mixContent instanceof QQAssociationNode)
 				throw new QCallerException('Content QQNode cannot go through any "To Many" association nodes.');

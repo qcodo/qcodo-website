@@ -278,9 +278,8 @@
 				case 'Name': return QQN::Forum()->Name;
 				case 'AnnounceOnlyFlag': return QQN::Forum()->AnnounceOnlyFlag;
 				case 'Description': return QQN::Forum()->Description;
-				case 'LastPostDate': return QQN::Forum()->LastPostDate;
-				case 'MessageCount': return QQN::Forum()->MessageCount;
-				case 'TopicCount': return QQN::Forum()->TopicCount;
+				case 'TopicLink': return QQN::Forum()->TopicLink;
+
 				default: throw new QCallerException('Simple Property not found in ForumDataGrid content: ' . $mixContent);
 			} else if ($mixContent instanceof QQAssociationNode)
 				throw new QCallerException('Content QQNode cannot go through any "To Many" association nodes.');

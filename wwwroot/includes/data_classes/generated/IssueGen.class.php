@@ -29,15 +29,11 @@
 	 * @property QDateTime $AssignedDate the value for dttAssignedDate 
 	 * @property QDateTime $DueDate the value for dttDueDate 
 	 * @property integer $VoteCount the value for intVoteCount 
-	 * @property QDateTime $LastUpdateDate the value for dttLastUpdateDate (Not Null)
 	 * @property Person $PostedByPerson the value for the Person object referenced by intPostedByPersonId (Not Null)
 	 * @property Person $AssignedToPerson the value for the Person object referenced by intAssignedToPersonId 
-	 * @property-read Person $_PersonAsEmail the value for the private _objPersonAsEmail (Read-Only) if set due to an expansion on the email_issue_person_assn association table
-	 * @property-read Person[] $_PersonAsEmailArray the value for the private _objPersonAsEmailArray (Read-Only) if set due to an ExpandAsArray on the email_issue_person_assn association table
+	 * @property TopicLink $TopicLink the value for the TopicLink object that uniquely references this Issue
 	 * @property-read IssueFieldValue $_IssueFieldValue the value for the private _objIssueFieldValue (Read-Only) if set due to an expansion on the issue_field_value.issue_id reverse relationship
 	 * @property-read IssueFieldValue[] $_IssueFieldValueArray the value for the private _objIssueFieldValueArray (Read-Only) if set due to an ExpandAsArray on the issue_field_value.issue_id reverse relationship
-	 * @property-read IssueMessage $_IssueMessage the value for the private _objIssueMessage (Read-Only) if set due to an expansion on the issue_message.issue_id reverse relationship
-	 * @property-read IssueMessage[] $_IssueMessageArray the value for the private _objIssueMessageArray (Read-Only) if set due to an ExpandAsArray on the issue_message.issue_id reverse relationship
 	 * @property-read IssueVote $_IssueVote the value for the private _objIssueVote (Read-Only) if set due to an expansion on the issue_vote.issue_id reverse relationship
 	 * @property-read IssueVote[] $_IssueVoteArray the value for the private _objIssueVoteArray (Read-Only) if set due to an ExpandAsArray on the issue_vote.issue_id reverse relationship
 	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
@@ -162,30 +158,6 @@
 
 
 		/**
-		 * Protected member variable that maps to the database column issue.last_update_date
-		 * @var QDateTime dttLastUpdateDate
-		 */
-		protected $dttLastUpdateDate;
-		const LastUpdateDateDefault = null;
-
-
-		/**
-		 * Private member variable that stores a reference to a single PersonAsEmail object
-		 * (of type Person), if this Issue object was restored with
-		 * an expansion on the email_issue_person_assn association table.
-		 * @var Person _objPersonAsEmail;
-		 */
-		private $_objPersonAsEmail;
-
-		/**
-		 * Private member variable that stores a reference to an array of PersonAsEmail objects
-		 * (of type Person[]), if this Issue object was restored with
-		 * an ExpandAsArray on the email_issue_person_assn association table.
-		 * @var Person[] _objPersonAsEmailArray;
-		 */
-		private $_objPersonAsEmailArray = array();
-
-		/**
 		 * Private member variable that stores a reference to a single IssueFieldValue object
 		 * (of type IssueFieldValue), if this Issue object was restored with
 		 * an expansion on the issue_field_value association table.
@@ -200,22 +172,6 @@
 		 * @var IssueFieldValue[] _objIssueFieldValueArray;
 		 */
 		private $_objIssueFieldValueArray = array();
-
-		/**
-		 * Private member variable that stores a reference to a single IssueMessage object
-		 * (of type IssueMessage), if this Issue object was restored with
-		 * an expansion on the issue_message association table.
-		 * @var IssueMessage _objIssueMessage;
-		 */
-		private $_objIssueMessage;
-
-		/**
-		 * Private member variable that stores a reference to an array of IssueMessage objects
-		 * (of type IssueMessage[]), if this Issue object was restored with
-		 * an ExpandAsArray on the issue_message association table.
-		 * @var IssueMessage[] _objIssueMessageArray;
-		 */
-		private $_objIssueMessageArray = array();
 
 		/**
 		 * Private member variable that stores a reference to a single IssueVote object
@@ -274,6 +230,24 @@
 		 * @var Person objAssignedToPerson
 		 */
 		protected $objAssignedToPerson;
+
+		/**
+		 * Protected member variable that contains the object which points to
+		 * this object by the reference in the unique database column topic_link.issue_id.
+		 *
+		 * NOTE: Always use the TopicLink property getter to correctly retrieve this TopicLink object.
+		 * (Because this class implements late binding, this variable reference MAY be null.)
+		 * @var TopicLink objTopicLink
+		 */
+		protected $objTopicLink;
+		
+		/**
+		 * Used internally to manage whether the adjoined TopicLink object
+		 * needs to be updated on save.
+		 * 
+		 * NOTE: Do not manually update this value 
+		 */
+		protected $blnDirtyTopicLink;
 
 
 
@@ -552,7 +526,6 @@
 			$objBuilder->AddSelectItem($strTableName, 'assigned_date', $strAliasPrefix . 'assigned_date');
 			$objBuilder->AddSelectItem($strTableName, 'due_date', $strAliasPrefix . 'due_date');
 			$objBuilder->AddSelectItem($strTableName, 'vote_count', $strAliasPrefix . 'vote_count');
-			$objBuilder->AddSelectItem($strTableName, 'last_update_date', $strAliasPrefix . 'last_update_date');
 		}
 
 
@@ -590,20 +563,6 @@
 				if (!$strAliasPrefix)
 					$strAliasPrefix = 'issue__';
 
-				$strAlias = $strAliasPrefix . 'personasemail__person_id__id';
-				$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
-				if ((array_key_exists($strAlias, $strExpandAsArrayNodes)) &&
-					(!is_null($objDbRow->GetColumn($strAliasName)))) {
-					if ($intPreviousChildItemCount = count($objPreviousItem->_objPersonAsEmailArray)) {
-						$objPreviousChildItem = $objPreviousItem->_objPersonAsEmailArray[$intPreviousChildItemCount - 1];
-						$objChildItem = Person::InstantiateDbRow($objDbRow, $strAliasPrefix . 'personasemail__person_id__', $strExpandAsArrayNodes, $objPreviousChildItem, $strColumnAliasArray);
-						if ($objChildItem)
-							$objPreviousItem->_objPersonAsEmailArray[] = $objChildItem;
-					} else
-						$objPreviousItem->_objPersonAsEmailArray[] = Person::InstantiateDbRow($objDbRow, $strAliasPrefix . 'personasemail__person_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
-					$blnExpandedViaArray = true;
-				}
-
 
 				$strAlias = $strAliasPrefix . 'issuefieldvalue__id';
 				$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
@@ -616,20 +575,6 @@
 							$objPreviousItem->_objIssueFieldValueArray[] = $objChildItem;
 					} else
 						$objPreviousItem->_objIssueFieldValueArray[] = IssueFieldValue::InstantiateDbRow($objDbRow, $strAliasPrefix . 'issuefieldvalue__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
-					$blnExpandedViaArray = true;
-				}
-
-				$strAlias = $strAliasPrefix . 'issuemessage__id';
-				$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
-				if ((array_key_exists($strAlias, $strExpandAsArrayNodes)) &&
-					(!is_null($objDbRow->GetColumn($strAliasName)))) {
-					if ($intPreviousChildItemCount = count($objPreviousItem->_objIssueMessageArray)) {
-						$objPreviousChildItem = $objPreviousItem->_objIssueMessageArray[$intPreviousChildItemCount - 1];
-						$objChildItem = IssueMessage::InstantiateDbRow($objDbRow, $strAliasPrefix . 'issuemessage__', $strExpandAsArrayNodes, $objPreviousChildItem, $strColumnAliasArray);
-						if ($objChildItem)
-							$objPreviousItem->_objIssueMessageArray[] = $objChildItem;
-					} else
-						$objPreviousItem->_objIssueMessageArray[] = IssueMessage::InstantiateDbRow($objDbRow, $strAliasPrefix . 'issuemessage__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 					$blnExpandedViaArray = true;
 				}
 
@@ -686,8 +631,6 @@
 			$objToReturn->dttDueDate = $objDbRow->GetColumn($strAliasName, 'DateTime');
 			$strAliasName = array_key_exists($strAliasPrefix . 'vote_count', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'vote_count'] : $strAliasPrefix . 'vote_count';
 			$objToReturn->intVoteCount = $objDbRow->GetColumn($strAliasName, 'Integer');
-			$strAliasName = array_key_exists($strAliasPrefix . 'last_update_date', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'last_update_date'] : $strAliasPrefix . 'last_update_date';
-			$objToReturn->dttLastUpdateDate = $objDbRow->GetColumn($strAliasName, 'DateTime');
 
 			// Instantiate Virtual Attributes
 			foreach ($objDbRow->GetColumnNameArray() as $strColumnName => $mixValue) {
@@ -714,16 +657,18 @@
 				$objToReturn->objAssignedToPerson = Person::InstantiateDbRow($objDbRow, $strAliasPrefix . 'assigned_to_person_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 
 
-
-			// Check for PersonAsEmail Virtual Binding
-			$strAlias = $strAliasPrefix . 'personasemail__person_id__id';
+			// Check for TopicLink Unique ReverseReference Binding
+			$strAlias = $strAliasPrefix . 'topiclink__id';
 			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
-			if (!is_null($objDbRow->GetColumn($strAliasName))) {
-				if (($strExpandAsArrayNodes) && (array_key_exists($strAlias, $strExpandAsArrayNodes)))
-					$objToReturn->_objPersonAsEmailArray[] = Person::InstantiateDbRow($objDbRow, $strAliasPrefix . 'personasemail__person_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+			if ($objDbRow->ColumnExists($strAliasName)) {
+				if (!is_null($objDbRow->GetColumn($strAliasName)))
+					$objToReturn->objTopicLink = TopicLink::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topiclink__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 				else
-					$objToReturn->_objPersonAsEmail = Person::InstantiateDbRow($objDbRow, $strAliasPrefix . 'personasemail__person_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+					// We ATTEMPTED to do an Early Bind but the Object Doesn't Exist
+					// Let's set to FALSE so that the object knows not to try and re-query again
+					$objToReturn->objTopicLink = false;
 			}
+
 
 
 			// Check for IssueFieldValue Virtual Binding
@@ -734,16 +679,6 @@
 					$objToReturn->_objIssueFieldValueArray[] = IssueFieldValue::InstantiateDbRow($objDbRow, $strAliasPrefix . 'issuefieldvalue__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 				else
 					$objToReturn->_objIssueFieldValue = IssueFieldValue::InstantiateDbRow($objDbRow, $strAliasPrefix . 'issuefieldvalue__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
-			}
-
-			// Check for IssueMessage Virtual Binding
-			$strAlias = $strAliasPrefix . 'issuemessage__id';
-			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
-			if (!is_null($objDbRow->GetColumn($strAliasName))) {
-				if (($strExpandAsArrayNodes) && (array_key_exists($strAlias, $strExpandAsArrayNodes)))
-					$objToReturn->_objIssueMessageArray[] = IssueMessage::InstantiateDbRow($objDbRow, $strAliasPrefix . 'issuemessage__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
-				else
-					$objToReturn->_objIssueMessage = IssueMessage::InstantiateDbRow($objDbRow, $strAliasPrefix . 'issuemessage__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 			}
 
 			// Check for IssueVote Virtual Binding
@@ -946,37 +881,6 @@
 		////////////////////////////////////////////////////
 		// INDEX-BASED LOAD METHODS (Array via Many to Many)
 		////////////////////////////////////////////////////
-			/**
-		 * Load an array of Person objects for a given PersonAsEmail
-		 * via the email_issue_person_assn table
-		 * @param integer $intPersonId
-		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
-		 * @return Issue[]
-		*/
-		public static function LoadArrayByPersonAsEmail($intPersonId, $objOptionalClauses = null) {
-			// Call Issue::QueryArray to perform the LoadArrayByPersonAsEmail query
-			try {
-				return Issue::QueryArray(
-					QQ::Equal(QQN::Issue()->PersonAsEmail->PersonId, $intPersonId),
-					$objOptionalClauses
-				);
-			} catch (QCallerException $objExc) {
-				$objExc->IncrementOffset();
-				throw $objExc;
-			}
-		}
-
-		/**
-		 * Count Issues for a given PersonAsEmail
-		 * via the email_issue_person_assn table
-		 * @param integer $intPersonId
-		 * @return int
-		*/
-		public static function CountByPersonAsEmail($intPersonId) {
-			return Issue::QueryCount(
-				QQ::Equal(QQN::Issue()->PersonAsEmail->PersonId, $intPersonId)
-			);
-		}
 
 
 
@@ -1014,8 +918,7 @@
 							`post_date`,
 							`assigned_date`,
 							`due_date`,
-							`vote_count`,
-							`last_update_date`
+							`vote_count`
 						) VALUES (
 							' . $objDatabase->SqlVariable($this->intIssueStatusTypeId) . ',
 							' . $objDatabase->SqlVariable($this->strTitle) . ',
@@ -1029,8 +932,7 @@
 							' . $objDatabase->SqlVariable($this->dttPostDate) . ',
 							' . $objDatabase->SqlVariable($this->dttAssignedDate) . ',
 							' . $objDatabase->SqlVariable($this->dttDueDate) . ',
-							' . $objDatabase->SqlVariable($this->intVoteCount) . ',
-							' . $objDatabase->SqlVariable($this->dttLastUpdateDate) . '
+							' . $objDatabase->SqlVariable($this->intVoteCount) . '
 						)
 					');
 
@@ -1058,13 +960,32 @@
 							`post_date` = ' . $objDatabase->SqlVariable($this->dttPostDate) . ',
 							`assigned_date` = ' . $objDatabase->SqlVariable($this->dttAssignedDate) . ',
 							`due_date` = ' . $objDatabase->SqlVariable($this->dttDueDate) . ',
-							`vote_count` = ' . $objDatabase->SqlVariable($this->intVoteCount) . ',
-							`last_update_date` = ' . $objDatabase->SqlVariable($this->dttLastUpdateDate) . '
+							`vote_count` = ' . $objDatabase->SqlVariable($this->intVoteCount) . '
 						WHERE
 							`id` = ' . $objDatabase->SqlVariable($this->intId) . '
 					');
 				}
 
+		
+		
+				// Update the adjoined TopicLink object (if applicable)
+				// TODO: Make this into hard-coded SQL queries
+				if ($this->blnDirtyTopicLink) {
+					// Unassociate the old one (if applicable)
+					if ($objAssociated = TopicLink::LoadByIssueId($this->intId)) {
+						$objAssociated->IssueId = null;
+						$objAssociated->Save();
+					}
+
+					// Associate the new one (if applicable)
+					if ($this->objTopicLink) {
+						$this->objTopicLink->IssueId = $this->intId;
+						$this->objTopicLink->Save();
+					}
+
+					// Reset the "Dirty" flag
+					$this->blnDirtyTopicLink = false;
+				}
 			} catch (QCallerException $objExc) {
 				$objExc->IncrementOffset();
 				throw $objExc;
@@ -1089,6 +1010,16 @@
 			// Get the Database Object for this Class
 			$objDatabase = Issue::GetDatabase();
 
+			
+			
+			// Update the adjoined TopicLink object (if applicable) and perform the unassociation
+
+			// Optional -- if you **KNOW** that you do not want to EVER run any level of business logic on the disassocation,
+			// you *could* override Delete() so that this step can be a single hard coded query to optimize performance.
+			if ($objAssociated = TopicLink::LoadByIssueId($this->intId)) {
+				$objAssociated->IssueId = null;
+				$objAssociated->Save();
+			}
 
 			// Perform the SQL Query
 			$objDatabase->NonQuery('
@@ -1151,7 +1082,6 @@
 			$this->dttAssignedDate = $objReloaded->dttAssignedDate;
 			$this->dttDueDate = $objReloaded->dttDueDate;
 			$this->intVoteCount = $objReloaded->intVoteCount;
-			$this->dttLastUpdateDate = $objReloaded->dttLastUpdateDate;
 		}
 
 
@@ -1270,13 +1200,6 @@
 					 */
 					return $this->intVoteCount;
 
-				case 'LastUpdateDate':
-					/**
-					 * Gets the value for dttLastUpdateDate (Not Null)
-					 * @return QDateTime
-					 */
-					return $this->dttLastUpdateDate;
-
 
 				///////////////////
 				// Member Objects
@@ -1309,27 +1232,31 @@
 						throw $objExc;
 					}
 
+		
+		
+				case 'TopicLink':
+					/**
+					 * Gets the value for the TopicLink object that uniquely references this Issue
+					 * by objTopicLink (Unique)
+					 * @return TopicLink
+					 */
+					try {
+						if ($this->objTopicLink === false)
+							// We've attempted early binding -- and the reverse reference object does not exist
+							return null;
+						if (!$this->objTopicLink)
+							$this->objTopicLink = TopicLink::LoadByIssueId($this->intId);
+						return $this->objTopicLink;
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
 
 				////////////////////////////
 				// Virtual Object References (Many to Many and Reverse References)
 				// (If restored via a "Many-to" expansion)
 				////////////////////////////
-
-				case '_PersonAsEmail':
-					/**
-					 * Gets the value for the private _objPersonAsEmail (Read-Only)
-					 * if set due to an expansion on the email_issue_person_assn association table
-					 * @return Person
-					 */
-					return $this->_objPersonAsEmail;
-
-				case '_PersonAsEmailArray':
-					/**
-					 * Gets the value for the private _objPersonAsEmailArray (Read-Only)
-					 * if set due to an ExpandAsArray on the email_issue_person_assn association table
-					 * @return Person[]
-					 */
-					return (array) $this->_objPersonAsEmailArray;
 
 				case '_IssueFieldValue':
 					/**
@@ -1346,22 +1273,6 @@
 					 * @return IssueFieldValue[]
 					 */
 					return (array) $this->_objIssueFieldValueArray;
-
-				case '_IssueMessage':
-					/**
-					 * Gets the value for the private _objIssueMessage (Read-Only)
-					 * if set due to an expansion on the issue_message.issue_id reverse relationship
-					 * @return IssueMessage
-					 */
-					return $this->_objIssueMessage;
-
-				case '_IssueMessageArray':
-					/**
-					 * Gets the value for the private _objIssueMessageArray (Read-Only)
-					 * if set due to an ExpandAsArray on the issue_message.issue_id reverse relationship
-					 * @return IssueMessage[]
-					 */
-					return (array) $this->_objIssueMessageArray;
 
 				case '_IssueVote':
 					/**
@@ -1577,19 +1488,6 @@
 						throw $objExc;
 					}
 
-				case 'LastUpdateDate':
-					/**
-					 * Sets the value for dttLastUpdateDate (Not Null)
-					 * @param QDateTime $mixValue
-					 * @return QDateTime
-					 */
-					try {
-						return ($this->dttLastUpdateDate = QType::Cast($mixValue, QType::DateTime));
-					} catch (QCallerException $objExc) {
-						$objExc->IncrementOffset();
-						throw $objExc;
-					}
-
 
 				///////////////////
 				// Member Objects
@@ -1652,6 +1550,45 @@
 						// Update Local Member Variables
 						$this->objAssignedToPerson = $mixValue;
 						$this->intAssignedToPersonId = $mixValue->Id;
+
+						// Return $mixValue
+						return $mixValue;
+					}
+					break;
+
+				case 'TopicLink':
+					/**
+					 * Sets the value for the TopicLink object referenced by objTopicLink (Unique)
+					 * @param TopicLink $mixValue
+					 * @return TopicLink
+					 */
+					if (is_null($mixValue)) {
+						$this->objTopicLink = null;
+
+						// Make sure we update the adjoined TopicLink object the next time we call Save()
+						$this->blnDirtyTopicLink = true;
+
+						return null;
+					} else {
+						// Make sure $mixValue actually is a TopicLink object
+						try {
+							$mixValue = QType::Cast($mixValue, 'TopicLink');
+						} catch (QInvalidCastException $objExc) {
+							$objExc->IncrementOffset();
+							throw $objExc;
+						}
+
+						// Are we setting objTopicLink to a DIFFERENT $mixValue?
+						if ((!$this->TopicLink) || ($this->TopicLink->Id != $mixValue->Id)) {
+							// Yes -- therefore, set the "Dirty" flag to true
+							// to make sure we update the adjoined TopicLink object the next time we call Save()
+							$this->blnDirtyTopicLink = true;
+
+							// Update Local Member Variable
+							$this->objTopicLink = $mixValue;
+						} else {
+							// Nope -- therefore, make no changes
+						}
 
 						// Return $mixValue
 						return $mixValue;
@@ -1837,156 +1774,6 @@
 
 			
 		
-		// Related Objects' Methods for IssueMessage
-		//-------------------------------------------------------------------
-
-		/**
-		 * Gets all associated IssueMessages as an array of IssueMessage objects
-		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
-		 * @return IssueMessage[]
-		*/ 
-		public function GetIssueMessageArray($objOptionalClauses = null) {
-			if ((is_null($this->intId)))
-				return array();
-
-			try {
-				return IssueMessage::LoadArrayByIssueId($this->intId, $objOptionalClauses);
-			} catch (QCallerException $objExc) {
-				$objExc->IncrementOffset();
-				throw $objExc;
-			}
-		}
-
-		/**
-		 * Counts all associated IssueMessages
-		 * @return int
-		*/ 
-		public function CountIssueMessages() {
-			if ((is_null($this->intId)))
-				return 0;
-
-			return IssueMessage::CountByIssueId($this->intId);
-		}
-
-		/**
-		 * Associates a IssueMessage
-		 * @param IssueMessage $objIssueMessage
-		 * @return void
-		*/ 
-		public function AssociateIssueMessage(IssueMessage $objIssueMessage) {
-			if ((is_null($this->intId)))
-				throw new QUndefinedPrimaryKeyException('Unable to call AssociateIssueMessage on this unsaved Issue.');
-			if ((is_null($objIssueMessage->Id)))
-				throw new QUndefinedPrimaryKeyException('Unable to call AssociateIssueMessage on this Issue with an unsaved IssueMessage.');
-
-			// Get the Database Object for this Class
-			$objDatabase = Issue::GetDatabase();
-
-			// Perform the SQL Query
-			$objDatabase->NonQuery('
-				UPDATE
-					`issue_message`
-				SET
-					`issue_id` = ' . $objDatabase->SqlVariable($this->intId) . '
-				WHERE
-					`id` = ' . $objDatabase->SqlVariable($objIssueMessage->Id) . '
-			');
-		}
-
-		/**
-		 * Unassociates a IssueMessage
-		 * @param IssueMessage $objIssueMessage
-		 * @return void
-		*/ 
-		public function UnassociateIssueMessage(IssueMessage $objIssueMessage) {
-			if ((is_null($this->intId)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateIssueMessage on this unsaved Issue.');
-			if ((is_null($objIssueMessage->Id)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateIssueMessage on this Issue with an unsaved IssueMessage.');
-
-			// Get the Database Object for this Class
-			$objDatabase = Issue::GetDatabase();
-
-			// Perform the SQL Query
-			$objDatabase->NonQuery('
-				UPDATE
-					`issue_message`
-				SET
-					`issue_id` = null
-				WHERE
-					`id` = ' . $objDatabase->SqlVariable($objIssueMessage->Id) . ' AND
-					`issue_id` = ' . $objDatabase->SqlVariable($this->intId) . '
-			');
-		}
-
-		/**
-		 * Unassociates all IssueMessages
-		 * @return void
-		*/ 
-		public function UnassociateAllIssueMessages() {
-			if ((is_null($this->intId)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateIssueMessage on this unsaved Issue.');
-
-			// Get the Database Object for this Class
-			$objDatabase = Issue::GetDatabase();
-
-			// Perform the SQL Query
-			$objDatabase->NonQuery('
-				UPDATE
-					`issue_message`
-				SET
-					`issue_id` = null
-				WHERE
-					`issue_id` = ' . $objDatabase->SqlVariable($this->intId) . '
-			');
-		}
-
-		/**
-		 * Deletes an associated IssueMessage
-		 * @param IssueMessage $objIssueMessage
-		 * @return void
-		*/ 
-		public function DeleteAssociatedIssueMessage(IssueMessage $objIssueMessage) {
-			if ((is_null($this->intId)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateIssueMessage on this unsaved Issue.');
-			if ((is_null($objIssueMessage->Id)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateIssueMessage on this Issue with an unsaved IssueMessage.');
-
-			// Get the Database Object for this Class
-			$objDatabase = Issue::GetDatabase();
-
-			// Perform the SQL Query
-			$objDatabase->NonQuery('
-				DELETE FROM
-					`issue_message`
-				WHERE
-					`id` = ' . $objDatabase->SqlVariable($objIssueMessage->Id) . ' AND
-					`issue_id` = ' . $objDatabase->SqlVariable($this->intId) . '
-			');
-		}
-
-		/**
-		 * Deletes all associated IssueMessages
-		 * @return void
-		*/ 
-		public function DeleteAllIssueMessages() {
-			if ((is_null($this->intId)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateIssueMessage on this unsaved Issue.');
-
-			// Get the Database Object for this Class
-			$objDatabase = Issue::GetDatabase();
-
-			// Perform the SQL Query
-			$objDatabase->NonQuery('
-				DELETE FROM
-					`issue_message`
-				WHERE
-					`issue_id` = ' . $objDatabase->SqlVariable($this->intId) . '
-			');
-		}
-
-			
-		
 		// Related Objects' Methods for IssueVote
 		//-------------------------------------------------------------------
 
@@ -2135,128 +1922,6 @@
 			');
 		}
 
-			
-		// Related Many-to-Many Objects' Methods for PersonAsEmail
-		//-------------------------------------------------------------------
-
-		/**
-		 * Gets all many-to-many associated PeopleAsEmail as an array of Person objects
-		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
-		 * @return Person[]
-		*/ 
-		public function GetPersonAsEmailArray($objOptionalClauses = null) {
-			if ((is_null($this->intId)))
-				return array();
-
-			try {
-				return Person::LoadArrayByIssueAsEmail($this->intId, $objOptionalClauses);
-			} catch (QCallerException $objExc) {
-				$objExc->IncrementOffset();
-				throw $objExc;
-			}
-		}
-
-		/**
-		 * Counts all many-to-many associated PeopleAsEmail
-		 * @return int
-		*/ 
-		public function CountPeopleAsEmail() {
-			if ((is_null($this->intId)))
-				return 0;
-
-			return Person::CountByIssueAsEmail($this->intId);
-		}
-
-		/**
-		 * Checks to see if an association exists with a specific PersonAsEmail
-		 * @param Person $objPerson
-		 * @return bool
-		*/
-		public function IsPersonAsEmailAssociated(Person $objPerson) {
-			if ((is_null($this->intId)))
-				throw new QUndefinedPrimaryKeyException('Unable to call IsPersonAsEmailAssociated on this unsaved Issue.');
-			if ((is_null($objPerson->Id)))
-				throw new QUndefinedPrimaryKeyException('Unable to call IsPersonAsEmailAssociated on this Issue with an unsaved Person.');
-
-			$intRowCount = Issue::QueryCount(
-				QQ::AndCondition(
-					QQ::Equal(QQN::Issue()->Id, $this->intId),
-					QQ::Equal(QQN::Issue()->PersonAsEmail->PersonId, $objPerson->Id)
-				)
-			);
-
-			return ($intRowCount > 0);
-		}
-
-		/**
-		 * Associates a PersonAsEmail
-		 * @param Person $objPerson
-		 * @return void
-		*/ 
-		public function AssociatePersonAsEmail(Person $objPerson) {
-			if ((is_null($this->intId)))
-				throw new QUndefinedPrimaryKeyException('Unable to call AssociatePersonAsEmail on this unsaved Issue.');
-			if ((is_null($objPerson->Id)))
-				throw new QUndefinedPrimaryKeyException('Unable to call AssociatePersonAsEmail on this Issue with an unsaved Person.');
-
-			// Get the Database Object for this Class
-			$objDatabase = Issue::GetDatabase();
-
-			// Perform the SQL Query
-			$objDatabase->NonQuery('
-				INSERT INTO `email_issue_person_assn` (
-					`issue_id`,
-					`person_id`
-				) VALUES (
-					' . $objDatabase->SqlVariable($this->intId) . ',
-					' . $objDatabase->SqlVariable($objPerson->Id) . '
-				)
-			');
-		}
-
-		/**
-		 * Unassociates a PersonAsEmail
-		 * @param Person $objPerson
-		 * @return void
-		*/ 
-		public function UnassociatePersonAsEmail(Person $objPerson) {
-			if ((is_null($this->intId)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociatePersonAsEmail on this unsaved Issue.');
-			if ((is_null($objPerson->Id)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociatePersonAsEmail on this Issue with an unsaved Person.');
-
-			// Get the Database Object for this Class
-			$objDatabase = Issue::GetDatabase();
-
-			// Perform the SQL Query
-			$objDatabase->NonQuery('
-				DELETE FROM
-					`email_issue_person_assn`
-				WHERE
-					`issue_id` = ' . $objDatabase->SqlVariable($this->intId) . ' AND
-					`person_id` = ' . $objDatabase->SqlVariable($objPerson->Id) . '
-			');
-		}
-
-		/**
-		 * Unassociates all PeopleAsEmail
-		 * @return void
-		*/ 
-		public function UnassociateAllPeopleAsEmail() {
-			if ((is_null($this->intId)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateAllPersonAsEmailArray on this unsaved Issue.');
-
-			// Get the Database Object for this Class
-			$objDatabase = Issue::GetDatabase();
-
-			// Perform the SQL Query
-			$objDatabase->NonQuery('
-				DELETE FROM
-					`email_issue_person_assn`
-				WHERE
-					`issue_id` = ' . $objDatabase->SqlVariable($this->intId) . '
-			');
-		}
 
 
 
@@ -2281,7 +1946,6 @@
 			$strToReturn .= '<element name="AssignedDate" type="xsd:dateTime"/>';
 			$strToReturn .= '<element name="DueDate" type="xsd:dateTime"/>';
 			$strToReturn .= '<element name="VoteCount" type="xsd:int"/>';
-			$strToReturn .= '<element name="LastUpdateDate" type="xsd:dateTime"/>';
 			$strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
 			$strToReturn .= '</sequence></complexType>';
 			return $strToReturn;
@@ -2336,8 +2000,6 @@
 				$objToReturn->dttDueDate = new QDateTime($objSoapObject->DueDate);
 			if (property_exists($objSoapObject, 'VoteCount'))
 				$objToReturn->intVoteCount = $objSoapObject->VoteCount;
-			if (property_exists($objSoapObject, 'LastUpdateDate'))
-				$objToReturn->dttLastUpdateDate = new QDateTime($objSoapObject->LastUpdateDate);
 			if (property_exists($objSoapObject, '__blnRestored'))
 				$objToReturn->__blnRestored = $objSoapObject->__blnRestored;
 			return $objToReturn;
@@ -2370,8 +2032,6 @@
 				$objObject->dttAssignedDate = $objObject->dttAssignedDate->__toString(QDateTime::FormatSoap);
 			if ($objObject->dttDueDate)
 				$objObject->dttDueDate = $objObject->dttDueDate->__toString(QDateTime::FormatSoap);
-			if ($objObject->dttLastUpdateDate)
-				$objObject->dttLastUpdateDate = $objObject->dttLastUpdateDate->__toString(QDateTime::FormatSoap);
 			return $objObject;
 		}
 
@@ -2385,33 +2045,6 @@
 	/////////////////////////////////////
 	// ADDITIONAL CLASSES for QCODO QUERY
 	/////////////////////////////////////
-
-	class QQNodeIssuePersonAsEmail extends QQAssociationNode {
-		protected $strType = 'association';
-		protected $strName = 'personasemail';
-
-		protected $strTableName = 'email_issue_person_assn';
-		protected $strPrimaryKey = 'issue_id';
-		protected $strClassName = 'Person';
-
-		public function __get($strName) {
-			switch ($strName) {
-				case 'PersonId':
-					return new QQNode('person_id', 'PersonId', 'integer', $this);
-				case 'Person':
-					return new QQNodePerson('person_id', 'PersonId', 'integer', $this);
-				case '_ChildTableNode':
-					return new QQNodePerson('person_id', 'PersonId', 'integer', $this);
-				default:
-					try {
-						return parent::__get($strName);
-					} catch (QCallerException $objExc) {
-						$objExc->IncrementOffset();
-						throw $objExc;
-					}
-			}
-		}
-	}
 
 	class QQNodeIssue extends QQNode {
 		protected $strTableName = 'issue';
@@ -2451,16 +2084,12 @@
 					return new QQNode('due_date', 'DueDate', 'QDateTime', $this);
 				case 'VoteCount':
 					return new QQNode('vote_count', 'VoteCount', 'integer', $this);
-				case 'LastUpdateDate':
-					return new QQNode('last_update_date', 'LastUpdateDate', 'QDateTime', $this);
-				case 'PersonAsEmail':
-					return new QQNodeIssuePersonAsEmail($this);
 				case 'IssueFieldValue':
 					return new QQReverseReferenceNodeIssueFieldValue($this, 'issuefieldvalue', 'reverse_reference', 'issue_id');
-				case 'IssueMessage':
-					return new QQReverseReferenceNodeIssueMessage($this, 'issuemessage', 'reverse_reference', 'issue_id');
 				case 'IssueVote':
 					return new QQReverseReferenceNodeIssueVote($this, 'issuevote', 'reverse_reference', 'issue_id');
+				case 'TopicLink':
+					return new QQReverseReferenceNodeTopicLink($this, 'topiclink', 'reverse_reference', 'issue_id', 'TopicLink');
 
 				case '_PrimaryKeyNode':
 					return new QQNode('id', 'Id', 'integer', $this);
@@ -2513,16 +2142,12 @@
 					return new QQNode('due_date', 'DueDate', 'QDateTime', $this);
 				case 'VoteCount':
 					return new QQNode('vote_count', 'VoteCount', 'integer', $this);
-				case 'LastUpdateDate':
-					return new QQNode('last_update_date', 'LastUpdateDate', 'QDateTime', $this);
-				case 'PersonAsEmail':
-					return new QQNodeIssuePersonAsEmail($this);
 				case 'IssueFieldValue':
 					return new QQReverseReferenceNodeIssueFieldValue($this, 'issuefieldvalue', 'reverse_reference', 'issue_id');
-				case 'IssueMessage':
-					return new QQReverseReferenceNodeIssueMessage($this, 'issuemessage', 'reverse_reference', 'issue_id');
 				case 'IssueVote':
 					return new QQReverseReferenceNodeIssueVote($this, 'issuevote', 'reverse_reference', 'issue_id');
+				case 'TopicLink':
+					return new QQReverseReferenceNodeTopicLink($this, 'topiclink', 'reverse_reference', 'issue_id', 'TopicLink');
 
 				case '_PrimaryKeyNode':
 					return new QQNode('id', 'Id', 'integer', $this);

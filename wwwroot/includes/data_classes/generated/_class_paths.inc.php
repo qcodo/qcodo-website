@@ -90,13 +90,6 @@
 		QApplicationBase::$ClassFile['issuefieldvaluemetacontrol'] = __DATA_META_CONTROLS__ . '/IssueFieldValueMetaControl.class.php';
 		QApplicationBase::$ClassFile['issuefieldvaluedatagrid'] = __DATA_META_CONTROLS__ . '/IssueFieldValueDataGrid.class.php';
 
-	// ClassPaths for the IssueMessage class
-		QApplicationBase::$ClassFile['issuemessage'] = __DATA_CLASSES__ . '/IssueMessage.class.php';
-		QApplicationBase::$ClassFile['qqnodeissuemessage'] = __DATA_CLASSES__ . '/IssueMessage.class.php';
-		QApplicationBase::$ClassFile['qqreversereferencenodeissuemessage'] = __DATA_CLASSES__ . '/IssueMessage.class.php';
-		QApplicationBase::$ClassFile['issuemessagemetacontrol'] = __DATA_META_CONTROLS__ . '/IssueMessageMetaControl.class.php';
-		QApplicationBase::$ClassFile['issuemessagedatagrid'] = __DATA_META_CONTROLS__ . '/IssueMessageDataGrid.class.php';
-
 	// ClassPaths for the IssueVote class
 		QApplicationBase::$ClassFile['issuevote'] = __DATA_CLASSES__ . '/IssueVote.class.php';
 		QApplicationBase::$ClassFile['qqnodeissuevote'] = __DATA_CLASSES__ . '/IssueVote.class.php';
@@ -138,5 +131,12 @@
 		QApplicationBase::$ClassFile['qqreversereferencenodetopic'] = __DATA_CLASSES__ . '/Topic.class.php';
 		QApplicationBase::$ClassFile['topicmetacontrol'] = __DATA_META_CONTROLS__ . '/TopicMetaControl.class.php';
 		QApplicationBase::$ClassFile['topicdatagrid'] = __DATA_META_CONTROLS__ . '/TopicDataGrid.class.php';
+
+	// ClassPaths for the TopicLink class
+		QApplicationBase::$ClassFile['topiclink'] = __DATA_CLASSES__ . '/TopicLink.class.php';
+		QApplicationBase::$ClassFile['qqnodetopiclink'] = __DATA_CLASSES__ . '/TopicLink.class.php';
+		QApplicationBase::$ClassFile['qqreversereferencenodetopiclink'] = __DATA_CLASSES__ . '/TopicLink.class.php';
+		QApplicationBase::$ClassFile['topiclinkmetacontrol'] = __DATA_META_CONTROLS__ . '/TopicLinkMetaControl.class.php';
+		QApplicationBase::$ClassFile['topiclinkdatagrid'] = __DATA_META_CONTROLS__ . '/TopicLinkDataGrid.class.php';
 
 ?>

@@ -20,13 +20,7 @@
 	 * @property string $Name the value for strName (Not Null)
 	 * @property boolean $AnnounceOnlyFlag the value for blnAnnounceOnlyFlag 
 	 * @property string $Description the value for strDescription 
-	 * @property QDateTime $LastPostDate the value for dttLastPostDate 
-	 * @property integer $MessageCount the value for intMessageCount 
-	 * @property integer $TopicCount the value for intTopicCount 
-	 * @property-read Message $_Message the value for the private _objMessage (Read-Only) if set due to an expansion on the message.forum_id reverse relationship
-	 * @property-read Message[] $_MessageArray the value for the private _objMessageArray (Read-Only) if set due to an ExpandAsArray on the message.forum_id reverse relationship
-	 * @property-read Topic $_Topic the value for the private _objTopic (Read-Only) if set due to an expansion on the topic.forum_id reverse relationship
-	 * @property-read Topic[] $_TopicArray the value for the private _objTopicArray (Read-Only) if set due to an ExpandAsArray on the topic.forum_id reverse relationship
+	 * @property TopicLink $TopicLink the value for the TopicLink object that uniquely references this Forum
 	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
 	class ForumGen extends QBaseClass {
@@ -78,62 +72,6 @@
 
 
 		/**
-		 * Protected member variable that maps to the database column forum.last_post_date
-		 * @var QDateTime dttLastPostDate
-		 */
-		protected $dttLastPostDate;
-		const LastPostDateDefault = null;
-
-
-		/**
-		 * Protected member variable that maps to the database column forum.message_count
-		 * @var integer intMessageCount
-		 */
-		protected $intMessageCount;
-		const MessageCountDefault = null;
-
-
-		/**
-		 * Protected member variable that maps to the database column forum.topic_count
-		 * @var integer intTopicCount
-		 */
-		protected $intTopicCount;
-		const TopicCountDefault = null;
-
-
-		/**
-		 * Private member variable that stores a reference to a single Message object
-		 * (of type Message), if this Forum object was restored with
-		 * an expansion on the message association table.
-		 * @var Message _objMessage;
-		 */
-		private $_objMessage;
-
-		/**
-		 * Private member variable that stores a reference to an array of Message objects
-		 * (of type Message[]), if this Forum object was restored with
-		 * an ExpandAsArray on the message association table.
-		 * @var Message[] _objMessageArray;
-		 */
-		private $_objMessageArray = array();
-
-		/**
-		 * Private member variable that stores a reference to a single Topic object
-		 * (of type Topic), if this Forum object was restored with
-		 * an expansion on the topic association table.
-		 * @var Topic _objTopic;
-		 */
-		private $_objTopic;
-
-		/**
-		 * Private member variable that stores a reference to an array of Topic objects
-		 * (of type Topic[]), if this Forum object was restored with
-		 * an ExpandAsArray on the topic association table.
-		 * @var Topic[] _objTopicArray;
-		 */
-		private $_objTopicArray = array();
-
-		/**
 		 * Protected array of virtual attributes for this object (e.g. extra/other calculated and/or non-object bound
 		 * columns from the run-time database query result for this object).  Used by InstantiateDbRow and
 		 * GetVirtualAttribute.
@@ -154,6 +92,24 @@
 		///////////////////////////////
 		// PROTECTED MEMBER OBJECTS
 		///////////////////////////////
+
+		/**
+		 * Protected member variable that contains the object which points to
+		 * this object by the reference in the unique database column topic_link.forum_id.
+		 *
+		 * NOTE: Always use the TopicLink property getter to correctly retrieve this TopicLink object.
+		 * (Because this class implements late binding, this variable reference MAY be null.)
+		 * @var TopicLink objTopicLink
+		 */
+		protected $objTopicLink;
+		
+		/**
+		 * Used internally to manage whether the adjoined TopicLink object
+		 * needs to be updated on save.
+		 * 
+		 * NOTE: Do not manually update this value 
+		 */
+		protected $blnDirtyTopicLink;
 
 
 
@@ -423,9 +379,6 @@
 			$objBuilder->AddSelectItem($strTableName, 'name', $strAliasPrefix . 'name');
 			$objBuilder->AddSelectItem($strTableName, 'announce_only_flag', $strAliasPrefix . 'announce_only_flag');
 			$objBuilder->AddSelectItem($strTableName, 'description', $strAliasPrefix . 'description');
-			$objBuilder->AddSelectItem($strTableName, 'last_post_date', $strAliasPrefix . 'last_post_date');
-			$objBuilder->AddSelectItem($strTableName, 'message_count', $strAliasPrefix . 'message_count');
-			$objBuilder->AddSelectItem($strTableName, 'topic_count', $strAliasPrefix . 'topic_count');
 		}
 
 
@@ -452,52 +405,6 @@
 			if (!$objDbRow)
 				return null;
 
-			// See if we're doing an array expansion on the previous item
-			$strAlias = $strAliasPrefix . 'id';
-			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
-			if (($strExpandAsArrayNodes) && ($objPreviousItem) &&
-				($objPreviousItem->intId == $objDbRow->GetColumn($strAliasName, 'Integer'))) {
-
-				// We are.  Now, prepare to check for ExpandAsArray clauses
-				$blnExpandedViaArray = false;
-				if (!$strAliasPrefix)
-					$strAliasPrefix = 'forum__';
-
-
-				$strAlias = $strAliasPrefix . 'message__id';
-				$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
-				if ((array_key_exists($strAlias, $strExpandAsArrayNodes)) &&
-					(!is_null($objDbRow->GetColumn($strAliasName)))) {
-					if ($intPreviousChildItemCount = count($objPreviousItem->_objMessageArray)) {
-						$objPreviousChildItem = $objPreviousItem->_objMessageArray[$intPreviousChildItemCount - 1];
-						$objChildItem = Message::InstantiateDbRow($objDbRow, $strAliasPrefix . 'message__', $strExpandAsArrayNodes, $objPreviousChildItem, $strColumnAliasArray);
-						if ($objChildItem)
-							$objPreviousItem->_objMessageArray[] = $objChildItem;
-					} else
-						$objPreviousItem->_objMessageArray[] = Message::InstantiateDbRow($objDbRow, $strAliasPrefix . 'message__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
-					$blnExpandedViaArray = true;
-				}
-
-				$strAlias = $strAliasPrefix . 'topic__id';
-				$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
-				if ((array_key_exists($strAlias, $strExpandAsArrayNodes)) &&
-					(!is_null($objDbRow->GetColumn($strAliasName)))) {
-					if ($intPreviousChildItemCount = count($objPreviousItem->_objTopicArray)) {
-						$objPreviousChildItem = $objPreviousItem->_objTopicArray[$intPreviousChildItemCount - 1];
-						$objChildItem = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topic__', $strExpandAsArrayNodes, $objPreviousChildItem, $strColumnAliasArray);
-						if ($objChildItem)
-							$objPreviousItem->_objTopicArray[] = $objChildItem;
-					} else
-						$objPreviousItem->_objTopicArray[] = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topic__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
-					$blnExpandedViaArray = true;
-				}
-
-				// Either return false to signal array expansion, or check-to-reset the Alias prefix and move on
-				if ($blnExpandedViaArray)
-					return false;
-				else if ($strAliasPrefix == 'forum__')
-					$strAliasPrefix = null;
-			}
 
 			// Create a new instance of the Forum object
 			$objToReturn = new Forum();
@@ -513,12 +420,6 @@
 			$objToReturn->blnAnnounceOnlyFlag = $objDbRow->GetColumn($strAliasName, 'Bit');
 			$strAliasName = array_key_exists($strAliasPrefix . 'description', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'description'] : $strAliasPrefix . 'description';
 			$objToReturn->strDescription = $objDbRow->GetColumn($strAliasName, 'VarChar');
-			$strAliasName = array_key_exists($strAliasPrefix . 'last_post_date', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'last_post_date'] : $strAliasPrefix . 'last_post_date';
-			$objToReturn->dttLastPostDate = $objDbRow->GetColumn($strAliasName, 'DateTime');
-			$strAliasName = array_key_exists($strAliasPrefix . 'message_count', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'message_count'] : $strAliasPrefix . 'message_count';
-			$objToReturn->intMessageCount = $objDbRow->GetColumn($strAliasName, 'Integer');
-			$strAliasName = array_key_exists($strAliasPrefix . 'topic_count', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'topic_count'] : $strAliasPrefix . 'topic_count';
-			$objToReturn->intTopicCount = $objDbRow->GetColumn($strAliasName, 'Integer');
 
 			// Instantiate Virtual Attributes
 			foreach ($objDbRow->GetColumnNameArray() as $strColumnName => $mixValue) {
@@ -533,27 +434,19 @@
 				$strAliasPrefix = 'forum__';
 
 
-
-
-			// Check for Message Virtual Binding
-			$strAlias = $strAliasPrefix . 'message__id';
+			// Check for TopicLink Unique ReverseReference Binding
+			$strAlias = $strAliasPrefix . 'topiclink__id';
 			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
-			if (!is_null($objDbRow->GetColumn($strAliasName))) {
-				if (($strExpandAsArrayNodes) && (array_key_exists($strAlias, $strExpandAsArrayNodes)))
-					$objToReturn->_objMessageArray[] = Message::InstantiateDbRow($objDbRow, $strAliasPrefix . 'message__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+			if ($objDbRow->ColumnExists($strAliasName)) {
+				if (!is_null($objDbRow->GetColumn($strAliasName)))
+					$objToReturn->objTopicLink = TopicLink::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topiclink__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 				else
-					$objToReturn->_objMessage = Message::InstantiateDbRow($objDbRow, $strAliasPrefix . 'message__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+					// We ATTEMPTED to do an Early Bind but the Object Doesn't Exist
+					// Let's set to FALSE so that the object knows not to try and re-query again
+					$objToReturn->objTopicLink = false;
 			}
 
-			// Check for Topic Virtual Binding
-			$strAlias = $strAliasPrefix . 'topic__id';
-			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
-			if (!is_null($objDbRow->GetColumn($strAliasName))) {
-				if (($strExpandAsArrayNodes) && (array_key_exists($strAlias, $strExpandAsArrayNodes)))
-					$objToReturn->_objTopicArray[] = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topic__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
-				else
-					$objToReturn->_objTopic = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topic__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
-			}
+
 
 			return $objToReturn;
 		}
@@ -645,18 +538,12 @@
 							`order_number`,
 							`name`,
 							`announce_only_flag`,
-							`description`,
-							`last_post_date`,
-							`message_count`,
-							`topic_count`
+							`description`
 						) VALUES (
 							' . $objDatabase->SqlVariable($this->intOrderNumber) . ',
 							' . $objDatabase->SqlVariable($this->strName) . ',
 							' . $objDatabase->SqlVariable($this->blnAnnounceOnlyFlag) . ',
-							' . $objDatabase->SqlVariable($this->strDescription) . ',
-							' . $objDatabase->SqlVariable($this->dttLastPostDate) . ',
-							' . $objDatabase->SqlVariable($this->intMessageCount) . ',
-							' . $objDatabase->SqlVariable($this->intTopicCount) . '
+							' . $objDatabase->SqlVariable($this->strDescription) . '
 						)
 					');
 
@@ -675,15 +562,32 @@
 							`order_number` = ' . $objDatabase->SqlVariable($this->intOrderNumber) . ',
 							`name` = ' . $objDatabase->SqlVariable($this->strName) . ',
 							`announce_only_flag` = ' . $objDatabase->SqlVariable($this->blnAnnounceOnlyFlag) . ',
-							`description` = ' . $objDatabase->SqlVariable($this->strDescription) . ',
-							`last_post_date` = ' . $objDatabase->SqlVariable($this->dttLastPostDate) . ',
-							`message_count` = ' . $objDatabase->SqlVariable($this->intMessageCount) . ',
-							`topic_count` = ' . $objDatabase->SqlVariable($this->intTopicCount) . '
+							`description` = ' . $objDatabase->SqlVariable($this->strDescription) . '
 						WHERE
 							`id` = ' . $objDatabase->SqlVariable($this->intId) . '
 					');
 				}
 
+		
+		
+				// Update the adjoined TopicLink object (if applicable)
+				// TODO: Make this into hard-coded SQL queries
+				if ($this->blnDirtyTopicLink) {
+					// Unassociate the old one (if applicable)
+					if ($objAssociated = TopicLink::LoadByForumId($this->intId)) {
+						$objAssociated->ForumId = null;
+						$objAssociated->Save();
+					}
+
+					// Associate the new one (if applicable)
+					if ($this->objTopicLink) {
+						$this->objTopicLink->ForumId = $this->intId;
+						$this->objTopicLink->Save();
+					}
+
+					// Reset the "Dirty" flag
+					$this->blnDirtyTopicLink = false;
+				}
 			} catch (QCallerException $objExc) {
 				$objExc->IncrementOffset();
 				throw $objExc;
@@ -708,6 +612,16 @@
 			// Get the Database Object for this Class
 			$objDatabase = Forum::GetDatabase();
 
+			
+			
+			// Update the adjoined TopicLink object (if applicable) and perform the unassociation
+
+			// Optional -- if you **KNOW** that you do not want to EVER run any level of business logic on the disassocation,
+			// you *could* override Delete() so that this step can be a single hard coded query to optimize performance.
+			if ($objAssociated = TopicLink::LoadByForumId($this->intId)) {
+				$objAssociated->ForumId = null;
+				$objAssociated->Save();
+			}
 
 			// Perform the SQL Query
 			$objDatabase->NonQuery('
@@ -761,9 +675,6 @@
 			$this->strName = $objReloaded->strName;
 			$this->blnAnnounceOnlyFlag = $objReloaded->blnAnnounceOnlyFlag;
 			$this->strDescription = $objReloaded->strDescription;
-			$this->dttLastPostDate = $objReloaded->dttLastPostDate;
-			$this->intMessageCount = $objReloaded->intMessageCount;
-			$this->intTopicCount = $objReloaded->intTopicCount;
 		}
 
 
@@ -819,68 +730,35 @@
 					 */
 					return $this->strDescription;
 
-				case 'LastPostDate':
-					/**
-					 * Gets the value for dttLastPostDate 
-					 * @return QDateTime
-					 */
-					return $this->dttLastPostDate;
-
-				case 'MessageCount':
-					/**
-					 * Gets the value for intMessageCount 
-					 * @return integer
-					 */
-					return $this->intMessageCount;
-
-				case 'TopicCount':
-					/**
-					 * Gets the value for intTopicCount 
-					 * @return integer
-					 */
-					return $this->intTopicCount;
-
 
 				///////////////////
 				// Member Objects
 				///////////////////
+		
+		
+				case 'TopicLink':
+					/**
+					 * Gets the value for the TopicLink object that uniquely references this Forum
+					 * by objTopicLink (Unique)
+					 * @return TopicLink
+					 */
+					try {
+						if ($this->objTopicLink === false)
+							// We've attempted early binding -- and the reverse reference object does not exist
+							return null;
+						if (!$this->objTopicLink)
+							$this->objTopicLink = TopicLink::LoadByForumId($this->intId);
+						return $this->objTopicLink;
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
 
 				////////////////////////////
 				// Virtual Object References (Many to Many and Reverse References)
 				// (If restored via a "Many-to" expansion)
 				////////////////////////////
-
-				case '_Message':
-					/**
-					 * Gets the value for the private _objMessage (Read-Only)
-					 * if set due to an expansion on the message.forum_id reverse relationship
-					 * @return Message
-					 */
-					return $this->_objMessage;
-
-				case '_MessageArray':
-					/**
-					 * Gets the value for the private _objMessageArray (Read-Only)
-					 * if set due to an ExpandAsArray on the message.forum_id reverse relationship
-					 * @return Message[]
-					 */
-					return (array) $this->_objMessageArray;
-
-				case '_Topic':
-					/**
-					 * Gets the value for the private _objTopic (Read-Only)
-					 * if set due to an expansion on the topic.forum_id reverse relationship
-					 * @return Topic
-					 */
-					return $this->_objTopic;
-
-				case '_TopicArray':
-					/**
-					 * Gets the value for the private _objTopicArray (Read-Only)
-					 * if set due to an ExpandAsArray on the topic.forum_id reverse relationship
-					 * @return Topic[]
-					 */
-					return (array) $this->_objTopicArray;
 
 
 				case '__Restored':
@@ -961,49 +839,49 @@
 						throw $objExc;
 					}
 
-				case 'LastPostDate':
-					/**
-					 * Sets the value for dttLastPostDate 
-					 * @param QDateTime $mixValue
-					 * @return QDateTime
-					 */
-					try {
-						return ($this->dttLastPostDate = QType::Cast($mixValue, QType::DateTime));
-					} catch (QCallerException $objExc) {
-						$objExc->IncrementOffset();
-						throw $objExc;
-					}
-
-				case 'MessageCount':
-					/**
-					 * Sets the value for intMessageCount 
-					 * @param integer $mixValue
-					 * @return integer
-					 */
-					try {
-						return ($this->intMessageCount = QType::Cast($mixValue, QType::Integer));
-					} catch (QCallerException $objExc) {
-						$objExc->IncrementOffset();
-						throw $objExc;
-					}
-
-				case 'TopicCount':
-					/**
-					 * Sets the value for intTopicCount 
-					 * @param integer $mixValue
-					 * @return integer
-					 */
-					try {
-						return ($this->intTopicCount = QType::Cast($mixValue, QType::Integer));
-					} catch (QCallerException $objExc) {
-						$objExc->IncrementOffset();
-						throw $objExc;
-					}
-
 
 				///////////////////
 				// Member Objects
 				///////////////////
+				case 'TopicLink':
+					/**
+					 * Sets the value for the TopicLink object referenced by objTopicLink (Unique)
+					 * @param TopicLink $mixValue
+					 * @return TopicLink
+					 */
+					if (is_null($mixValue)) {
+						$this->objTopicLink = null;
+
+						// Make sure we update the adjoined TopicLink object the next time we call Save()
+						$this->blnDirtyTopicLink = true;
+
+						return null;
+					} else {
+						// Make sure $mixValue actually is a TopicLink object
+						try {
+							$mixValue = QType::Cast($mixValue, 'TopicLink');
+						} catch (QInvalidCastException $objExc) {
+							$objExc->IncrementOffset();
+							throw $objExc;
+						}
+
+						// Are we setting objTopicLink to a DIFFERENT $mixValue?
+						if ((!$this->TopicLink) || ($this->TopicLink->Id != $mixValue->Id)) {
+							// Yes -- therefore, set the "Dirty" flag to true
+							// to make sure we update the adjoined TopicLink object the next time we call Save()
+							$this->blnDirtyTopicLink = true;
+
+							// Update Local Member Variable
+							$this->objTopicLink = $mixValue;
+						} else {
+							// Nope -- therefore, make no changes
+						}
+
+						// Return $mixValue
+						return $mixValue;
+					}
+					break;
+
 				default:
 					try {
 						return parent::__set($strName, $mixValue);
@@ -1031,306 +909,6 @@
 		// ASSOCIATED OBJECTS' METHODS
 		///////////////////////////////
 
-			
-		
-		// Related Objects' Methods for Message
-		//-------------------------------------------------------------------
-
-		/**
-		 * Gets all associated Messages as an array of Message objects
-		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
-		 * @return Message[]
-		*/ 
-		public function GetMessageArray($objOptionalClauses = null) {
-			if ((is_null($this->intId)))
-				return array();
-
-			try {
-				return Message::LoadArrayByForumId($this->intId, $objOptionalClauses);
-			} catch (QCallerException $objExc) {
-				$objExc->IncrementOffset();
-				throw $objExc;
-			}
-		}
-
-		/**
-		 * Counts all associated Messages
-		 * @return int
-		*/ 
-		public function CountMessages() {
-			if ((is_null($this->intId)))
-				return 0;
-
-			return Message::CountByForumId($this->intId);
-		}
-
-		/**
-		 * Associates a Message
-		 * @param Message $objMessage
-		 * @return void
-		*/ 
-		public function AssociateMessage(Message $objMessage) {
-			if ((is_null($this->intId)))
-				throw new QUndefinedPrimaryKeyException('Unable to call AssociateMessage on this unsaved Forum.');
-			if ((is_null($objMessage->Id)))
-				throw new QUndefinedPrimaryKeyException('Unable to call AssociateMessage on this Forum with an unsaved Message.');
-
-			// Get the Database Object for this Class
-			$objDatabase = Forum::GetDatabase();
-
-			// Perform the SQL Query
-			$objDatabase->NonQuery('
-				UPDATE
-					`message`
-				SET
-					`forum_id` = ' . $objDatabase->SqlVariable($this->intId) . '
-				WHERE
-					`id` = ' . $objDatabase->SqlVariable($objMessage->Id) . '
-			');
-		}
-
-		/**
-		 * Unassociates a Message
-		 * @param Message $objMessage
-		 * @return void
-		*/ 
-		public function UnassociateMessage(Message $objMessage) {
-			if ((is_null($this->intId)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateMessage on this unsaved Forum.');
-			if ((is_null($objMessage->Id)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateMessage on this Forum with an unsaved Message.');
-
-			// Get the Database Object for this Class
-			$objDatabase = Forum::GetDatabase();
-
-			// Perform the SQL Query
-			$objDatabase->NonQuery('
-				UPDATE
-					`message`
-				SET
-					`forum_id` = null
-				WHERE
-					`id` = ' . $objDatabase->SqlVariable($objMessage->Id) . ' AND
-					`forum_id` = ' . $objDatabase->SqlVariable($this->intId) . '
-			');
-		}
-
-		/**
-		 * Unassociates all Messages
-		 * @return void
-		*/ 
-		public function UnassociateAllMessages() {
-			if ((is_null($this->intId)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateMessage on this unsaved Forum.');
-
-			// Get the Database Object for this Class
-			$objDatabase = Forum::GetDatabase();
-
-			// Perform the SQL Query
-			$objDatabase->NonQuery('
-				UPDATE
-					`message`
-				SET
-					`forum_id` = null
-				WHERE
-					`forum_id` = ' . $objDatabase->SqlVariable($this->intId) . '
-			');
-		}
-
-		/**
-		 * Deletes an associated Message
-		 * @param Message $objMessage
-		 * @return void
-		*/ 
-		public function DeleteAssociatedMessage(Message $objMessage) {
-			if ((is_null($this->intId)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateMessage on this unsaved Forum.');
-			if ((is_null($objMessage->Id)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateMessage on this Forum with an unsaved Message.');
-
-			// Get the Database Object for this Class
-			$objDatabase = Forum::GetDatabase();
-
-			// Perform the SQL Query
-			$objDatabase->NonQuery('
-				DELETE FROM
-					`message`
-				WHERE
-					`id` = ' . $objDatabase->SqlVariable($objMessage->Id) . ' AND
-					`forum_id` = ' . $objDatabase->SqlVariable($this->intId) . '
-			');
-		}
-
-		/**
-		 * Deletes all associated Messages
-		 * @return void
-		*/ 
-		public function DeleteAllMessages() {
-			if ((is_null($this->intId)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateMessage on this unsaved Forum.');
-
-			// Get the Database Object for this Class
-			$objDatabase = Forum::GetDatabase();
-
-			// Perform the SQL Query
-			$objDatabase->NonQuery('
-				DELETE FROM
-					`message`
-				WHERE
-					`forum_id` = ' . $objDatabase->SqlVariable($this->intId) . '
-			');
-		}
-
-			
-		
-		// Related Objects' Methods for Topic
-		//-------------------------------------------------------------------
-
-		/**
-		 * Gets all associated Topics as an array of Topic objects
-		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
-		 * @return Topic[]
-		*/ 
-		public function GetTopicArray($objOptionalClauses = null) {
-			if ((is_null($this->intId)))
-				return array();
-
-			try {
-				return Topic::LoadArrayByForumId($this->intId, $objOptionalClauses);
-			} catch (QCallerException $objExc) {
-				$objExc->IncrementOffset();
-				throw $objExc;
-			}
-		}
-
-		/**
-		 * Counts all associated Topics
-		 * @return int
-		*/ 
-		public function CountTopics() {
-			if ((is_null($this->intId)))
-				return 0;
-
-			return Topic::CountByForumId($this->intId);
-		}
-
-		/**
-		 * Associates a Topic
-		 * @param Topic $objTopic
-		 * @return void
-		*/ 
-		public function AssociateTopic(Topic $objTopic) {
-			if ((is_null($this->intId)))
-				throw new QUndefinedPrimaryKeyException('Unable to call AssociateTopic on this unsaved Forum.');
-			if ((is_null($objTopic->Id)))
-				throw new QUndefinedPrimaryKeyException('Unable to call AssociateTopic on this Forum with an unsaved Topic.');
-
-			// Get the Database Object for this Class
-			$objDatabase = Forum::GetDatabase();
-
-			// Perform the SQL Query
-			$objDatabase->NonQuery('
-				UPDATE
-					`topic`
-				SET
-					`forum_id` = ' . $objDatabase->SqlVariable($this->intId) . '
-				WHERE
-					`id` = ' . $objDatabase->SqlVariable($objTopic->Id) . '
-			');
-		}
-
-		/**
-		 * Unassociates a Topic
-		 * @param Topic $objTopic
-		 * @return void
-		*/ 
-		public function UnassociateTopic(Topic $objTopic) {
-			if ((is_null($this->intId)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateTopic on this unsaved Forum.');
-			if ((is_null($objTopic->Id)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateTopic on this Forum with an unsaved Topic.');
-
-			// Get the Database Object for this Class
-			$objDatabase = Forum::GetDatabase();
-
-			// Perform the SQL Query
-			$objDatabase->NonQuery('
-				UPDATE
-					`topic`
-				SET
-					`forum_id` = null
-				WHERE
-					`id` = ' . $objDatabase->SqlVariable($objTopic->Id) . ' AND
-					`forum_id` = ' . $objDatabase->SqlVariable($this->intId) . '
-			');
-		}
-
-		/**
-		 * Unassociates all Topics
-		 * @return void
-		*/ 
-		public function UnassociateAllTopics() {
-			if ((is_null($this->intId)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateTopic on this unsaved Forum.');
-
-			// Get the Database Object for this Class
-			$objDatabase = Forum::GetDatabase();
-
-			// Perform the SQL Query
-			$objDatabase->NonQuery('
-				UPDATE
-					`topic`
-				SET
-					`forum_id` = null
-				WHERE
-					`forum_id` = ' . $objDatabase->SqlVariable($this->intId) . '
-			');
-		}
-
-		/**
-		 * Deletes an associated Topic
-		 * @param Topic $objTopic
-		 * @return void
-		*/ 
-		public function DeleteAssociatedTopic(Topic $objTopic) {
-			if ((is_null($this->intId)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateTopic on this unsaved Forum.');
-			if ((is_null($objTopic->Id)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateTopic on this Forum with an unsaved Topic.');
-
-			// Get the Database Object for this Class
-			$objDatabase = Forum::GetDatabase();
-
-			// Perform the SQL Query
-			$objDatabase->NonQuery('
-				DELETE FROM
-					`topic`
-				WHERE
-					`id` = ' . $objDatabase->SqlVariable($objTopic->Id) . ' AND
-					`forum_id` = ' . $objDatabase->SqlVariable($this->intId) . '
-			');
-		}
-
-		/**
-		 * Deletes all associated Topics
-		 * @return void
-		*/ 
-		public function DeleteAllTopics() {
-			if ((is_null($this->intId)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateTopic on this unsaved Forum.');
-
-			// Get the Database Object for this Class
-			$objDatabase = Forum::GetDatabase();
-
-			// Perform the SQL Query
-			$objDatabase->NonQuery('
-				DELETE FROM
-					`topic`
-				WHERE
-					`forum_id` = ' . $objDatabase->SqlVariable($this->intId) . '
-			');
-		}
-
 
 
 
@@ -1346,9 +924,6 @@
 			$strToReturn .= '<element name="Name" type="xsd:string"/>';
 			$strToReturn .= '<element name="AnnounceOnlyFlag" type="xsd:boolean"/>';
 			$strToReturn .= '<element name="Description" type="xsd:string"/>';
-			$strToReturn .= '<element name="LastPostDate" type="xsd:dateTime"/>';
-			$strToReturn .= '<element name="MessageCount" type="xsd:int"/>';
-			$strToReturn .= '<element name="TopicCount" type="xsd:int"/>';
 			$strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
 			$strToReturn .= '</sequence></complexType>';
 			return $strToReturn;
@@ -1381,12 +956,6 @@
 				$objToReturn->blnAnnounceOnlyFlag = $objSoapObject->AnnounceOnlyFlag;
 			if (property_exists($objSoapObject, 'Description'))
 				$objToReturn->strDescription = $objSoapObject->Description;
-			if (property_exists($objSoapObject, 'LastPostDate'))
-				$objToReturn->dttLastPostDate = new QDateTime($objSoapObject->LastPostDate);
-			if (property_exists($objSoapObject, 'MessageCount'))
-				$objToReturn->intMessageCount = $objSoapObject->MessageCount;
-			if (property_exists($objSoapObject, 'TopicCount'))
-				$objToReturn->intTopicCount = $objSoapObject->TopicCount;
 			if (property_exists($objSoapObject, '__blnRestored'))
 				$objToReturn->__blnRestored = $objSoapObject->__blnRestored;
 			return $objToReturn;
@@ -1405,8 +974,6 @@
 		}
 
 		public static function GetSoapObjectFromObject($objObject, $blnBindRelatedObjects) {
-			if ($objObject->dttLastPostDate)
-				$objObject->dttLastPostDate = $objObject->dttLastPostDate->__toString(QDateTime::FormatSoap);
 			return $objObject;
 		}
 
@@ -1437,16 +1004,8 @@
 					return new QQNode('announce_only_flag', 'AnnounceOnlyFlag', 'boolean', $this);
 				case 'Description':
 					return new QQNode('description', 'Description', 'string', $this);
-				case 'LastPostDate':
-					return new QQNode('last_post_date', 'LastPostDate', 'QDateTime', $this);
-				case 'MessageCount':
-					return new QQNode('message_count', 'MessageCount', 'integer', $this);
-				case 'TopicCount':
-					return new QQNode('topic_count', 'TopicCount', 'integer', $this);
-				case 'Message':
-					return new QQReverseReferenceNodeMessage($this, 'message', 'reverse_reference', 'forum_id');
-				case 'Topic':
-					return new QQReverseReferenceNodeTopic($this, 'topic', 'reverse_reference', 'forum_id');
+				case 'TopicLink':
+					return new QQReverseReferenceNodeTopicLink($this, 'topiclink', 'reverse_reference', 'forum_id', 'TopicLink');
 
 				case '_PrimaryKeyNode':
 					return new QQNode('id', 'Id', 'integer', $this);
@@ -1477,16 +1036,8 @@
 					return new QQNode('announce_only_flag', 'AnnounceOnlyFlag', 'boolean', $this);
 				case 'Description':
 					return new QQNode('description', 'Description', 'string', $this);
-				case 'LastPostDate':
-					return new QQNode('last_post_date', 'LastPostDate', 'QDateTime', $this);
-				case 'MessageCount':
-					return new QQNode('message_count', 'MessageCount', 'integer', $this);
-				case 'TopicCount':
-					return new QQNode('topic_count', 'TopicCount', 'integer', $this);
-				case 'Message':
-					return new QQReverseReferenceNodeMessage($this, 'message', 'reverse_reference', 'forum_id');
-				case 'Topic':
-					return new QQReverseReferenceNodeTopic($this, 'topic', 'reverse_reference', 'forum_id');
+				case 'TopicLink':
+					return new QQReverseReferenceNodeTopicLink($this, 'topiclink', 'reverse_reference', 'forum_id', 'TopicLink');
 
 				case '_PrimaryKeyNode':
 					return new QQNode('id', 'Id', 'integer', $this);
