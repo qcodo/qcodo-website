@@ -8,6 +8,15 @@ INSERT INTO `forum` VALUES
 	(8,5,'QForge and Qcodo Hosting',0,'For anything regarding <a class=\"link_body\" href=\"http://qforge.qcodo.com/\">QForge</a> or <a class=\"link_body\" href=\"http://www.qcodohosting.org/\">Qcodo Hosting</a>'),
 	(9,4,'Qcodo Jobs Board',0,'For Qcodo-related job openings, contracting opportunities and developers for hire.');
 
+INSERT INTO topic_link VALUES (null, 1, 0, 0, null, 2, null);
+INSERT INTO topic_link VALUES (null, 1, 0, 0, null, 3, null);
+INSERT INTO topic_link VALUES (null, 1, 0, 0, null, 4, null);
+INSERT INTO topic_link VALUES (null, 1, 0, 0, null, 5, null);
+INSERT INTO topic_link VALUES (null, 1, 0, 0, null, 6, null);
+INSERT INTO topic_link VALUES (null, 1, 0, 0, null, 7, null);
+INSERT INTO topic_link VALUES (null, 1, 0, 0, null, 8, null);
+INSERT INTO topic_link VALUES (null, 1, 0, 0, null, 9, null);
+
 INSERT INTO person_type VALUES (1,'Administrator');
 INSERT INTO person_type VALUES (2,'Moderator');
 INSERT INTO person_type VALUES (3,'Contributor');

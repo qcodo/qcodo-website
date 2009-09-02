@@ -58,6 +58,10 @@
 				return null;
 		}
 
+		public function GetOrCreateTopicLink() {
+			
+		}
+
 		/**
 		 * Sets a vote for a person and updates the vote_count value for this issue.
 		 * If already voted OR if person is the poster, the vote will NOT count.

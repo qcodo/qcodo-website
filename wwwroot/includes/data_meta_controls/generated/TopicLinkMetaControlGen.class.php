@@ -179,7 +179,7 @@
 			$this->lstTopicLinkType = new QListBox($this->objParentObject, $strControlId);
 			$this->lstTopicLinkType->Name = QApplication::Translate('Topic Link Type');
 			$this->lstTopicLinkType->Required = true;
-			foreach (TopicType::$NameArray as $intId => $strValue)
+			foreach (TopicLinkType::$NameArray as $intId => $strValue)
 				$this->lstTopicLinkType->AddItem(new QListItem($strValue, $intId, $this->objTopicLink->TopicLinkTypeId == $intId));
 			return $this->lstTopicLinkType;
 		}
@@ -192,7 +192,7 @@
 		public function lblTopicLinkTypeId_Create($strControlId = null) {
 			$this->lblTopicLinkTypeId = new QLabel($this->objParentObject, $strControlId);
 			$this->lblTopicLinkTypeId->Name = QApplication::Translate('Topic Link Type');
-			$this->lblTopicLinkTypeId->Text = ($this->objTopicLink->TopicLinkTypeId) ? TopicType::$NameArray[$this->objTopicLink->TopicLinkTypeId] : null;
+			$this->lblTopicLinkTypeId->Text = ($this->objTopicLink->TopicLinkTypeId) ? TopicLinkType::$NameArray[$this->objTopicLink->TopicLinkTypeId] : null;
 			$this->lblTopicLinkTypeId->Required = true;
 			return $this->lblTopicLinkTypeId;
 		}
@@ -354,7 +354,7 @@
 			if ($this->lblId) if ($this->blnEditMode) $this->lblId->Text = $this->objTopicLink->Id;
 
 			if ($this->lstTopicLinkType) $this->lstTopicLinkType->SelectedValue = $this->objTopicLink->TopicLinkTypeId;
-			if ($this->lblTopicLinkTypeId) $this->lblTopicLinkTypeId->Text = ($this->objTopicLink->TopicLinkTypeId) ? TopicType::$NameArray[$this->objTopicLink->TopicLinkTypeId] : null;
+			if ($this->lblTopicLinkTypeId) $this->lblTopicLinkTypeId->Text = ($this->objTopicLink->TopicLinkTypeId) ? TopicLinkType::$NameArray[$this->objTopicLink->TopicLinkTypeId] : null;
 
 			if ($this->txtTopicCount) $this->txtTopicCount->Text = $this->objTopicLink->TopicCount;
 			if ($this->lblTopicCount) $this->lblTopicCount->Text = $this->objTopicLink->TopicCount;
