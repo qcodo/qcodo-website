@@ -18,15 +18,23 @@
 	 * @subpackage GeneratedDataObjects
 	 */
 	abstract class TopicLinkTypeGen extends QBaseClass {
+		const Forum = 1;
+		const Issue = 2;
 
-		const MaxId = 0;
+		const MaxId = 2;
 
-		public static $NameArray = array();
+		public static $NameArray = array(
+			1 => 'Forum',
+			2 => 'Issue');
 
-		public static $TokenArray = array();
+		public static $TokenArray = array(
+			1 => 'Forum',
+			2 => 'Issue');
 
 		public static function ToString($intTopicLinkTypeId) {
 			switch ($intTopicLinkTypeId) {
+				case 1: return 'Forum';
+				case 2: return 'Issue';
 				default:
 					throw new QCallerException(sprintf('Invalid intTopicLinkTypeId: %s', $intTopicLinkTypeId));
 			}
@@ -34,6 +42,8 @@
 
 		public static function ToToken($intTopicLinkTypeId) {
 			switch ($intTopicLinkTypeId) {
+				case 1: return 'Forum';
+				case 2: return 'Issue';
 				default:
 					throw new QCallerException(sprintf('Invalid intTopicLinkTypeId: %s', $intTopicLinkTypeId));
 			}

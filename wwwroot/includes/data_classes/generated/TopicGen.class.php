@@ -19,7 +19,7 @@
 	 * @property integer $TopicLinkId the value for intTopicLinkId (Not Null)
 	 * @property string $Name the value for strName 
 	 * @property integer $PersonId the value for intPersonId 
-	 * @property QDateTime $LastPostDate the value for dttLastPostDate (Not Null)
+	 * @property QDateTime $LastPostDate the value for dttLastPostDate 
 	 * @property integer $MessageCount the value for intMessageCount 
 	 * @property integer $ViewCount the value for intViewCount 
 	 * @property TopicLink $TopicLink the value for the TopicLink object referenced by intTopicLinkId (Not Null)
@@ -1072,7 +1072,7 @@
 
 				case 'LastPostDate':
 					/**
-					 * Gets the value for dttLastPostDate (Not Null)
+					 * Gets the value for dttLastPostDate 
 					 * @return QDateTime
 					 */
 					return $this->dttLastPostDate;
@@ -1263,7 +1263,7 @@
 
 				case 'LastPostDate':
 					/**
-					 * Sets the value for dttLastPostDate (Not Null)
+					 * Sets the value for dttLastPostDate 
 					 * @param QDateTime $mixValue
 					 * @return QDateTime
 					 */

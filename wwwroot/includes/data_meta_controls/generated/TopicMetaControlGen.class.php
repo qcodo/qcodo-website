@@ -282,7 +282,6 @@
 			$this->calLastPostDate->Name = QApplication::Translate('Last Post Date');
 			$this->calLastPostDate->DateTime = $this->objTopic->LastPostDate;
 			$this->calLastPostDate->DateTimePickerType = QDateTimePickerType::DateTime;
-			$this->calLastPostDate->Required = true;
 			return $this->calLastPostDate;
 		}
 
@@ -297,7 +296,6 @@
 			$this->lblLastPostDate->Name = QApplication::Translate('Last Post Date');
 			$this->strLastPostDateDateTimeFormat = $strDateTimeFormat;
 			$this->lblLastPostDate->Text = sprintf($this->objTopic->LastPostDate) ? $this->objTopic->LastPostDate->__toString($this->strLastPostDateDateTimeFormat) : null;
-			$this->lblLastPostDate->Required = true;
 			return $this->lblLastPostDate;
 		}
 

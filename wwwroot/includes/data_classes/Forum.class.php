@@ -28,20 +28,6 @@
 		}
 
 		/**
-		 * This will refresh all the stats (last post date, message/topic counts) and save the record to the database
-		 * @return void
-		 */
-		public function RefreshStats() {
-			$objMessage = Message::QuerySingle(QQ::Equal(QQN::Message()->ForumId, $this->intId), QQ::Clause(QQ::OrderBy(QQN::Message()->PostDate, false), QQ::LimitInfo(1)));
-			$this->dttLastPostDate = $objMessage->PostDate;
-
-			$this->intMessageCount = Message::CountByForumId($this->intId);
-			$this->intTopicCount = Topic::CountByForumId($this->intId);
-
-			$this->Save();
-		}
-
-		/**
 		 * Can the user post to this forum?
 		 * @param Person $objPerson
 		 * @return boolean

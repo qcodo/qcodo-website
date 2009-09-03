@@ -137,8 +137,9 @@
 					$objIssue->DueDate = QDataGen::GenerateDateTime($objIssue->PostDate, QDateTime::Now());
 			}
 		}
-		$objIssue->LastUpdateDate = $objIssue->PostDate;
 		$objIssue->Save();
+
+		$objTopic = $objIssue->CreateTopicAndTopicLink();
 
 		// Add Field Values
 		foreach ($objIssueFieldArray as $objIssueField) {
@@ -156,14 +157,14 @@
 		}
 
 		// Add Trackers
-		$objIssue->AssociatePersonAsEmail($objIssue->PostedByPerson);
+		$objTopic->AssociatePersonAsEmail($objIssue->PostedByPerson);
 		$intCount = rand(0, 25);
 		if (rand(0, 1)) $intCount = round($intCount / 2);
 		if (rand(0, 1)) $intCount = round($intCount / 2);
 		for ($intIndex = 0; $intIndex < $intCount; $intIndex++) {
 			$objRandomPerson = Person::Load(rand(1, $intMaxPersonId));
-			if (!$objIssue->IsPersonAsEmailAssociated($objRandomPerson))
-				$objIssue->AssociatePersonAsEmail($objRandomPerson);
+			if (!$objTopic->IsPersonAsEmailAssociated($objRandomPerson))
+				$objTopic->AssociatePersonAsEmail($objRandomPerson);
 		}
 	}
 

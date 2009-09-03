@@ -60,7 +60,13 @@
 			$this->intMessageCount = Message::CountByTopicId($this->intId);
 
 			$this->Save();
+		}
 
+		/**
+		 * This should rarely be called.  It's mainly just for data load.
+		 * @return void
+		 */
+		public function RefreshReplyNumbering() {
 			// Update Reply Numbering
 			$intNumber = 0;
 			foreach ($this->GetMessageArray(QQ::OrderBy(QQN::Message()->PostDate)) as $objMessage) {
@@ -227,6 +233,39 @@
 		}
 
 
+		/**
+		 * This will post a new message for this topic, while updating the stats for both the topic and the topic link.
+		 * 
+		 * If no person is passed in, then it is assumed that this Message is a "System Message".
+		 * 
+		 * @param string $strMessageText
+		 * @param Person $objPerson
+		 * @param QDateTime $dttPostDate
+		 * @return Message
+		 */
+		public function PostMessage($strMessageText, Person $objPerson = null, QDateTime $dttPostDate = null) {
+			$objMessage = new Message();
+			$objMessage->Topic = $this;
+			$objMessage->TopicLink = $this->TopicLink;
+			$objMessage->Person = $objPerson;
+			$objMessage->Message = $strMessageText;
+			$objMessage->RefreshCompiledHtml();
+			$objMessage->PostDate = ($dttPostDate) ? $dttPostDate : QDateTime::Now();
+
+			if ($this->CountMessages() == 0) {
+				$objMessage->ReplyNumber = null;
+			} else {
+				$objResult = Message::GetDatabase()->Query('SELECT MAX(reply_number) AS max_reply_number FROM message WHERE topic_id=' . $this->intId);
+				$objMessage->ReplyNumber = $objResult->GetNextRow()->GetColumn('max_reply_number') + 1;
+			}
+
+			$objMessage->Save();
+
+			$this->RefreshStats();
+			$this->TopicLink->RefreshStats();
+
+			return $objMessage;
+		}
 
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...

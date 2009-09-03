@@ -58,8 +58,23 @@
 				return null;
 		}
 
-		public function GetOrCreateTopicLink() {
+		/**
+		 * Creates the Topic and TopicLink for this Issue object.
+		 * @return Topic
+		 */
+		public function CreateTopicAndTopicLink() {
+			$objTopicLink = new TopicLink();
+			$objTopicLink->TopicLinkTypeId = TopicLinkType::Issue;
+			$objTopicLink->Issue = $this;
+			$objTopicLink->Save();
+
+			$objTopic = new Topic();
+			$objTopic->TopicLink = $objTopicLink;
+			$objTopic->Name = $this->strTitle;
+			$objTopic->Person = $this->PostedByPerson;
+			$objTopic->Save();
 			
+			return $objTopic;
 		}
 
 		/**
@@ -97,26 +112,19 @@
 
 
 		/**
-		 * Posts a new message/comment for this Issue.  If no person is specified, then it is assumed
+		 * Posts a new message/comment for this Issue.  If no Person is specified, then it is assumed
 		 * that this is a "System Message" for this Issue.  This will update the last_update_date on this
 		 * issue.
 		 * @param string $strMessageText the text of the message, itself
-		 * @param Person $objPerson optional person who posted this message, or "System" if none
+		 * @param Person $objPerson optional person who posted this message or performed the action
+		 * @param boolean $blnSystemFlag whether this is a system message
 		 * @param QDateTime $dttPostDate
-		 * @return void
+		 * @return Message
 		 */
 		public function PostMessage($strMessageText, Person $objPerson = null, QDateTime $dttPostDate = null) {
-			$objIssueMessage = new IssueMessage();
-			$objIssueMessage->Issue = $this;
-			if ($objPerson) $objIssueMessage->Person = $objPerson;
-			$objIssueMessage->Message = $strMessageText;
-			$objIssueMessage->ReplyNumber = IssueMessage::CountByIssueId($this->intId) + 1;
-			$objIssueMessage->PostDate = ($dttPostDate) ? new QDateTime($dttPostDate) : QDateTime::Now();
-			$objIssueMessage->Save();
-
-			// Update Last Update Date info in the issue itself
-			$this->dttLastUpdateDate = new QDateTime($objIssueMessage->PostDate);
-			$this->Save();
+			$objTopicArray = $this->TopicLink->GetTopicArray();
+			$objTopic = $objTopicArray[0];
+			return $objTopic->PostMessage($strMessageText, $objPerson, $dttPostDate);
 		}
 
 
