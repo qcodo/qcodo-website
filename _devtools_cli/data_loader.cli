@@ -171,7 +171,7 @@
 	// Generate Issues, themselves
 	QDataGen::DisplayForEachTaskStart($strTitle = 'Generating Messages for Issues', Issue::CountAll());
 	foreach (Issue::LoadAll() as $objIssue) {
-		$intStep = QDataGen::DisplayForEachTaskNext($strTitle);
+		QDataGen::DisplayForEachTaskNext($strTitle);
 		$intCount = rand(1, 25);
 		if (rand(0, 1)) $intCount = round($intCount / 2);
 		if (rand(0, 1)) $intCount = round($intCount / 2);
@@ -196,15 +196,18 @@
 	//////////////////////
 	// Forum Topics
 	//////////////////////
-
+	$objForumArray = Forum::LoadAll();
+	$objForumTopicArray = array();
 	while (QDataGen::DisplayWhileTask('Generating Forum Topics', 500)) {
-		$objTopic = new Topic();
-		$objTopic->ForumId = rand($intMinForumId, $intMaxForumId);
-		$objTopic->Name = QDataGen::GenerateTitle(4, 12);
-		$objTopic->PersonId = rand(1, $intMaxPersonId);
-		$objTopic->LastPostDate = QDataGen::GenerateDateTime($dttStartDate, QDateTime::Now());
-		$objTopic->ViewCount = rand(1000, 99999);
-		$objTopic->Save();
+		$objForum = QDataGen::GenerateFromArray($objForumArray);
+		
+		$strName = QDataGen::GenerateTitle(4, 12);
+		$strFirstMessageText =  QDataGen::GenerateContent(rand(1, 5));
+		$objPerson = Person::Load(rand(1, $intMaxPersonId));
+		$dttDateTime = QDataGen::GenerateDateTime($dttStartDate, QDateTime::Now());
+
+		$objTopic = $objForum->PostTopic($strName, $strFirstMessageText, $objPerson, $dttDateTime);
+		$objForumTopicArray[] = $objTopic;
 	}
 
 
@@ -213,9 +216,9 @@
 	// Forum Messages
 	//////////////////////
 
-	QDataGen::DisplayForEachTaskStart($strTopics = 'Generating Forum Messages for Topics', Topic::CountAll());
-	foreach (Topic::LoadAll() as $objTopic) {
-		$intStep = QDataGen::DisplayForEachTaskNext($strTopics);
+	QDataGen::DisplayForEachTaskStart($strTopics = 'Generating Forum Messages for Topics', count($objForumTopicArray));
+	foreach ($objForumTopicArray as $objTopic) {
+		QDataGen::DisplayForEachTaskNext($strTopics);
 
 		// Randomly Select a Number of Messages for this Forum Topic
 		$intMessageCount = rand(1, 80);
@@ -225,35 +228,17 @@
 		if (rand(0, 1)) $intMessageCount = round($intMessageCount / 2);
 		if (rand(0, 1)) $intMessageCount = round($intMessageCount / 2);
 		if (rand(0, 1)) $intMessageCount = round($intMessageCount / 2);
-		
+
 		$blnFirstMessage = true;
 		while (QDataGen::DisplayWhileTask(' - Generating Messages for Topic #' . $objTopic->Id, $intMessageCount, true)) {
-			$objMessage = new Message();
-			$objMessage->Forum = $objTopic->Forum;
-			$objMessage->Topic = $objTopic;
-
-			if ($blnFirstMessage) {
-				$blnFirstMessage = false;
-				// The "First Message" should be posted by the topic's post person and have the topic's post date
-				$objMessage->Person = $objTopic->Person;
-				$objMessage->PostDate = $objTopic->LastPostDate;
-			} else {
-				$objMessage->PersonId = rand(1, $intMaxPersonId);
-				$objMessage->PostDate = QDataGen::GenerateDateTime($objTopic->LastPostDate, QDateTime::Now());
-			}
-
-			$objMessage->Message = QDataGen::GenerateContent(rand(1, 5));
-			$objMessage->RefreshCompiledHtml();
-			$objMessage->Save();
+			$strMessageText =  QDataGen::GenerateContent(rand(1, 5));
+			$objPerson = Person::Load(rand(1, $intMaxPersonId));
+			$dttDateTime = QDataGen::GenerateDateTime($dttStartDate, QDateTime::Now());
+			$objTopic->PostMessage($strMessageText, $objPerson, $dttDateTime);
 		}
-		
-		// Finally, Refresh this topic's last post date and message count so that it matches the truly post date of the most recently posted message
-		$objTopic->RefreshStats();
+
+		// Finally, Refresh this topic's ReplyNumber ordering
+		$objTopic->RefreshReplyNumbering();
 	}
 	QDataGen::DisplayForEachTaskEnd($strTopics);
-
-	// Refresh each Forum's Last Post Date and Counts as well
-	foreach (Forum::LoadAll() as $objForum) {
-		$objForum->RefreshStats();
-	}
 ?>

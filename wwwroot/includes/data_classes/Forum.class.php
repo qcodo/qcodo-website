@@ -39,6 +39,26 @@
 				return true;
 		}
 
+		/**
+		 * This will post a new Topic for this forum along with the topic's first / initial message.
+		 * 
+		 * @param string $strTitle
+		 * @param string $strMessageText
+		 * @param Person $objPerson
+		 * @param QDateTime $dttPostDate
+		 * @return Topic
+		 */
+		public function PostTopic($strTitle, $strFirstMessageText, Person $objPerson, QDateTime $dttPostDate = null) {
+			$objTopic = new Topic();
+			$objTopic->TopicLink = $this->TopicLink;
+			$objTopic->Name = $strTitle;
+			$objTopic->Person = $objPerson;
+			$objTopic->Save();
+			
+			$objTopic->PostMessage($strFirstMessageText, $objPerson, $dttPostDate);
+			return $objTopic;
+		}
+
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...
 		// but feel free to use these as a starting point)
