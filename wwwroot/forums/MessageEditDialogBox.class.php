@@ -57,21 +57,14 @@
 
 			// Setup stuff if it's a NEW message being posted (either a NEW response or a NEW topic)
 			if (!$this->blnEditMode) {
-				$this->mctMessage->Message->PostDate = QDateTime::Now();
-
-				// For new topics, create the topic first!
+				// For NEW TOPIC in this Forum
 				if (!$this->mctMessage->Message->Topic) {
-					$objTopic = new Topic();
-					$objTopic->ForumId = $this->lstForum->SelectedValue;
-					$objTopic->Name = $this->txtTopicName->Text;
-					$objTopic->Person = QApplication::$Person;
-					$objTopic->LastPostDate = $this->mctMessage->Message->PostDate;
-					$objTopic->Save();
-					
-					$this->mctMessage->Message->ForumId = $this->lstForum->SelectedValue;
-					$this->mctMessage->Message->Topic = $objTopic;
-					
-					$blnNewTopic = true;
+					$objForum = Forum::Load($this->lstForum->SelectedValue);
+					$objNewTopic = $objForum->PostTopic(trim($this->txtTopicName->Text), trim($this->txtMessage->Text), QApplication::$Person);
+					QApplication::Redirect(sprintf('/forums/forum.php/%s/%s/', $objForum->Id, $objNewTopic->Id));
+				// Otherwise, it's a new POST in this TOPIC
+				} else {
+					$this->mctMessage->Message->PostDate = QDateTime::Now();
 				}
 			}
 
@@ -83,13 +76,9 @@
 			// Refresh Stats and Stuff
 			$this->mctMessage->Message->Topic->RefreshStats();
 			$this->mctMessage->Message->Topic->RefreshSearchIndex();
-			$this->mctMessage->Message->Forum->RefreshStats();
+			$this->mctMessage->Message->TopicLink->RefreshStats();
 
-			// Redirect if it's a NEW TOPIC
-			if ($blnNewTopic)
-				QApplication::Redirect(sprintf('/forums/forum.php/%s/%s/', $this->mctMessage->Message->ForumId, $this->mctMessage->Message->TopicId));
-			else
-				$this->objForm->CloseMessageDialog(true, !$this->blnEditMode);
+			$this->objForm->CloseMessageDialog(true, !$this->blnEditMode);
 		}
 
 		public function btnCancel_Click($strFormId, $strControlId, $strParameter) {
@@ -102,7 +91,7 @@
 
 			if ($objMessage->TopicId) {
 				$this->lstForum->RemoveAllItems();
-				$this->lstForum->AddItem($objMessage->Forum->Name);
+				$this->lstForum->AddItem($objMessage->TopicLink->Forum->Name);
 				$this->lstForum->Enabled = false;
 
 				$this->txtTopicName->Text = $objMessage->Topic->Name;
@@ -125,7 +114,7 @@
 				$this->lstForum->RemoveAllItems();
 				foreach (Forum::LoadAll(QQ::OrderBy(QQN::Forum()->OrderNumber)) as $objForum) {
 					if ($objForum->CanUserPost(QApplication::$Person))
-						$this->lstForum->AddItem($objForum->Name, $objForum->Id, $objForum->Id == $objMessage->ForumId);
+						$this->lstForum->AddItem($objForum->Name, $objForum->Id, $objForum->Id == $objMessage->TopicLink->ForumId);
 				}
 				$this->lstForum->Enabled = true;
 

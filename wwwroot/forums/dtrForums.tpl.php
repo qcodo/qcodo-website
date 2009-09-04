@@ -5,11 +5,11 @@
 	</p>
 	<div class="stats">
 		<div class="left">
-			<strong><?php _p($_ITEM->MessageCount); ?></strong> message<?php _p(($_ITEM->MessageCount != 1) ? 's' : ''); ?> in <strong><?php _p($_ITEM->TopicCount); ?></strong> topic<?php _p(($_ITEM->TopicCount != 1) ? 's' : ''); ?>
+			<strong><?php _p($_ITEM->TopicLink->MessageCount); ?></strong> message<?php _p(($_ITEM->TopicLink->MessageCount != 1) ? 's' : ''); ?> in <strong><?php _p($_ITEM->TopicLink->TopicCount); ?></strong> topic<?php _p(($_ITEM->TopicLink->TopicCount != 1) ? 's' : ''); ?>
 		</div>
 		<div class="right">
-			<?php if ($_ITEM->LastPostDate) { ?>
-				last post on <strong><?php _p($_ITEM->LastPostDate->__toString('DDD MMM D, h:mm z')); ?></strong>
+			<?php if ($_ITEM->TopicLink->LastPostDate) { ?>
+				last post on <strong><?php _p($_ITEM->TopicLink->LastPostDate->__toString('DDD MMM D, h:mm z')); ?></strong>
 			<?php } ?>
 		</div>
 	</div>

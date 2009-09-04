@@ -288,7 +288,7 @@
 			if ($this->objForum)
 				$intThisForumId = $this->objForum->Id;
 			else if ($this->objTopic)
-				$intThisForumId = $this->objTopic->ForumId;
+				$intThisForumId = $this->objTopic->TopicLink->ForumId;
 			else
 				$intThisForumId = QApplication::PathInfo(0);  
 
@@ -296,7 +296,7 @@
 			if (!strlen($strSearchTerm)) {
 				// Maintain View to Topic if Applicable
 				if ($this->objTopic)
-					QApplication::Redirect('/forums/forum.php/' . $this->objTopic->ForumId . '/' . $this->objTopic->Id);
+					QApplication::Redirect('/forums/forum.php/' . $this->objTopic->TopicLink->ForumId . '/' . $this->objTopic->Id);
 				else
 					QApplication::Redirect('/forums/forum.php/' . $intThisForumId);
 			}
@@ -398,7 +398,7 @@
 
 			// For Forum View: Topic must be part of the Forum
 			} else {
-				if ($this->objTopic->ForumId != $this->objForum->Id)
+				if ($this->objTopic->TopicLink->ForumId != $this->objForum->Id)
 					$this->objTopic = null;
 			}
 
@@ -437,13 +437,13 @@
 					break;
 
 				default:
-					$this->dtrTopics->TotalItemCount = $this->objForum->TopicCount;
+					$this->dtrTopics->TotalItemCount = $this->objForum->TopicLink->TopicCount;
 
 					// If First Time (on FormCreate), pre-set the Page Number
 					if (($this->strCallType == QCallType::None) && ($this->objTopic)) 
 						$this->dtrTopics->PageNumber = $this->GetPageNumber($this->objTopic, $this->dtrTopics->ItemsPerPage);
 
-					$this->dtrTopics->DataSource = Topic::LoadArrayByForumId($this->objForum->Id, QQ::Clause(QQ::OrderBy(QQN::Topic()->LastPostDate, false), $this->dtrTopics->LimitClause));
+					$this->dtrTopics->DataSource = Topic::LoadArrayByTopicLinkId($this->objForum->TopicLink->Id, QQ::Clause(QQ::OrderBy(QQN::Topic()->LastPostDate, false), $this->dtrTopics->LimitClause));
 					break;
 			}
 		}
@@ -495,7 +495,7 @@
 
 			if (QApplication::$Person) {
 				$objMessage = new Message();
-				$objMessage->Forum = $this->objTopic->Forum;
+				$objMessage->TopicLink = $this->objTopic->TopicLink;
 				$objMessage->Topic = $this->objTopic;
 				$objMessage->Person = QApplication::$Person;
 				$objMessage->ReplyNumber = $this->objTopic->MessageCount;
@@ -518,7 +518,7 @@
 
 			if (QApplication::$Person) {
 				$objMessage = new Message();
-				$objMessage->Forum = $this->objForum;
+				$objMessage->TopicLink = $this->objForum->TopicLink;
 				$objMessage->Person = QApplication::$Person;
 				$objMessage->ReplyNumber = null;
 				$this->dlgMessage->EditMessage($objMessage);
@@ -635,7 +635,7 @@
 		 */
 		public function GetPageNumber(Topic $objTopic, $intItemsPerPage, $objQueryHitArray = null) {
 			if (is_null($objQueryHitArray)) {
-				$objResult = Topic::GetDatabase()->Query('SELECT id FROM topic WHERE forum_id=' . $objTopic->ForumId . ' ORDER BY last_post_date DESC');
+				$objResult = Topic::GetDatabase()->Query('SELECT id FROM topic WHERE topic_link_id=' . $objTopic->TopicLinkId . ' ORDER BY last_post_date DESC');
 				$intRecordNumber = 0;
 				while ($objRow = $objResult->GetNextRow()) {
 					$intRecordNumber++;

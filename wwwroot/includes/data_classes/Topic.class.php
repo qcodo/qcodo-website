@@ -219,7 +219,7 @@
 			// Create the Document
 			$objDocument = new Zend_Search_Lucene_Document();
 			$objDocument->addField(Zend_Search_Lucene_Field::Keyword('db_id', $this->Id));
-			$objDocument->addField(Zend_Search_Lucene_Field::UnIndexed('forum_id', $this->ForumId));
+			$objDocument->addField(Zend_Search_Lucene_Field::UnIndexed('topic_link_id', $this->TopicLinkId));
 			$objDocument->addField(Zend_Search_Lucene_Field::UnIndexed('message_count', $this->MessageCount));
 			$objDocument->addField(Zend_Search_Lucene_Field::UnIndexed('last_post_date', $this->LastPostDate->Timestamp));
 			$objDocument->addField(Zend_Search_Lucene_Field::Text('title', $this->Name));
