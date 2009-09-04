@@ -37,7 +37,7 @@
 			$this->dtgIssues->MetaAddTypeColumn('IssueStatusTypeId', 'IssueStatusType', 'Html=<?= $_FORM->RenderStatus($_ITEM); ?>', 'HtmlEntities=false', 'Name=Status', 'Width=85px');
 			$this->dtgIssues->MetaAddColumn('PostDate', 'Name=Posted', 'CssClass=small', 'Width=65px');
 			$this->dtgIssues->MetaAddColumn(QQN::Issue()->PostedByPerson->DisplayName, 'Name=By', 'Html=<?= $_FORM->RenderPostedBy($_ITEM); ?>', 'HtmlEntities=false', 'Width=100px', 'CssClass=small reverseLink');
-			$this->dtgIssues->MetaAddColumn('LastUpdateDate', 'Name=Last Updated', 'CssClass=small', 'Width=65px');
+			$this->dtgIssues->MetaAddColumn(QQN::Issue()->TopicLink->LastPostDate, 'Name=Last Updated', 'CssClass=small', 'Width=65px');
 			$this->dtgIssues->MetaAddColumn(QQN::Issue()->AssignedToPerson->DisplayName, 'Name=Assigned To', 'Html=<?= $_FORM->RenderAssignedTo($_ITEM); ?>', 'HtmlEntities=false', 'Width=100px', 'CssClass=small reverseLink');
 
 			$this->objIssueFieldForCategory = IssueField::LoadIssueFieldForCategory();

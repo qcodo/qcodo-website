@@ -91,25 +91,25 @@
 		 * ordered by highest rank first
 		 * 
 		 * @param string $strSearchQuery
-		 * @param integer $intForumId optional parameter to restrict search to only within a specific Forum
+		 * @param integer $intTopicLinkId optional parameter to restrict search to only within a specific TopicLink
 		 * @return Zend_Search_Lucene_Search_QueryHit[]
 		 */
-		public static function GetQueryHitArrayForSearch($strSearchQuery, $intForumId = null) {
+		public static function GetQueryHitArrayForSearch($strSearchQuery, $intTopicLinkId = null) {
 			// open the index
-			$objIndex = new Zend_Search_Lucene(__SEARCH_INDEXES__ . '/forum_topics');
+			$objIndex = new Zend_Search_Lucene(__SEARCH_INDEXES__ . '/topics');
 
 			$objHits = $objIndex->find($strSearchQuery);
 
 			// No results
 			if (!count($objHits)) return array();
 
-			// Results for "All Forums" search
-			if (is_null($intForumId)) return $objHits;
+			// Results for "All Topic Links" search
+			if (is_null($intTopicLinkId)) return $objHits;
 
-			// Results for a specific Forum search
+			// Results for a specific TopicLink search
 			$objToReturnArray = array();
 			foreach ($objHits as $objHit) {
-				if ($objHit->forum_id == $intForumId) $objToReturnArray[] = $objHit;
+				if ($objHit->topic_link_id == $intTopicLinkId) $objToReturnArray[] = $objHit;
 			}
 			return $objToReturnArray;
 		}
@@ -134,7 +134,7 @@
 			foreach ($objQueryHitArray as $objHit) {
 				$objTopic = new Topic();
 				$objTopic->intId = $objHit->db_id;
-				$objTopic->intForumId = $objHit->forum_id;
+				$objTopic->intTopicLinkId = $objHit->topic_link_id;
 				$objTopic->strName = $objHit->title;
 				$objTopic->dttLastPostDate = QDateTime::FromTimestamp($objHit->last_post_date);
 				$objTopic->intMessageCount = $objHit->message_count;
@@ -152,7 +152,7 @@
 		 */
 		public static function LoadArrayBySearch($strSearchQuery) {
 			// open the index
-			$objIndex = new Zend_Search_Lucene(__SEARCH_INDEXES__ . '/forum_topics');
+			$objIndex = new Zend_Search_Lucene(__SEARCH_INDEXES__ . '/topics');
 
 			$intIdArray = array();
 			$objHits = $objIndex->find($strSearchQuery);
@@ -183,9 +183,9 @@
 		 * @return Zend_Search_Lucene
 		 */
 		public static function CreateSearchIndex() {
-			if (is_dir(__SEARCH_INDEXES__ . '/forum_topics'))
+			if (is_dir(__SEARCH_INDEXES__ . '/topics'))
 				throw new QCallerException('Cannot call Topic::CreateSearchIndex() - Index directory exists');
-			$objIndex = new Zend_Search_Lucene(__SEARCH_INDEXES__ . '/forum_topics', true);
+			$objIndex = new Zend_Search_Lucene(__SEARCH_INDEXES__ . '/topics', true);
 			return $objIndex;
 		}
 
@@ -196,7 +196,7 @@
 		 */
 		public function RefreshSearchIndex($objIndex = null) {
 			if (!$objIndex) {
-				$objIndex = new Zend_Search_Lucene(__SEARCH_INDEXES__ . '/forum_topics');
+				$objIndex = new Zend_Search_Lucene(__SEARCH_INDEXES__ . '/topics');
 				$blnIndexProvided = false;
 			} else {
 				$blnIndexProvided = true;
@@ -220,6 +220,7 @@
 			$objDocument = new Zend_Search_Lucene_Document();
 			$objDocument->addField(Zend_Search_Lucene_Field::Keyword('db_id', $this->Id));
 			$objDocument->addField(Zend_Search_Lucene_Field::UnIndexed('topic_link_id', $this->TopicLinkId));
+			$objDocument->addField(Zend_Search_Lucene_Field::UnIndexed('topic_link_type_id', $this->TopicLink->TopicLinkTypeId));
 			$objDocument->addField(Zend_Search_Lucene_Field::UnIndexed('message_count', $this->MessageCount));
 			$objDocument->addField(Zend_Search_Lucene_Field::UnIndexed('last_post_date', $this->LastPostDate->Timestamp));
 			$objDocument->addField(Zend_Search_Lucene_Field::Text('title', $this->Name));

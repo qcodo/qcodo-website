@@ -80,7 +80,7 @@
 				} else {
 					// State 5 or State 6
 					$strHeaderLarge = QApplication::HtmlEntities($this->objForum->Name);
-					$this->objQueryHitArray = Topic::GetQueryHitArrayForSearch($this->strSearchTerm, $this->objForum->Id);
+					$this->objQueryHitArray = Topic::GetQueryHitArrayForSearch($this->strSearchTerm, $this->objForum->TopicLink->Id);
 
 					$this->SelectTopic(QApplication::PathInfo(1));
 					$this->intViewState = ($this->objTopic) ? 6 : 5;
@@ -231,8 +231,13 @@
 				$this->btnSearchThis->Text = '"' . $this->objForum->Name . '"';
 				$this->btnSearchThis->ToolTip = 'Search within ' . $this->btnSearchThis->Text . ' forum';
 			} else if ($this->objTopic) {
-				$this->btnSearchThis->Text = '"' . $this->objTopic->Forum->Name . '"';
-				$this->btnSearchThis->ToolTip = 'Search within ' . $this->btnSearchThis->Text . ' forum';
+				if ($this->objTopic->TopicLink->Forum) {
+					$this->btnSearchThis->Text = '"' . $this->objTopic->TopicLink->Forum->Name . '"';
+					$this->btnSearchThis->ToolTip = 'Search within ' . $this->btnSearchThis->Text . ' forum';
+				} else {
+					$this->btnSearchThis->Text = '"Issues"';
+					$this->btnSearchThis->ToolTip = 'Search within ' . $this->btnSearchThis->Text . ' forum';
+				}
 			} else {
 				$this->btnSearchThis->Visible = false;
 			}
@@ -418,14 +423,14 @@
 		}
 
 		public function dtrTopics_Bind() {
-			$intForumId = null;
+			$intTopicLinkId = null;
 			switch ($this->intViewState) {
 				case 5:
 				case 6:
-					$intForumId = $this->objForum->Id;
+					$intTopicLinkId = $this->objForum->TopicLink->Id;
 				case 3:
 				case 4:
-					if (!$this->objQueryHitArray) $this->objQueryHitArray = Topic::GetQueryHitArrayForSearch($this->strSearchTerm, $intForumId);
+					if (!$this->objQueryHitArray) $this->objQueryHitArray = Topic::GetQueryHitArrayForSearch($this->strSearchTerm, $intTopicLinkId);
 					$this->dtrTopics->TotalItemCount = count($this->objQueryHitArray);
 
 					// If First Time (on FormCreate), pre-set the Page Number

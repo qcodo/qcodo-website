@@ -11,7 +11,7 @@
 <h1><?php _p($this->objTopic->Name); ?></h1>
 <h3>
 	forum:
-	<strong><?php _p(strtolower($this->objTopic->Forum->Name)); ?></strong>
+	<strong><?php _p(strtolower(($this->objTopic->TopicLink->Forum) ? $this->objTopic->TopicLink->Forum->Name : 'Issues')); ?></strong>
 
 	<br/>
 
