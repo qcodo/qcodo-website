@@ -323,8 +323,20 @@
 			}
 		}
 		
+		/**
+		 * This gets called by MessagesPanel on any new message post/update.  For non-search based view states, since the "last post date"
+		 * is now very recent, this topic shoots to the top of the forum.  We want to reset the page number for dtrTopics in this case. 
+		 * @return void
+		 */
 		public function dtrTopics_Reset() {
-			$this->dtrTopics->PageNumber = 1;
+			switch ($this->intViewState) {
+				case 1:
+				case 2:
+					$this->dtrTopics->PageNumber = 1;
+					break;
+				default:
+					break;
+			}
 		}
 
 		public function RenderTopicLink(Topic $objTopic) {
