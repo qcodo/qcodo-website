@@ -78,11 +78,11 @@
 			$this->mctMessage->Message->Topic->RefreshSearchIndex();
 			$this->mctMessage->Message->TopicLink->RefreshStats();
 
-			$this->objForm->CloseMessageDialog(true, !$this->blnEditMode);
+			$this->ParentControl->CloseMessageDialog(true, !$this->blnEditMode);
 		}
 
 		public function btnCancel_Click($strFormId, $strControlId, $strParameter) {
-			$this->objForm->CloseMessageDialog();
+			$this->ParentControl->CloseMessageDialog();
 		}
 
 		public function EditMessage(Message $objMessage) {

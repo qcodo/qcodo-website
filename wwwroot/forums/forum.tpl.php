@@ -44,41 +44,10 @@
 
 <?php
 	} else {
+		$this->pnlMessages->Render();
+	}
 ?>
 
-	<div class="topic" style="margin-top: 12px;">
-		<?php $this->lblTopicInfo->Render(); ?>
-
-		<div class="controlBar">
-			<div class="controls">
-				<?php $this->btnRespond1->Render(); ?>
-				<div class="spacer">&nbsp;</div>
-				<?php $this->btnNotify1->Render(); ?>
-				<div class="spacer">&nbsp;</div>
-				<?php $this->btnMarkAsViewed1->Render(); ?>
-			</div>
-			<div class="paginator"><?php $this->dtrMessages->Paginator->Render(); ?></div>
-		</div>
-
-		<br clear="all"/>
-		<?php $this->dtrMessages->Render(); ?>
-		<br clear="all"/>
-
-		<div class="controlBar">
-			<div class="controls">
-				<?php $this->btnRespond2->Render(); ?>
-				<div class="spacer">&nbsp;</div>
-				<?php $this->btnNotify2->Render(); ?>
-				<div class="spacer">&nbsp;</div>
-				<?php $this->btnMarkAsViewed2->Render(); ?>
-			</div>
-			<div class="paginator"><?php $this->dtrMessages->PaginatorAlternate->Render(); ?></div>
-		</div>
-	</div>
-
-<?php } /* if (!$this->objTopic) */ ?>
-
 	<br clear="all"/>
-	<?php $this->dlgMessage->Render(); ?>
 
 <?php require(__INCLUDES__ . '/footer.inc.php'); ?>

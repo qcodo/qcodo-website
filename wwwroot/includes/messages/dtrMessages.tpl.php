@@ -5,13 +5,13 @@
 <div class="messageBar <?php if ($_CONTROL->CurrentItemIndex % 2) print 'messageBarAlternate'; ?>">
 	<div class="name">
 <?php
-	if ($_FORM->IsMessageEditable($_ITEM)) {
+	if ($_CONTROL->ParentControl->IsMessageEditable($_ITEM)) {
 		if ($_ITEM->ReplyNumber) {
 			printf('<span class="replyNumber"><a href="#" title="Edit This Post" %s>Reply #%s</a> &nbsp;|&nbsp; </span>',
-				$_FORM->pxyEditMessage->RenderAsEvents($_ITEM->Id, false), $_ITEM->ReplyNumber);
+				$_CONTROL->ParentControl->pxyEditMessage->RenderAsEvents($_ITEM->Id, false), $_ITEM->ReplyNumber);
 		} else {
 			printf('<span class="replyNumber"><a href="#" title="Edit This Post" %s>Edit</a> &nbsp;|&nbsp; </span>',
-				$_FORM->pxyEditMessage->RenderAsEvents($_ITEM->Id, false));
+				$_CONTROL->ParentControl->pxyEditMessage->RenderAsEvents($_ITEM->Id, false));
 		}
 	} else {
 		if ($_ITEM->ReplyNumber) {

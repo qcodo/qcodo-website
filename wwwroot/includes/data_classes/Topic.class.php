@@ -268,6 +268,67 @@
 			return $objMessage;
 		}
 
+
+		/**
+		 * Specifies whether or not the "current user" is being notified on updates
+		 * @return boolean
+		 */
+		public function IsNotifying() {
+			return (QApplication::$Person && $this->IsPersonAsEmailAssociated(QApplication::$Person));
+		}
+
+
+		/**
+		 * Specifies whether or not the "current user" has viewed the message already
+		 * @return boolean
+		 */
+		public function IsViewed() {
+			if (QApplication::$Person) {
+				return $this->IsPersonAsReadAssociated(QApplication::$Person);
+			} else {
+				$this->SetupViewedTopicArray();
+				return array_key_exists($this->Id, $_SESSION['intViewedTopicArray']);
+			}
+		}
+
+
+		/**
+		 * Will mark this topic as "viewed" by this "current user"
+		 * @return void
+		 */
+		public function MarkAsViewed() {
+			if (QApplication::$Person) {
+				if (!$this->IsPersonAsReadAssociated(QApplication::$Person))
+					$this->AssociatePersonAsRead(QApplication::$Person);
+			} else {
+				$this->SetupViewedTopicArray();
+				$_SESSION['intViewedTopicArray'][$this->Id] = true;
+			}
+		}
+
+
+		/**
+		 * Will mark this topic as "unviewed" by this "current user"
+		 * @return void
+		 */
+		public function MarkAsUnviewed() {
+			if (QApplication::$Person) {
+				$this->UnassociatePersonAsRead(QApplication::$Person);
+			} else {
+				$this->SetupViewedTopicArray();
+				$_SESSION['intViewedTopicArray'][$this->Id] = false;
+				unset($_SESSION['intViewedTopicArray'][$this->Id]);
+			}
+		}
+
+		protected function SetupViewedTopicArray() {
+			// For non-logged in users, create the ViewedTopicArray in Session
+			if (!QApplication::$Person) {
+				if (!array_key_exists('intViewedTopicArray', $_SESSION))
+					$_SESSION['intViewedTopicArray'] = array();
+			}
+		}
+
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...
 		// but feel free to use these as a starting point)
