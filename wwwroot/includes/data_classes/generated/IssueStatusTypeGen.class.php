@@ -18,47 +18,51 @@
 	 * @subpackage GeneratedDataObjects
 	 */
 	abstract class IssueStatusTypeGen extends QBaseClass {
-		const NewIssue = 1;
-		const Open = 2;
-		const Assigned = 3;
-		const Fixed = 4;
-		const ClosedFixed = 5;
-		const ClosedWontFix = 6;
-		const ClosedDuplicate = 7;
-		const ClosedCannotReplicate = 8;
+		const Critical = 1;
+		const High = 10;
+		const Standard = 50;
+		const Low = 100;
+		const NewIssue = 101;
+		const Open = 102;
+		const Assigned = 103;
+		const Fixed = 104;
+		const Closed = 105;
 
-		const MaxId = 8;
+		const MaxId = 105;
 
 		public static $NameArray = array(
-			1 => 'New Issue',
-			2 => 'Open',
-			3 => 'Assigned',
-			4 => 'Fixed',
-			5 => 'Closed - Fixed',
-			6 => 'Closed - Won\'t Fix',
-			7 => 'Closed - Duplicate',
-			8 => 'Closed - Cannot Replicate');
+			1 => 'Critical',
+			10 => 'High',
+			50 => 'Standard',
+			100 => 'Low',
+			101 => 'New Issue',
+			102 => 'Open',
+			103 => 'Assigned',
+			104 => 'Fixed',
+			105 => 'Closed');
 
 		public static $TokenArray = array(
-			1 => 'NewIssue',
-			2 => 'Open',
-			3 => 'Assigned',
-			4 => 'Fixed',
-			5 => 'ClosedFixed',
-			6 => 'ClosedWontFix',
-			7 => 'ClosedDuplicate',
-			8 => 'ClosedCannotReplicate');
+			1 => 'Critical',
+			10 => 'High',
+			50 => 'Standard',
+			100 => 'Low',
+			101 => 'NewIssue',
+			102 => 'Open',
+			103 => 'Assigned',
+			104 => 'Fixed',
+			105 => 'Closed');
 
 		public static function ToString($intIssueStatusTypeId) {
 			switch ($intIssueStatusTypeId) {
-				case 1: return 'New Issue';
-				case 2: return 'Open';
-				case 3: return 'Assigned';
-				case 4: return 'Fixed';
-				case 5: return 'Closed - Fixed';
-				case 6: return 'Closed - Won\'t Fix';
-				case 7: return 'Closed - Duplicate';
-				case 8: return 'Closed - Cannot Replicate';
+				case 1: return 'Critical';
+				case 10: return 'High';
+				case 50: return 'Standard';
+				case 100: return 'Low';
+				case 101: return 'New Issue';
+				case 102: return 'Open';
+				case 103: return 'Assigned';
+				case 104: return 'Fixed';
+				case 105: return 'Closed';
 				default:
 					throw new QCallerException(sprintf('Invalid intIssueStatusTypeId: %s', $intIssueStatusTypeId));
 			}
@@ -66,14 +70,15 @@
 
 		public static function ToToken($intIssueStatusTypeId) {
 			switch ($intIssueStatusTypeId) {
-				case 1: return 'NewIssue';
-				case 2: return 'Open';
-				case 3: return 'Assigned';
-				case 4: return 'Fixed';
-				case 5: return 'ClosedFixed';
-				case 6: return 'ClosedWontFix';
-				case 7: return 'ClosedDuplicate';
-				case 8: return 'ClosedCannotReplicate';
+				case 1: return 'Critical';
+				case 10: return 'High';
+				case 50: return 'Standard';
+				case 100: return 'Low';
+				case 101: return 'NewIssue';
+				case 102: return 'Open';
+				case 103: return 'Assigned';
+				case 104: return 'Fixed';
+				case 105: return 'Closed';
 				default:
 					throw new QCallerException(sprintf('Invalid intIssueStatusTypeId: %s', $intIssueStatusTypeId));
 			}

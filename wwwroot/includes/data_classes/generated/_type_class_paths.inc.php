@@ -1,4 +1,8 @@
 <?php 
+	// ClassPaths for the IssuePriorityType type class
+		QApplicationBase::$ClassFile['issueprioritytype'] = __DATA_CLASSES__ . '/IssuePriorityType.class.php';
+	// ClassPaths for the IssueResolutionType type class
+		QApplicationBase::$ClassFile['issueresolutiontype'] = __DATA_CLASSES__ . '/IssueResolutionType.class.php';
 	// ClassPaths for the IssueStatusType type class
 		QApplicationBase::$ClassFile['issuestatustype'] = __DATA_CLASSES__ . '/IssueStatusType.class.php';
 	// ClassPaths for the PersonType type class

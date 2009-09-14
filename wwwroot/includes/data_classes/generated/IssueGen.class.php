@@ -16,7 +16,9 @@
 	 * @package Qcodo Website
 	 * @subpackage GeneratedDataObjects
 	 * @property-read integer $Id the value for intId (Read-Only PK)
+	 * @property integer $IssuePriorityTypeId the value for intIssuePriorityTypeId (Not Null)
 	 * @property integer $IssueStatusTypeId the value for intIssueStatusTypeId (Not Null)
+	 * @property integer $IssueResolutionTypeId the value for intIssueResolutionTypeId 
 	 * @property string $Title the value for strTitle 
 	 * @property string $ExampleCode the value for strExampleCode 
 	 * @property string $ExampleTemplate the value for strExampleTemplate 
@@ -53,11 +55,27 @@
 
 
 		/**
+		 * Protected member variable that maps to the database column issue.issue_priority_type_id
+		 * @var integer intIssuePriorityTypeId
+		 */
+		protected $intIssuePriorityTypeId;
+		const IssuePriorityTypeIdDefault = null;
+
+
+		/**
 		 * Protected member variable that maps to the database column issue.issue_status_type_id
 		 * @var integer intIssueStatusTypeId
 		 */
 		protected $intIssueStatusTypeId;
 		const IssueStatusTypeIdDefault = null;
+
+
+		/**
+		 * Protected member variable that maps to the database column issue.issue_resolution_type_id
+		 * @var integer intIssueResolutionTypeId
+		 */
+		protected $intIssueResolutionTypeId;
+		const IssueResolutionTypeIdDefault = null;
 
 
 		/**
@@ -513,7 +531,9 @@
 			}
 
 			$objBuilder->AddSelectItem($strTableName, 'id', $strAliasPrefix . 'id');
+			$objBuilder->AddSelectItem($strTableName, 'issue_priority_type_id', $strAliasPrefix . 'issue_priority_type_id');
 			$objBuilder->AddSelectItem($strTableName, 'issue_status_type_id', $strAliasPrefix . 'issue_status_type_id');
+			$objBuilder->AddSelectItem($strTableName, 'issue_resolution_type_id', $strAliasPrefix . 'issue_resolution_type_id');
 			$objBuilder->AddSelectItem($strTableName, 'title', $strAliasPrefix . 'title');
 			$objBuilder->AddSelectItem($strTableName, 'example_code', $strAliasPrefix . 'example_code');
 			$objBuilder->AddSelectItem($strTableName, 'example_template', $strAliasPrefix . 'example_template');
@@ -605,8 +625,12 @@
 
 			$strAliasName = array_key_exists($strAliasPrefix . 'id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'id'] : $strAliasPrefix . 'id';
 			$objToReturn->intId = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'issue_priority_type_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'issue_priority_type_id'] : $strAliasPrefix . 'issue_priority_type_id';
+			$objToReturn->intIssuePriorityTypeId = $objDbRow->GetColumn($strAliasName, 'Integer');
 			$strAliasName = array_key_exists($strAliasPrefix . 'issue_status_type_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'issue_status_type_id'] : $strAliasPrefix . 'issue_status_type_id';
 			$objToReturn->intIssueStatusTypeId = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'issue_resolution_type_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'issue_resolution_type_id'] : $strAliasPrefix . 'issue_resolution_type_id';
+			$objToReturn->intIssueResolutionTypeId = $objDbRow->GetColumn($strAliasName, 'Integer');
 			$strAliasName = array_key_exists($strAliasPrefix . 'title', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'title'] : $strAliasPrefix . 'title';
 			$objToReturn->strTitle = $objDbRow->GetColumn($strAliasName, 'VarChar');
 			$strAliasName = array_key_exists($strAliasPrefix . 'example_code', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'example_code'] : $strAliasPrefix . 'example_code';
@@ -750,6 +774,38 @@
 			
 		/**
 		 * Load an array of Issue objects,
+		 * by IssuePriorityTypeId Index(es)
+		 * @param integer $intIssuePriorityTypeId
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @return Issue[]
+		*/
+		public static function LoadArrayByIssuePriorityTypeId($intIssuePriorityTypeId, $objOptionalClauses = null) {
+			// Call Issue::QueryArray to perform the LoadArrayByIssuePriorityTypeId query
+			try {
+				return Issue::QueryArray(
+					QQ::Equal(QQN::Issue()->IssuePriorityTypeId, $intIssuePriorityTypeId),
+					$objOptionalClauses);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+		}
+
+		/**
+		 * Count Issues
+		 * by IssuePriorityTypeId Index(es)
+		 * @param integer $intIssuePriorityTypeId
+		 * @return int
+		*/
+		public static function CountByIssuePriorityTypeId($intIssuePriorityTypeId) {
+			// Call Issue::QueryCount to perform the CountByIssuePriorityTypeId query
+			return Issue::QueryCount(
+				QQ::Equal(QQN::Issue()->IssuePriorityTypeId, $intIssuePriorityTypeId)
+			);
+		}
+			
+		/**
+		 * Load an array of Issue objects,
 		 * by IssueStatusTypeId Index(es)
 		 * @param integer $intIssueStatusTypeId
 		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
@@ -777,6 +833,38 @@
 			// Call Issue::QueryCount to perform the CountByIssueStatusTypeId query
 			return Issue::QueryCount(
 				QQ::Equal(QQN::Issue()->IssueStatusTypeId, $intIssueStatusTypeId)
+			);
+		}
+			
+		/**
+		 * Load an array of Issue objects,
+		 * by IssueResolutionTypeId Index(es)
+		 * @param integer $intIssueResolutionTypeId
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @return Issue[]
+		*/
+		public static function LoadArrayByIssueResolutionTypeId($intIssueResolutionTypeId, $objOptionalClauses = null) {
+			// Call Issue::QueryArray to perform the LoadArrayByIssueResolutionTypeId query
+			try {
+				return Issue::QueryArray(
+					QQ::Equal(QQN::Issue()->IssueResolutionTypeId, $intIssueResolutionTypeId),
+					$objOptionalClauses);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+		}
+
+		/**
+		 * Count Issues
+		 * by IssueResolutionTypeId Index(es)
+		 * @param integer $intIssueResolutionTypeId
+		 * @return int
+		*/
+		public static function CountByIssueResolutionTypeId($intIssueResolutionTypeId) {
+			// Call Issue::QueryCount to perform the CountByIssueResolutionTypeId query
+			return Issue::QueryCount(
+				QQ::Equal(QQN::Issue()->IssueResolutionTypeId, $intIssueResolutionTypeId)
 			);
 		}
 			
@@ -906,7 +994,9 @@
 					// Perform an INSERT query
 					$objDatabase->NonQuery('
 						INSERT INTO `issue` (
+							`issue_priority_type_id`,
 							`issue_status_type_id`,
+							`issue_resolution_type_id`,
 							`title`,
 							`example_code`,
 							`example_template`,
@@ -920,7 +1010,9 @@
 							`due_date`,
 							`vote_count`
 						) VALUES (
+							' . $objDatabase->SqlVariable($this->intIssuePriorityTypeId) . ',
 							' . $objDatabase->SqlVariable($this->intIssueStatusTypeId) . ',
+							' . $objDatabase->SqlVariable($this->intIssueResolutionTypeId) . ',
 							' . $objDatabase->SqlVariable($this->strTitle) . ',
 							' . $objDatabase->SqlVariable($this->strExampleCode) . ',
 							' . $objDatabase->SqlVariable($this->strExampleTemplate) . ',
@@ -948,7 +1040,9 @@
 						UPDATE
 							`issue`
 						SET
+							`issue_priority_type_id` = ' . $objDatabase->SqlVariable($this->intIssuePriorityTypeId) . ',
 							`issue_status_type_id` = ' . $objDatabase->SqlVariable($this->intIssueStatusTypeId) . ',
+							`issue_resolution_type_id` = ' . $objDatabase->SqlVariable($this->intIssueResolutionTypeId) . ',
 							`title` = ' . $objDatabase->SqlVariable($this->strTitle) . ',
 							`example_code` = ' . $objDatabase->SqlVariable($this->strExampleCode) . ',
 							`example_template` = ' . $objDatabase->SqlVariable($this->strExampleTemplate) . ',
@@ -1069,7 +1163,9 @@
 			$objReloaded = Issue::Load($this->intId);
 
 			// Update $this's local variables to match
+			$this->IssuePriorityTypeId = $objReloaded->IssuePriorityTypeId;
 			$this->IssueStatusTypeId = $objReloaded->IssueStatusTypeId;
+			$this->IssueResolutionTypeId = $objReloaded->IssueResolutionTypeId;
 			$this->strTitle = $objReloaded->strTitle;
 			$this->strExampleCode = $objReloaded->strExampleCode;
 			$this->strExampleTemplate = $objReloaded->strExampleTemplate;
@@ -1109,12 +1205,26 @@
 					 */
 					return $this->intId;
 
+				case 'IssuePriorityTypeId':
+					/**
+					 * Gets the value for intIssuePriorityTypeId (Not Null)
+					 * @return integer
+					 */
+					return $this->intIssuePriorityTypeId;
+
 				case 'IssueStatusTypeId':
 					/**
 					 * Gets the value for intIssueStatusTypeId (Not Null)
 					 * @return integer
 					 */
 					return $this->intIssueStatusTypeId;
+
+				case 'IssueResolutionTypeId':
+					/**
+					 * Gets the value for intIssueResolutionTypeId 
+					 * @return integer
+					 */
+					return $this->intIssueResolutionTypeId;
 
 				case 'Title':
 					/**
@@ -1317,6 +1427,19 @@
 				///////////////////
 				// Member Variables
 				///////////////////
+				case 'IssuePriorityTypeId':
+					/**
+					 * Sets the value for intIssuePriorityTypeId (Not Null)
+					 * @param integer $mixValue
+					 * @return integer
+					 */
+					try {
+						return ($this->intIssuePriorityTypeId = QType::Cast($mixValue, QType::Integer));
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
 				case 'IssueStatusTypeId':
 					/**
 					 * Sets the value for intIssueStatusTypeId (Not Null)
@@ -1325,6 +1448,19 @@
 					 */
 					try {
 						return ($this->intIssueStatusTypeId = QType::Cast($mixValue, QType::Integer));
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
+				case 'IssueResolutionTypeId':
+					/**
+					 * Sets the value for intIssueResolutionTypeId 
+					 * @param integer $mixValue
+					 * @return integer
+					 */
+					try {
+						return ($this->intIssueResolutionTypeId = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {
 						$objExc->IncrementOffset();
 						throw $objExc;
@@ -1933,7 +2069,9 @@
 		public static function GetSoapComplexTypeXml() {
 			$strToReturn = '<complexType name="Issue"><sequence>';
 			$strToReturn .= '<element name="Id" type="xsd:int"/>';
+			$strToReturn .= '<element name="IssuePriorityTypeId" type="xsd:int"/>';
 			$strToReturn .= '<element name="IssueStatusTypeId" type="xsd:int"/>';
+			$strToReturn .= '<element name="IssueResolutionTypeId" type="xsd:int"/>';
 			$strToReturn .= '<element name="Title" type="xsd:string"/>';
 			$strToReturn .= '<element name="ExampleCode" type="xsd:string"/>';
 			$strToReturn .= '<element name="ExampleTemplate" type="xsd:string"/>';
@@ -1972,8 +2110,12 @@
 			$objToReturn = new Issue();
 			if (property_exists($objSoapObject, 'Id'))
 				$objToReturn->intId = $objSoapObject->Id;
+			if (property_exists($objSoapObject, 'IssuePriorityTypeId'))
+				$objToReturn->intIssuePriorityTypeId = $objSoapObject->IssuePriorityTypeId;
 			if (property_exists($objSoapObject, 'IssueStatusTypeId'))
 				$objToReturn->intIssueStatusTypeId = $objSoapObject->IssueStatusTypeId;
+			if (property_exists($objSoapObject, 'IssueResolutionTypeId'))
+				$objToReturn->intIssueResolutionTypeId = $objSoapObject->IssueResolutionTypeId;
 			if (property_exists($objSoapObject, 'Title'))
 				$objToReturn->strTitle = $objSoapObject->Title;
 			if (property_exists($objSoapObject, 'ExampleCode'))
@@ -2054,8 +2196,12 @@
 			switch ($strName) {
 				case 'Id':
 					return new QQNode('id', 'Id', 'integer', $this);
+				case 'IssuePriorityTypeId':
+					return new QQNode('issue_priority_type_id', 'IssuePriorityTypeId', 'integer', $this);
 				case 'IssueStatusTypeId':
 					return new QQNode('issue_status_type_id', 'IssueStatusTypeId', 'integer', $this);
+				case 'IssueResolutionTypeId':
+					return new QQNode('issue_resolution_type_id', 'IssueResolutionTypeId', 'integer', $this);
 				case 'Title':
 					return new QQNode('title', 'Title', 'string', $this);
 				case 'ExampleCode':
@@ -2112,8 +2258,12 @@
 			switch ($strName) {
 				case 'Id':
 					return new QQNode('id', 'Id', 'integer', $this);
+				case 'IssuePriorityTypeId':
+					return new QQNode('issue_priority_type_id', 'IssuePriorityTypeId', 'integer', $this);
 				case 'IssueStatusTypeId':
 					return new QQNode('issue_status_type_id', 'IssueStatusTypeId', 'integer', $this);
+				case 'IssueResolutionTypeId':
+					return new QQNode('issue_resolution_type_id', 'IssueResolutionTypeId', 'integer', $this);
 				case 'Title':
 					return new QQNode('title', 'Title', 'string', $this);
 				case 'ExampleCode':

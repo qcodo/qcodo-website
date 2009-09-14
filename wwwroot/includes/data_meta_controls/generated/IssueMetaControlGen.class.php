@@ -18,8 +18,12 @@
 	 * property-read Issue $Issue the actual Issue data class being edited
 	 * property QLabel $IdControl
 	 * property-read QLabel $IdLabel
+	 * property QListBox $IssuePriorityTypeIdControl
+	 * property-read QLabel $IssuePriorityTypeIdLabel
 	 * property QListBox $IssueStatusTypeIdControl
 	 * property-read QLabel $IssueStatusTypeIdLabel
+	 * property QListBox $IssueResolutionTypeIdControl
+	 * property-read QLabel $IssueResolutionTypeIdLabel
 	 * property QTextBox $TitleControl
 	 * property-read QLabel $TitleLabel
 	 * property QTextBox $ExampleCodeControl
@@ -59,7 +63,9 @@
 
 		// Controls that allow the editing of Issue's individual data fields
 		protected $lblId;
+		protected $lstIssuePriorityType;
 		protected $lstIssueStatusType;
+		protected $lstIssueResolutionType;
 		protected $txtTitle;
 		protected $txtExampleCode;
 		protected $txtExampleTemplate;
@@ -74,7 +80,9 @@
 		protected $txtVoteCount;
 
 		// Controls that allow the viewing of Issue's individual data fields
+		protected $lblIssuePriorityTypeId;
 		protected $lblIssueStatusTypeId;
+		protected $lblIssueResolutionTypeId;
 		protected $lblTitle;
 		protected $lblExampleCode;
 		protected $lblExampleTemplate;
@@ -203,6 +211,33 @@
 		}
 
 		/**
+		 * Create and setup QListBox lstIssuePriorityType
+		 * @param string $strControlId optional ControlId to use
+		 * @return QListBox
+		 */
+		public function lstIssuePriorityType_Create($strControlId = null) {
+			$this->lstIssuePriorityType = new QListBox($this->objParentObject, $strControlId);
+			$this->lstIssuePriorityType->Name = QApplication::Translate('Issue Priority Type');
+			$this->lstIssuePriorityType->Required = true;
+			foreach (IssuePriorityType::$NameArray as $intId => $strValue)
+				$this->lstIssuePriorityType->AddItem(new QListItem($strValue, $intId, $this->objIssue->IssuePriorityTypeId == $intId));
+			return $this->lstIssuePriorityType;
+		}
+
+		/**
+		 * Create and setup QLabel lblIssuePriorityTypeId
+		 * @param string $strControlId optional ControlId to use
+		 * @return QLabel
+		 */
+		public function lblIssuePriorityTypeId_Create($strControlId = null) {
+			$this->lblIssuePriorityTypeId = new QLabel($this->objParentObject, $strControlId);
+			$this->lblIssuePriorityTypeId->Name = QApplication::Translate('Issue Priority Type');
+			$this->lblIssuePriorityTypeId->Text = ($this->objIssue->IssuePriorityTypeId) ? IssuePriorityType::$NameArray[$this->objIssue->IssuePriorityTypeId] : null;
+			$this->lblIssuePriorityTypeId->Required = true;
+			return $this->lblIssuePriorityTypeId;
+		}
+
+		/**
 		 * Create and setup QListBox lstIssueStatusType
 		 * @param string $strControlId optional ControlId to use
 		 * @return QListBox
@@ -227,6 +262,32 @@
 			$this->lblIssueStatusTypeId->Text = ($this->objIssue->IssueStatusTypeId) ? IssueStatusType::$NameArray[$this->objIssue->IssueStatusTypeId] : null;
 			$this->lblIssueStatusTypeId->Required = true;
 			return $this->lblIssueStatusTypeId;
+		}
+
+		/**
+		 * Create and setup QListBox lstIssueResolutionType
+		 * @param string $strControlId optional ControlId to use
+		 * @return QListBox
+		 */
+		public function lstIssueResolutionType_Create($strControlId = null) {
+			$this->lstIssueResolutionType = new QListBox($this->objParentObject, $strControlId);
+			$this->lstIssueResolutionType->Name = QApplication::Translate('Issue Resolution Type');
+			$this->lstIssueResolutionType->AddItem(QApplication::Translate('- Select One -'), null);
+			foreach (IssueResolutionType::$NameArray as $intId => $strValue)
+				$this->lstIssueResolutionType->AddItem(new QListItem($strValue, $intId, $this->objIssue->IssueResolutionTypeId == $intId));
+			return $this->lstIssueResolutionType;
+		}
+
+		/**
+		 * Create and setup QLabel lblIssueResolutionTypeId
+		 * @param string $strControlId optional ControlId to use
+		 * @return QLabel
+		 */
+		public function lblIssueResolutionTypeId_Create($strControlId = null) {
+			$this->lblIssueResolutionTypeId = new QLabel($this->objParentObject, $strControlId);
+			$this->lblIssueResolutionTypeId->Name = QApplication::Translate('Issue Resolution Type');
+			$this->lblIssueResolutionTypeId->Text = ($this->objIssue->IssueResolutionTypeId) ? IssueResolutionType::$NameArray[$this->objIssue->IssueResolutionTypeId] : null;
+			return $this->lblIssueResolutionTypeId;
 		}
 
 		/**
@@ -603,8 +664,14 @@
 
 			if ($this->lblId) if ($this->blnEditMode) $this->lblId->Text = $this->objIssue->Id;
 
+			if ($this->lstIssuePriorityType) $this->lstIssuePriorityType->SelectedValue = $this->objIssue->IssuePriorityTypeId;
+			if ($this->lblIssuePriorityTypeId) $this->lblIssuePriorityTypeId->Text = ($this->objIssue->IssuePriorityTypeId) ? IssuePriorityType::$NameArray[$this->objIssue->IssuePriorityTypeId] : null;
+
 			if ($this->lstIssueStatusType) $this->lstIssueStatusType->SelectedValue = $this->objIssue->IssueStatusTypeId;
 			if ($this->lblIssueStatusTypeId) $this->lblIssueStatusTypeId->Text = ($this->objIssue->IssueStatusTypeId) ? IssueStatusType::$NameArray[$this->objIssue->IssueStatusTypeId] : null;
+
+			if ($this->lstIssueResolutionType) $this->lstIssueResolutionType->SelectedValue = $this->objIssue->IssueResolutionTypeId;
+			if ($this->lblIssueResolutionTypeId) $this->lblIssueResolutionTypeId->Text = ($this->objIssue->IssueResolutionTypeId) ? IssueResolutionType::$NameArray[$this->objIssue->IssueResolutionTypeId] : null;
 
 			if ($this->txtTitle) $this->txtTitle->Text = $this->objIssue->Title;
 			if ($this->lblTitle) $this->lblTitle->Text = $this->objIssue->Title;
@@ -699,7 +766,9 @@
 		public function SaveIssue() {
 			try {
 				// Update any fields for controls that have been created
+				if ($this->lstIssuePriorityType) $this->objIssue->IssuePriorityTypeId = $this->lstIssuePriorityType->SelectedValue;
 				if ($this->lstIssueStatusType) $this->objIssue->IssueStatusTypeId = $this->lstIssueStatusType->SelectedValue;
+				if ($this->lstIssueResolutionType) $this->objIssue->IssueResolutionTypeId = $this->lstIssueResolutionType->SelectedValue;
 				if ($this->txtTitle) $this->objIssue->Title = $this->txtTitle->Text;
 				if ($this->txtExampleCode) $this->objIssue->ExampleCode = $this->txtExampleCode->Text;
 				if ($this->txtExampleTemplate) $this->objIssue->ExampleTemplate = $this->txtExampleTemplate->Text;
@@ -761,12 +830,24 @@
 				case 'IdLabel':
 					if (!$this->lblId) return $this->lblId_Create();
 					return $this->lblId;
+				case 'IssuePriorityTypeIdControl':
+					if (!$this->lstIssuePriorityType) return $this->lstIssuePriorityType_Create();
+					return $this->lstIssuePriorityType;
+				case 'IssuePriorityTypeIdLabel':
+					if (!$this->lblIssuePriorityTypeId) return $this->lblIssuePriorityTypeId_Create();
+					return $this->lblIssuePriorityTypeId;
 				case 'IssueStatusTypeIdControl':
 					if (!$this->lstIssueStatusType) return $this->lstIssueStatusType_Create();
 					return $this->lstIssueStatusType;
 				case 'IssueStatusTypeIdLabel':
 					if (!$this->lblIssueStatusTypeId) return $this->lblIssueStatusTypeId_Create();
 					return $this->lblIssueStatusTypeId;
+				case 'IssueResolutionTypeIdControl':
+					if (!$this->lstIssueResolutionType) return $this->lstIssueResolutionType_Create();
+					return $this->lstIssueResolutionType;
+				case 'IssueResolutionTypeIdLabel':
+					if (!$this->lblIssueResolutionTypeId) return $this->lblIssueResolutionTypeId_Create();
+					return $this->lblIssueResolutionTypeId;
 				case 'TitleControl':
 					if (!$this->txtTitle) return $this->txtTitle_Create();
 					return $this->txtTitle;
@@ -869,8 +950,12 @@
 					// Controls that point to Issue fields
 					case 'IdControl':
 						return ($this->lblId = QType::Cast($mixValue, 'QControl'));
+					case 'IssuePriorityTypeIdControl':
+						return ($this->lstIssuePriorityType = QType::Cast($mixValue, 'QControl'));
 					case 'IssueStatusTypeIdControl':
 						return ($this->lstIssueStatusType = QType::Cast($mixValue, 'QControl'));
+					case 'IssueResolutionTypeIdControl':
+						return ($this->lstIssueResolutionType = QType::Cast($mixValue, 'QControl'));
 					case 'TitleControl':
 						return ($this->txtTitle = QType::Cast($mixValue, 'QControl'));
 					case 'ExampleCodeControl':

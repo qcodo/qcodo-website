@@ -34,18 +34,25 @@ INSERT INTO `download_category` VALUES
 	(3,4,'Other',0,'For other Community-Contributed classes, utilities, and code-snippets','', NULL),
 	(4,3,'Language Files',0,'A place to share language files and language file updates for Internationalized Qcodo.','These are files that should be placed within the core at /includes/qcodo/i18n.  As files are uploaded and perfected, and as authors grant permission, we will put them into the core in future releases.', NULL);
 
-INSERT INTO article_section VALUES(1,'Getting Started');
-INSERT INTO article_section VALUES(2,'Harnessing the Power of Qcodo');
-INSERT INTO article_section VALUES(3,'Advanced Topics');
+INSERT INTO article_section VALUES(1, 'Getting Started');
+INSERT INTO article_section VALUES(2, 'Harnessing the Power of Qcodo');
+INSERT INTO article_section VALUES(3, 'Advanced Topics');
+
+INSERT INTO issue_status_type(id, name) VALUES (1, 'Critical');
+INSERT INTO issue_status_type(id, name) VALUES (10, 'High');
+INSERT INTO issue_status_type(id, name) VALUES (50, 'Standard');
+INSERT INTO issue_status_type(id, name) VALUES (100, 'Low');
 
 INSERT INTO issue_status_type(id, name) VALUES (NULL, 'New Issue');
 INSERT INTO issue_status_type(id, name) VALUES (NULL, 'Open');
 INSERT INTO issue_status_type(id, name) VALUES (NULL, 'Assigned');
 INSERT INTO issue_status_type(id, name) VALUES (NULL, 'Fixed');
-INSERT INTO issue_status_type(id, name) VALUES (NULL, 'Closed - Fixed');
-INSERT INTO issue_status_type(id, name) VALUES (NULL, 'Closed - Won\'t Fix');
-INSERT INTO issue_status_type(id, name) VALUES (NULL, 'Closed - Duplicate');
-INSERT INTO issue_status_type(id, name) VALUES (NULL, 'Closed - Cannot Replicate');
+INSERT INTO issue_status_type(id, name) VALUES (NULL, 'Closed');
+
+INSERT INTO issue_resolution_type(id, name) VALUES (NULL, 'Fixed');
+INSERT INTO issue_resolution_type(id, name) VALUES (NULL, 'Won\'t Fix');
+INSERT INTO issue_resolution_type(id, name) VALUES (NULL, 'Duplicate');
+INSERT INTO issue_resolution_type(id, name) VALUES (NULL, 'Cannot Replicate');
 
 INSERT INTO issue_field(id, name, order_number, required_flag, mutable_flag, active_flag, token) VALUES (1, 'Qcodo Version', 1, true, false, true, 'qcodo_version');
 INSERT INTO issue_field(id, name, order_number, required_flag, mutable_flag, active_flag, token) VALUES (2, 'PHP Version', 2, true, true, true, 'php_version');
