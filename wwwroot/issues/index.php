@@ -16,6 +16,7 @@
 
 		protected $txtSummary;
 		protected $lstCategory;
+		protected $lstPriority;
 		protected $lstStatus;
 		protected $txtPostedBy;
 		protected $txtAssignedTo;
@@ -32,14 +33,17 @@
 			$this->dtgIssues->SetDataBinder('dtgIssues_Bind');
 
 			$this->dtgIssues->MetaAddColumn('Id', 'Html=<?= $_FORM->RenderId($_ITEM); ?>', 'Name=Issue ID', 'HtmlEntities=false', 'Width=60px');
-			$this->dtgIssues->MetaAddColumn('Title', 'Html=<?= $_FORM->RenderTitle($_ITEM); ?>', 'Name=Summary', 'HtmlEntities=false', 'Width=300px');
-			$this->dtgIssues->AddColumn(new QDataGridColumn('Category', '<?= $_FORM->RenderCategory($_ITEM); ?>', 'Width=130px'));
+			$this->dtgIssues->MetaAddColumn('Title', 'Html=<?= $_FORM->RenderTitle($_ITEM); ?>', 'Name=Summary', 'HtmlEntities=false', 'Width=240px');
+			$this->dtgIssues->MetaAddTypeColumn('IssuePriorityTypeId', 'IssuePriorityType', 'Name=Priority', 'Width=68px');
 			$this->dtgIssues->MetaAddTypeColumn('IssueStatusTypeId', 'IssueStatusType', 'Html=<?= $_FORM->RenderStatus($_ITEM); ?>', 'HtmlEntities=false', 'Name=Status', 'Width=85px');
+			$this->dtgIssues->AddColumn(new QDataGridColumn('Category', '<?= $_FORM->RenderCategory($_ITEM); ?>', 'Width=115px', 'CssClass=small'));
 			$this->dtgIssues->MetaAddColumn('PostDate', 'Name=Posted', 'CssClass=small', 'Width=65px');
 			$this->dtgIssues->MetaAddColumn(QQN::Issue()->PostedByPerson->DisplayName, 'Name=By', 'Html=<?= $_FORM->RenderPostedBy($_ITEM); ?>', 'HtmlEntities=false', 'Width=100px', 'CssClass=small reverseLink');
 			$this->dtgIssues->MetaAddColumn(QQN::Issue()->TopicLink->LastPostDate, 'Name=Last Updated', 'CssClass=small', 'Width=65px');
 			$this->dtgIssues->MetaAddColumn(QQN::Issue()->AssignedToPerson->DisplayName, 'Name=Assigned To', 'Html=<?= $_FORM->RenderAssignedTo($_ITEM); ?>', 'HtmlEntities=false', 'Width=100px', 'CssClass=small reverseLink');
 
+			$this->dtgIssues->GetColumnByName('Status')->OrderByClause = QQ::OrderBy(QQN::Issue()->IssueStatusTypeId, QQN::Issue()->IssueResolutionTypeId);
+			$this->dtgIssues->GetColumnByName('Status')->ReverseOrderByClause = QQ::OrderBy(QQN::Issue()->IssueStatusTypeId, false, QQN::Issue()->IssueResolutionTypeId, false);
 			$this->objIssueFieldForCategory = IssueField::LoadIssueFieldForCategory();
 			$this->objIssueFieldForQcodoVersion = IssueField::LoadIssueFieldForQcodoVersion();
 			$this->objIssueFieldForPhpVersion = IssueField::LoadIssueFieldForPhpVersion();
@@ -66,6 +70,15 @@
 			foreach ($this->objIssueFieldForCategory->GetIssueFieldOptionArray(QQ::OrderBy(QQN::IssueFieldOption()->OrderNumber)) as $objOption)
 				$this->lstCategory->AddItem($objOption->Name, $objOption->Id);
 			
+			$this->lstPriority = new QListBox($this);
+			$this->lstPriority->Name = 'Priority';
+			$this->lstPriority->AddAction(new QChangeEvent(), new QAjaxAction('Refresh'));
+			$this->lstPriority->AddAction(new QEnterKeyEvent(), new QAjaxAction('Refresh'));
+			$this->lstPriority->AddAction(new QEnterKeyEvent(), new QTerminateAction());
+			$this->lstPriority->AddItem('- View All -', null);
+			foreach (IssuePriorityType::$NameArray as $intKey => $strName)
+				$this->lstPriority->AddItem($strName, $intKey);
+
 			$this->lstStatus = new QListBox($this);
 			$this->lstStatus->Name = 'Status';
 			$this->lstStatus->AddAction(new QChangeEvent(), new QAjaxAction('Refresh'));
@@ -75,7 +88,7 @@
 			foreach (IssueStatusType::$NameArray as $intKey => $strName)
 				$this->lstStatus->AddItem($strName, $intKey);
 			
-			$this->txtPostedBy = new QTextBox($this);
+				$this->txtPostedBy = new QTextBox($this);
 			$this->txtPostedBy->Name = 'Posted By';
 			$this->txtPostedBy->AddAction(new QChangeEvent(), new QAjaxAction('Refresh'));
 			$this->txtPostedBy->AddAction(new QEnterKeyEvent(), new QAjaxAction('Refresh'));
@@ -110,6 +123,13 @@
 				$objCondition = QQ::AndCondition(
 					$objCondition,
 					QQ::Equal(QQN::Issue()->IssueStatusTypeId, $intValue)
+				);
+			}
+			
+			if ($intValue = $this->lstPriority->SelectedValue) {
+				$objCondition = QQ::AndCondition(
+					$objCondition,
+					QQ::Equal(QQN::Issue()->IssuePriorityTypeId, $intValue)
 				);
 			}
 			
@@ -168,12 +188,13 @@
 		}
 		
 		public function RenderStatus(Issue $objIssue) {
-			$strStatus = IssueStatusType::$NameArray[$objIssue->IssueStatusTypeId];
-			if (strpos($strStatus, ' - ') !== false) {
-				return '<strong>' . str_replace(' - ', '</strong><br/><em style="font-size: 10px; color: #777;">', $strStatus) . '</em>';
-			} else {
-				return '<strong>' . $strStatus . '</strong>';
+			$strStatus = '<strong>' . IssueStatusType::$NameArray[$objIssue->IssueStatusTypeId] . '</strong>';
+			if ($objIssue->IssueResolutionTypeId) {
+				$strStatus .= '<br/><em style="font-size: 10px; color: #777;">';
+				$strStatus .= IssueResolutionType::$NameArray[$objIssue->IssueResolutionTypeId];
+				$strStatus .= '</em>';
 			}
+			return $strStatus;
 		}
 
 		public function RenderPostedBy(Issue $objIssue) {

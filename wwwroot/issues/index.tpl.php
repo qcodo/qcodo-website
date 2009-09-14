@@ -10,13 +10,18 @@
 		</div>
 
 		<div style="float: left; font-size: 11px; font-weight: bold; margin-right: 15px;">
-			Category<br/>
-			<?php $this->lstCategory->Render('Width=140px'); ?>
+			Priority<br/>
+			<?php $this->lstPriority->Render('Width=140px'); ?>
 		</div>
 
 		<div style="float: left; font-size: 11px; font-weight: bold; margin-right: 15px;">
 			Status<br/>
 			<?php $this->lstStatus->Render('Width=140px'); ?>
+		</div>
+
+		<div style="float: left; font-size: 11px; font-weight: bold; margin-right: 15px;">
+			Category<br/>
+			<?php $this->lstCategory->Render('Width=140px'); ?>
 		</div>
 
 		<div style="float: left; font-size: 11px; font-weight: bold; margin-right: 15px;">
