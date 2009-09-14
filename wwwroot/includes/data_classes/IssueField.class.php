@@ -14,6 +14,14 @@
 	 * 
 	 */
 	class IssueField extends IssueFieldGen {
+		const TokenQcodoVersion = 'qcodo_version';
+		const TokenPhpVersion = 'php_version';
+		const TokenCategory = 'category';
+		const TokenBrowser = 'browser';
+		const TokenWebServer = 'web_server';
+		const TokenDatabase = 'database';
+		const TokenOperatingSystem = 'os';
+
 		/**
 		 * Default "to string" handler
 		 * Allows pages to _p()/echo()/print() this object, and to define the default
@@ -32,7 +40,7 @@
 		 * @return IssueField
 		 */
 		public static function LoadIssueFieldForCategory() {
-			return IssueField::LoadByToken('category');
+			return IssueField::LoadByToken(IssueField::TokenCategory);
 		}
 		
 		/**
@@ -40,7 +48,7 @@
 		 * @return IssueField
 		 */
 		public static function LoadIssueFieldForPhpVersion() {
-			return IssueField::LoadByToken('php_version');
+			return IssueField::LoadByToken(IssueField::TokenPhpVersion);
 		}
 
 		/**
@@ -48,7 +56,7 @@
 		 * @return IssueField
 		 */
 		public static function LoadIssueFieldForQcodoVersion() {
-			return IssueField::LoadByToken('qcodo_version');
+			return IssueField::LoadByToken(IssueField::TokenQcodoVersion);
 		}
 		
 		// Override or Create New Load/Count methods

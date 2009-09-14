@@ -27,6 +27,24 @@
 			return sprintf('Issue Object %s',  $this->intId);
 		}
 
+		public function __get($strName) {
+			switch ($strName) {
+				case 'Priority': return IssuePriorityType::$NameArray[$this->intIssuePriorityTypeId];
+				case 'Status': return IssueStatusType::$NameArray[$this->intIssueStatusTypeId];
+				case 'Resolution':
+					if (!$this->intIssueResolutionTypeId) return null;
+					return IssueResolutionType::$NameArray[$this->intIssueResolutionTypeId];
+				
+				default:
+					try {
+						return parent::__get($strName);
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+			}
+		}
+
 		/**
 		 * Given a selected FieldOption, this will set the field's value for this Issue for the given option.
 		 * If a prior option was specified, that will be overwritten.
@@ -57,7 +75,24 @@
 			else
 				return null;
 		}
+		
+		/**
+		 * This will return the string-based name of the selected FieldToken for this issue, or NULL if
+		 * either the Field doesn't exist or if the Option doesn't exist (e.g. none was set)
+		 * 
+		 * @param string $strToken the token of the IssueField you want to look up
+		 * @return string the value of the IssueField for this issue and token
+		 */
+		public function GetFieldOptionValueForIssueFieldToken($strToken) {
+			$objIssueField = IssueField::LoadByToken($strToken);
+			if (!$objIssueField) return null;
 
+			$objFieldValue = IssueFieldValue::LoadByIssueIdIssueFieldId($this->intId, $objIssueField->Id);
+			if (!$objFieldValue) return null;
+
+			return $objFieldValue->IssueFieldOption->Name;
+		}
+		
 		/**
 		 * Creates the Topic and TopicLink for this Issue object.
 		 * @return Topic

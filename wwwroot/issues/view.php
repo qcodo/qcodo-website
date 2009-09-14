@@ -19,6 +19,17 @@
 		protected function btnButton_Click($strFormId, $strControlId, $strParameter) {
 			$this->lblMessage->Text = 'Hello, World!';
 		}
+		
+		protected function DisplayField($strLabel, $strValue) {
+			if ($strValue) {
+?>
+				<div class="issuePanelField">
+					<div class="left"><?php _p($strLabel); ?></div>
+					<div class="right"><?php _p($strValue); ?></div>
+				</div>
+<?php				
+			}
+		}
 	}
 
 	QcodoForm::Run('QcodoForm');
