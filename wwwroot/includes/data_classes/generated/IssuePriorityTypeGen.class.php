@@ -18,15 +18,31 @@
 	 * @subpackage GeneratedDataObjects
 	 */
 	abstract class IssuePriorityTypeGen extends QBaseClass {
+		const Critical = 1;
+		const High = 10;
+		const Standard = 50;
+		const Low = 100;
 
-		const MaxId = 0;
+		const MaxId = 100;
 
-		public static $NameArray = array();
+		public static $NameArray = array(
+			1 => 'Critical',
+			10 => 'High',
+			50 => 'Standard',
+			100 => 'Low');
 
-		public static $TokenArray = array();
+		public static $TokenArray = array(
+			1 => 'Critical',
+			10 => 'High',
+			50 => 'Standard',
+			100 => 'Low');
 
 		public static function ToString($intIssuePriorityTypeId) {
 			switch ($intIssuePriorityTypeId) {
+				case 1: return 'Critical';
+				case 10: return 'High';
+				case 50: return 'Standard';
+				case 100: return 'Low';
 				default:
 					throw new QCallerException(sprintf('Invalid intIssuePriorityTypeId: %s', $intIssuePriorityTypeId));
 			}
@@ -34,6 +50,10 @@
 
 		public static function ToToken($intIssuePriorityTypeId) {
 			switch ($intIssuePriorityTypeId) {
+				case 1: return 'Critical';
+				case 10: return 'High';
+				case 50: return 'Standard';
+				case 100: return 'Low';
 				default:
 					throw new QCallerException(sprintf('Invalid intIssuePriorityTypeId: %s', $intIssuePriorityTypeId));
 			}

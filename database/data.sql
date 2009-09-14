@@ -38,10 +38,10 @@ INSERT INTO article_section VALUES(1, 'Getting Started');
 INSERT INTO article_section VALUES(2, 'Harnessing the Power of Qcodo');
 INSERT INTO article_section VALUES(3, 'Advanced Topics');
 
-INSERT INTO issue_status_type(id, name) VALUES (1, 'Critical');
-INSERT INTO issue_status_type(id, name) VALUES (10, 'High');
-INSERT INTO issue_status_type(id, name) VALUES (50, 'Standard');
-INSERT INTO issue_status_type(id, name) VALUES (100, 'Low');
+INSERT INTO issue_priority_type(id, name) VALUES (1, 'Critical');
+INSERT INTO issue_priority_type(id, name) VALUES (10, 'High');
+INSERT INTO issue_priority_type(id, name) VALUES (50, 'Standard');
+INSERT INTO issue_priority_type(id, name) VALUES (100, 'Low');
 
 INSERT INTO issue_status_type(id, name) VALUES (NULL, 'New Issue');
 INSERT INTO issue_status_type(id, name) VALUES (NULL, 'Open');
