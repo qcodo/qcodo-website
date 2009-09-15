@@ -24,6 +24,7 @@
 		
 		protected $lstRequiredFields = array();
 		protected $lstOptionalFields = array();
+		protected $txtMutableFields = array();
 		
 		protected function Form_Create() {
 			parent::Form_Create();
@@ -70,6 +71,13 @@
 
 				if ($objIssueField->MutableFlag) {
 					$lstField->AddItem('- Other... -', -1);
+					
+					$txtMutableField = new QTextBox($this, 'txtMutableField' . $objIssueField->Id);
+					$txtMutableField->Visible = false;
+					$txtMutableField->SetCustomStyle('margin-top', '2px');
+					$this->txtMutableFields[$objIssueField->Id] = $txtMutableField;
+
+					$lstField->AddAction(new QChangeEvent(), new QAjaxAction('lstField_Change'));
 				}
 
 				if ($objIssueField->RequiredFlag)
@@ -83,6 +91,14 @@
 			$this->txtLongDescription->TextMode = QTextMode::MultiLine;
 			
 			$this->txtTitle->Focus();
+		}
+		
+		protected function lstField_Change($strFormId, $strControlId, $strParameter) {
+			if ($this->GetControl($strControlId)->SelectedValue == -1) {
+				$this->txtMutableFields[$strParameter]->Visible = true;
+				$this->txtMutableFields[$strParameter]->Focus();
+			} else
+				$this->txtMutableFields[$strParameter]->Visible = false;
 		}
 	}
 	

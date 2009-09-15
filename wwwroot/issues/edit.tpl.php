@@ -1,5 +1,4 @@
 <?php require(__INCLUDES__ . '/header.inc.php'); ?>
-
 	<div class="form">
 
 		<h1>Report a Bug or Issue</h1>
@@ -33,10 +32,23 @@
 			<?php $this->lstResolution->RenderForDialog('Name=Resolution','Width=180px'); ?>
 			<br/><br/>
 			
-			<?php foreach ($this->lstRequiredFields as $lstField) $lstField->RenderForDialog('Width=180px'); ?>
+<?php 
+			foreach ($this->lstRequiredFields as $lstField) {
+				if (array_key_exists($lstField->ActionParameter, $this->txtMutableFields)) {
+					$lstField->HtmlAfter = '<br/>' . $this->txtMutableFields[$lstField->ActionParameter]->Render(false, 'Width=175px'); 
+				}
+				$lstField->RenderForDialog('Width=180px');
+			}
+?>
 			<br/><br/>
+<?php 
+			foreach ($this->lstOptionalFields as $lstField) {
+				if (array_key_exists($lstField->ActionParameter, $this->txtMutableFields))
+					$lstField->HtmlAfter = '<br/>' . $this->txtMutableFields[$lstField->ActionParameter]->Render(false, 'Width=175px'); 
+				$lstField->RenderForDialog('Width=180px');
+			}
+?>
 
-			<?php foreach ($this->lstOptionalFields as $lstField) $lstField->RenderForDialog('Width=180px'); ?>
 		</div>
 	</div>
 
