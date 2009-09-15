@@ -77,6 +77,65 @@
 			////////////////////////////////////////////
 		}
 
+		public function RenderSideBySideErrorBelow($blnDisplayOutput = true) {
+			////////////////////
+			// Call RenderHelper
+			$this->RenderHelper(func_get_args(), __FUNCTION__);
+			////////////////////
+
+			// Custom Render Functionality Here
+
+			// Because this example RenderWithName will render a block-based element (e.g. a DIV), let's ensure
+			// that IsBlockElement is set to true
+			$this->blnIsBlockElement = true;
+
+			// Render the Control's Dressing
+			$strToReturn = '<div class="renderForForm">';
+
+			// Render the Left side
+			$strLeftClass = "left";
+			if ($this->blnRequired)
+				$strLeftClass .= ' required';
+			if (!$this->blnEnabled)
+				$strLeftClass .= ' disabled';
+
+			$strToReturn .= sprintf('<div class="%s"><label for="%s">%s</label></div>' , $strLeftClass, $this->strControlId, $this->strName);
+
+			if ($this->strInstructions) {
+				if ($this instanceof QCheckBox) {
+					$strInstructions = ' <span class="instructions forCheckbox">' . $this->strInstructions . '</span>';
+				} else {
+					$strInstructions = '<br/><span class="instructions">' . $this->strInstructions . '</span>';
+				}
+			} else {
+				$strInstructions = '';
+			}
+
+
+			// Render the Right side
+			if ($this->strValidationError)
+				$strMessage = sprintf('<br/><span class="error">%s</span>', $this->strValidationError);
+			else if ($this->strWarning)
+				$strMessage = sprintf('<br/><span class="error">%s</span>', $this->strWarning);
+			else
+				$strMessage = '';
+
+			try {
+				$strToReturn .= sprintf('<div class="right">%s%s%s%s%s</div>',
+					$this->strHtmlBefore, $this->GetControlHtml(), $this->strHtmlAfter, $strMessage, $strInstructions);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+
+			$strToReturn .= '</div>';
+
+			////////////////////////////////////////////
+			// Call RenderOutput, Returning its Contents
+			return $this->RenderOutput($strToReturn, $blnDisplayOutput);
+			////////////////////////////////////////////
+		}
+
 		public function RenderForDialog($blnDisplayOutput = true) {
 			////////////////////
 			// Call RenderHelper
@@ -112,9 +171,9 @@
 
 			// Render the Right side
 			if ($this->strValidationError)
-				$strMessage = sprintf('<span class="error">%s</span>', $this->strValidationError);
+				$strMessage = sprintf('<br/><span class="error">%s</span>', $this->strValidationError);
 			else if ($this->strWarning)
-				$strMessage = sprintf('<span class="error">%s</span>', $this->strWarning);
+				$strMessage = sprintf('<br/><span class="error">%s</span>', $this->strWarning);
 			else
 				$strMessage = '';
 

@@ -13,8 +13,8 @@
 			Fields in <strong>BOLD</strong> are required.</p>
 			<br/>
 
-			<?php $this->txtTitle->RenderForForm('Width=346px', 'Name=Short Description'); ?>
-			<?php $this->txtLongDescription->RenderForForm('Width=350px', 'Height=120px', 'Name=Long Description'); ?>
+			<?php $this->txtTitle->RenderSideBySideErrorBelow('Width=346px', 'Name=Short Description'); ?>
+			<?php $this->txtLongDescription->RenderSideBySideErrorBelow('Width=350px', 'Height=120px', 'Name=Long Description'); ?>
 			
 			<br/>
 			
@@ -23,6 +23,15 @@
 			<?php $this->txtExampleData->RenderForForm('Width=350px', 'Height=120px'); ?>
 			<?php $this->txtExpectedOutput->RenderForForm('Width=350px', 'Height=80px'); ?>
 			<?php $this->txtActualOutput->RenderForForm('Width=350px', 'Height=80px'); ?>
+			
+			<br/>
+			
+			
+			<div class="renderForForm"><div class="left">&nbsp;</div><div class="right">
+				<?php $this->btnOkay->Render(); ?>
+				&nbsp;or&nbsp;
+				<?php $this->btnCancel->Render(); ?>
+			</div></div>
 		</div>
 
 		<div class="sidebar">
@@ -50,6 +59,8 @@
 ?>
 
 		</div>
+		
+		<br clear="all"/><br/>
 	</div>
 
 <?php require(__INCLUDES__ . '/footer.inc.php'); ?>
