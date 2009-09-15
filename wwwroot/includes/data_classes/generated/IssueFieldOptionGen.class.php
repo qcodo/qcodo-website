@@ -610,6 +610,46 @@
 				QQ::Equal(QQN::IssueFieldOption()->IssueFieldId, $intIssueFieldId)
 			);
 		}
+			
+		/**
+		 * Load an array of IssueFieldOption objects,
+		 * by IssueFieldId, ActiveFlag Index(es)
+		 * @param integer $intIssueFieldId
+		 * @param boolean $blnActiveFlag
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @return IssueFieldOption[]
+		*/
+		public static function LoadArrayByIssueFieldIdActiveFlag($intIssueFieldId, $blnActiveFlag, $objOptionalClauses = null) {
+			// Call IssueFieldOption::QueryArray to perform the LoadArrayByIssueFieldIdActiveFlag query
+			try {
+				return IssueFieldOption::QueryArray(
+					QQ::AndCondition(
+					QQ::Equal(QQN::IssueFieldOption()->IssueFieldId, $intIssueFieldId),
+					QQ::Equal(QQN::IssueFieldOption()->ActiveFlag, $blnActiveFlag)
+					),
+					$objOptionalClauses);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+		}
+
+		/**
+		 * Count IssueFieldOptions
+		 * by IssueFieldId, ActiveFlag Index(es)
+		 * @param integer $intIssueFieldId
+		 * @param boolean $blnActiveFlag
+		 * @return int
+		*/
+		public static function CountByIssueFieldIdActiveFlag($intIssueFieldId, $blnActiveFlag) {
+			// Call IssueFieldOption::QueryCount to perform the CountByIssueFieldIdActiveFlag query
+			return IssueFieldOption::QueryCount(
+				QQ::AndCondition(
+				QQ::Equal(QQN::IssueFieldOption()->IssueFieldId, $intIssueFieldId),
+				QQ::Equal(QQN::IssueFieldOption()->ActiveFlag, $blnActiveFlag)
+				)
+			);
+		}
 
 
 

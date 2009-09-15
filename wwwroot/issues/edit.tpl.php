@@ -3,8 +3,8 @@
 	<div class="form">
 
 		<h1>Report a Bug or Issue</h1>
-		<div class="mainForm">
 
+		<div class="mainForm">
 			<p class="instructions">Please help out the <strong>Qcodo.com</strong> team in improving Qcodo!
 			The more detail you can provide, the easier it will be to debug and fix.  It's <strong>very
 			important</strong> to post example code and/or instructions on how to reproduce.<br/><br/>
@@ -14,13 +14,29 @@
 			Fields in <strong>BOLD</strong> are required.</p>
 			<br/>
 
-			<?php $this->txtTitle->RenderForForm('Width=300px', 'Name=Short Description'); ?>
-			<?php $this->txtExampleCode->RenderForForm('Width=300px', 'Height=80px'); ?>
-			<?php $this->txtExampleTemplate->RenderForForm('Width=300px', 'Height=80px'); ?>
-			<?php $this->txtExampleData->RenderForForm('Width=300px', 'Height=80px'); ?>
-			<?php $this->txtExpectedOutput->RenderForForm('Width=300px', 'Height=80px'); ?>
-			<?php $this->txtActualOutput->RenderForForm('Width=300px', 'Height=80px'); ?>
+			<?php $this->txtTitle->RenderForForm('Width=346px', 'Name=Short Description'); ?>
+			<?php $this->txtLongDescription->RenderForForm('Width=350px', 'Height=120px', 'Name=Long Description'); ?>
 			
+			<br/>
+			
+			<?php $this->txtExampleCode->RenderForForm('Width=350px', 'Height=120px'); ?>
+			<?php $this->txtExampleTemplate->RenderForForm('Width=350px', 'Height=120px'); ?>
+			<?php $this->txtExampleData->RenderForForm('Width=350px', 'Height=120px'); ?>
+			<?php $this->txtExpectedOutput->RenderForForm('Width=350px', 'Height=80px'); ?>
+			<?php $this->txtActualOutput->RenderForForm('Width=350px', 'Height=80px'); ?>
+		</div>
+
+		<div class="sidebar">
+			<p style="height: 115px;">&nbsp;</p>
+			<?php $this->lstPriority->RenderForDialog('Name=Priority','Width=180px'); ?>
+			<?php $this->lstStatus->RenderForDialog('Name=Status','Width=180px'); ?>
+			<?php $this->lstResolution->RenderForDialog('Name=Resolution','Width=180px'); ?>
+			<br/><br/>
+			
+			<?php foreach ($this->lstRequiredFields as $lstField) $lstField->RenderForDialog('Width=180px'); ?>
+			<br/><br/>
+
+			<?php foreach ($this->lstOptionalFields as $lstField) $lstField->RenderForDialog('Width=180px'); ?>
 		</div>
 	</div>
 

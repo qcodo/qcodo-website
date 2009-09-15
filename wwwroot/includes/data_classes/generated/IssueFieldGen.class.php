@@ -611,6 +611,38 @@
 				QQ::Equal(QQN::IssueField()->Token, $strToken)
 			);
 		}
+			
+		/**
+		 * Load an array of IssueField objects,
+		 * by ActiveFlag Index(es)
+		 * @param boolean $blnActiveFlag
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @return IssueField[]
+		*/
+		public static function LoadArrayByActiveFlag($blnActiveFlag, $objOptionalClauses = null) {
+			// Call IssueField::QueryArray to perform the LoadArrayByActiveFlag query
+			try {
+				return IssueField::QueryArray(
+					QQ::Equal(QQN::IssueField()->ActiveFlag, $blnActiveFlag),
+					$objOptionalClauses);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+		}
+
+		/**
+		 * Count IssueFields
+		 * by ActiveFlag Index(es)
+		 * @param boolean $blnActiveFlag
+		 * @return int
+		*/
+		public static function CountByActiveFlag($blnActiveFlag) {
+			// Call IssueField::QueryCount to perform the CountByActiveFlag query
+			return IssueField::QueryCount(
+				QQ::Equal(QQN::IssueField()->ActiveFlag, $blnActiveFlag)
+			);
+		}
 
 
 

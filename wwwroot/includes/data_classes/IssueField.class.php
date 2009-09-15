@@ -34,6 +34,14 @@
 		public function __toString() {
 			return sprintf('IssueField Object %s',  $this->intId);
 		}
+		
+		/**
+		 * Gets the array of active IssueFieldOptions for this IssueField in the appropriate order
+		 * @return IssueFieldOption[]
+		 */
+		public function GetOptionArray() {
+			return IssueFieldOption::LoadArrayByIssueFieldIdActiveFlag($this->intId, true, QQ::OrderBy(QQN::IssueFieldOption()->OrderNumber));
+		}
 
 		/**
 		 * Gets the IssueField object for the Category field
