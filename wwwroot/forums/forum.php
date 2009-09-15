@@ -134,6 +134,9 @@
 				case 4:
 					$this->pnlMessages->lblTopicInfo_SetTemplate(__INCLUDES__ . '/messages/lblTopicInfoWithForumName.tpl.php');
 					break;
+				case 1:
+					// No Topic is Selected -- therefore, no template
+					break;
 				default:
 					$this->pnlMessages->lblTopicInfo_SetTemplate(__INCLUDES__ . '/messages/lblTopicInfo.tpl.php');
 					break;
@@ -209,6 +212,7 @@
 			$this->btnSearchAll->AddAction(new QClickEvent(), new QTerminateAction());
 			$this->btnSearchAll->ActionParameter = false;
 
+			// Last Minute Cleanup
 			switch ($this->intViewState) {
 				case 3:
 				case 4:
@@ -381,7 +385,7 @@
 				$objMessage->TopicLink = $this->objForum->TopicLink;
 				$objMessage->Person = QApplication::$Person;
 				$objMessage->ReplyNumber = null;
-				$this->dlgMessage->EditMessage($objMessage);
+				$this->pnlMessages->dlgMessage->EditMessage($objMessage);
 			} else
 				QApplication::Redirect('/login/');
 		}

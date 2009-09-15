@@ -84,30 +84,62 @@
 		public function btnCancel_Click($strFormId, $strControlId, $strParameter) {
 			$this->ParentControl->CloseMessageDialog();
 		}
+		
+		public function EditMessageHelper_Forum(Message $objMessage) {
+			$this->lstForum->RemoveAllItems();
+			$this->lstForum->AddItem($objMessage->TopicLink->Forum->Name);
+			$this->lstForum->Enabled = false;
+
+			if ($objMessage->Id) {
+				$this->lblHeading->Text = 'Edit My Existing Post';
+				$this->blnEditMode = true;
+				$this->btnOkay->Text = 'Update My Reply';
+			} else {
+				$this->lblHeading->Text = 'Post Response to Current Topic';
+				$this->blnEditMode = false;
+				$this->btnOkay->Text = 'Post My Reply';
+			}
+		}
+
+		public function EditMessageHelper_Issue(Message $objMessage) {
+			$this->lstForum->RemoveAllItems();
+			$this->lstForum->Visible = false;
+
+			if ($objMessage->Id) {
+				$this->lblHeading->Text = 'Edit My Existing Comment';
+				$this->blnEditMode = true;
+				$this->btnOkay->Text = 'Update My Comment';
+			} else {
+				$this->lblHeading->Text = 'Post a New Comment for this Issue';
+				$this->blnEditMode = false;
+				$this->btnOkay->Text = 'Post My Comment';
+			}
+		}
 
 		public function EditMessage(Message $objMessage) {
 			$this->mctMessage->ReplaceObject($objMessage);
 			$this->ShowDialogBox();
 
+			// Does the Topic for this Message Already Exist?
 			if ($objMessage->TopicId) {
-				$this->lstForum->RemoveAllItems();
-				$this->lstForum->AddItem($objMessage->TopicLink->Forum->Name);
-				$this->lstForum->Enabled = false;
-
 				$this->txtTopicName->Text = $objMessage->Topic->Name;
 				$this->txtTopicName->Enabled = false;
 
-				if ($objMessage->Id) {
-					$this->lblHeading->Text = 'Edit My Existing Post';
-					$this->blnEditMode = true;
-					$this->btnOkay->Text = 'Update My Reply';
-				} else {
-					$this->lblHeading->Text = 'Post Response to Current Topic';
-					$this->blnEditMode = false;
-					$this->btnOkay->Text = 'Post My Reply';
+				// If so, we need to call a helper method for the TopicLinkType for this Topic
+				switch ($objMessage->TopicLink->TopicLinkTypeId) {
+					case TopicLinkType::Forum:
+						$this->EditMessageHelper_Forum($objMessage);
+						break;
+					case TopicLinkType::Issue:
+						$this->EditMessageHelper_Issue($objMessage);
+						break;
+					default:
+						throw new Exception('Unsupported TopicLinkTypeId: ' . $objMessage->TopicLink->TopicLinkTypeId);
 				}
-				
+
 				$this->txtMessage->Focus();
+
+			// Otherwise, we are looking at a NEW Topic -- this ONLY HAPPENS with Forum
 			} else {
 				$this->lblHeading->Text = 'Post a New Topic';
 				

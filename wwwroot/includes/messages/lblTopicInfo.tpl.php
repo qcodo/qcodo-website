@@ -8,16 +8,16 @@
 		$strRelative .= ' ago';
 ?>
 
-<h1><?php _p($_CONTROL->ParentControl->objTopic->Name); ?></h1>
-<h3>
-	thread:
-	<strong><?php _p($_CONTROL->ParentControl->objTopic->ReplyCount); ?></strong>
+	<h1><?php _p($_CONTROL->ParentControl->objTopic->Name); ?></h1>
+	<h3>
+		thread:
+		<strong><?php _p($_CONTROL->ParentControl->objTopic->ReplyCount); ?></strong>
+		
+		&nbsp;|&nbsp;
 	
-	&nbsp;|&nbsp;
-
-	last: <strong><?php _p($strRelative); ?></strong>
-
-	&nbsp;|&nbsp;
-
-	started: <strong><?php _p($_CONTROL->ParentControl->strPostStartedLinkText, false)?></strong>
-</h3>
+		last: <strong><?php _p($strRelative); ?></strong>
+	
+		&nbsp;|&nbsp;
+	
+		started: <strong><?php _p($_CONTROL->ParentControl->strPostStartedLinkText, false)?></strong>
+	</h3>

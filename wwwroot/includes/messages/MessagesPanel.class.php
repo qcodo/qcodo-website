@@ -97,6 +97,14 @@
 
 			$this->pxyEditMessage->AddAction(new QClickEvent(), new QAjaxControlAction($this, 'pxyEditMessage_Click'));
 			$this->pxyEditMessage->AddAction(new QClickEvent(), new QTerminateAction());
+
+			// HIde all buttons until a Topic is properly selected
+			$this->btnRespond1->Visible = false;
+			$this->btnRespond2->Visible = false;
+			$this->btnMarkAsViewed1->Visible = false;
+			$this->btnMarkAsViewed2->Visible = false;
+			$this->btnNotify1->Visible = false;
+			$this->btnNotify2->Visible = false;
 		}
 
 		/**
@@ -192,9 +200,11 @@
 
 				// Repaginate on new posts
 				if ($blnRepaginate) {
-					$this->dtrMessages->PageNumber = 1;
+					$this->dtrMessages->PageNumber = -1;
 					$strMethodName = $this->strCallbackMethodOnNewPost; 
-					$this->objCallbackMethodOnNewPost->$strMethodName();
+					if ($strMethodName) {
+						$this->objCallbackMethodOnNewPost->$strMethodName();
+					}
 				}
 			}
 
@@ -213,6 +223,14 @@
 		public function SelectTopic(Topic $objTopic) {
 			$this->objTopic = $objTopic;
 			if ($this->objTopic) {
+				// View Buttons
+				$this->btnRespond1->Visible = true;
+				$this->btnRespond2->Visible = true;
+				$this->btnMarkAsViewed1->Visible = true;
+				$this->btnMarkAsViewed2->Visible = true;
+				$this->btnNotify1->Visible = true;
+				$this->btnNotify2->Visible = true;
+
 				$objFirstMessage = Message::QuerySingle(
 					QQ::Equal(QQN::Message()->TopicId, $this->objTopic->Id),
 					QQ::OrderBy(QQN::Message()->Id)
@@ -227,6 +245,13 @@
 				$this->UpdateNotifyButtons();
 				$this->UpdateMarkAsViewedButtons();
 			} else {
+				// Hide Buttons
+				$this->btnRespond1->Visible = false;
+				$this->btnRespond2->Visible = false;
+				$this->btnMarkAsViewed1->Visible = false;
+				$this->btnMarkAsViewed2->Visible = false;
+				$this->btnNotify1->Visible = false;
+				$this->btnNotify2->Visible = false;
 			}
 		}
 

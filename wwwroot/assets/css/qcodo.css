@@ -27,6 +27,16 @@
 		div.renderForForm div.right span.instructions { font: 10px 'Arial', 'Helvetica'; color: #666; font-style: italic; text-transform: none;}
 		div.renderForForm span.forCheckbox { position: relative; top: -2px; font-style: normal; }
 
+	div.renderForDialog { margin-bottom: 12px; }
+		div.renderForDialog div.label { font-size: 10px; margin-bottom: 1px; }
+		div.renderForDialog div.required { font-weight: bold; text-transform: uppercase; }
+
+		div.renderForDialog div.control { }
+		div.renderForDialog div.control span.error { font: 10px 'Arial', 'Helvetica'; color: #966; font-style: italic; }
+		
+		div.renderForDialog input { padding: 0; margin: 0; }
+		div.renderForDialog div.control span.instructions { font: 10px 'Arial', 'Helvetica'; color: #666; font-style: italic; text-transform: none;}
+		div.renderForDialog span.forCheckbox { position: relative; top: -2px; font-style: normal; }
 
 	h2 { color: #eee; background-color: #353; margin: 0; padding: 2px 5px 2px 5px; font-size: 20px;}
 	
