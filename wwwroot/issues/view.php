@@ -56,12 +56,12 @@
 			$this->lblMessage->Text = 'Hello, World!';
 		}
 		
-		protected function DisplayField($strLabel, $strValue) {
+		protected function DisplayField($strLabel, $strValue, $blnHtmlEntities = true) {
 			if ($strValue) {
 ?>
 				<div class="issuePanelField">
 					<div class="left"><?php _p($strLabel); ?></div>
-					<div class="right"><?php _p($strValue); ?></div>
+					<div class="right"><?php _p($strValue, $blnHtmlEntities); ?></div>
 				</div>
 <?php				
 			}

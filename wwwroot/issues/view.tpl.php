@@ -1,7 +1,10 @@
 <?php require(__INCLUDES__ . '/header.inc.php'); ?>
 
 	<div class="searchBar">
-		<div class="title">Bugs and Issues</div>
+		<div class="title">
+			<span style="font-weight: normal; font-size: 12px;">Issue #<?php _p($this->objIssue->Id); ?>: </span>
+			<?php _p($this->objIssue->Title); ?>
+		</div>
 		<div class="right">
 			<?php // $this->txtSearch->Render(); ?>
 		</div>
@@ -25,5 +28,6 @@
 	</div>
 
 	<?php $this->pnlMessages->Render(); ?>
+	<br clear="all"/>
 
 <?php require(__INCLUDES__ . '/footer.inc.php'); ?>

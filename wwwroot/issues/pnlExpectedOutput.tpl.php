@@ -2,10 +2,8 @@
 	if ($_FORM->objIssue->ExpectedOutput) {
 ?>
 		<div class="issuePanelTitle">Expected Result</div>
-		<div class="issuePanelBody">
-			<code style="width: 200px;">
-				<?php _b($this->objIssue->ExpectedOutput); ?>
-			</code>
+		<div class="issuePanelBody" style="overflow: auto;">
+			<pre><?php _p($this->objIssue->ExpectedOutput); ?></pre>
 		</div>
 <?php	
 	}

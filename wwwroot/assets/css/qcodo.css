@@ -82,8 +82,9 @@
 	div.issuePanelBody { width: 200px; background-color: #eee; border: 1px solid #666; padding: 5px; font-size: 11px; margin-bottom: 12px;}
 		div.issuePanelBody div.issuePanelField { height: 100%; clear: both; _zoom: 1; }
 		div.issuePanelBody div.issuePanelField:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
-			div.issuePanelBody div.issuePanelField div.left { float: left; width: 50px;}
+			div.issuePanelBody div.issuePanelField div.left { float: left; width: 65px;}
 			div.issuePanelBody div.issuePanelField div.right { float: left; font-weight: bold;}
+		div.issuePanelBody pre { width: 200px; padding: 0; margin: 0;}
 
 /* FORUMS */
 		div.searchBar { background-color: #393939; -moz-border-radius: 8px 8px 0 0; height: 22px; padding: 4px 14px 0 14px; border: 1px solid #222; }
