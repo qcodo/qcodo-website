@@ -117,7 +117,7 @@
 				$this->dtrMessages->TotalItemCount = $this->objTopic->MessageCount;
 
 				$objDataSource = $this->objTopic->GetMessageArray(QQ::Clause(
-					QQ::OrderBy(QQN::Message()->PostDate, false),
+					QQ::OrderBy(QQN::Message()->PostDate, true),
 					$this->dtrMessages->LimitClause,
 					QQ::Expand(QQN::Message()->Person),
 					QQ::Expand(QQN::Message()->Person->Country)

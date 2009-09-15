@@ -64,6 +64,9 @@
 				case 'ViewProfileUrl':
 					return '/profile/view.php/' . $this->strUsername;
 
+				case 'DisplayNameWithLink':
+					return sprintf('<a href="%s" title="View Profile">%s</a>', $this->ViewProfileUrl, QApplication::HtmlEntities($this->DisplayName));
+
 				case 'SmtpEmailAddress':
 					return $this->strFirstName . ' ' . $this->strLastName . ' <' . $this->strEmail . '>';
 

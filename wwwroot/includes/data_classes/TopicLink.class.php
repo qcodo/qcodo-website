@@ -41,6 +41,15 @@
 			$this->Save();
 		}
 
+		/**
+		 * Intended to be used for Single-Topic TopicLink objects (e.g. not really useful for "Forum"-based TopicLinks)
+		 * @return Topic
+		 */
+		public function GetTopic() {
+			$objTopicArray = $this->GetTopicArray();
+			return $objTopicArray[0];
+		}
+
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...
 		// but feel free to use these as a starting point)
