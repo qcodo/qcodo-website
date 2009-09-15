@@ -43,8 +43,9 @@
 			$this->txtTopicName->AddAction(new QEnterKeyEvent(), new QFocusControlAction($this->txtMessage));
 			$this->txtTopicName->AddAction(new QEnterKeyEvent(), new QTerminateAction());
 			
+			$this->btnOkay->AddAction(new QClickEvent(), new QToggleEnableAction($this->btnOkay));
 			$this->btnOkay->AddAction(new QClickEvent(), new QAjaxControlAction($this, 'btnOkay_Click'));
-
+			
 			$this->btnCancel->AddAction(new QClickEvent(), new QAjaxControlAction($this, 'btnCancel_Click'));
 			$this->btnCancel->AddAction(new QClickEvent(), new QTerminateAction());
 			
@@ -53,6 +54,7 @@
 		}
 
 		public function btnOkay_Click($strFormId, $strControlId, $strParameter) {
+			$this->btnOkay->Enabled = true;
 			$blnNewTopic = false;
 
 			// Setup stuff if it's a NEW message being posted (either a NEW response or a NEW topic)

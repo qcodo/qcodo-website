@@ -200,8 +200,8 @@
 
 				// Repaginate on new posts
 				if ($blnRepaginate) {
-					$this->dtrMessages->PageNumber = -1;
-					$strMethodName = $this->strCallbackMethodOnNewPost; 
+					$this->dtrMessages->PageNumber = QPaginatedControl::LastPage;
+					$strMethodName = $this->strCallbackMethodOnNewPost;
 					if ($strMethodName) {
 						$this->objCallbackMethodOnNewPost->$strMethodName();
 					}
