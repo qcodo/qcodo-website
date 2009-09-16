@@ -21,6 +21,12 @@
 		protected $strIncludedStyleSheetFileArray = array();
 		protected $strIgnoreStyleSheetFileArray = array();
 
+		private $pxyUrlHashProxy = null;
+		private $intUrlHashPollingInterval = null;
+		private $strUrlHashMethod = null;
+		private $objUrlHashParentObject = null;
+		protected $strUrlHash;
+		
 		protected $strPreviousRequestMode = false;
 		protected $strHtmlIncludeFilePath;
 		protected $strCssClass;
@@ -49,6 +55,7 @@
 				case "FormStatus": return $this->intFormStatus;
 				case "HtmlIncludeFilePath": return $this->strHtmlIncludeFilePath;
 				case "CssClass": return $this->strCssClass;
+				case "UrlHash": return $this->strUrlHash;
 
 				default:
 					try {
@@ -121,7 +128,6 @@
 		protected function Form_PreRender() {}
 		protected function Form_Validate() {return true;}
 		protected function Form_Exit() {}
-		
 
 		public function VarExport($blnReturn = true) {
 			if ($this->objControlArray) foreach ($this->objControlArray as $objControl)
@@ -334,8 +340,10 @@
 				$strToReturn = $objControl->RenderAjax(false);
 			if ($strToReturn)
 				$strToReturn .= "\r\n";
-			foreach ($objControl->GetChildControls() as $objChildControl)
+			foreach ($objControl->GetChildControls() as $objChildControl) {
 				$strToReturn .= $this->RenderAjaxHelper($objChildControl);
+				$objChildControl->MarkAsRendered();
+			}
 			return $strToReturn;
 		}
 		
@@ -1132,11 +1140,16 @@
 					$strEndScript = 'qc.loadJavaScriptFile("' . $strScript . '", null); ';
 			}
 
-			// Finally, add qcodo includes path
+			// Next, add qcodo includes path
 			$strEndScript = sprintf('qc.jsAssets = "%s"; ', __VIRTUAL_DIRECTORY__ . __JS_ASSETS__) . $strEndScript;
 			$strEndScript = sprintf('qc.phpAssets = "%s"; ', __VIRTUAL_DIRECTORY__ . __PHP_ASSETS__) . $strEndScript;
 			$strEndScript = sprintf('qc.cssAssets = "%s"; ', __VIRTUAL_DIRECTORY__ . __CSS_ASSETS__) . $strEndScript;
 			$strEndScript = sprintf('qc.imageAssets = "%s"; ', __VIRTUAL_DIRECTORY__ . __IMAGE_ASSETS__) . $strEndScript;
+
+			// And lastly, add a Hash Processor (if any and if applicable)
+			if ($this->pxyUrlHashProxy && (QApplication::$RequestMode != QRequestMode::Ajax)) {
+				$strEndScript .= sprintf('setInterval("qc.processHash(\'%s\')", %s); ', $this->pxyUrlHashProxy->ControlId, $this->intUrlHashPollingInterval);
+			}
 
 			// Create Final EndScript Script
 			$strEndScript = sprintf('<script type="text/javascript">qc.registerForm(); %s</script>', $strEndScript);
@@ -1185,8 +1198,38 @@
 			} else
 				return $strToReturn;
 		}
+
+		/**
+		 * If the QForm should process the URL hash value after initial rendering, set the PHP method name (and parent object)
+		 * to be called to process the hash on initial load.  Method specified should be an Event Handler, where the $strParameter
+		 * passed in will be the value of the hash value (if any).  If no parent object is specified, this QForm will be assumed.
+		 * @param string $strMethodName name of the event handling method to be called 
+		 * @param Object $objParentControl optional object that contains the method
+		 * @param integer $intUrlHashPollingInterval the interval (in ms) on how often the URL is reprocessed (optional, default is 250ms)
+		 * @return void
+		 */
+		public function SetUrlHashProcessor($strMethodName, $objParentControl = null, $intUrlHashPollingInterval = 250) {
+			if (!$this->pxyUrlHashProxy)
+				$this->pxyUrlHashProxy = new QControlProxy($this);
+
+			// Setup Values
+			$this->intUrlHashPollingInterval = $intUrlHashPollingInterval;
+			$this->strUrlHashMethod = $strMethodName;
+			$this->objUrlHashParentObject = $objParentControl;
+
+			// Setup the Control Proxy
+			$this->pxyUrlHashProxy->RemoveAllActions(QClickEvent::EventName);
+			$this->pxyUrlHashProxy->AddAction(new QClickEvent(), new QAjaxAction('UrlHashProxy_Process'));
+		}
+
+		protected function UrlHashProxy_Process($strFormId, $strControlId, $strParameter) {
+			$this->strUrlHash = trim($strParameter);
+			$objObject = ($this->objUrlHashParentObject) ? $this->objUrlHashParentObject : $this;
+			$strMethod = $this->strUrlHashMethod;
+			$objObject->$strMethod(); 
+		}
 	}
-	
+
 	function __QForm_EvaluateTemplate_ObHandler($strBuffer) {
 		return $strBuffer;
 	}

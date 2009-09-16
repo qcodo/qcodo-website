@@ -1,7 +1,7 @@
 <?php require(__INCLUDES__ . '/header.inc.php'); ?>
 	<div class="form">
 
-		<h1>Report a Bug or Issue</h1>
+		<h1><?php _p($this->strHeadline); ?></h1>
 
 		<div class="mainForm">
 			<p class="instructions">Please help out the <strong>Qcodo.com</strong> team in improving Qcodo!
@@ -36,6 +36,11 @@
 
 		<div class="sidebar">
 			<p style="height: 115px;">&nbsp;</p>
+			<?php $this->txtAssignedTo->RenderForDialog('Name=Assigned To','Width=180px'); ?>
+			<?php $this->txtDueDate->HtmlAfter = ' &nbsp; ' . $this->calDueDate->Render(false); ?>
+			<?php $this->txtDueDate->RenderForDialog('Name=Due Date','Width=150px'); ?>
+			<br/><br/>
+
 			<?php $this->lstPriority->RenderForDialog('Name=Priority','Width=180px'); ?>
 			<?php $this->lstStatus->RenderForDialog('Name=Status','Width=180px'); ?>
 			<?php $this->lstResolution->RenderForDialog('Name=Resolution','Width=180px'); ?>

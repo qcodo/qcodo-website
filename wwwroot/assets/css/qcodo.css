@@ -238,4 +238,25 @@
 		table.issuesDataGrid td.small { font-size: 10px; }
 		table.issuesDataGrid td.reverseLink a { text-decoration: none; }
 		table.issuesDataGrid td.reverseLink a:hover { text-decoration: underline; }
-		
+
+	/* QCalendar */
+	div.calendar { width: 200px; border: 1px solid #337; background-color: #ccf; }
+		div.calendar div.navigator { background-color: #337; overflow: auto; _height: 100%; color: #fff; padding: 2px 6px 2px 6px; }
+		div.calendar div.navigator div.left { float: left; }
+		div.calendar div.navigator div.month { float: left; width: 80px; text-align: center; font-weight: bold; font-size: 11px; }
+		div.calendar div.navigator div.year { float: right; }
+		div.calendar div.navigator div.year span { font-size: 11px; font-weight: bold; margin-left: 6px; margin-right: 6px; }
+			div.calendar div.navigator a { color: #fff; text-decoration: none; }
+			div.calendar div.navigator a:hover { text-decoration: underline; }
+		div.calendar table { border: 0; margin-left: auto; margin-right: auto;}
+			div.calendar th { text-align: center; border: 0; padding: 4px 2px 4px 2px; font-weight: bold; font-size: 10px;}
+			div.calendar td { text-align: center; border-width: 0 0 1px 0; border-style: solid; border-color: black; padding: 0;}
+				div.calendar td.lastRow { border-width: 0;}
+				div.calendar td a { text-decoration: none; color: #000; display: block; padding: 2px 6px 2px 6px; }
+				div.calendar td.today { background-color: #bbd; }
+				div.calendar td.nonMonth a { color: #aaf; }
+				div.calendar td.selected { background-color: #c9a; font-weight: bold; }
+				div.calendar td a:hover { background-color: #eef; color: #000; }
+		div.calendar div.options { text-align: center; background-color: #337; }
+			div.calendar div.options a { color: #fff; font-size: 10px; text-decoration: none;}
+			div.calendar div.options a:hover { text-decoration: underline; }

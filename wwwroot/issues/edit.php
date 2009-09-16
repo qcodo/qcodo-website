@@ -9,10 +9,16 @@
 
 		protected $mctIssue;
 		protected $blnEditMode;
+		
+		protected $strHeadline;
 
 		protected $txtTitle;
 		protected $txtLongDescription;
-		
+
+		protected $txtAssignedTo;
+		protected $txtDueDate;
+		protected $calDueDate;
+
 		protected $txtExampleCode;
 		protected $txtExampleTemplate;
 		protected $txtExampleData;
@@ -41,9 +47,11 @@
 				$objIssue->PostedByPerson = QApplication::$Person;
 				$this->blnEditMode = false;
 				$this->strPageTitle .= 'Create New';
+				$this->strHeadline = 'Report a New Bug or Issue';
 			} else {
 				$this->blnEditMode = true;
-				$this->strPageTitle .= 'Edit';
+				$this->strPageTitle .= 'Edit Issue #' . $objIssue->Id;
+				$this->strHeadline = 'Edit Issue #' . $objIssue->Id;
 			}
 
 			$this->mctIssue = new IssueMetaControl($this, $objIssue);
@@ -61,6 +69,11 @@
 			$this->lstStatus = $this->mctIssue->lstIssueStatusType_Create();
 			$this->lstResolution = $this->mctIssue->lstIssueResolutionType_Create();
 			$this->lstStatus_Change();
+			
+			$this->txtAssignedTo = new QTextBox($this);
+			$this->txtDueDate = new QDateTimeTextBox($this);
+			$this->calDueDate = new QCalendar($this->txtDueDate, $this->txtDueDate);
+			$this->txtAssignedTo_Refresh();
 			
 			$this->lstStatus->AddAction(new QChangeEvent(), new QAjaxAction('lstStatus_Change'));
 			
@@ -87,6 +100,18 @@
 			$this->btnCancel->AddAction(new QClickEvent(), new QTerminateAction());
 
 			$this->txtTitle->Focus();
+		}
+		
+		protected function txtAssignedTo_Refresh() {
+			if ($this->mctIssue->Issue->AssignedToPersonId) {
+				$this->txtAssignedTo->Text = $this->mctIssue->Issue->AssignedToPerson->DisplayName;
+				$this->txtDueDate->Visible = true;
+				$this->txtDueDate->Required = true;
+			} else {
+				$this->txtAssignedTo->Text = '[none]';
+				$this->txtDueDate->Visible = false;
+				$this->txtDueDate->Required = false;
+			}
 		}
 		
 		protected function lstField_Setup(IssueField $objIssueField) {
@@ -149,7 +174,7 @@
 		protected function Form_PreRender() {
 			$this->btnOkay->Enabled = true;
 		}
-
+		
 		protected function btnOkay_Click() {
 			if (!$this->blnEditMode) {
 				$this->mctIssue->Issue->PostDate = QDateTime::Now();
