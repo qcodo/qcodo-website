@@ -144,6 +144,69 @@
 			else
 				return false;
 		}
+		
+		public function IsEditableForPerson(Person $objPerson = null) {
+			if (!$objPerson) return false;
+
+			if ($objPerson->Id == $this->PostedByPersonId) return true;
+			if ($objPerson->Id == $this->AssignedToPersonId) return true;
+			if ($objPerson->PersonTypeId < PersonType::RegisteredUser) return true;
+
+			return false;
+		}
+		
+		public function GetDifferenceArray(Issue $objIssue) {
+			$strArrayToReturn = array();
+
+			if (trim(strtolower($objIssue->Title)) != trim(strtolower($this->Title))) {
+				$strArrayToReturn[] = sprintf('Short Description changed from "%s" to "%s"',
+					trim($objIssue->Title), trim($this->Title));
+			}
+
+			if (($objIssue->IssuePriorityTypeId != $this->IssuePriorityTypeId) ||
+				(!$objIssue->IssuePriorityTypeId && $this->IssuePriorityTypeId) ||
+				($objIssue->IssuePriorityTypeId && !$this->IssuePriorityTypeId)) {
+				$strArrayToReturn[] = sprintf('Priority changed from %s to %s',
+					($objIssue->IssuePriorityTypeId) ? $objIssue->Priority : 'none',
+					($this->IssuePriorityTypeId) ? $this->Priority : 'none');
+			}
+
+			if (($objIssue->IssueStatusTypeId != $this->IssueStatusTypeId) ||
+				(!$objIssue->IssueStatusTypeId && $this->IssueStatusTypeId) ||
+				($objIssue->IssueStatusTypeId && !$this->IssueStatusTypeId)) {
+				$strArrayToReturn[] = sprintf('Status changed from %s to %s',
+					($objIssue->IssueStatusTypeId) ? $objIssue->Status : 'none',
+					($this->IssueStatusTypeId) ? $this->Status : 'none');
+			}
+
+			if (($objIssue->IssueResolutionTypeId != $this->IssueResolutionTypeId) ||
+				(!$objIssue->IssueResolutionTypeId && $this->IssueResolutionTypeId) ||
+				($objIssue->IssueResolutionTypeId && !$this->IssueResolutionTypeId)) {
+				$strArrayToReturn[] = sprintf('Resolution changed from %s to %s',
+					($objIssue->IssueResolutionTypeId) ? $objIssue->Resolution : 'none',
+					($this->IssueResolutionTypeId) ? $this->Resolution : 'none');
+			}
+			
+			if (($objIssue->AssignedToPersonId != $this->AssignedToPersonId) ||
+				(!$objIssue->AssignedToPersonId && $this->AssignedToPersonId) ||
+				($objIssue->AssignedToPersonId && !$this->AssignedToPersonId)) {
+				$strArrayToReturn[] = sprintf('Assignment changed from %s to %s',
+					($objIssue->AssignedToPerson) ? $objIssue->AssignedToPerson->DisplayName : 'none',
+					($this->AssignedToPerson) ? $this->AssignedToPerson->DisplayName : 'none');
+			}
+			
+			if ($objIssue->DueDate || $this->DueDate) {
+				if ((!$objIssue->DueDate && $this->DueDate) ||
+					($objIssue->DueDate && !$this->DueDate) ||
+					(!$objIssue->DueDate->IsEqualTo($this->DueDate))) {
+					$strArrayToReturn[] = sprintf('Due date changed from %s to %s',
+						($objIssue->DueDate) ? $objIssue->DueDate->__toString('MMM D YYYY') : 'none',
+						($this->DueDate) ? $this->DueDate->__toString('MMM D YYYY') : 'none');
+				}
+			}
+			
+			return $strArrayToReturn;
+		}
 
 
 		/**

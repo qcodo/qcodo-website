@@ -122,6 +122,9 @@
 			 * @return void
 			 */
 			public static function Authenticate($intMinimumPersonTypeId = null) {
+				if (!QApplication::$Person)
+					QApplication::Redirect('/login/');
+
 				return QApplication::$Person;
 			}
 

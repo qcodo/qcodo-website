@@ -16,8 +16,11 @@
 		</div>
 	</div>
 
-	<div style="float: left;">
+	<div style="float: left; width: 230px;">
 		<?php $this->pnlDetails->Render(); ?>
+<?php if ($this->objIssue->IsEditableForPerson(QApplication::$Person)) { ?>
+		<div class="roundedLink" style="margin-left: 53px;"><a href="/issues/edit.php/<?php _p($this->objIssue->Id); ?>" title="Edit This Issue" style="width: 110px; text-align: center;">Edit Issue</a></div><br clear="all"/><br/>
+<?php } ?>
 		<?php $this->pnlVotes->Render(); ?>
 
 		<?php $this->pnlExampleCode->Render(); ?>

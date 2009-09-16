@@ -7,7 +7,7 @@
 
 	<br/>
 
-	<?php _p($this->DisplayField('qcod', $this->objIssue->GetFieldOptionValueForIssueFieldToken(IssueField::TokenQcodoVersion)), false); ?>
+	<?php _p($this->DisplayField('qcodo', $this->objIssue->GetFieldOptionValueForIssueFieldToken(IssueField::TokenQcodoVersion)), false); ?>
 	<?php _p($this->DisplayField('category', $this->objIssue->GetFieldOptionValueForIssueFieldToken(IssueField::TokenCategory)), false); ?>
 	<?php _p($this->DisplayField('php', $this->objIssue->GetFieldOptionValueForIssueFieldToken(IssueField::TokenPhpVersion)), false); ?>
 	<?php _p($this->DisplayField('database', $this->objIssue->GetFieldOptionValueForIssueFieldToken(IssueField::TokenDatabase)), false); ?>

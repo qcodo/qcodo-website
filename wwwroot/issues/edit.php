@@ -1,5 +1,6 @@
 <?php
 	require('../includes/prepend.inc.php');
+	QApplication::Authenticate();
 
 	class QcodoForm extends QcodoWebsiteForm {
 		protected $strPageTitle = 'Bugs and Issues - ';
@@ -38,10 +39,10 @@
 				$objIssue->IssuePriorityTypeId = IssuePriorityType::Standard;
 				$objIssue->IssueStatusTypeId = IssueStatusType::NewIssue;
 				$objIssue->PostedByPerson = QApplication::$Person;
-				$blnEditMode = false;
+				$this->blnEditMode = false;
 				$this->strPageTitle .= 'Create New';
 			} else {
-				$blnEditMode = true;
+				$this->blnEditMode = true;
 				$this->strPageTitle .= 'Edit';
 			}
 
@@ -68,7 +69,8 @@
 			}
 
 			$this->txtLongDescription = new QTextBox($this);
-			$this->txtLongDescription->Required = true;
+			$this->txtLongDescription->Visible = !$this->blnEditMode;
+			$this->txtLongDescription->Required = !$this->blnEditMode;
 			$this->txtLongDescription->TextMode = QTextMode::MultiLine;
 			
 			$this->btnOkay = new QButton($this);
@@ -149,17 +151,27 @@
 		}
 
 		protected function btnOkay_Click() {
-			if (!$this->blnEditMode)
-				$this->mctIssue->Issue->PostDate = QDateTime::Now();
-
-			$this->mctIssue->SaveIssue();
-
 			if (!$this->blnEditMode) {
+				$this->mctIssue->Issue->PostDate = QDateTime::Now();
+				$this->mctIssue->SaveIssue();
 				$this->mctIssue->Issue->CreateTopicAndTopicLink();
 				$this->mctIssue->Issue->PostMessage(trim($this->txtLongDescription->Text), QApplication::$Person, $this->mctIssue->Issue->PostDate);
 			} else {
-				// TODO: Post System Message
+				$objOldVersionOfIssue = Issue::Load($this->mctIssue->Issue->Id);
+				$this->mctIssue->SaveIssue();
+				$strTextArray = $this->mctIssue->Issue->GetDifferenceArray($objOldVersionOfIssue);
+
+				if (count($strTextArray)) {
+					$strMessage = sprintf("%s made edits to the issue, including:\r\n\r\n* %s",
+						QApplication::$Person->DisplayName,
+						implode("\r\n* ", $strTextArray));
+				} else {
+					$strMessage = sprintf("%s made content edits to the issue", QApplication::$Person->DisplayName);
+				}
+				$this->mctIssue->Issue->PostMessage($strMessage, null);
 			}
+
+			QApplication::Redirect('/issues/view.php/' . $this->mctIssue->Issue->Id);
 		}
 
 		protected function btnCancel_Click() {

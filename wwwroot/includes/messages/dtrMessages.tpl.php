@@ -19,7 +19,7 @@
 		}
 	}
 ?>
-	<?php _p($_ITEM->Person->DisplayForForums, false); ?>
+	<?php _p(($_ITEM->Person) ? $_ITEM->Person->DisplayForForums : '&lsaquo;&lsaquo; Qcodo System Message &rsaquo;&rsaquo;', false); ?>
 	</div>
 	<div class="date">
 	<?php _p($dttLocalize->__toString('DDDD, MMMM D, YYYY, h:mm zz')); ?>
