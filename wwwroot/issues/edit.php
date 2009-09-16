@@ -76,10 +76,7 @@
 			$this->txtDueDate = new QDateTimeTextBox($this);
 			$this->calDueDate = new QCalendar($this->txtDueDate, $this->txtDueDate);
 			$this->txtAssignedTo_Refresh();
-			$this->dlgAssignedTo = new QDialogBox($this);
-			$this->dlgAssignedTo->MatteClickable = false;
-			
-			$this->dlgAssignedTo->HideDialogBox();
+			$this->dlgAssignedTo = new PersonSelectorDialog($this);
 			$this->txtAssignedTo->AddAction(new QClickEvent(), new QShowDialogBox($this->dlgAssignedTo));
 			
 			$this->lstStatus->AddAction(new QChangeEvent(), new QAjaxAction('lstStatus_Change'));
