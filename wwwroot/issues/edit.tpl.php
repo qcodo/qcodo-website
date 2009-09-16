@@ -39,6 +39,7 @@
 			<?php $this->txtAssignedTo->RenderForDialog('Name=Assigned To','Width=180px'); ?>
 			<?php $this->txtDueDate->HtmlAfter = ' &nbsp; ' . $this->calDueDate->Render(false); ?>
 			<?php $this->txtDueDate->RenderForDialog('Name=Due Date','Width=150px'); ?>
+			<?php $this->dlgAssignedTo->Render(); ?>
 			<br/><br/>
 
 			<?php $this->lstPriority->RenderForDialog('Name=Priority','Width=180px'); ?>

@@ -18,7 +18,8 @@
 		protected $txtAssignedTo;
 		protected $txtDueDate;
 		protected $calDueDate;
-
+		protected $dlgAssignedTo;
+		
 		protected $txtExampleCode;
 		protected $txtExampleTemplate;
 		protected $txtExampleData;
@@ -71,9 +72,15 @@
 			$this->lstStatus_Change();
 			
 			$this->txtAssignedTo = new QTextBox($this);
+			$this->txtAssignedTo->ReadOnly = true;
 			$this->txtDueDate = new QDateTimeTextBox($this);
 			$this->calDueDate = new QCalendar($this->txtDueDate, $this->txtDueDate);
 			$this->txtAssignedTo_Refresh();
+			$this->dlgAssignedTo = new QDialogBox($this);
+			$this->dlgAssignedTo->MatteClickable = false;
+			
+			$this->dlgAssignedTo->HideDialogBox();
+			$this->txtAssignedTo->AddAction(new QClickEvent(), new QShowDialogBox($this->dlgAssignedTo));
 			
 			$this->lstStatus->AddAction(new QChangeEvent(), new QAjaxAction('lstStatus_Change'));
 			
@@ -103,7 +110,7 @@
 		}
 		
 		protected function txtAssignedTo_Refresh() {
-			if ($this->mctIssue->Issue->AssignedToPersonId) {
+			if ($this->txtAssignedTo->Visible && $this->mctIssue->Issue->AssignedToPersonId) {
 				$this->txtAssignedTo->Text = $this->mctIssue->Issue->AssignedToPerson->DisplayName;
 				$this->txtDueDate->Visible = true;
 				$this->txtDueDate->Required = true;
