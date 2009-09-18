@@ -36,6 +36,22 @@
 		}
 		
 		/**
+		 * Will create and save to the database a new IssueFieldOption for this IssueField
+		 * @param string $strName
+		 * @return IssueFieldOption
+		 */
+		public function CreateNewIssueFieldOption($strName) {
+			$objIssueFieldOption = new IssueFieldOption();
+			$objIssueFieldOption->IssueField = $this;
+			$objIssueFieldOption->Name = trim($strName);
+			$objIssueFieldOption->SetToken();
+			$objIssueFieldOption->OrderNumber = $this->CountIssueFieldOptions() + 1;
+			$objIssueFieldOption->ActiveFlag = true;
+			$objIssueFieldOption->Save();
+			return $objIssueFieldOption;
+		}
+
+		/**
 		 * Gets the array of active IssueFieldOptions for this IssueField in the appropriate order
 		 * @return IssueFieldOption[]
 		 */

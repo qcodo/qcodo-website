@@ -233,10 +233,20 @@
 		public function Form_Validate($blnToReturn = true) {
 			if ($this->txtAssignedTo->Required && ($this->txtAssignedTo->Text == '[none]')) {
 				$this->txtAssignedTo->Warning = 'Required';
-				return parent::Form_Validate(false);
-			} else {
-				return parent::Form_Validate(true);
+				$blnToReturn = false;
 			}
+
+			foreach ($this->txtMutableFields as $intIssueFieldId => $txtField) {
+				if ($txtField->Visible && strlen(trim($txtField->Text))) {
+					$strToken = IssueFieldOption::TokenizeName($txtField->Text);
+					if (IssueFieldOption::LoadByIssueFieldIdToken($intIssueFieldId, $strToken)) {
+						$txtField->Warning = 'Value already exists';
+						$blnToReturn = false;
+					}
+				}
+			}
+
+			return parent::Form_Validate($blnToReturn);
 		}
 		
 		public function dlgAssignedTo_Select(Person $objPerson = null) {
@@ -272,7 +282,39 @@
 				$this->mctIssue->Issue->PostMessage($strMessage, null);
 			}
 
+			// Save Other Fields (both required and optional)
+			
+			// First Erase them All to "start over"
+			$this->mctIssue->Issue->DeleteAllIssueFieldValues();
+
+			// Now assign the Required ones
+			foreach ($this->lstRequiredFields as $lstField) {
+				$this->lstField_Save($lstField);
+			}
+
+			// Finally assign the Optional ones
+			foreach ($this->lstOptionalFields as $lstField) {
+				$this->lstField_Save($lstField);
+			}
+
 			QApplication::Redirect('/issues/view.php/' . $this->mctIssue->Issue->Id);
+		}
+
+		protected function lstField_Save(QListBox $lstField) {
+			if ($lstField->SelectedValue) {
+				// Did the user select "OTHER"?
+				if ($lstField->SelectedValue == -1) {
+					// Yes -- we need to create the new IssueFieldOption
+					$objIssueField = IssueField::Load($lstField->ActionParameter);
+					$objIssueFieldOption = $objIssueField->CreateNewIssueFieldOption($this->txtMutableFields[$lstField->ActionParameter]->Text);
+				} else {
+					// No -- let's use theexisting IssueFieldOption
+					$objIssueFieldOption = IssueFieldOption::Load($lstField->SelectedValue);
+				}
+				
+				// Now let's set it to the Issue!
+				$this->mctIssue->Issue->SetFieldOption($objIssueFieldOption);
+			}
 		}
 
 		protected function btnCancel_Click() {

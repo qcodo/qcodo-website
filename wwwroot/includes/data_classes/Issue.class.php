@@ -144,6 +144,34 @@
 			else
 				return false;
 		}
+		
+		/**
+		 * Specifies whether or not this person can actually vote (either way).
+		 * Rules are person must be logged in and must NOT be the original poster of the issue/bug.
+		 * @param Person $objPerson
+		 * @return boolean
+		 */
+		public function IsVotableForPerson(Person $objPerson = null) {
+			if (($objPerson) && ($objPerson->Id != $this->PostedByPersonId))
+				return true;
+			return false;
+		}
+
+		/**
+		 * This will clear or delete the vote on this issue by the given person (if applicable)
+		 * and refresh/udpate the vote count
+		 * @param Person $objPerson
+		 * @return void
+		 */
+		public function ClearVote(Person $objPerson) {
+			$objVote = IssueVote::LoadByIssueIdPersonId($this->intId, $objPerson->Id);
+			if ($objVote) {
+				$objVote->Delete();
+			}
+
+			$this->intVoteCount = IssueVote::CountByIssueId($this->intId);
+			$this->Save();
+		}
 
 		/**
 		 * Returns whether or not the Person is allowed to Edit the contents of this issue.

@@ -40,6 +40,8 @@
 		div.renderForDialog div.control span.instructions { font: 10px 'Arial', 'Helvetica'; color: #666; font-style: italic; text-transform: none;}
 		div.renderForDialog span.forCheckbox { position: relative; top: -2px; font-style: normal; }
 
+	div.renderForDialog span.warning { font: 10px 'Arial', 'Helvetica'; color: #966; font-style: italic; }
+
 	h2 { color: #eee; background-color: #353; margin: 0; padding: 2px 5px 2px 5px; font-size: 20px;}
 	
 	div#navbar { height: 55px; background-color: #333333; border-bottom: 1px solid #161616; font: 12px verdana, arial, helvetica, sans-serif; }

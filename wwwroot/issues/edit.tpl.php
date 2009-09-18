@@ -48,7 +48,7 @@
 <?php 
 			foreach ($this->lstRequiredFields as $lstField) {
 				if (array_key_exists($lstField->ActionParameter, $this->txtMutableFields)) {
-					$lstField->HtmlAfter = '<br/>' . $this->txtMutableFields[$lstField->ActionParameter]->Render(false, 'Width=175px'); 
+					$lstField->HtmlAfter = '<br/>' . $this->txtMutableFields[$lstField->ActionParameter]->RenderWithError(false, 'Width=175px'); 
 				}
 				$lstField->RenderForDialog('Width=180px');
 			}
@@ -57,7 +57,7 @@
 <?php 
 			foreach ($this->lstOptionalFields as $lstField) {
 				if (array_key_exists($lstField->ActionParameter, $this->txtMutableFields))
-					$lstField->HtmlAfter = '<br/>' . $this->txtMutableFields[$lstField->ActionParameter]->Render(false, 'Width=175px'); 
+					$lstField->HtmlAfter = '<br/>' . $this->txtMutableFields[$lstField->ActionParameter]->RenderWithError(false, 'Width=175px'); 
 				$lstField->RenderForDialog('Width=180px');
 			}
 ?>
