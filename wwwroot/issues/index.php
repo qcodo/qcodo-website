@@ -44,6 +44,10 @@
 
 			$this->dtgIssues->GetColumnByName('Status')->OrderByClause = QQ::OrderBy(QQN::Issue()->IssueStatusTypeId, QQN::Issue()->IssueResolutionTypeId);
 			$this->dtgIssues->GetColumnByName('Status')->ReverseOrderByClause = QQ::OrderBy(QQN::Issue()->IssueStatusTypeId, false, QQN::Issue()->IssueResolutionTypeId, false);
+			$this->dtgIssues->SortColumnIndex = 7;
+			$this->dtgIssues->SortDirection = 1;
+			
+
 			$this->objIssueFieldForCategory = IssueField::LoadIssueFieldForCategory();
 			$this->objIssueFieldForQcodoVersion = IssueField::LoadIssueFieldForQcodoVersion();
 			$this->objIssueFieldForPhpVersion = IssueField::LoadIssueFieldForPhpVersion();
