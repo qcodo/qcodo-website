@@ -26,12 +26,16 @@
 		 * @return string a nicely formatted string representation of this object
 		 */
 		public function __toString() {
-			if ($this->blnDisplayRealNameFlag)
-				return $this->DisplayName;
-			else
-				return $this->strUsername;
+			return $this->DisplayName;
 		}
 
+		public static function LoadArrayForMemberSearch($strDisplayName, $objOptionalClauses = null) {
+			return Person::QueryArray(QQ::Like(QQN::Person()->DisplayName, '%' . $strDisplayName . '%'), $objOptionalClauses);
+		}
+		public static function CountForMemberSearch($strDisplayName) {
+			return Person::QueryCount(QQ::Like(QQN::Person()->DisplayName, '%' . $strDisplayName . '%'));
+		}
+		
 		public function __get($strName) {
 			switch ($strName) {
 				case 'DisplayForForums':

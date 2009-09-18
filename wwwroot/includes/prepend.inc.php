@@ -123,9 +123,12 @@
 			 */
 			public static function Authenticate($intMinimumPersonTypeId = null) {
 				if (!QApplication::$Person)
-					QApplication::Redirect('/login/');
-
+					QApplication::RedirectToLogin();
 				return QApplication::$Person;
+			}
+
+			public static function RedirectToLogin() {
+				QApplication::Redirect('/login/?strReferer=' . urlencode(QApplication::$RequestUri));
 			}
 
 			/**

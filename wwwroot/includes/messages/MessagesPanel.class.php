@@ -149,12 +149,12 @@
 				$objMessage->ReplyNumber = $this->objTopic->MessageCount;
 				$this->dlgMessage->EditMessage($objMessage);
 			} else
-				QApplication::Redirect('/login/');
+				QApplication::RedirectToLogin();
 		}
 		
 		public function btnNotify_Click() {
 			if (!QApplication::$Person)
-				QApplication::Redirect('/login/');
+				QApplication::RedirectToLogin();
 			else if ($this->objTopic) {
 				if ($this->objTopic->IsNotifying())
 					$this->objTopic->UnassociatePersonAsEmail(QApplication::$Person);

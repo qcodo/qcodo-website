@@ -46,9 +46,12 @@
 			
 			$this->lnkForgot = new RoundedLinkButton($this);
 			$this->lnkForgot->Text = 'Forgot My Password';
-			$this->lnkForgot->LinkUrl = '/login/forgot.php';
+			if (array_key_exists('strReferer', $_GET))
+				$this->lnkForgot->LinkUrl = '/login/forgot.php?strReferer=' . urlencode($_GET['strReferer']);
+			else
+				$this->lnkForgot->LinkUrl = '/login/forgot.php';
 			$this->lnkForgot->AddCssClass('roundedLinkGray');
-			
+
 			// Add Actions
 			$this->txtUsername->AddAction(new QEnterKeyEvent(), new QFocusControlAction($this->txtPassword));
 			$this->txtUsername->AddAction(new QEnterKeyEvent(), new QTerminateAction());
@@ -71,9 +74,12 @@
 					QApplication::SetLoginTicketToCookie($objPerson);
 
 				// Redirect to the correct location
-				if ($objPerson->PasswordResetFlag)
-					QApplication::Redirect('/profile/password.php');
-				else
+				if ($objPerson->PasswordResetFlag) {
+					if (array_key_exists('strReferer', $_GET))
+						QApplication::Redirect('/profile/password.php?strReferer=' . urlencode($_GET['strReferer']));
+					else
+						QApplication::Redirect('/profile/password.php?strReferer=' . urlencode('/'));
+				} else
 					QApplication::Redirect('/');
 			}
 

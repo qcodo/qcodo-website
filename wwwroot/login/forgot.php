@@ -64,7 +64,10 @@
 		}
 
 		protected function btnOkay_Click($strFormId, $strControlId, $strParameter) {
-			QApplication::Redirect('/login/');
+			if (array_key_exists('strReferer', $_GET))
+				QApplication::Redirect('/login?strReferer=' . urlencode($_GET['strReferer']));
+			else
+				QApplication::Redirect('/login/');
 		}
 
 		protected function btnSend_Click($strFormId, $strControlId, $strParameter) {

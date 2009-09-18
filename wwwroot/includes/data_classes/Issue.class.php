@@ -144,7 +144,12 @@
 			else
 				return false;
 		}
-		
+
+		/**
+		 * Returns whether or not the Person is allowed to Edit the contents of this issue.
+		 * @param Person $objPerson
+		 * @return boolean
+		 */
 		public function IsEditableForPerson(Person $objPerson = null) {
 			if (!$objPerson) return false;
 
@@ -154,7 +159,18 @@
 
 			return false;
 		}
-		
+
+		/**
+		 * Returns whether or not hte Person is allowed to Admin the issue (change status, assign to person or set a due date).
+		 * @param Person $objPerson
+		 * @return boolean
+		 */
+		public function IsAdminableForPerson(Person $objPerson = null) {
+			if (!$objPerson) return false;
+			if ($objPerson->PersonTypeId < PersonType::RegisteredUser) return true;
+			return false;
+		}
+
 		public function GetDifferenceArray(Issue $objIssue) {
 			$strArrayToReturn = array();
 

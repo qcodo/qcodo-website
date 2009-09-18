@@ -50,6 +50,9 @@
 				$this->strPageTitle .= 'Create New';
 				$this->strHeadline = 'Report a New Bug or Issue';
 			} else {
+				if (!$objIssue->IsEditableForPerson(QApplication::$Person)) {
+					QApplication::RedirectToLogin();
+				}
 				$this->blnEditMode = true;
 				$this->strPageTitle .= 'Edit Issue #' . $objIssue->Id;
 				$this->strHeadline = 'Edit Issue #' . $objIssue->Id;
@@ -69,17 +72,19 @@
 			$this->lstPriority = $this->mctIssue->lstIssuePriorityType_Create();
 			$this->lstStatus = $this->mctIssue->lstIssueStatusType_Create();
 			$this->lstResolution = $this->mctIssue->lstIssueResolutionType_Create();
-			$this->lstStatus_Change();
 			
 			$this->txtAssignedTo = new QTextBox($this);
 			$this->txtAssignedTo->ReadOnly = true;
 			$this->txtDueDate = new QDateTimeTextBox($this);
 			$this->calDueDate = new QCalendar($this->txtDueDate, $this->txtDueDate);
-			$this->txtAssignedTo_Refresh();
-			$this->dlgAssignedTo = new PersonSelectorDialog($this);
-			$this->txtAssignedTo->AddAction(new QClickEvent(), new QShowDialogBox($this->dlgAssignedTo));
+			$this->txtDueDate->Text = ($this->mctIssue->Issue->DueDate) ? $this->mctIssue->Issue->DueDate->__toString() : null;
 			
-			$this->lstStatus->AddAction(new QChangeEvent(), new QAjaxAction('lstStatus_Change'));
+			$this->dlgAssignedTo = new PersonSelectorDialog($this, 'dlgAssignedTo_Select');
+
+			$this->txtAssignedTo->AddAction(new QClickEvent(), new QShowDialogBox($this->dlgAssignedTo));
+			$this->txtAssignedTo->AddAction(new QClickEvent(), new QFocusControlAction($this->dlgAssignedTo->txtMemberSearch));
+			
+			$this->lstStatus->AddAction(new QChangeEvent(), new QAjaxAction('RefreshStatuses'));
 			
 			foreach (IssueField::LoadArrayByActiveFlag(true, QQ::OrderBy(QQN::IssueField()->OrderNumber)) as $objIssueField) {
 				$this->lstField_Setup($objIssueField);
@@ -103,21 +108,17 @@
 			$this->btnCancel->AddAction(new QClickEvent(), new QAjaxAction('btnCancel_Click'));
 			$this->btnCancel->AddAction(new QClickEvent(), new QTerminateAction());
 
+			if ($objIssue->IsAdminableForPerson(QApplication::$Person)) {
+				$this->RefreshStatuses();
+			} else {
+				$this->txtAssignedTo->Visible = false;
+				$this->txtDueDate->Visible = false;
+				$this->lstStatus->Visible = false;
+				$this->lstResolution->Visible = false;
+			}
 			$this->txtTitle->Focus();
 		}
-		
-		protected function txtAssignedTo_Refresh() {
-			if ($this->txtAssignedTo->Visible && $this->mctIssue->Issue->AssignedToPersonId) {
-				$this->txtAssignedTo->Text = $this->mctIssue->Issue->AssignedToPerson->DisplayName;
-				$this->txtDueDate->Visible = true;
-				$this->txtDueDate->Required = true;
-			} else {
-				$this->txtAssignedTo->Text = '[none]';
-				$this->txtDueDate->Visible = false;
-				$this->txtDueDate->Required = false;
-			}
-		}
-		
+
 		protected function lstField_Setup(IssueField $objIssueField) {
 			$lstField = new QListBox($this);
 			$lstField->Name = $objIssueField->Name;
@@ -164,15 +165,84 @@
 			}
 		}
 		
-		protected function lstStatus_Change() {
-			if ($this->lstStatus->SelectedValue == IssueStatusType::Closed) {
-				$this->lstResolution->Visible = true;
-				$this->lstResolution->Required = true;
-			} else {
-				$this->lstResolution->Visible = false;
-				$this->lstResolution->Required = false;
-				$this->lstResolution->SelectedValue = null;
+		protected function RefreshStatuses() {
+			switch ($this->lstStatus->SelectedValue) {
+				case IssueStatusType::NewIssue:
+				case IssueStatusType::Open:
+					$this->lstResolution->Visible = false;
+					$this->lstResolution->Required = false;
+					$this->lstResolution->SelectedValue = null;
+
+					$this->mctIssue->Issue->AssignedToPerson = null;
+					$this->txtAssignedTo->Visible = false;
+					$this->txtAssignedTo->Required = false;
+
+					$this->mctIssue->Issue->AssignedDate = null;
+					$this->mctIssue->Issue->DueDate = null;
+					$this->txtDueDate->Text = null;
+					$this->txtDueDate->Required = false;
+					$this->txtDueDate->Visible = false;
+					break;
+
+				case IssueStatusType::Assigned:
+					$this->lstResolution->Visible = false;
+					$this->lstResolution->Required = false;
+					$this->lstResolution->SelectedValue = null;
+
+					$this->txtAssignedTo->Visible = true;
+					$this->txtAssignedTo->Required = true;
+
+					$this->txtDueDate->Required = true;
+					$this->txtDueDate->Visible = true;
+					break;
+
+				case IssueStatusType::Fixed:
+					$this->lstResolution->Visible = false;
+					$this->lstResolution->Required = false;
+					$this->lstResolution->SelectedValue = null;
+					
+					$this->txtAssignedTo->Visible = true;
+					$this->txtAssignedTo->Required = false;
+
+					$this->txtDueDate->Visible = ($this->mctIssue->Issue->AssignedToPersonId);
+					$this->txtDueDate->Required = false;
+					break;
+
+				case IssueStatusType::Closed:
+					$this->lstResolution->Visible = true;
+					$this->lstResolution->Required = true;
+
+					$this->txtAssignedTo->Visible = true;
+					$this->txtAssignedTo->Required = false;
+
+					$this->txtDueDate->Visible = ($this->mctIssue->Issue->AssignedToPersonId);
+					$this->txtDueDate->Required = false;
+					break;
+
+				default:
+					throw new Exception('Invalid IssueStatusTypeId: ' . $this->lstStatus->SelectedValue);
 			}
+
+			if ($this->mctIssue->Issue->AssignedToPersonId) {
+				$this->txtAssignedTo->Text = $this->mctIssue->Issue->AssignedToPerson->DisplayName;
+			} else {
+				$this->txtAssignedTo->Text = '[none]';
+			}
+		}
+		
+		public function Form_Validate($blnToReturn = true) {
+			if ($this->txtAssignedTo->Required && ($this->txtAssignedTo->Text == '[none]')) {
+				$this->txtAssignedTo->Warning = 'Required';
+				return parent::Form_Validate(false);
+			} else {
+				return parent::Form_Validate(true);
+			}
+		}
+		
+		public function dlgAssignedTo_Select(Person $objPerson = null) {
+			$this->mctIssue->Issue->AssignedToPerson = $objPerson;
+			$this->mctIssue->Issue->AssignedDate = QDateTime::Now();
+			$this->RefreshStatuses();
 		}
 
 		protected function Form_PreRender() {
@@ -180,6 +250,8 @@
 		}
 		
 		protected function btnOkay_Click() {
+			$this->mctIssue->Issue->DueDate = $this->txtDueDate->DateTime;
+
 			if (!$this->blnEditMode) {
 				$this->mctIssue->Issue->PostDate = QDateTime::Now();
 				$this->mctIssue->SaveIssue();

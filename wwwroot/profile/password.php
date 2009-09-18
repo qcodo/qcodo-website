@@ -72,7 +72,11 @@
 			QApplication::$Person->SetPassword($this->txtNewPassword->Text);
 			QApplication::$Person->PasswordResetFlag = false;
 			QApplication::$Person->Save();
-			QApplication::Redirect(QApplication::$Person->ViewProfileUrl);
+			if (array_key_exists('strReferer', $_GET)) {
+				QApplication::Redirect($_GET['strReferer']);
+			} else {
+				QApplication::Redirect(QApplication::$Person->ViewProfileUrl);
+			}
 		}
 	}
 
