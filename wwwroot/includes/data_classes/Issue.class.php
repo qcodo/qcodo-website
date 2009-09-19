@@ -138,7 +138,9 @@
 		 * @param Person $objPerson
 		 * @return boolean
 		 */
-		public function IsPersonVoted(Person $objPerson) {
+		public function IsPersonVoted(Person $objPerson = null) {
+			if (!$objPerson) return false;
+
 			if (IssueVote::LoadByIssueIdPersonId($this->intId, $objPerson->Id))
 				return true;
 			else

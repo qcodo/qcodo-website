@@ -92,6 +92,10 @@
 
 
 /* ISSUES */
+	div.issueLeftColumn { float: left; width: 230px; }
+		div.issueLeftColumn div.roundedLink { margin-left: 53px; }
+		div.issueLeftColumn div.roundedLink a { width: 110px; text-align: center; }
+
 	div.issuePanelTitle { width: 220px; background-color: #666; border: 1px solid #666; padding: 1px 5px; font-size: 12px; color: #fff; font-weight: bold;}
 	div.issuePanelBody { width: 220px; background-color: #eee; border: 1px solid #666; padding: 5px; font-size: 11px; margin-bottom: 12px;}
 		div.issuePanelBody div.issuePanelField { height: 100%; clear: both; _zoom: 1; }
@@ -104,9 +108,10 @@
 	div.dtrPersonSelectorResults div { padding: 2px; }
 	div.dtrPersonSelectorResults div.hover { cursor: pointer; background-color: #aba; }
 
-	div.dtrVotes { border: 1px solid #666; height: 100px; overflow: auto; padding: 2px; }
+	div.dtrVotes { border: 1px solid #aba; overflow: auto; padding: 2px; background-color: #efe;}
 	div.dtrVotes div { color: #444; }
-
+	div.pnlVotes div div.roundedLink { margin-left: 58px; }
+	div.pnlVotes div div.roundedLink a { width: 90px; text-align: center; font-size: 10px; }
 
 /* FORUMS */
 		div.searchBar { background-color: #393939; -moz-border-radius: 8px 8px 0 0; height: 22px; padding: 4px 14px 0 14px; border: 1px solid #222; }

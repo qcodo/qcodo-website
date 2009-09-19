@@ -16,10 +16,10 @@
 		</div>
 	</div>
 
-	<div style="float: left; width: 230px;">
+	<div class="issueLeftColumn">
 		<?php $this->pnlDetails->Render(); ?>
 <?php if ($this->objIssue->IsEditableForPerson(QApplication::$Person)) { ?>
-		<div class="roundedLink" style="margin-left: 53px;"><a href="/issues/edit.php/<?php _p($this->objIssue->Id); ?>" title="Edit This Issue" style="width: 110px; text-align: center;">Edit Issue</a></div><br clear="all"/><br/>
+		<div class="roundedLink roundedLinkGray"><a href="/issues/edit.php/<?php _p($this->objIssue->Id); ?>" title="Edit This Issue" style="">Edit Issue</a></div><br clear="all"/><br/>
 <?php } ?>
 		<?php $this->pnlVotes->Render(); ?>
 

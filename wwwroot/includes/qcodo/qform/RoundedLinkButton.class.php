@@ -29,12 +29,12 @@
 			if ($strStyle = $this->GetStyleAttributes())
 				$strStyle = 'style="' . $strStyle . '"';
 
-			$strToReturn = sprintf('<div %s %s id="%s"><a href="%s" %s>%s</a></div>',
-				$strStyle,
+			$strToReturn = sprintf('<div %s id="%s"><a href="%s" %s %s>%s</a></div>',
 				$strAttributes,
 				$this->strControlId,
 				$this->strLinkUrl,
 				$strActions,
+				$strStyle,
 				($this->blnHtmlEntities) ? 
 					QApplication::HtmlEntities($this->strText) :
 					$this->strText);
