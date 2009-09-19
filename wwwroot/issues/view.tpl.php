@@ -28,6 +28,7 @@
 		<?php $this->pnlExampleData->Render(); ?>
 		<?php $this->pnlExpectedOutput->Render(); ?>
 		<?php $this->pnlActualOutput->Render(); ?>
+		<?php $this->dlgZoom->Render(); ?>
 	</div>
 
 	<?php $this->pnlMessages->Render(); ?>

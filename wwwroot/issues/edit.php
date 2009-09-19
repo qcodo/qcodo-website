@@ -297,7 +297,7 @@
 				$this->lstField_Save($lstField);
 			}
 
-			QApplication::Redirect('/issues/view.php/' . $this->mctIssue->Issue->Id);
+			QApplication::Redirect('/issues/view.php/' . $this->mctIssue->Issue->Id . '/lastpage');
 		}
 
 		protected function lstField_Save(QListBox $lstField) {

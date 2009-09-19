@@ -32,6 +32,10 @@
 			$this->objCallbackMethodOnNewPost = $objClass;
 			$this->strCallbackMethodOnNewPost = $strMethodName;
 		}
+		
+		public function SetPageNumber($intPageNumber) {
+			$this->dtrMessages->PageNumber = $intPageNumber;
+		}
 
 		public function __construct($objParentControl, $strControlId = null) {
 			try {

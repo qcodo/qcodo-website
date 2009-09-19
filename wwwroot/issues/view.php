@@ -21,6 +21,12 @@
 		protected $pnlExpectedOutput;
 		protected $pnlActualOutput;
 
+		protected $pxyZoom;
+		protected $dlgZoom;
+		protected $btnZoomClose;
+		protected $lblZoomHeadline;
+		protected $pnlZoomCode;
+		
 		protected $pnlMessages;
 
 		protected function Form_Create() {
@@ -45,30 +51,96 @@
 			$this->btnVotes->AddAction(new QClickEvent(), new QAjaxAction('pnlVotes_Click'));
 			$this->btnVotes->AddAction(new QClickEvent(), new QTerminateAction());
 			
-			$this->pnlExampleCode = new QPanel($this);
-			$this->pnlExampleCode->Template = dirname(__FILE__) . '/pnlExampleCode.tpl.php';
+			$this->pnlExampleCode = new QPanel($this, 'ExampleCode');
+			$this->pnlExampleCode->Template = dirname(__FILE__) . '/pnlExample.tpl.php';
 
-			$this->pnlExampleTemplate = new QPanel($this);
-			$this->pnlExampleTemplate->Template = dirname(__FILE__) . '/pnlExampleTemplate.tpl.php';
+			$this->pnlExampleTemplate = new QPanel($this, 'ExampleTemplate');
+			$this->pnlExampleTemplate->Template = dirname(__FILE__) . '/pnlExample.tpl.php';
 
-			$this->pnlExampleData = new QPanel($this);
-			$this->pnlExampleData->Template = dirname(__FILE__) . '/pnlExampleData.tpl.php';
+			$this->pnlExampleData = new QPanel($this, 'ExampleData');
+			$this->pnlExampleData->Template = dirname(__FILE__) . '/pnlExample.tpl.php';
 
-			$this->pnlExpectedOutput = new QPanel($this);
-			$this->pnlExpectedOutput->Template = dirname(__FILE__) . '/pnlExpectedOutput.tpl.php';
+			$this->pnlExpectedOutput = new QPanel($this, 'ExpectedOutput');
+			$this->pnlExpectedOutput->Template = dirname(__FILE__) . '/pnlExample.tpl.php';
 
-			$this->pnlActualOutput = new QPanel($this);
-			$this->pnlActualOutput->Template = dirname(__FILE__) . '/pnlActualOutput.tpl.php';
+			$this->pnlActualOutput = new QPanel($this, 'ActualOutput');
+			$this->pnlActualOutput->Template = dirname(__FILE__) . '/pnlExample.tpl.php';
 
 			$this->pnlMessages = new MessagesPanel($this);
 			$this->pnlMessages->SelectTopic($this->objIssue->TopicLink->GetTopic());
 			$this->pnlMessages->lblTopicInfo_SetTemplate(__INCLUDES__ . '/messages/lblTopicInfoForIssue.tpl.php');
+			if (QApplication::PathInfo(1) == 'lastpage')
+				$this->pnlMessages->SetPageNumber(QPaginatedControl::LastPage);
+				
+			$this->pxyZoom = new QControlProxy($this);
+			$this->pxyZoom->AddAction(new QClickEvent(), new QAjaxAction('pxyZoom_Click'));
+			$this->pxyZoom->AddAction(new QClickEvent(), new QTerminateAction());
 			
+			$this->dlgZoom = new QDialogBox($this);
+			$this->dlgZoom->Template = dirname(__FILE__) . '/dlgZoom.tpl.php';
+			$this->dlgZoom->MatteClickable = false;
+			$this->dlgZoom->AddCssClass('dlgZoom');
+			$this->dlgZoom->HideDialogBox();
+
+			$this->lblZoomHeadline = new QLabel($this->dlgZoom);
+			$this->lblZoomHeadline->TagName = 'h2';
+
+			$this->pnlZoomCode = new QPanel($this->dlgZoom);
+			$this->pnlZoomCode->CssClass = 'pnlZoomCode';
+
+			$this->btnZoomClose = new QButton($this->dlgZoom);
+			$this->btnZoomClose->Text = 'Close';
+			$this->btnZoomClose->AddAction(new QClickEvent(), new QHideDialogBox($this->dlgZoom));
+
 			QApplication::ExecuteJavaScript(sprintf('SetIssuePanelMaximumHeight("%s", 200);', $this->pnlExampleCode->ControlId)); 
 			QApplication::ExecuteJavaScript(sprintf('SetIssuePanelMaximumHeight("%s", 200);', $this->pnlExampleTemplate->ControlId)); 
 			QApplication::ExecuteJavaScript(sprintf('SetIssuePanelMaximumHeight("%s", 200);', $this->pnlExampleData->ControlId)); 
 			QApplication::ExecuteJavaScript(sprintf('SetIssuePanelMaximumHeight("%s", 200);', $this->pnlExpectedOutput->ControlId)); 
 			QApplication::ExecuteJavaScript(sprintf('SetIssuePanelMaximumHeight("%s", 200);', $this->pnlActualOutput->ControlId)); 
+		}
+
+		protected function GetLabelForExamplePanel($strControlId) {
+			switch ($strControlId) {
+				case 'ExampleCode':
+					return 'Example Code';
+
+				case 'ExampleTemplate':
+					return 'Example Template';
+
+				case 'ExampleData':
+					return 'Example Data';
+
+				case 'ExpectedOutput':
+					return 'Expected Output';
+
+				case 'ActualOutput':
+					return 'Actual Output';
+			}
+		}
+		
+		protected function GetContentForExamplePanel($strControlId) {
+			switch ($strControlId) {
+				case 'ExampleCode':
+					return sprintf('<pre>%s</pre>', trim(highlight_string($this->objIssue->ExampleCode, true)));
+
+				case 'ExampleTemplate':
+					return sprintf('<pre>%s</pre>', trim(highlight_string($this->objIssue->ExampleTemplate, true)));
+
+				case 'ExampleData':
+					return sprintf('<pre>%s</pre>', trim($this->objIssue->ExampleData));
+
+				case 'ExpectedOutput':
+					return sprintf('<pre>%s</pre>', trim($this->objIssue->ExpectedOutput));
+
+				case 'ActualOutput':
+					return sprintf('<pre>%s</pre>', trim($this->objIssue->ActualOutput));
+			}
+		}
+
+		protected function pxyZoom_Click($strFormId, $strControlId, $strParameter) {
+			$this->lblZoomHeadline->Text = $this->GetLabelForExamplePanel($strParameter);
+			$this->pnlZoomCode->Text = $this->GetContentForExamplePanel($strParameter);
+			$this->dlgZoom->ShowDialogBox();
 		}
 
 		protected function pnlVotes_Refresh() {
