@@ -1,6 +1,5 @@
 <div class="issuePanelTitle">Votes</div>
 <div class="issuePanelBody">
-	<code style="width: 200px;">
-		TO DO
-	</code>
+	<?php _p($_FORM->DisplayVoteCount(), false); ?>:
+	<?php $_FORM->dtrVotes->Render('CssClass=dtrVotes'); ?>
 </div>

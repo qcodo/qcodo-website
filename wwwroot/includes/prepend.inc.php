@@ -127,6 +127,11 @@
 				return QApplication::$Person;
 			}
 
+			/**
+			 * Redirect the user to the Login page, specifying that the user gets redirected
+			 * back to this "current page" after a successful login.
+			 * @return void
+			 */
 			public static function RedirectToLogin() {
 				QApplication::Redirect('/login/?strReferer=' . urlencode(QApplication::$RequestUri));
 			}

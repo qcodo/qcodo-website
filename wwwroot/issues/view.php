@@ -11,6 +11,7 @@
 
 		protected $pnlDetails;
 		protected $pnlVotes;
+		protected $dtrVotes;
 		protected $pnlExampleCode;
 		protected $pnlExampleTemplate;
 		protected $pnlExampleData;
@@ -32,6 +33,10 @@
 			$this->pnlVotes = new QPanel($this);
 			$this->pnlVotes->Template = dirname(__FILE__) . '/pnlVotes.tpl.php';
 			
+			$this->dtrVotes = new QDataRepeater($this->pnlVotes);
+			$this->dtrVotes->SetDataBinder('dtrVotes_Bind');
+			$this->dtrVotes->Template = dirname(__FILE__) . '/dtrVotes.tpl.php';
+
 			$this->pnlExampleCode = new QPanel($this);
 			$this->pnlExampleCode->Template = dirname(__FILE__) . '/pnlExampleCode.tpl.php';
 			
@@ -54,6 +59,20 @@
 
 		protected function btnButton_Click($strFormId, $strControlId, $strParameter) {
 			$this->lblMessage->Text = 'Hello, World!';
+		}
+		
+		protected function dtrVotes_Bind() {
+			$this->dtrVotes->DataSource = $this->objIssue->GetIssueVoteArray(array(QQ::OrderBy(QQN::IssueVote()->VoteDate), QQ::Expand(QQN::IssueVote()->Person->FirstName)));
+		}
+		
+		protected function DisplayVoteCount() {
+			$intVoteCount = $this->objIssue->CountIssueVotes();
+			if ($intVoteCount > 1)
+				return 'There are <strong>' . $intVoteCount . ' votes</strong> for this issue';
+			else if ($intVoteCount == 1)
+				return 'There is <strong>1 vote</strong> for this issue';
+			else
+				return 'There are <strong>no votes</strong> for this issue';
 		}
 		
 		protected function DisplayField($strLabel, $strValue, $blnHtmlEntities = true) {

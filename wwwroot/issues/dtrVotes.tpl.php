@@ -1,0 +1,1 @@
+<div><?php _p($_ITEM->Person->DisplayName); ?></div>
