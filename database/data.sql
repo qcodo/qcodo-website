@@ -28,14 +28,14 @@ INSERT INTO `forum` VALUES
 	(8,5,'QForge and Qcodo Hosting',0,'For anything regarding <a class=\"link_body\" href=\"http://qforge.qcodo.com/\">QForge</a> or <a class=\"link_body\" href=\"http://www.qcodohosting.org/\">Qcodo Hosting</a>'),
 	(9,4,'Qcodo Jobs Board',0,'For Qcodo-related job openings, contracting opportunities and developers for hire.');
 
-INSERT INTO topic_link VALUES (null, 1, 0, 0, null, 2, null);
-INSERT INTO topic_link VALUES (null, 1, 0, 0, null, 3, null);
-INSERT INTO topic_link VALUES (null, 1, 0, 0, null, 4, null);
-INSERT INTO topic_link VALUES (null, 1, 0, 0, null, 5, null);
-INSERT INTO topic_link VALUES (null, 1, 0, 0, null, 6, null);
-INSERT INTO topic_link VALUES (null, 1, 0, 0, null, 7, null);
-INSERT INTO topic_link VALUES (null, 1, 0, 0, null, 8, null);
-INSERT INTO topic_link VALUES (null, 1, 0, 0, null, 9, null);
+INSERT INTO topic_link(topic_link_type_id, topic_count, message_count, forum_id) VALUES (1, 0, 0, 2);
+INSERT INTO topic_link(topic_link_type_id, topic_count, message_count, forum_id) VALUES (1, 0, 0, 3);
+INSERT INTO topic_link(topic_link_type_id, topic_count, message_count, forum_id) VALUES (1, 0, 0, 4);
+INSERT INTO topic_link(topic_link_type_id, topic_count, message_count, forum_id) VALUES (1, 0, 0, 5);
+INSERT INTO topic_link(topic_link_type_id, topic_count, message_count, forum_id) VALUES (1, 0, 0, 6);
+INSERT INTO topic_link(topic_link_type_id, topic_count, message_count, forum_id) VALUES (1, 0, 0, 7);
+INSERT INTO topic_link(topic_link_type_id, topic_count, message_count, forum_id) VALUES (1, 0, 0, 8);
+INSERT INTO topic_link(topic_link_type_id, topic_count, message_count, forum_id) VALUES (1, 0, 0, 9);
 
 INSERT INTO `download_category` VALUES
 	(1,1,'Official Releases',1,'For Official Qcodo Releases','For the latest DEVELOPMENT snapshot, please go to the <a href=\"/support/\" class=\"link_body\">Support</a> page.', NULL),
