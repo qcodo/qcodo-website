@@ -120,5 +120,29 @@
 		static public function TopicLink() {
 			return new QQNodeTopicLink('topic_link', null, null);
 		}
+		/**
+		 * @return QQNodeWikiImage
+		 */
+		static public function WikiImage() {
+			return new QQNodeWikiImage('wiki_image', null, null);
+		}
+		/**
+		 * @return QQNodeWikiItem
+		 */
+		static public function WikiItem() {
+			return new QQNodeWikiItem('wiki_item', null, null);
+		}
+		/**
+		 * @return QQNodeWikiPage
+		 */
+		static public function WikiPage() {
+			return new QQNodeWikiPage('wiki_page', null, null);
+		}
+		/**
+		 * @return QQNodeWikiVersion
+		 */
+		static public function WikiVersion() {
+			return new QQNodeWikiVersion('wiki_version', null, null);
+		}
 	}
 ?>

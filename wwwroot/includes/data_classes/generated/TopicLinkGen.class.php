@@ -22,8 +22,10 @@
 	 * @property QDateTime $LastPostDate the value for dttLastPostDate 
 	 * @property integer $ForumId the value for intForumId (Unique)
 	 * @property integer $IssueId the value for intIssueId (Unique)
+	 * @property integer $WikiItemId the value for intWikiItemId (Unique)
 	 * @property Forum $Forum the value for the Forum object referenced by intForumId (Unique)
 	 * @property Issue $Issue the value for the Issue object referenced by intIssueId (Unique)
+	 * @property WikiItem $WikiItem the value for the WikiItem object referenced by intWikiItemId (Unique)
 	 * @property-read Message $_Message the value for the private _objMessage (Read-Only) if set due to an expansion on the message.topic_link_id reverse relationship
 	 * @property-read Message[] $_MessageArray the value for the private _objMessageArray (Read-Only) if set due to an ExpandAsArray on the message.topic_link_id reverse relationship
 	 * @property-read Topic $_Topic the value for the private _objTopic (Read-Only) if set due to an expansion on the topic.topic_link_id reverse relationship
@@ -90,6 +92,14 @@
 		 */
 		protected $intIssueId;
 		const IssueIdDefault = null;
+
+
+		/**
+		 * Protected member variable that maps to the database column topic_link.wiki_item_id
+		 * @var integer intWikiItemId
+		 */
+		protected $intWikiItemId;
+		const WikiItemIdDefault = null;
 
 
 		/**
@@ -165,6 +175,16 @@
 		 * @var Issue objIssue
 		 */
 		protected $objIssue;
+
+		/**
+		 * Protected member variable that contains the object pointed by the reference
+		 * in the database column topic_link.wiki_item_id.
+		 *
+		 * NOTE: Always use the WikiItem property getter to correctly retrieve this WikiItem object.
+		 * (Because this class implements late binding, this variable reference MAY be null.)
+		 * @var WikiItem objWikiItem
+		 */
+		protected $objWikiItem;
 
 
 
@@ -436,6 +456,7 @@
 			$objBuilder->AddSelectItem($strTableName, 'last_post_date', $strAliasPrefix . 'last_post_date');
 			$objBuilder->AddSelectItem($strTableName, 'forum_id', $strAliasPrefix . 'forum_id');
 			$objBuilder->AddSelectItem($strTableName, 'issue_id', $strAliasPrefix . 'issue_id');
+			$objBuilder->AddSelectItem($strTableName, 'wiki_item_id', $strAliasPrefix . 'wiki_item_id');
 		}
 
 
@@ -527,6 +548,8 @@
 			$objToReturn->intForumId = $objDbRow->GetColumn($strAliasName, 'Integer');
 			$strAliasName = array_key_exists($strAliasPrefix . 'issue_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'issue_id'] : $strAliasPrefix . 'issue_id';
 			$objToReturn->intIssueId = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'wiki_item_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'wiki_item_id'] : $strAliasPrefix . 'wiki_item_id';
+			$objToReturn->intWikiItemId = $objDbRow->GetColumn($strAliasName, 'Integer');
 
 			// Instantiate Virtual Attributes
 			foreach ($objDbRow->GetColumnNameArray() as $strColumnName => $mixValue) {
@@ -551,6 +574,12 @@
 			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
 			if (!is_null($objDbRow->GetColumn($strAliasName)))
 				$objToReturn->objIssue = Issue::InstantiateDbRow($objDbRow, $strAliasPrefix . 'issue_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+
+			// Check for WikiItem Early Binding
+			$strAlias = $strAliasPrefix . 'wiki_item_id__id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+			if (!is_null($objDbRow->GetColumn($strAliasName)))
+				$objToReturn->objWikiItem = WikiItem::InstantiateDbRow($objDbRow, $strAliasPrefix . 'wiki_item_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 
 
 
@@ -657,6 +686,18 @@
 		}
 			
 		/**
+		 * Load a single TopicLink object,
+		 * by WikiItemId Index(es)
+		 * @param integer $intWikiItemId
+		 * @return TopicLink
+		*/
+		public static function LoadByWikiItemId($intWikiItemId) {
+			return TopicLink::QuerySingle(
+				QQ::Equal(QQN::TopicLink()->WikiItemId, $intWikiItemId)
+			);
+		}
+			
+		/**
 		 * Load an array of TopicLink objects,
 		 * by TopicLinkTypeId Index(es)
 		 * @param integer $intTopicLinkTypeId
@@ -723,14 +764,16 @@
 							`message_count`,
 							`last_post_date`,
 							`forum_id`,
-							`issue_id`
+							`issue_id`,
+							`wiki_item_id`
 						) VALUES (
 							' . $objDatabase->SqlVariable($this->intTopicLinkTypeId) . ',
 							' . $objDatabase->SqlVariable($this->intTopicCount) . ',
 							' . $objDatabase->SqlVariable($this->intMessageCount) . ',
 							' . $objDatabase->SqlVariable($this->dttLastPostDate) . ',
 							' . $objDatabase->SqlVariable($this->intForumId) . ',
-							' . $objDatabase->SqlVariable($this->intIssueId) . '
+							' . $objDatabase->SqlVariable($this->intIssueId) . ',
+							' . $objDatabase->SqlVariable($this->intWikiItemId) . '
 						)
 					');
 
@@ -751,7 +794,8 @@
 							`message_count` = ' . $objDatabase->SqlVariable($this->intMessageCount) . ',
 							`last_post_date` = ' . $objDatabase->SqlVariable($this->dttLastPostDate) . ',
 							`forum_id` = ' . $objDatabase->SqlVariable($this->intForumId) . ',
-							`issue_id` = ' . $objDatabase->SqlVariable($this->intIssueId) . '
+							`issue_id` = ' . $objDatabase->SqlVariable($this->intIssueId) . ',
+							`wiki_item_id` = ' . $objDatabase->SqlVariable($this->intWikiItemId) . '
 						WHERE
 							`id` = ' . $objDatabase->SqlVariable($this->intId) . '
 					');
@@ -836,6 +880,7 @@
 			$this->dttLastPostDate = $objReloaded->dttLastPostDate;
 			$this->ForumId = $objReloaded->ForumId;
 			$this->IssueId = $objReloaded->IssueId;
+			$this->WikiItemId = $objReloaded->WikiItemId;
 		}
 
 
@@ -905,6 +950,13 @@
 					 */
 					return $this->intIssueId;
 
+				case 'WikiItemId':
+					/**
+					 * Gets the value for intWikiItemId (Unique)
+					 * @return integer
+					 */
+					return $this->intWikiItemId;
+
 
 				///////////////////
 				// Member Objects
@@ -932,6 +984,20 @@
 						if ((!$this->objIssue) && (!is_null($this->intIssueId)))
 							$this->objIssue = Issue::Load($this->intIssueId);
 						return $this->objIssue;
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
+				case 'WikiItem':
+					/**
+					 * Gets the value for the WikiItem object referenced by intWikiItemId (Unique)
+					 * @return WikiItem
+					 */
+					try {
+						if ((!$this->objWikiItem) && (!is_null($this->intWikiItemId)))
+							$this->objWikiItem = WikiItem::Load($this->intWikiItemId);
+						return $this->objWikiItem;
 					} catch (QCallerException $objExc) {
 						$objExc->IncrementOffset();
 						throw $objExc;
@@ -1082,6 +1148,20 @@
 						throw $objExc;
 					}
 
+				case 'WikiItemId':
+					/**
+					 * Sets the value for intWikiItemId (Unique)
+					 * @param integer $mixValue
+					 * @return integer
+					 */
+					try {
+						$this->objWikiItem = null;
+						return ($this->intWikiItemId = QType::Cast($mixValue, QType::Integer));
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
 
 				///////////////////
 				// Member Objects
@@ -1144,6 +1224,38 @@
 						// Update Local Member Variables
 						$this->objIssue = $mixValue;
 						$this->intIssueId = $mixValue->Id;
+
+						// Return $mixValue
+						return $mixValue;
+					}
+					break;
+
+				case 'WikiItem':
+					/**
+					 * Sets the value for the WikiItem object referenced by intWikiItemId (Unique)
+					 * @param WikiItem $mixValue
+					 * @return WikiItem
+					 */
+					if (is_null($mixValue)) {
+						$this->intWikiItemId = null;
+						$this->objWikiItem = null;
+						return null;
+					} else {
+						// Make sure $mixValue actually is a WikiItem object
+						try {
+							$mixValue = QType::Cast($mixValue, 'WikiItem');
+						} catch (QInvalidCastException $objExc) {
+							$objExc->IncrementOffset();
+							throw $objExc;
+						} 
+
+						// Make sure $mixValue is a SAVED WikiItem object
+						if (is_null($mixValue->Id))
+							throw new QCallerException('Unable to set an unsaved WikiItem for this TopicLink');
+
+						// Update Local Member Variables
+						$this->objWikiItem = $mixValue;
+						$this->intWikiItemId = $mixValue->Id;
 
 						// Return $mixValue
 						return $mixValue;
@@ -1494,6 +1606,7 @@
 			$strToReturn .= '<element name="LastPostDate" type="xsd:dateTime"/>';
 			$strToReturn .= '<element name="Forum" type="xsd1:Forum"/>';
 			$strToReturn .= '<element name="Issue" type="xsd1:Issue"/>';
+			$strToReturn .= '<element name="WikiItem" type="xsd1:WikiItem"/>';
 			$strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
 			$strToReturn .= '</sequence></complexType>';
 			return $strToReturn;
@@ -1504,6 +1617,7 @@
 				$strComplexTypeArray['TopicLink'] = TopicLink::GetSoapComplexTypeXml();
 				Forum::AlterSoapComplexTypeArray($strComplexTypeArray);
 				Issue::AlterSoapComplexTypeArray($strComplexTypeArray);
+				WikiItem::AlterSoapComplexTypeArray($strComplexTypeArray);
 			}
 		}
 
@@ -1534,6 +1648,9 @@
 			if ((property_exists($objSoapObject, 'Issue')) &&
 				($objSoapObject->Issue))
 				$objToReturn->Issue = Issue::GetObjectFromSoapObject($objSoapObject->Issue);
+			if ((property_exists($objSoapObject, 'WikiItem')) &&
+				($objSoapObject->WikiItem))
+				$objToReturn->WikiItem = WikiItem::GetObjectFromSoapObject($objSoapObject->WikiItem);
 			if (property_exists($objSoapObject, '__blnRestored'))
 				$objToReturn->__blnRestored = $objSoapObject->__blnRestored;
 			return $objToReturn;
@@ -1562,6 +1679,10 @@
 				$objObject->objIssue = Issue::GetSoapObjectFromObject($objObject->objIssue, false);
 			else if (!$blnBindRelatedObjects)
 				$objObject->intIssueId = null;
+			if ($objObject->objWikiItem)
+				$objObject->objWikiItem = WikiItem::GetSoapObjectFromObject($objObject->objWikiItem, false);
+			else if (!$blnBindRelatedObjects)
+				$objObject->intWikiItemId = null;
 			return $objObject;
 		}
 
@@ -1600,6 +1721,10 @@
 					return new QQNode('issue_id', 'IssueId', 'integer', $this);
 				case 'Issue':
 					return new QQNodeIssue('issue_id', 'Issue', 'integer', $this);
+				case 'WikiItemId':
+					return new QQNode('wiki_item_id', 'WikiItemId', 'integer', $this);
+				case 'WikiItem':
+					return new QQNodeWikiItem('wiki_item_id', 'WikiItem', 'integer', $this);
 				case 'Message':
 					return new QQReverseReferenceNodeMessage($this, 'message', 'reverse_reference', 'topic_link_id');
 				case 'Topic':
@@ -1642,6 +1767,10 @@
 					return new QQNode('issue_id', 'IssueId', 'integer', $this);
 				case 'Issue':
 					return new QQNodeIssue('issue_id', 'Issue', 'integer', $this);
+				case 'WikiItemId':
+					return new QQNode('wiki_item_id', 'WikiItemId', 'integer', $this);
+				case 'WikiItem':
+					return new QQNodeWikiItem('wiki_item_id', 'WikiItem', 'integer', $this);
 				case 'Message':
 					return new QQReverseReferenceNodeMessage($this, 'message', 'reverse_reference', 'topic_link_id');
 				case 'Topic':

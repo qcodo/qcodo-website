@@ -55,6 +55,10 @@
 	 * @property-read Message[] $_MessageArray the value for the private _objMessageArray (Read-Only) if set due to an ExpandAsArray on the message.person_id reverse relationship
 	 * @property-read Topic $_Topic the value for the private _objTopic (Read-Only) if set due to an expansion on the topic.person_id reverse relationship
 	 * @property-read Topic[] $_TopicArray the value for the private _objTopicArray (Read-Only) if set due to an ExpandAsArray on the topic.person_id reverse relationship
+	 * @property-read WikiItem $_WikiItemAsCurrentPostedBy the value for the private _objWikiItemAsCurrentPostedBy (Read-Only) if set due to an expansion on the wiki_item.current_posted_by_person_id reverse relationship
+	 * @property-read WikiItem[] $_WikiItemAsCurrentPostedByArray the value for the private _objWikiItemAsCurrentPostedByArray (Read-Only) if set due to an ExpandAsArray on the wiki_item.current_posted_by_person_id reverse relationship
+	 * @property-read WikiVersion $_WikiVersionAsPostedBy the value for the private _objWikiVersionAsPostedBy (Read-Only) if set due to an expansion on the wiki_version.posted_by_person_id reverse relationship
+	 * @property-read WikiVersion[] $_WikiVersionAsPostedByArray the value for the private _objWikiVersionAsPostedByArray (Read-Only) if set due to an ExpandAsArray on the wiki_version.posted_by_person_id reverse relationship
 	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
 	class PersonGen extends QBaseClass {
@@ -374,6 +378,38 @@
 		 * @var Topic[] _objTopicArray;
 		 */
 		private $_objTopicArray = array();
+
+		/**
+		 * Private member variable that stores a reference to a single WikiItemAsCurrentPostedBy object
+		 * (of type WikiItem), if this Person object was restored with
+		 * an expansion on the wiki_item association table.
+		 * @var WikiItem _objWikiItemAsCurrentPostedBy;
+		 */
+		private $_objWikiItemAsCurrentPostedBy;
+
+		/**
+		 * Private member variable that stores a reference to an array of WikiItemAsCurrentPostedBy objects
+		 * (of type WikiItem[]), if this Person object was restored with
+		 * an ExpandAsArray on the wiki_item association table.
+		 * @var WikiItem[] _objWikiItemAsCurrentPostedByArray;
+		 */
+		private $_objWikiItemAsCurrentPostedByArray = array();
+
+		/**
+		 * Private member variable that stores a reference to a single WikiVersionAsPostedBy object
+		 * (of type WikiVersion), if this Person object was restored with
+		 * an expansion on the wiki_version association table.
+		 * @var WikiVersion _objWikiVersionAsPostedBy;
+		 */
+		private $_objWikiVersionAsPostedBy;
+
+		/**
+		 * Private member variable that stores a reference to an array of WikiVersionAsPostedBy objects
+		 * (of type WikiVersion[]), if this Person object was restored with
+		 * an ExpandAsArray on the wiki_version association table.
+		 * @var WikiVersion[] _objWikiVersionAsPostedByArray;
+		 */
+		private $_objWikiVersionAsPostedByArray = array();
 
 		/**
 		 * Protected array of virtual attributes for this object (e.g. extra/other calculated and/or non-object bound
@@ -876,6 +912,34 @@
 					$blnExpandedViaArray = true;
 				}
 
+				$strAlias = $strAliasPrefix . 'wikiitemascurrentpostedby__id';
+				$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+				if ((array_key_exists($strAlias, $strExpandAsArrayNodes)) &&
+					(!is_null($objDbRow->GetColumn($strAliasName)))) {
+					if ($intPreviousChildItemCount = count($objPreviousItem->_objWikiItemAsCurrentPostedByArray)) {
+						$objPreviousChildItem = $objPreviousItem->_objWikiItemAsCurrentPostedByArray[$intPreviousChildItemCount - 1];
+						$objChildItem = WikiItem::InstantiateDbRow($objDbRow, $strAliasPrefix . 'wikiitemascurrentpostedby__', $strExpandAsArrayNodes, $objPreviousChildItem, $strColumnAliasArray);
+						if ($objChildItem)
+							$objPreviousItem->_objWikiItemAsCurrentPostedByArray[] = $objChildItem;
+					} else
+						$objPreviousItem->_objWikiItemAsCurrentPostedByArray[] = WikiItem::InstantiateDbRow($objDbRow, $strAliasPrefix . 'wikiitemascurrentpostedby__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+					$blnExpandedViaArray = true;
+				}
+
+				$strAlias = $strAliasPrefix . 'wikiversionaspostedby__id';
+				$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+				if ((array_key_exists($strAlias, $strExpandAsArrayNodes)) &&
+					(!is_null($objDbRow->GetColumn($strAliasName)))) {
+					if ($intPreviousChildItemCount = count($objPreviousItem->_objWikiVersionAsPostedByArray)) {
+						$objPreviousChildItem = $objPreviousItem->_objWikiVersionAsPostedByArray[$intPreviousChildItemCount - 1];
+						$objChildItem = WikiVersion::InstantiateDbRow($objDbRow, $strAliasPrefix . 'wikiversionaspostedby__', $strExpandAsArrayNodes, $objPreviousChildItem, $strColumnAliasArray);
+						if ($objChildItem)
+							$objPreviousItem->_objWikiVersionAsPostedByArray[] = $objChildItem;
+					} else
+						$objPreviousItem->_objWikiVersionAsPostedByArray[] = WikiVersion::InstantiateDbRow($objDbRow, $strAliasPrefix . 'wikiversionaspostedby__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+					$blnExpandedViaArray = true;
+				}
+
 				// Either return false to signal array expansion, or check-to-reset the Alias prefix and move on
 				if ($blnExpandedViaArray)
 					return false;
@@ -1049,6 +1113,26 @@
 					$objToReturn->_objTopicArray[] = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topic__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 				else
 					$objToReturn->_objTopic = Topic::InstantiateDbRow($objDbRow, $strAliasPrefix . 'topic__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+			}
+
+			// Check for WikiItemAsCurrentPostedBy Virtual Binding
+			$strAlias = $strAliasPrefix . 'wikiitemascurrentpostedby__id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+			if (!is_null($objDbRow->GetColumn($strAliasName))) {
+				if (($strExpandAsArrayNodes) && (array_key_exists($strAlias, $strExpandAsArrayNodes)))
+					$objToReturn->_objWikiItemAsCurrentPostedByArray[] = WikiItem::InstantiateDbRow($objDbRow, $strAliasPrefix . 'wikiitemascurrentpostedby__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+				else
+					$objToReturn->_objWikiItemAsCurrentPostedBy = WikiItem::InstantiateDbRow($objDbRow, $strAliasPrefix . 'wikiitemascurrentpostedby__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+			}
+
+			// Check for WikiVersionAsPostedBy Virtual Binding
+			$strAlias = $strAliasPrefix . 'wikiversionaspostedby__id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+			if (!is_null($objDbRow->GetColumn($strAliasName))) {
+				if (($strExpandAsArrayNodes) && (array_key_exists($strAlias, $strExpandAsArrayNodes)))
+					$objToReturn->_objWikiVersionAsPostedByArray[] = WikiVersion::InstantiateDbRow($objDbRow, $strAliasPrefix . 'wikiversionaspostedby__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+				else
+					$objToReturn->_objWikiVersionAsPostedBy = WikiVersion::InstantiateDbRow($objDbRow, $strAliasPrefix . 'wikiversionaspostedby__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 			}
 
 			return $objToReturn;
@@ -1856,6 +1940,38 @@
 					 * @return Topic[]
 					 */
 					return (array) $this->_objTopicArray;
+
+				case '_WikiItemAsCurrentPostedBy':
+					/**
+					 * Gets the value for the private _objWikiItemAsCurrentPostedBy (Read-Only)
+					 * if set due to an expansion on the wiki_item.current_posted_by_person_id reverse relationship
+					 * @return WikiItem
+					 */
+					return $this->_objWikiItemAsCurrentPostedBy;
+
+				case '_WikiItemAsCurrentPostedByArray':
+					/**
+					 * Gets the value for the private _objWikiItemAsCurrentPostedByArray (Read-Only)
+					 * if set due to an ExpandAsArray on the wiki_item.current_posted_by_person_id reverse relationship
+					 * @return WikiItem[]
+					 */
+					return (array) $this->_objWikiItemAsCurrentPostedByArray;
+
+				case '_WikiVersionAsPostedBy':
+					/**
+					 * Gets the value for the private _objWikiVersionAsPostedBy (Read-Only)
+					 * if set due to an expansion on the wiki_version.posted_by_person_id reverse relationship
+					 * @return WikiVersion
+					 */
+					return $this->_objWikiVersionAsPostedBy;
+
+				case '_WikiVersionAsPostedByArray':
+					/**
+					 * Gets the value for the private _objWikiVersionAsPostedByArray (Read-Only)
+					 * if set due to an ExpandAsArray on the wiki_version.posted_by_person_id reverse relationship
+					 * @return WikiVersion[]
+					 */
+					return (array) $this->_objWikiVersionAsPostedByArray;
 
 
 				case '__Restored':
@@ -3253,6 +3369,306 @@
 		}
 
 			
+		
+		// Related Objects' Methods for WikiItemAsCurrentPostedBy
+		//-------------------------------------------------------------------
+
+		/**
+		 * Gets all associated WikiItemsAsCurrentPostedBy as an array of WikiItem objects
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @return WikiItem[]
+		*/ 
+		public function GetWikiItemAsCurrentPostedByArray($objOptionalClauses = null) {
+			if ((is_null($this->intId)))
+				return array();
+
+			try {
+				return WikiItem::LoadArrayByCurrentPostedByPersonId($this->intId, $objOptionalClauses);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+		}
+
+		/**
+		 * Counts all associated WikiItemsAsCurrentPostedBy
+		 * @return int
+		*/ 
+		public function CountWikiItemsAsCurrentPostedBy() {
+			if ((is_null($this->intId)))
+				return 0;
+
+			return WikiItem::CountByCurrentPostedByPersonId($this->intId);
+		}
+
+		/**
+		 * Associates a WikiItemAsCurrentPostedBy
+		 * @param WikiItem $objWikiItem
+		 * @return void
+		*/ 
+		public function AssociateWikiItemAsCurrentPostedBy(WikiItem $objWikiItem) {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call AssociateWikiItemAsCurrentPostedBy on this unsaved Person.');
+			if ((is_null($objWikiItem->Id)))
+				throw new QUndefinedPrimaryKeyException('Unable to call AssociateWikiItemAsCurrentPostedBy on this Person with an unsaved WikiItem.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Person::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				UPDATE
+					`wiki_item`
+				SET
+					`current_posted_by_person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+				WHERE
+					`id` = ' . $objDatabase->SqlVariable($objWikiItem->Id) . '
+			');
+		}
+
+		/**
+		 * Unassociates a WikiItemAsCurrentPostedBy
+		 * @param WikiItem $objWikiItem
+		 * @return void
+		*/ 
+		public function UnassociateWikiItemAsCurrentPostedBy(WikiItem $objWikiItem) {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateWikiItemAsCurrentPostedBy on this unsaved Person.');
+			if ((is_null($objWikiItem->Id)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateWikiItemAsCurrentPostedBy on this Person with an unsaved WikiItem.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Person::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				UPDATE
+					`wiki_item`
+				SET
+					`current_posted_by_person_id` = null
+				WHERE
+					`id` = ' . $objDatabase->SqlVariable($objWikiItem->Id) . ' AND
+					`current_posted_by_person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+			');
+		}
+
+		/**
+		 * Unassociates all WikiItemsAsCurrentPostedBy
+		 * @return void
+		*/ 
+		public function UnassociateAllWikiItemsAsCurrentPostedBy() {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateWikiItemAsCurrentPostedBy on this unsaved Person.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Person::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				UPDATE
+					`wiki_item`
+				SET
+					`current_posted_by_person_id` = null
+				WHERE
+					`current_posted_by_person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+			');
+		}
+
+		/**
+		 * Deletes an associated WikiItemAsCurrentPostedBy
+		 * @param WikiItem $objWikiItem
+		 * @return void
+		*/ 
+		public function DeleteAssociatedWikiItemAsCurrentPostedBy(WikiItem $objWikiItem) {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateWikiItemAsCurrentPostedBy on this unsaved Person.');
+			if ((is_null($objWikiItem->Id)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateWikiItemAsCurrentPostedBy on this Person with an unsaved WikiItem.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Person::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				DELETE FROM
+					`wiki_item`
+				WHERE
+					`id` = ' . $objDatabase->SqlVariable($objWikiItem->Id) . ' AND
+					`current_posted_by_person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+			');
+		}
+
+		/**
+		 * Deletes all associated WikiItemsAsCurrentPostedBy
+		 * @return void
+		*/ 
+		public function DeleteAllWikiItemsAsCurrentPostedBy() {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateWikiItemAsCurrentPostedBy on this unsaved Person.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Person::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				DELETE FROM
+					`wiki_item`
+				WHERE
+					`current_posted_by_person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+			');
+		}
+
+			
+		
+		// Related Objects' Methods for WikiVersionAsPostedBy
+		//-------------------------------------------------------------------
+
+		/**
+		 * Gets all associated WikiVersionsAsPostedBy as an array of WikiVersion objects
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @return WikiVersion[]
+		*/ 
+		public function GetWikiVersionAsPostedByArray($objOptionalClauses = null) {
+			if ((is_null($this->intId)))
+				return array();
+
+			try {
+				return WikiVersion::LoadArrayByPostedByPersonId($this->intId, $objOptionalClauses);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+		}
+
+		/**
+		 * Counts all associated WikiVersionsAsPostedBy
+		 * @return int
+		*/ 
+		public function CountWikiVersionsAsPostedBy() {
+			if ((is_null($this->intId)))
+				return 0;
+
+			return WikiVersion::CountByPostedByPersonId($this->intId);
+		}
+
+		/**
+		 * Associates a WikiVersionAsPostedBy
+		 * @param WikiVersion $objWikiVersion
+		 * @return void
+		*/ 
+		public function AssociateWikiVersionAsPostedBy(WikiVersion $objWikiVersion) {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call AssociateWikiVersionAsPostedBy on this unsaved Person.');
+			if ((is_null($objWikiVersion->Id)))
+				throw new QUndefinedPrimaryKeyException('Unable to call AssociateWikiVersionAsPostedBy on this Person with an unsaved WikiVersion.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Person::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				UPDATE
+					`wiki_version`
+				SET
+					`posted_by_person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+				WHERE
+					`id` = ' . $objDatabase->SqlVariable($objWikiVersion->Id) . '
+			');
+		}
+
+		/**
+		 * Unassociates a WikiVersionAsPostedBy
+		 * @param WikiVersion $objWikiVersion
+		 * @return void
+		*/ 
+		public function UnassociateWikiVersionAsPostedBy(WikiVersion $objWikiVersion) {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateWikiVersionAsPostedBy on this unsaved Person.');
+			if ((is_null($objWikiVersion->Id)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateWikiVersionAsPostedBy on this Person with an unsaved WikiVersion.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Person::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				UPDATE
+					`wiki_version`
+				SET
+					`posted_by_person_id` = null
+				WHERE
+					`id` = ' . $objDatabase->SqlVariable($objWikiVersion->Id) . ' AND
+					`posted_by_person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+			');
+		}
+
+		/**
+		 * Unassociates all WikiVersionsAsPostedBy
+		 * @return void
+		*/ 
+		public function UnassociateAllWikiVersionsAsPostedBy() {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateWikiVersionAsPostedBy on this unsaved Person.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Person::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				UPDATE
+					`wiki_version`
+				SET
+					`posted_by_person_id` = null
+				WHERE
+					`posted_by_person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+			');
+		}
+
+		/**
+		 * Deletes an associated WikiVersionAsPostedBy
+		 * @param WikiVersion $objWikiVersion
+		 * @return void
+		*/ 
+		public function DeleteAssociatedWikiVersionAsPostedBy(WikiVersion $objWikiVersion) {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateWikiVersionAsPostedBy on this unsaved Person.');
+			if ((is_null($objWikiVersion->Id)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateWikiVersionAsPostedBy on this Person with an unsaved WikiVersion.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Person::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				DELETE FROM
+					`wiki_version`
+				WHERE
+					`id` = ' . $objDatabase->SqlVariable($objWikiVersion->Id) . ' AND
+					`posted_by_person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+			');
+		}
+
+		/**
+		 * Deletes all associated WikiVersionsAsPostedBy
+		 * @return void
+		*/ 
+		public function DeleteAllWikiVersionsAsPostedBy() {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateWikiVersionAsPostedBy on this unsaved Person.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Person::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				DELETE FROM
+					`wiki_version`
+				WHERE
+					`posted_by_person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+			');
+		}
+
+			
 		// Related Many-to-Many Objects' Methods for TopicAsEmail
 		//-------------------------------------------------------------------
 
@@ -3897,6 +4313,10 @@
 					return new QQReverseReferenceNodeMessage($this, 'message', 'reverse_reference', 'person_id');
 				case 'Topic':
 					return new QQReverseReferenceNodeTopic($this, 'topic', 'reverse_reference', 'person_id');
+				case 'WikiItemAsCurrentPostedBy':
+					return new QQReverseReferenceNodeWikiItem($this, 'wikiitemascurrentpostedby', 'reverse_reference', 'current_posted_by_person_id');
+				case 'WikiVersionAsPostedBy':
+					return new QQReverseReferenceNodeWikiVersion($this, 'wikiversionaspostedby', 'reverse_reference', 'posted_by_person_id');
 
 				case '_PrimaryKeyNode':
 					return new QQNode('id', 'Id', 'integer', $this);
@@ -3977,6 +4397,10 @@
 					return new QQReverseReferenceNodeMessage($this, 'message', 'reverse_reference', 'person_id');
 				case 'Topic':
 					return new QQReverseReferenceNodeTopic($this, 'topic', 'reverse_reference', 'person_id');
+				case 'WikiItemAsCurrentPostedBy':
+					return new QQReverseReferenceNodeWikiItem($this, 'wikiitemascurrentpostedby', 'reverse_reference', 'current_posted_by_person_id');
+				case 'WikiVersionAsPostedBy':
+					return new QQReverseReferenceNodeWikiVersion($this, 'wikiversionaspostedby', 'reverse_reference', 'posted_by_person_id');
 
 				case '_PrimaryKeyNode':
 					return new QQNode('id', 'Id', 'integer', $this);

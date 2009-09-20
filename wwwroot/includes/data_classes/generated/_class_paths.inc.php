@@ -139,4 +139,32 @@
 		QApplicationBase::$ClassFile['topiclinkmetacontrol'] = __DATA_META_CONTROLS__ . '/TopicLinkMetaControl.class.php';
 		QApplicationBase::$ClassFile['topiclinkdatagrid'] = __DATA_META_CONTROLS__ . '/TopicLinkDataGrid.class.php';
 
+	// ClassPaths for the WikiImage class
+		QApplicationBase::$ClassFile['wikiimage'] = __DATA_CLASSES__ . '/WikiImage.class.php';
+		QApplicationBase::$ClassFile['qqnodewikiimage'] = __DATA_CLASSES__ . '/WikiImage.class.php';
+		QApplicationBase::$ClassFile['qqreversereferencenodewikiimage'] = __DATA_CLASSES__ . '/WikiImage.class.php';
+		QApplicationBase::$ClassFile['wikiimagemetacontrol'] = __DATA_META_CONTROLS__ . '/WikiImageMetaControl.class.php';
+		QApplicationBase::$ClassFile['wikiimagedatagrid'] = __DATA_META_CONTROLS__ . '/WikiImageDataGrid.class.php';
+
+	// ClassPaths for the WikiItem class
+		QApplicationBase::$ClassFile['wikiitem'] = __DATA_CLASSES__ . '/WikiItem.class.php';
+		QApplicationBase::$ClassFile['qqnodewikiitem'] = __DATA_CLASSES__ . '/WikiItem.class.php';
+		QApplicationBase::$ClassFile['qqreversereferencenodewikiitem'] = __DATA_CLASSES__ . '/WikiItem.class.php';
+		QApplicationBase::$ClassFile['wikiitemmetacontrol'] = __DATA_META_CONTROLS__ . '/WikiItemMetaControl.class.php';
+		QApplicationBase::$ClassFile['wikiitemdatagrid'] = __DATA_META_CONTROLS__ . '/WikiItemDataGrid.class.php';
+
+	// ClassPaths for the WikiPage class
+		QApplicationBase::$ClassFile['wikipage'] = __DATA_CLASSES__ . '/WikiPage.class.php';
+		QApplicationBase::$ClassFile['qqnodewikipage'] = __DATA_CLASSES__ . '/WikiPage.class.php';
+		QApplicationBase::$ClassFile['qqreversereferencenodewikipage'] = __DATA_CLASSES__ . '/WikiPage.class.php';
+		QApplicationBase::$ClassFile['wikipagemetacontrol'] = __DATA_META_CONTROLS__ . '/WikiPageMetaControl.class.php';
+		QApplicationBase::$ClassFile['wikipagedatagrid'] = __DATA_META_CONTROLS__ . '/WikiPageDataGrid.class.php';
+
+	// ClassPaths for the WikiVersion class
+		QApplicationBase::$ClassFile['wikiversion'] = __DATA_CLASSES__ . '/WikiVersion.class.php';
+		QApplicationBase::$ClassFile['qqnodewikiversion'] = __DATA_CLASSES__ . '/WikiVersion.class.php';
+		QApplicationBase::$ClassFile['qqreversereferencenodewikiversion'] = __DATA_CLASSES__ . '/WikiVersion.class.php';
+		QApplicationBase::$ClassFile['wikiversionmetacontrol'] = __DATA_META_CONTROLS__ . '/WikiVersionMetaControl.class.php';
+		QApplicationBase::$ClassFile['wikiversiondatagrid'] = __DATA_META_CONTROLS__ . '/WikiVersionDataGrid.class.php';
+
 ?>

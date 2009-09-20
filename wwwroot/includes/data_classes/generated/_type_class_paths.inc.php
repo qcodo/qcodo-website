@@ -9,4 +9,8 @@
 		QApplicationBase::$ClassFile['persontype'] = __DATA_CLASSES__ . '/PersonType.class.php';
 	// ClassPaths for the TopicLinkType type class
 		QApplicationBase::$ClassFile['topiclinktype'] = __DATA_CLASSES__ . '/TopicLinkType.class.php';
+	// ClassPaths for the WikiImageType type class
+		QApplicationBase::$ClassFile['wikiimagetype'] = __DATA_CLASSES__ . '/WikiImageType.class.php';
+	// ClassPaths for the WikiItemType type class
+		QApplicationBase::$ClassFile['wikiitemtype'] = __DATA_CLASSES__ . '/WikiItemType.class.php';
 ?>

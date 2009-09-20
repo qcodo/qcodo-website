@@ -30,6 +30,8 @@
 	 * property-read QLabel $ForumIdLabel
 	 * property QListBox $IssueIdControl
 	 * property-read QLabel $IssueIdLabel
+	 * property QListBox $WikiItemIdControl
+	 * property-read QLabel $WikiItemIdLabel
 	 * property-read string $TitleVerb a verb indicating whether or not this is being edited or created
 	 * property-read boolean $EditMode a boolean indicating whether or not this is being edited or created
 	 */
@@ -49,6 +51,7 @@
 		protected $calLastPostDate;
 		protected $lstForum;
 		protected $lstIssue;
+		protected $lstWikiItem;
 
 		// Controls that allow the viewing of TopicLink's individual data fields
 		protected $lblTopicLinkTypeId;
@@ -57,6 +60,7 @@
 		protected $lblLastPostDate;
 		protected $lblForumId;
 		protected $lblIssueId;
+		protected $lblWikiItemId;
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
 
@@ -340,6 +344,37 @@
 			return $this->lblIssueId;
 		}
 
+		/**
+		 * Create and setup QListBox lstWikiItem
+		 * @param string $strControlId optional ControlId to use
+		 * @return QListBox
+		 */
+		public function lstWikiItem_Create($strControlId = null) {
+			$this->lstWikiItem = new QListBox($this->objParentObject, $strControlId);
+			$this->lstWikiItem->Name = QApplication::Translate('Wiki Item');
+			$this->lstWikiItem->AddItem(QApplication::Translate('- Select One -'), null);
+			$objWikiItemArray = WikiItem::LoadAll();
+			if ($objWikiItemArray) foreach ($objWikiItemArray as $objWikiItem) {
+				$objListItem = new QListItem($objWikiItem->__toString(), $objWikiItem->Id);
+				if (($this->objTopicLink->WikiItem) && ($this->objTopicLink->WikiItem->Id == $objWikiItem->Id))
+					$objListItem->Selected = true;
+				$this->lstWikiItem->AddItem($objListItem);
+			}
+			return $this->lstWikiItem;
+		}
+
+		/**
+		 * Create and setup QLabel lblWikiItemId
+		 * @param string $strControlId optional ControlId to use
+		 * @return QLabel
+		 */
+		public function lblWikiItemId_Create($strControlId = null) {
+			$this->lblWikiItemId = new QLabel($this->objParentObject, $strControlId);
+			$this->lblWikiItemId->Name = QApplication::Translate('Wiki Item');
+			$this->lblWikiItemId->Text = ($this->objTopicLink->WikiItem) ? $this->objTopicLink->WikiItem->__toString() : null;
+			return $this->lblWikiItemId;
+		}
+
 
 
 		/**
@@ -391,6 +426,19 @@
 			}
 			if ($this->lblIssueId) $this->lblIssueId->Text = ($this->objTopicLink->Issue) ? $this->objTopicLink->Issue->__toString() : null;
 
+			if ($this->lstWikiItem) {
+					$this->lstWikiItem->RemoveAllItems();
+				$this->lstWikiItem->AddItem(QApplication::Translate('- Select One -'), null);
+				$objWikiItemArray = WikiItem::LoadAll();
+				if ($objWikiItemArray) foreach ($objWikiItemArray as $objWikiItem) {
+					$objListItem = new QListItem($objWikiItem->__toString(), $objWikiItem->Id);
+					if (($this->objTopicLink->WikiItem) && ($this->objTopicLink->WikiItem->Id == $objWikiItem->Id))
+						$objListItem->Selected = true;
+					$this->lstWikiItem->AddItem($objListItem);
+				}
+			}
+			if ($this->lblWikiItemId) $this->lblWikiItemId->Text = ($this->objTopicLink->WikiItem) ? $this->objTopicLink->WikiItem->__toString() : null;
+
 		}
 
 
@@ -420,6 +468,7 @@
 				if ($this->calLastPostDate) $this->objTopicLink->LastPostDate = $this->calLastPostDate->DateTime;
 				if ($this->lstForum) $this->objTopicLink->ForumId = $this->lstForum->SelectedValue;
 				if ($this->lstIssue) $this->objTopicLink->IssueId = $this->lstIssue->SelectedValue;
+				if ($this->lstWikiItem) $this->objTopicLink->WikiItemId = $this->lstWikiItem->SelectedValue;
 
 				// Update any UniqueReverseReferences (if any) for controls that have been created for it
 
@@ -504,6 +553,12 @@
 				case 'IssueIdLabel':
 					if (!$this->lblIssueId) return $this->lblIssueId_Create();
 					return $this->lblIssueId;
+				case 'WikiItemIdControl':
+					if (!$this->lstWikiItem) return $this->lstWikiItem_Create();
+					return $this->lstWikiItem;
+				case 'WikiItemIdLabel':
+					if (!$this->lblWikiItemId) return $this->lblWikiItemId_Create();
+					return $this->lblWikiItemId;
 				default:
 					try {
 						return parent::__get($strName);
@@ -540,6 +595,8 @@
 						return ($this->lstForum = QType::Cast($mixValue, 'QControl'));
 					case 'IssueIdControl':
 						return ($this->lstIssue = QType::Cast($mixValue, 'QControl'));
+					case 'WikiItemIdControl':
+						return ($this->lstWikiItem = QType::Cast($mixValue, 'QControl'));
 					default:
 						return parent::__set($strName, $mixValue);
 				}

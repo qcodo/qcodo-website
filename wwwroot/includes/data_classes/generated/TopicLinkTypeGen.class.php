@@ -20,21 +20,25 @@
 	abstract class TopicLinkTypeGen extends QBaseClass {
 		const Forum = 1;
 		const Issue = 2;
+		const WikiItem = 3;
 
-		const MaxId = 2;
+		const MaxId = 3;
 
 		public static $NameArray = array(
 			1 => 'Forum',
-			2 => 'Issue');
+			2 => 'Issue',
+			3 => 'Wiki Item');
 
 		public static $TokenArray = array(
 			1 => 'Forum',
-			2 => 'Issue');
+			2 => 'Issue',
+			3 => 'WikiItem');
 
 		public static function ToString($intTopicLinkTypeId) {
 			switch ($intTopicLinkTypeId) {
 				case 1: return 'Forum';
 				case 2: return 'Issue';
+				case 3: return 'Wiki Item';
 				default:
 					throw new QCallerException(sprintf('Invalid intTopicLinkTypeId: %s', $intTopicLinkTypeId));
 			}
@@ -44,6 +48,7 @@
 			switch ($intTopicLinkTypeId) {
 				case 1: return 'Forum';
 				case 2: return 'Issue';
+				case 3: return 'WikiItem';
 				default:
 					throw new QCallerException(sprintf('Invalid intTopicLinkTypeId: %s', $intTopicLinkTypeId));
 			}
