@@ -28,6 +28,59 @@
 		}
 
 
+
+		/**
+		 * Sanitizes any string to be used as a good-looking WikiItem path.
+		 * Result will only contain lower-case alphanumeric characters, 
+		 * underscores and forward-slashes.
+		 * @param string $strPath the path to sanitize
+		 * @return string
+		 */
+		public static function SanitizeForPath($strPath) {
+			$strPathParts = explode('/', $strPath);
+			$strToReturn = '/';
+			foreach ($strPathParts as $strPathPart) {
+				$strPathPart = trim(strtolower($strPathPart));
+				$intLength = strlen($strPathPart);
+
+				if ($intLength) {
+					$strPath = '';
+
+					for ($intChar = 0 ; $intChar < $intLength; $intChar++) {
+						$strChar = $strPathPart[$intChar];
+						$intOrd = ord($strChar);
+
+						if (($intOrd >= ord('a')) && ($intOrd <= ord('z')))
+							$strPath .= $strChar;
+						else if (($intOrd >= ord('0')) && ($intOrd <= ord('9')))
+							$strPath .= $strChar;
+						else if (($strChar == ' ') ||
+								 ($strChar == '-') ||
+								 ($strChar == '/') ||
+								 ($strChar == '(') ||
+								 ($strChar == ')') ||
+								 ($strChar == '_'))
+							$strPath .= '_';
+					}
+
+					// Cleanup leading and trailing underscores
+					while (QString::FirstCharacter($strPath) == '_') $strPath = substr($strPath, 1);
+					while (QString::LastCharacter($strPath) == '_') $strPath = substr($strPath, 0, strlen($strPath) - 1);
+
+					// Cleanup Dupe Underscores
+					while (strpos($strPath, '__') !== false) $strPath = str_replace('__', '_', $strPath);
+
+					// At this pathpart to the path
+					$strToReturn .= $strPath . '/';
+				}
+			}
+
+			// Take off trailing '/' if applicable
+			if (strlen($strToReturn) > 1) $strToReturn = substr($strToReturn, 0, strlen($strToReturn) - 1);
+			return $strToReturn;
+		}
+
+
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...
 		// but feel free to use these as a starting point)

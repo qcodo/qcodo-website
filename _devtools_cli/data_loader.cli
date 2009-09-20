@@ -92,6 +92,20 @@
 
 
 
+
+
+	//////////////////////
+	// Wiki Tables and Classes
+	//////////////////////
+
+	while (QDataGen::DisplayWhileTask('Generating Wiki Pages...', 500)) {
+		$intPathLength = rand(1, 3);
+		
+	}	
+
+
+
+
 	//////////////////////
 	// Issue Tracker
 	//////////////////////

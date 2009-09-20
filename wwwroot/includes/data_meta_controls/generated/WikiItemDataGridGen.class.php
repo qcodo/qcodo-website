@@ -276,6 +276,7 @@
 				case 'Id': return QQN::WikiItem()->Id;
 				case 'Path': return QQN::WikiItem()->Path;
 				case 'WikiItemTypeId': return QQN::WikiItem()->WikiItemTypeId;
+				case 'EditorMinimumPersonTypeId': return QQN::WikiItem()->EditorMinimumPersonTypeId;
 				case 'CurrentWikiVersionId': return QQN::WikiItem()->CurrentWikiVersionId;
 				case 'CurrentWikiVersion': return QQN::WikiItem()->CurrentWikiVersion;
 				case 'CurrentName': return QQN::WikiItem()->CurrentName;

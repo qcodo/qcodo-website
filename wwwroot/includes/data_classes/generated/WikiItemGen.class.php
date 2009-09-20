@@ -18,6 +18,7 @@
 	 * @property-read integer $Id the value for intId (Read-Only PK)
 	 * @property string $Path the value for strPath (Unique)
 	 * @property integer $WikiItemTypeId the value for intWikiItemTypeId (Not Null)
+	 * @property integer $EditorMinimumPersonTypeId the value for intEditorMinimumPersonTypeId (Not Null)
 	 * @property integer $CurrentWikiVersionId the value for intCurrentWikiVersionId (Unique)
 	 * @property string $CurrentName the value for strCurrentName 
 	 * @property integer $CurrentPostedByPersonId the value for intCurrentPostedByPersonId 
@@ -58,6 +59,14 @@
 		 */
 		protected $intWikiItemTypeId;
 		const WikiItemTypeIdDefault = null;
+
+
+		/**
+		 * Protected member variable that maps to the database column wiki_item.editor_minimum_person_type_id
+		 * @var integer intEditorMinimumPersonTypeId
+		 */
+		protected $intEditorMinimumPersonTypeId;
+		const EditorMinimumPersonTypeIdDefault = null;
 
 
 		/**
@@ -435,6 +444,7 @@
 			$objBuilder->AddSelectItem($strTableName, 'id', $strAliasPrefix . 'id');
 			$objBuilder->AddSelectItem($strTableName, 'path', $strAliasPrefix . 'path');
 			$objBuilder->AddSelectItem($strTableName, 'wiki_item_type_id', $strAliasPrefix . 'wiki_item_type_id');
+			$objBuilder->AddSelectItem($strTableName, 'editor_minimum_person_type_id', $strAliasPrefix . 'editor_minimum_person_type_id');
 			$objBuilder->AddSelectItem($strTableName, 'current_wiki_version_id', $strAliasPrefix . 'current_wiki_version_id');
 			$objBuilder->AddSelectItem($strTableName, 'current_name', $strAliasPrefix . 'current_name');
 			$objBuilder->AddSelectItem($strTableName, 'current_posted_by_person_id', $strAliasPrefix . 'current_posted_by_person_id');
@@ -508,6 +518,8 @@
 			$objToReturn->strPath = $objDbRow->GetColumn($strAliasName, 'VarChar');
 			$strAliasName = array_key_exists($strAliasPrefix . 'wiki_item_type_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'wiki_item_type_id'] : $strAliasPrefix . 'wiki_item_type_id';
 			$objToReturn->intWikiItemTypeId = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'editor_minimum_person_type_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'editor_minimum_person_type_id'] : $strAliasPrefix . 'editor_minimum_person_type_id';
+			$objToReturn->intEditorMinimumPersonTypeId = $objDbRow->GetColumn($strAliasName, 'Integer');
 			$strAliasName = array_key_exists($strAliasPrefix . 'current_wiki_version_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'current_wiki_version_id'] : $strAliasPrefix . 'current_wiki_version_id';
 			$objToReturn->intCurrentWikiVersionId = $objDbRow->GetColumn($strAliasName, 'Integer');
 			$strAliasName = array_key_exists($strAliasPrefix . 'current_name', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'current_name'] : $strAliasPrefix . 'current_name';
@@ -681,6 +693,38 @@
 			
 		/**
 		 * Load an array of WikiItem objects,
+		 * by EditorMinimumPersonTypeId Index(es)
+		 * @param integer $intEditorMinimumPersonTypeId
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @return WikiItem[]
+		*/
+		public static function LoadArrayByEditorMinimumPersonTypeId($intEditorMinimumPersonTypeId, $objOptionalClauses = null) {
+			// Call WikiItem::QueryArray to perform the LoadArrayByEditorMinimumPersonTypeId query
+			try {
+				return WikiItem::QueryArray(
+					QQ::Equal(QQN::WikiItem()->EditorMinimumPersonTypeId, $intEditorMinimumPersonTypeId),
+					$objOptionalClauses);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+		}
+
+		/**
+		 * Count WikiItems
+		 * by EditorMinimumPersonTypeId Index(es)
+		 * @param integer $intEditorMinimumPersonTypeId
+		 * @return int
+		*/
+		public static function CountByEditorMinimumPersonTypeId($intEditorMinimumPersonTypeId) {
+			// Call WikiItem::QueryCount to perform the CountByEditorMinimumPersonTypeId query
+			return WikiItem::QueryCount(
+				QQ::Equal(QQN::WikiItem()->EditorMinimumPersonTypeId, $intEditorMinimumPersonTypeId)
+			);
+		}
+			
+		/**
+		 * Load an array of WikiItem objects,
 		 * by CurrentPostedByPersonId Index(es)
 		 * @param integer $intCurrentPostedByPersonId
 		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
@@ -743,6 +787,7 @@
 						INSERT INTO `wiki_item` (
 							`path`,
 							`wiki_item_type_id`,
+							`editor_minimum_person_type_id`,
 							`current_wiki_version_id`,
 							`current_name`,
 							`current_posted_by_person_id`,
@@ -750,6 +795,7 @@
 						) VALUES (
 							' . $objDatabase->SqlVariable($this->strPath) . ',
 							' . $objDatabase->SqlVariable($this->intWikiItemTypeId) . ',
+							' . $objDatabase->SqlVariable($this->intEditorMinimumPersonTypeId) . ',
 							' . $objDatabase->SqlVariable($this->intCurrentWikiVersionId) . ',
 							' . $objDatabase->SqlVariable($this->strCurrentName) . ',
 							' . $objDatabase->SqlVariable($this->intCurrentPostedByPersonId) . ',
@@ -771,6 +817,7 @@
 						SET
 							`path` = ' . $objDatabase->SqlVariable($this->strPath) . ',
 							`wiki_item_type_id` = ' . $objDatabase->SqlVariable($this->intWikiItemTypeId) . ',
+							`editor_minimum_person_type_id` = ' . $objDatabase->SqlVariable($this->intEditorMinimumPersonTypeId) . ',
 							`current_wiki_version_id` = ' . $objDatabase->SqlVariable($this->intCurrentWikiVersionId) . ',
 							`current_name` = ' . $objDatabase->SqlVariable($this->strCurrentName) . ',
 							`current_posted_by_person_id` = ' . $objDatabase->SqlVariable($this->intCurrentPostedByPersonId) . ',
@@ -885,6 +932,7 @@
 			// Update $this's local variables to match
 			$this->strPath = $objReloaded->strPath;
 			$this->WikiItemTypeId = $objReloaded->WikiItemTypeId;
+			$this->EditorMinimumPersonTypeId = $objReloaded->EditorMinimumPersonTypeId;
 			$this->CurrentWikiVersionId = $objReloaded->CurrentWikiVersionId;
 			$this->strCurrentName = $objReloaded->strCurrentName;
 			$this->CurrentPostedByPersonId = $objReloaded->CurrentPostedByPersonId;
@@ -929,6 +977,13 @@
 					 * @return integer
 					 */
 					return $this->intWikiItemTypeId;
+
+				case 'EditorMinimumPersonTypeId':
+					/**
+					 * Gets the value for intEditorMinimumPersonTypeId (Not Null)
+					 * @return integer
+					 */
+					return $this->intEditorMinimumPersonTypeId;
 
 				case 'CurrentWikiVersionId':
 					/**
@@ -1080,6 +1135,19 @@
 					 */
 					try {
 						return ($this->intWikiItemTypeId = QType::Cast($mixValue, QType::Integer));
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
+				case 'EditorMinimumPersonTypeId':
+					/**
+					 * Sets the value for intEditorMinimumPersonTypeId (Not Null)
+					 * @param integer $mixValue
+					 * @return integer
+					 */
+					try {
+						return ($this->intEditorMinimumPersonTypeId = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {
 						$objExc->IncrementOffset();
 						throw $objExc;
@@ -1436,6 +1504,7 @@
 			$strToReturn .= '<element name="Id" type="xsd:int"/>';
 			$strToReturn .= '<element name="Path" type="xsd:string"/>';
 			$strToReturn .= '<element name="WikiItemTypeId" type="xsd:int"/>';
+			$strToReturn .= '<element name="EditorMinimumPersonTypeId" type="xsd:int"/>';
 			$strToReturn .= '<element name="CurrentWikiVersion" type="xsd1:WikiVersion"/>';
 			$strToReturn .= '<element name="CurrentName" type="xsd:string"/>';
 			$strToReturn .= '<element name="CurrentPostedByPerson" type="xsd1:Person"/>';
@@ -1470,6 +1539,8 @@
 				$objToReturn->strPath = $objSoapObject->Path;
 			if (property_exists($objSoapObject, 'WikiItemTypeId'))
 				$objToReturn->intWikiItemTypeId = $objSoapObject->WikiItemTypeId;
+			if (property_exists($objSoapObject, 'EditorMinimumPersonTypeId'))
+				$objToReturn->intEditorMinimumPersonTypeId = $objSoapObject->EditorMinimumPersonTypeId;
 			if ((property_exists($objSoapObject, 'CurrentWikiVersion')) &&
 				($objSoapObject->CurrentWikiVersion))
 				$objToReturn->CurrentWikiVersion = WikiVersion::GetObjectFromSoapObject($objSoapObject->CurrentWikiVersion);
@@ -1534,6 +1605,8 @@
 					return new QQNode('path', 'Path', 'string', $this);
 				case 'WikiItemTypeId':
 					return new QQNode('wiki_item_type_id', 'WikiItemTypeId', 'integer', $this);
+				case 'EditorMinimumPersonTypeId':
+					return new QQNode('editor_minimum_person_type_id', 'EditorMinimumPersonTypeId', 'integer', $this);
 				case 'CurrentWikiVersionId':
 					return new QQNode('current_wiki_version_id', 'CurrentWikiVersionId', 'integer', $this);
 				case 'CurrentWikiVersion':
@@ -1576,6 +1649,8 @@
 					return new QQNode('path', 'Path', 'string', $this);
 				case 'WikiItemTypeId':
 					return new QQNode('wiki_item_type_id', 'WikiItemTypeId', 'integer', $this);
+				case 'EditorMinimumPersonTypeId':
+					return new QQNode('editor_minimum_person_type_id', 'EditorMinimumPersonTypeId', 'integer', $this);
 				case 'CurrentWikiVersionId':
 					return new QQNode('current_wiki_version_id', 'CurrentWikiVersionId', 'integer', $this);
 				case 'CurrentWikiVersion':

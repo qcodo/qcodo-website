@@ -22,6 +22,8 @@
 	 * property-read QLabel $PathLabel
 	 * property QListBox $WikiItemTypeIdControl
 	 * property-read QLabel $WikiItemTypeIdLabel
+	 * property QListBox $EditorMinimumPersonTypeIdControl
+	 * property-read QLabel $EditorMinimumPersonTypeIdLabel
 	 * property QListBox $CurrentWikiVersionIdControl
 	 * property-read QLabel $CurrentWikiVersionIdLabel
 	 * property QTextBox $CurrentNameControl
@@ -47,6 +49,7 @@
 		protected $lblId;
 		protected $txtPath;
 		protected $lstWikiItemType;
+		protected $lstEditorMinimumPersonType;
 		protected $lstCurrentWikiVersion;
 		protected $txtCurrentName;
 		protected $lstCurrentPostedByPerson;
@@ -55,6 +58,7 @@
 		// Controls that allow the viewing of WikiItem's individual data fields
 		protected $lblPath;
 		protected $lblWikiItemTypeId;
+		protected $lblEditorMinimumPersonTypeId;
 		protected $lblCurrentWikiVersionId;
 		protected $lblCurrentName;
 		protected $lblCurrentPostedByPersonId;
@@ -229,6 +233,33 @@
 		}
 
 		/**
+		 * Create and setup QListBox lstEditorMinimumPersonType
+		 * @param string $strControlId optional ControlId to use
+		 * @return QListBox
+		 */
+		public function lstEditorMinimumPersonType_Create($strControlId = null) {
+			$this->lstEditorMinimumPersonType = new QListBox($this->objParentObject, $strControlId);
+			$this->lstEditorMinimumPersonType->Name = QApplication::Translate('Editor Minimum Person Type');
+			$this->lstEditorMinimumPersonType->Required = true;
+			foreach (PersonType::$NameArray as $intId => $strValue)
+				$this->lstEditorMinimumPersonType->AddItem(new QListItem($strValue, $intId, $this->objWikiItem->EditorMinimumPersonTypeId == $intId));
+			return $this->lstEditorMinimumPersonType;
+		}
+
+		/**
+		 * Create and setup QLabel lblEditorMinimumPersonTypeId
+		 * @param string $strControlId optional ControlId to use
+		 * @return QLabel
+		 */
+		public function lblEditorMinimumPersonTypeId_Create($strControlId = null) {
+			$this->lblEditorMinimumPersonTypeId = new QLabel($this->objParentObject, $strControlId);
+			$this->lblEditorMinimumPersonTypeId->Name = QApplication::Translate('Editor Minimum Person Type');
+			$this->lblEditorMinimumPersonTypeId->Text = ($this->objWikiItem->EditorMinimumPersonTypeId) ? PersonType::$NameArray[$this->objWikiItem->EditorMinimumPersonTypeId] : null;
+			$this->lblEditorMinimumPersonTypeId->Required = true;
+			return $this->lblEditorMinimumPersonTypeId;
+		}
+
+		/**
 		 * Create and setup QListBox lstCurrentWikiVersion
 		 * @param string $strControlId optional ControlId to use
 		 * @return QListBox
@@ -394,6 +425,9 @@
 			if ($this->lstWikiItemType) $this->lstWikiItemType->SelectedValue = $this->objWikiItem->WikiItemTypeId;
 			if ($this->lblWikiItemTypeId) $this->lblWikiItemTypeId->Text = ($this->objWikiItem->WikiItemTypeId) ? WikiItemType::$NameArray[$this->objWikiItem->WikiItemTypeId] : null;
 
+			if ($this->lstEditorMinimumPersonType) $this->lstEditorMinimumPersonType->SelectedValue = $this->objWikiItem->EditorMinimumPersonTypeId;
+			if ($this->lblEditorMinimumPersonTypeId) $this->lblEditorMinimumPersonTypeId->Text = ($this->objWikiItem->EditorMinimumPersonTypeId) ? PersonType::$NameArray[$this->objWikiItem->EditorMinimumPersonTypeId] : null;
+
 			if ($this->lstCurrentWikiVersion) {
 					$this->lstCurrentWikiVersion->RemoveAllItems();
 				$this->lstCurrentWikiVersion->AddItem(QApplication::Translate('- Select One -'), null);
@@ -464,6 +498,7 @@
 				// Update any fields for controls that have been created
 				if ($this->txtPath) $this->objWikiItem->Path = $this->txtPath->Text;
 				if ($this->lstWikiItemType) $this->objWikiItem->WikiItemTypeId = $this->lstWikiItemType->SelectedValue;
+				if ($this->lstEditorMinimumPersonType) $this->objWikiItem->EditorMinimumPersonTypeId = $this->lstEditorMinimumPersonType->SelectedValue;
 				if ($this->lstCurrentWikiVersion) $this->objWikiItem->CurrentWikiVersionId = $this->lstCurrentWikiVersion->SelectedValue;
 				if ($this->txtCurrentName) $this->objWikiItem->CurrentName = $this->txtCurrentName->Text;
 				if ($this->lstCurrentPostedByPerson) $this->objWikiItem->CurrentPostedByPersonId = $this->lstCurrentPostedByPerson->SelectedValue;
@@ -529,6 +564,12 @@
 				case 'WikiItemTypeIdLabel':
 					if (!$this->lblWikiItemTypeId) return $this->lblWikiItemTypeId_Create();
 					return $this->lblWikiItemTypeId;
+				case 'EditorMinimumPersonTypeIdControl':
+					if (!$this->lstEditorMinimumPersonType) return $this->lstEditorMinimumPersonType_Create();
+					return $this->lstEditorMinimumPersonType;
+				case 'EditorMinimumPersonTypeIdLabel':
+					if (!$this->lblEditorMinimumPersonTypeId) return $this->lblEditorMinimumPersonTypeId_Create();
+					return $this->lblEditorMinimumPersonTypeId;
 				case 'CurrentWikiVersionIdControl':
 					if (!$this->lstCurrentWikiVersion) return $this->lstCurrentWikiVersion_Create();
 					return $this->lstCurrentWikiVersion;
@@ -587,6 +628,8 @@
 						return ($this->txtPath = QType::Cast($mixValue, 'QControl'));
 					case 'WikiItemTypeIdControl':
 						return ($this->lstWikiItemType = QType::Cast($mixValue, 'QControl'));
+					case 'EditorMinimumPersonTypeIdControl':
+						return ($this->lstEditorMinimumPersonType = QType::Cast($mixValue, 'QControl'));
 					case 'CurrentWikiVersionIdControl':
 						return ($this->lstCurrentWikiVersion = QType::Cast($mixValue, 'QControl'));
 					case 'CurrentNameControl':
