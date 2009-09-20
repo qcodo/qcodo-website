@@ -1,10 +1,19 @@
 INSERT INTO topic_link_type VALUES (1, 'Forum');
 INSERT INTO topic_link_type VALUES (2, 'Issue');
+INSERT INTO topic_link_type VALUES (3, 'Wiki Item');
 
-INSERT INTO person_type VALUES (1,'Administrator');
-INSERT INTO person_type VALUES (2,'Moderator');
-INSERT INTO person_type VALUES (3,'Contributor');
-INSERT INTO person_type VALUES (4,'Registered User');
+INSERT INTO person_type VALUES (1, 'Administrator');
+INSERT INTO person_type VALUES (2, 'Moderator');
+INSERT INTO person_type VALUES (3, 'Contributor');
+INSERT INTO person_type VALUES (4, 'Registered User');
+
+INSERT INTO wiki_item_type VALUES(1, 'Page');
+INSERT INTO wiki_item_type VALUES(2, 'Image');
+
+INSERT INTO wiki_image_type VALUES(1, 'Jpeg');
+INSERT INTO wiki_image_type VALUES(2, 'Png');
+INSERT INTO wiki_image_type VALUES(3, 'Gif');
+
 
 INSERT INTO person(person_type_id, username, first_name, last_name, email, password, display_real_name_flag, display_email_flag, opt_in_flag, donated_flag, location, country_id, url, registration_date, display_name) VALUES
 (1, 'mikeho', 'Mike', 'Ho', 'mike@quasidea.com', '67a1e09bb1f83f5007dc119c14d663aa', 1, 1, 1, 0, 'Sunnyvale, CA', 230, 'http://www.quasidea.com/', '2000-01-01 00:00:00', 'Mike Ho');
