@@ -1,7 +1,15 @@
 #!/usr/local/bin/php
 <?php
 	require(dirname(__FILE__) . '/cli_prepend.inc.php');
-
+	
+	// Define Amounts to Generate
+	define('GENERATE_PEOPLE', 200);
+	define('GENERATE_WIKI', 250);
+	define('GENERATE_ISSUES', 100);
+	define('GENERATE_FORUM_TOPICS', 100);
+	define('GENERATE_MESSAGES_PER_TOPIC_UBOUND', 50);
+	define('GENERATE_MESSAGES_PER_ISSUE_UBOUND', 25);
+	
 	// Example optional IssueFieldOption values for optional IssueFields loaded from data.sql
 	$strOperatingSystemArray = array('CentOS 4', 'CentOS 5', 'CentOS 5.1', 'CentOS 5.2', 'CentOS 5.3',
 		'Mac OS X 10.4', 'Mac OS X 10.5', 'Mac OS X 10.6',
@@ -68,7 +76,7 @@
 	// People
 	//////////////////////
 
-	while (QDataGen::DisplayWhileTask('Generating Person records', 200)) {
+	while (QDataGen::DisplayWhileTask('Generating Person records', GENERATE_PEOPLE)) {
 		$objPerson = new Person();
 		
 		// Person Type Id
@@ -122,7 +130,7 @@
 	// Wiki Tables and Classes
 	//////////////////////
 
-	while (QDataGen::DisplayWhileTask('Generating Wiki Items...', 500)) {
+	while (QDataGen::DisplayWhileTask('Generating Wiki Items...', GENERATE_WIKI)) {
 		$intPathLength = rand(1, 3);
 		$strPath = '';
 
@@ -170,7 +178,6 @@
 			$objWikiItem->CreateNewVersion($strName, $objWikiObject, $strMethodName, $arrMethodParameters, $objPerson, $dttPostDate);
 		}
 	}
-	exit();
 
 
 
@@ -197,7 +204,7 @@
 	}
 
 	// Generate Issues, themselves
-	while (QDataGen::DisplayWhileTask('Generating Issues', 500)) {
+	while (QDataGen::DisplayWhileTask('Generating Issues', GENERATE_ISSUES)) {
 		$objIssue = new Issue();
 		$objIssue->IssueStatusTypeId = rand(1, IssueStatusType::MaxId);
 		if ($objIssue->IssueStatusTypeId == IssueStatusType::Closed) {
@@ -259,7 +266,7 @@
 	QDataGen::DisplayForEachTaskStart($strTitle = 'Generating Messages for Issues', Issue::CountAll());
 	foreach (Issue::LoadAll() as $objIssue) {
 		QDataGen::DisplayForEachTaskNext($strTitle);
-		$intCount = rand(1, 25);
+		$intCount = rand(1, GENERATE_MESSAGES_PER_ISSUE_UBOUND);
 		if (rand(0, 1)) $intCount = round($intCount / 2);
 		if (rand(0, 1)) $intCount = round($intCount / 2);
 		if (rand(0, 1)) $intCount = round($intCount / 2);
@@ -285,7 +292,7 @@
 	//////////////////////
 	$objForumArray = Forum::LoadAll();
 	$objForumTopicArray = array();
-	while (QDataGen::DisplayWhileTask('Generating Forum Topics', 500)) {
+	while (QDataGen::DisplayWhileTask('Generating Forum Topics', GENERATE_FORUM_TOPICS)) {
 		$objForum = QDataGen::GenerateFromArray($objForumArray);
 		
 		$strName = QDataGen::GenerateTitle(4, 12);
@@ -308,7 +315,7 @@
 		QDataGen::DisplayForEachTaskNext($strTopics);
 
 		// Randomly Select a Number of Messages for this Forum Topic
-		$intMessageCount = rand(1, 80);
+		$intMessageCount = rand(1, GENERATE_MESSAGES_PER_TOPIC_UBOUND);
 		if (rand(0, 1)) $intMessageCount = round($intMessageCount / 2);
 		if (rand(0, 1)) $intMessageCount = round($intMessageCount / 2);
 		if (rand(0, 1)) $intMessageCount = round($intMessageCount / 2);
