@@ -69,7 +69,7 @@
 
 			if ($objPerson && $objPerson->IsPasswordValid($this->txtPassword->Text)) {
 				QApplication::LoginPerson($objPerson);
-				
+
 				if ($this->chkRemember->Checked)
 					QApplication::SetLoginTicketToCookie($objPerson);
 
@@ -79,14 +79,18 @@
 						QApplication::Redirect('/profile/password.php?strReferer=' . urlencode($_GET['strReferer']));
 					else
 						QApplication::Redirect('/profile/password.php?strReferer=' . urlencode('/'));
-				} else
-					QApplication::Redirect('/');
+				} else {
+					if (array_key_exists('strReferer', $_GET))
+						QApplication::Redirect($_GET['strReferer']);
+					else
+						QApplication::Redirect('/');
+				}
 			}
 
 			// If we're here, either the username and/or password is not valid
 			$this->txtUsername->Warning = 'Invalid username or password';
 			$this->txtPassword->Text = null;
-			
+
 			// Call Form_Validate() to do that blinking thing
 			$this->Form_Validate();
 		}

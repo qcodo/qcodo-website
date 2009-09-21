@@ -73,7 +73,7 @@
 					array('Community Contributions', '/test.php/2/1', 135))),
 				array('Community', '/forums/', 125, array(
 					array('Forums', '/forums/', 60),
-					array('Wiki', '/test.php/3/1', 60),
+					array('Wiki', '/wiki/', 60),
 					array('Other Projects', '/test.php/3/2', 98))),
 				array('Development', '/test.php/4', 135, array(
 					array('Bug Tracking', '/issues/', 90),
