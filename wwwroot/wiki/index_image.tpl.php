@@ -1,5 +1,8 @@
 <?php require(__INCLUDES__ . '/header.inc.php'); ?>
 
+	<h1><?php _p($this->objWikiItem->CurrentName); ?></h1>
+	<h3>Image</h3>
+
 	<p><?php $this->lblMessage->Render(); ?></p>
 	<p><?php $this->btnButton->Render(); ?></p>
 
