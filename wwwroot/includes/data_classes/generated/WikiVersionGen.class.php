@@ -23,6 +23,7 @@
 	 * @property QDateTime $PostDate the value for dttPostDate (Not Null)
 	 * @property WikiItem $WikiItem the value for the WikiItem object referenced by intWikiItemId (Not Null)
 	 * @property Person $PostedByPerson the value for the Person object referenced by intPostedByPersonId (Not Null)
+	 * @property WikiFile $WikiFile the value for the WikiFile object that uniquely references this WikiVersion
 	 * @property WikiImage $WikiImage the value for the WikiImage object that uniquely references this WikiVersion
 	 * @property WikiItem $WikiItemAsCurrent the value for the WikiItem object that uniquely references this WikiVersion
 	 * @property WikiPage $WikiPage the value for the WikiPage object that uniquely references this WikiVersion
@@ -124,6 +125,24 @@
 		 * @var Person objPostedByPerson
 		 */
 		protected $objPostedByPerson;
+
+		/**
+		 * Protected member variable that contains the object which points to
+		 * this object by the reference in the unique database column wiki_file.wiki_version_id.
+		 *
+		 * NOTE: Always use the WikiFile property getter to correctly retrieve this WikiFile object.
+		 * (Because this class implements late binding, this variable reference MAY be null.)
+		 * @var WikiFile objWikiFile
+		 */
+		protected $objWikiFile;
+		
+		/**
+		 * Used internally to manage whether the adjoined WikiFile object
+		 * needs to be updated on save.
+		 * 
+		 * NOTE: Do not manually update this value 
+		 */
+		protected $blnDirtyWikiFile;
 
 		/**
 		 * Protected member variable that contains the object which points to
@@ -517,6 +536,18 @@
 				$objToReturn->objPostedByPerson = Person::InstantiateDbRow($objDbRow, $strAliasPrefix . 'posted_by_person_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 
 
+			// Check for WikiFile Unique ReverseReference Binding
+			$strAlias = $strAliasPrefix . 'wikifile__wiki_version_id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+			if ($objDbRow->ColumnExists($strAliasName)) {
+				if (!is_null($objDbRow->GetColumn($strAliasName)))
+					$objToReturn->objWikiFile = WikiFile::InstantiateDbRow($objDbRow, $strAliasPrefix . 'wikifile__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+				else
+					// We ATTEMPTED to do an Early Bind but the Object Doesn't Exist
+					// Let's set to FALSE so that the object knows not to try and re-query again
+					$objToReturn->objWikiFile = false;
+			}
+
 			// Check for WikiImage Unique ReverseReference Binding
 			$strAlias = $strAliasPrefix . 'wikiimage__wiki_version_id';
 			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
@@ -760,6 +791,26 @@
 
 		
 		
+				// Update the adjoined WikiFile object (if applicable)
+				// TODO: Make this into hard-coded SQL queries
+				if ($this->blnDirtyWikiFile) {
+					// Unassociate the old one (if applicable)
+					if ($objAssociated = WikiFile::LoadByWikiVersionId($this->intId)) {
+						$objAssociated->WikiVersionId = null;
+						$objAssociated->Save();
+					}
+
+					// Associate the new one (if applicable)
+					if ($this->objWikiFile) {
+						$this->objWikiFile->WikiVersionId = $this->intId;
+						$this->objWikiFile->Save();
+					}
+
+					// Reset the "Dirty" flag
+					$this->blnDirtyWikiFile = false;
+				}
+		
+		
 				// Update the adjoined WikiImage object (if applicable)
 				// TODO: Make this into hard-coded SQL queries
 				if ($this->blnDirtyWikiImage) {
@@ -842,6 +893,15 @@
 			// Get the Database Object for this Class
 			$objDatabase = WikiVersion::GetDatabase();
 
+			
+			
+			// Update the adjoined WikiFile object (if applicable) and perform a delete
+
+			// Optional -- if you **KNOW** that you do not want to EVER run any level of business logic on the disassocation,
+			// you *could* override Delete() so that this step can be a single hard coded query to optimize performance.
+			if ($objAssociated = WikiFile::LoadByWikiVersionId($this->intId)) {
+				$objAssociated->Delete();
+			}
 			
 			
 			// Update the adjoined WikiImage object (if applicable) and perform a delete
@@ -1013,6 +1073,26 @@
 						if ((!$this->objPostedByPerson) && (!is_null($this->intPostedByPersonId)))
 							$this->objPostedByPerson = Person::Load($this->intPostedByPersonId);
 						return $this->objPostedByPerson;
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
+		
+		
+				case 'WikiFile':
+					/**
+					 * Gets the value for the WikiFile object that uniquely references this WikiVersion
+					 * by objWikiFile (Unique)
+					 * @return WikiFile
+					 */
+					try {
+						if ($this->objWikiFile === false)
+							// We've attempted early binding -- and the reverse reference object does not exist
+							return null;
+						if (!$this->objWikiFile)
+							$this->objWikiFile = WikiFile::LoadByWikiVersionId($this->intId);
+						return $this->objWikiFile;
 					} catch (QCallerException $objExc) {
 						$objExc->IncrementOffset();
 						throw $objExc;
@@ -1240,6 +1320,45 @@
 						// Update Local Member Variables
 						$this->objPostedByPerson = $mixValue;
 						$this->intPostedByPersonId = $mixValue->Id;
+
+						// Return $mixValue
+						return $mixValue;
+					}
+					break;
+
+				case 'WikiFile':
+					/**
+					 * Sets the value for the WikiFile object referenced by objWikiFile (Unique)
+					 * @param WikiFile $mixValue
+					 * @return WikiFile
+					 */
+					if (is_null($mixValue)) {
+						$this->objWikiFile = null;
+
+						// Make sure we update the adjoined WikiFile object the next time we call Save()
+						$this->blnDirtyWikiFile = true;
+
+						return null;
+					} else {
+						// Make sure $mixValue actually is a WikiFile object
+						try {
+							$mixValue = QType::Cast($mixValue, 'WikiFile');
+						} catch (QInvalidCastException $objExc) {
+							$objExc->IncrementOffset();
+							throw $objExc;
+						}
+
+						// Are we setting objWikiFile to a DIFFERENT $mixValue?
+						if ((!$this->WikiFile) || ($this->WikiFile->WikiVersionId != $mixValue->WikiVersionId)) {
+							// Yes -- therefore, set the "Dirty" flag to true
+							// to make sure we update the adjoined WikiFile object the next time we call Save()
+							$this->blnDirtyWikiFile = true;
+
+							// Update Local Member Variable
+							$this->objWikiFile = $mixValue;
+						} else {
+							// Nope -- therefore, make no changes
+						}
 
 						// Return $mixValue
 						return $mixValue;
@@ -1508,6 +1627,8 @@
 					return new QQNodePerson('posted_by_person_id', 'PostedByPerson', 'integer', $this);
 				case 'PostDate':
 					return new QQNode('post_date', 'PostDate', 'QDateTime', $this);
+				case 'WikiFile':
+					return new QQReverseReferenceNodeWikiFile($this, 'wikifile', 'reverse_reference', 'wiki_version_id', 'WikiFile');
 				case 'WikiImage':
 					return new QQReverseReferenceNodeWikiImage($this, 'wikiimage', 'reverse_reference', 'wiki_version_id', 'WikiImage');
 				case 'WikiItemAsCurrent':
@@ -1550,6 +1671,8 @@
 					return new QQNodePerson('posted_by_person_id', 'PostedByPerson', 'integer', $this);
 				case 'PostDate':
 					return new QQNode('post_date', 'PostDate', 'QDateTime', $this);
+				case 'WikiFile':
+					return new QQReverseReferenceNodeWikiFile($this, 'wikifile', 'reverse_reference', 'wiki_version_id', 'WikiFile');
 				case 'WikiImage':
 					return new QQReverseReferenceNodeWikiImage($this, 'wikiimage', 'reverse_reference', 'wiki_version_id', 'WikiImage');
 				case 'WikiItemAsCurrent':

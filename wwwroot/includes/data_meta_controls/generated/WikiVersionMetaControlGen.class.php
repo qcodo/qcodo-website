@@ -28,6 +28,8 @@
 	 * property-read QLabel $PostedByPersonIdLabel
 	 * property QDateTimePicker $PostDateControl
 	 * property-read QLabel $PostDateLabel
+	 * property QListBox $WikiFileControl
+	 * property-read QLabel $WikiFileLabel
 	 * property QListBox $WikiImageControl
 	 * property-read QLabel $WikiImageLabel
 	 * property QListBox $WikiItemAsCurrentControl
@@ -61,11 +63,13 @@
 		protected $lblPostDate;
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
+		protected $lstWikiFile;
 		protected $lstWikiImage;
 		protected $lstWikiItemAsCurrent;
 		protected $lstWikiPage;
 
 		// QLabel Controls (if applicable) to view Unique ReverseReferences and ManyToMany References
+		protected $lblWikiFile;
 		protected $lblWikiImage;
 		protected $lblWikiItemAsCurrent;
 		protected $lblWikiPage;
@@ -331,6 +335,40 @@
 		protected $strPostDateDateTimeFormat;
 
 		/**
+		 * Create and setup QListBox lstWikiFile
+		 * @param string $strControlId optional ControlId to use
+		 * @return QListBox
+		 */
+		public function lstWikiFile_Create($strControlId = null) {
+			$this->lstWikiFile = new QListBox($this->objParentObject, $strControlId);
+			$this->lstWikiFile->Name = QApplication::Translate('Wiki File');
+			$this->lstWikiFile->AddItem(QApplication::Translate('- Select One -'), null);
+			$objWikiFileArray = WikiFile::LoadAll();
+			if ($objWikiFileArray) foreach ($objWikiFileArray as $objWikiFile) {
+				$objListItem = new QListItem($objWikiFile->__toString(), $objWikiFile->WikiVersionId);
+				if ($objWikiFile->WikiVersionId == $this->objWikiVersion->Id)
+					$objListItem->Selected = true;
+				$this->lstWikiFile->AddItem($objListItem);
+			}
+			// Because WikiFile's WikiFile is not null, if a value is already selected, it cannot be changed.
+			if ($this->lstWikiFile->SelectedValue)
+				$this->lstWikiFile->Enabled = false;
+			return $this->lstWikiFile;
+		}
+
+		/**
+		 * Create and setup QLabel lblWikiFile
+		 * @param string $strControlId optional ControlId to use
+		 * @return QLabel
+		 */
+		public function lblWikiFile_Create($strControlId = null) {
+			$this->lblWikiFile = new QLabel($this->objParentObject, $strControlId);
+			$this->lblWikiFile->Name = QApplication::Translate('Wiki File');
+			$this->lblWikiFile->Text = ($this->objWikiVersion->WikiFile) ? $this->objWikiVersion->WikiFile->__toString() : null;
+			return $this->lblWikiFile;
+		}
+
+		/**
 		 * Create and setup QListBox lstWikiImage
 		 * @param string $strControlId optional ControlId to use
 		 * @return QListBox
@@ -479,6 +517,24 @@
 			if ($this->calPostDate) $this->calPostDate->DateTime = $this->objWikiVersion->PostDate;
 			if ($this->lblPostDate) $this->lblPostDate->Text = sprintf($this->objWikiVersion->PostDate) ? $this->objWikiVersion->__toString($this->strPostDateDateTimeFormat) : null;
 
+			if ($this->lstWikiFile) {
+				$this->lstWikiFile->RemoveAllItems();
+				$this->lstWikiFile->AddItem(QApplication::Translate('- Select One -'), null);
+				$objWikiFileArray = WikiFile::LoadAll();
+				if ($objWikiFileArray) foreach ($objWikiFileArray as $objWikiFile) {
+					$objListItem = new QListItem($objWikiFile->__toString(), $objWikiFile->WikiVersionId);
+					if ($objWikiFile->WikiVersionId == $this->objWikiVersion->Id)
+						$objListItem->Selected = true;
+					$this->lstWikiFile->AddItem($objListItem);
+				}
+				// Because WikiFile's WikiFile is not null, if a value is already selected, it cannot be changed.
+				if ($this->lstWikiFile->SelectedValue)
+					$this->lstWikiFile->Enabled = false;
+				else
+					$this->lstWikiFile->Enabled = true;
+			}
+			if ($this->lblWikiFile) $this->lblWikiFile->Text = ($this->objWikiVersion->WikiFile) ? $this->objWikiVersion->WikiFile->__toString() : null;
+
 			if ($this->lstWikiImage) {
 				$this->lstWikiImage->RemoveAllItems();
 				$this->lstWikiImage->AddItem(QApplication::Translate('- Select One -'), null);
@@ -558,6 +614,7 @@
 				if ($this->calPostDate) $this->objWikiVersion->PostDate = $this->calPostDate->DateTime;
 
 				// Update any UniqueReverseReferences (if any) for controls that have been created for it
+				if ($this->lstWikiFile) $this->objWikiVersion->WikiFile = WikiFile::Load($this->lstWikiFile->SelectedValue);
 				if ($this->lstWikiImage) $this->objWikiVersion->WikiImage = WikiImage::Load($this->lstWikiImage->SelectedValue);
 				if ($this->lstWikiItemAsCurrent) $this->objWikiVersion->WikiItemAsCurrent = WikiItem::Load($this->lstWikiItemAsCurrent->SelectedValue);
 				if ($this->lstWikiPage) $this->objWikiVersion->WikiPage = WikiPage::Load($this->lstWikiPage->SelectedValue);
@@ -637,6 +694,12 @@
 				case 'PostDateLabel':
 					if (!$this->lblPostDate) return $this->lblPostDate_Create();
 					return $this->lblPostDate;
+				case 'WikiFileControl':
+					if (!$this->lstWikiFile) return $this->lstWikiFile_Create();
+					return $this->lstWikiFile;
+				case 'WikiFileLabel':
+					if (!$this->lblWikiFile) return $this->lblWikiFile_Create();
+					return $this->lblWikiFile;
 				case 'WikiImageControl':
 					if (!$this->lstWikiImage) return $this->lstWikiImage_Create();
 					return $this->lstWikiImage;
@@ -689,6 +752,8 @@
 						return ($this->lstPostedByPerson = QType::Cast($mixValue, 'QControl'));
 					case 'PostDateControl':
 						return ($this->calPostDate = QType::Cast($mixValue, 'QControl'));
+					case 'WikiFileControl':
+						return ($this->lstWikiFile = QType::Cast($mixValue, 'QControl'));
 					case 'WikiImageControl':
 						return ($this->lstWikiImage = QType::Cast($mixValue, 'QControl'));
 					case 'WikiItemAsCurrentControl':

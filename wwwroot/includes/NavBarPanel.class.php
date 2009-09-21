@@ -14,6 +14,10 @@
 			parent::__construct($objParentObject, $strControlId);
 			$this->strTemplate = __INCLUDES__ . '/NavBarPanel.tpl.php';
 
+			// Cleanup Index Values
+			if (is_null($intNavIndex)) $intNavIndex = -1;
+			if (is_null($intSubNavIndex)) $intSubNavIndex = -1;
+			
 			// Calculate SubNavPadding
 			$intCount = count(QApplication::$NavBarArray);
 			$intSubNavWidth = 0;
@@ -27,7 +31,7 @@
 				if ($blnFoundSelected)
 					$this->intSubNavPadding += QApplication::$NavBarArray[$intIndex][2] + 1;
 			}
-			
+
 			if ($blnFoundSelected) {
 				$this->intSubNavPadding -= $intSubNavWidth;
 				if ($this->intSubNavPadding <= 0)

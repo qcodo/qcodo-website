@@ -121,6 +121,12 @@
 			return new QQNodeTopicLink('topic_link', null, null);
 		}
 		/**
+		 * @return QQNodeWikiFile
+		 */
+		static public function WikiFile() {
+			return new QQNodeWikiFile('wiki_file', null, null);
+		}
+		/**
 		 * @return QQNodeWikiImage
 		 */
 		static public function WikiImage() {

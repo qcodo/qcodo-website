@@ -139,6 +139,13 @@
 		QApplicationBase::$ClassFile['topiclinkmetacontrol'] = __DATA_META_CONTROLS__ . '/TopicLinkMetaControl.class.php';
 		QApplicationBase::$ClassFile['topiclinkdatagrid'] = __DATA_META_CONTROLS__ . '/TopicLinkDataGrid.class.php';
 
+	// ClassPaths for the WikiFile class
+		QApplicationBase::$ClassFile['wikifile'] = __DATA_CLASSES__ . '/WikiFile.class.php';
+		QApplicationBase::$ClassFile['qqnodewikifile'] = __DATA_CLASSES__ . '/WikiFile.class.php';
+		QApplicationBase::$ClassFile['qqreversereferencenodewikifile'] = __DATA_CLASSES__ . '/WikiFile.class.php';
+		QApplicationBase::$ClassFile['wikifilemetacontrol'] = __DATA_META_CONTROLS__ . '/WikiFileMetaControl.class.php';
+		QApplicationBase::$ClassFile['wikifiledatagrid'] = __DATA_META_CONTROLS__ . '/WikiFileDataGrid.class.php';
+
 	// ClassPaths for the WikiImage class
 		QApplicationBase::$ClassFile['wikiimage'] = __DATA_CLASSES__ . '/WikiImage.class.php';
 		QApplicationBase::$ClassFile['qqnodewikiimage'] = __DATA_CLASSES__ . '/WikiImage.class.php';

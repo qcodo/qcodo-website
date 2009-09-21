@@ -133,7 +133,7 @@
 				default:
 					throw new Exception('Unknown handler for WikiItemTypeId: ' . $objWikiItem->WikiItemTypeId);
 			}
-			
+
 			$objWikiItem->CreateNewVersion($strName, $objWikiObject, $objPerson, $dttPostDate);
 		}
 	}
