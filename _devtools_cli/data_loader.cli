@@ -98,10 +98,46 @@
 	// Wiki Tables and Classes
 	//////////////////////
 
-	while (QDataGen::DisplayWhileTask('Generating Wiki Pages...', 500)) {
+	while (QDataGen::DisplayWhileTask('Generating Wiki Items...', 500)) {
 		$intPathLength = rand(1, 3);
-		
-	}	
+		$strPath = '';
+
+		while (!($objWikiItem = WikiItem::CreateNewItem($strPath, rand(1, WikiItemType::MaxId)))) {
+			$strPath = '';
+			for ($intIndex = 0; $intIndex < $intPathLength; $intIndex++) $strPath .= '/' . QDataGen::GenerateTitle(1, 2);
+		}
+
+		$objWikiItem->EditorMinimumPersonTypeId = rand(1, PersonType::MaxId);
+		$objWikiItem->Save();
+
+		$intVersionCount = rand(1, 5);
+		$dttPostDate = $dttStartDate;
+
+		for ($intIndex = 0; $intIndex < $intVersionCount; $intIndex++) {
+			$strName = QDataGen::GenerateTitle(1, 8);
+			$objPerson = Person::Load(rand(1, $intMaxPersonId));
+			$dttPostDate = QDataGen::GenerateDateTime($dttPostDate, QDateTime::Now());
+
+			switch ($objWikiItem->WikiItemTypeId) {
+				case WikiItemType::Page:
+					$objWikiObject = new WikiPage();
+					$objWikiObject->Content = QDataGen::GenerateContent(rand(1, 5), 20, 40);
+//					$objWikiObject->CompileHtml();
+					break;
+				case WikiItemType::Image:
+					$objWikiObject = new WikiImage();
+					$objWikiObject->WikiImageTypeId = WikiImageType::Jpeg;
+					$objWikiObject->Width = rand(100, 400);
+					$objWikiObject->Height = rand(100, 400);
+					break;
+				default:
+					throw new Exception('Unknown handler for WikiItemTypeId: ' . $objWikiItem->WikiItemTypeId);
+			}
+			
+			$objWikiItem->CreateNewVersion($strName, $objWikiObject, $objPerson, $dttPostDate);
+		}
+	}
+	exit();
 
 
 

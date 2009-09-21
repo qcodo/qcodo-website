@@ -81,6 +81,78 @@
 		}
 
 
+		/**
+		 * Creates a new WikiItem for a given path and type.  If path already exists, return null.
+		 * Otherwise, return the new WikiItem.
+		 * @param string $strPath
+		 * @param integer $intWikiItemTypeId
+		 * @return WikiItem
+		 */
+		public static function CreateNewItem($strPath, $intWikiItemTypeId) {
+			// Make sure the path doesn't yet exist
+			$strPath = self::SanitizeForPath($strPath);
+			if (WikiItem::LoadByPath($strPath)) return null;
+
+			$objWikiItem = new WikiItem();
+			$objWikiItem->Path = $strPath;
+			$objWikiItem->WikiItemTypeId = $intWikiItemTypeId;
+			$objWikiItem->EditorMinimumPersonTypeId = PersonType::RegisteredUser;
+			$objWikiItem->Save();
+			return $objWikiItem;
+		}
+
+		/**
+		 * Given a Wiki object for this WikiItem, this will post it as a new version.
+		 * 
+		 * The passed in WikiObject will be saved to the database 
+		 * @param string $strName the name of this WikiItem
+		 * @param object $objWikiObject the linked Wiki object (e.g. WikiPage or WikiImage) that is not yet saved or assigned
+		 * @param Person $objPerson the Person who posted it
+		 * @param QDateTime $dttPostDate the optional datetime of the post (will use NOW if none passed)
+		 * @return WikiVersion
+		 */
+		public function CreateNewVersion($strName, $objWikiObject, Person $objPerson, QDateTime $dttPostDate = null) {
+			// Ensure the WikiObject is not yet saved or assigned
+			if ($objWikiObject->WikiVersionId)
+				throw new QCallerException('WikiObject is already saved or has already been assigned to a version');
+
+			// Ensure the WikiObject is the right type
+			if (WikiItemType::$ClassNameArray[$this->intWikiItemTypeId] != get_class($objWikiObject))
+				throw new QCallerException('WikiObject class does not match this wiki item type');
+
+			// Create and Save the WikiVersion
+			$objWikiVersion = new WikiVersion();
+			$objWikiVersion->WikiItem = $this;
+			$objWikiVersion->VersionNumber = $this->CountWikiVersions() + 1;
+			$objWikiVersion->Name = trim($strName);
+			$objWikiVersion->PostedByPerson = $objPerson;
+			$objWikiVersion->PostDate = ($dttPostDate) ? $dttPostDate : QDateTime::Now();
+			$objWikiVersion->Save();
+
+			// Assign the WikiObject
+			$objWikiObject->WikiVersion = $objWikiVersion;
+			$objWikiObject->Save();
+
+			// Update my metadata
+			$this->SetCurrentVersion($objWikiVersion);
+
+			// Return
+			return $objWikiVersion;
+		}
+
+		/**
+		 * Sets the current version for this wiki with the passed in WikiVersion object
+		 * @param WikiVersion $objWikiVersion the new current version
+		 * @return void
+		 */
+		public function SetCurrentVersion(WikiVersion $objWikiVersion) {
+			$this->CurrentWikiVersion = $objWikiVersion;
+			$this->CurrentName = $objWikiVersion->Name;
+			$this->CurrentPostedByPerson = $objWikiVersion->PostedByPerson;
+			$this->CurrentPostDate = $objWikiVersion->PostDate;
+			$this->Save();
+		}
+
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...
 		// but feel free to use these as a starting point)

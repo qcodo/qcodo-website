@@ -16,5 +16,8 @@
 	 * @subpackage DataObjects
 	 */
 	abstract class WikiItemType extends WikiItemTypeGen {
+		public static $ClassNameArray = array(
+			1 => 'WikiPage',
+			2 => 'WikiImage');
 	}
 ?>
