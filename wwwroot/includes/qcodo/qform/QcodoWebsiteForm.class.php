@@ -1,5 +1,14 @@
 <?php
 	class QcodoWebsiteForm extends QForm {
+		protected $pnlNavBar;
+		protected $strPageTitle;
+		protected $intNavBarIndex;
+		protected $intSubNavIndex;
+
+		protected function Form_Create() {
+			$this->pnlNavBar = new NavBarPanel($this, null, $this->intNavBarIndex, $this->intSubNavIndex);
+		}
+
 		protected function Form_Validate($blnToReturn = true) {
 			$blnFocused = false;
 

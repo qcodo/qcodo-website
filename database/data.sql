@@ -1,3 +1,5 @@
+INSERT INTO _version VALUES('3.0');
+
 INSERT INTO topic_link_type VALUES (1, 'Forum');
 INSERT INTO topic_link_type VALUES (2, 'Issue');
 INSERT INTO topic_link_type VALUES (3, 'Wiki Item');

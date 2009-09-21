@@ -3,15 +3,6 @@
 		///////////////////////////
 		// Form Preferences
 		///////////////////////////
-		protected $pnlNavBar;
-		protected $strPageTitle;
-		protected $intNavBarIndex;
-		protected $intSubNavIndex;
-
-		protected function Form_Create() {
-			$this->pnlNavBar = new NavBarPanel($this, null, $this->intNavBarIndex, $this->intSubNavIndex);
-		}
-
 
 		/**
 		 * If you wish to encrypt the resulting formstate data to be put on the form (via

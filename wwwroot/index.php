@@ -1,7 +1,7 @@
 <?php
 	require('includes/prepend.inc.php');
 
-	class QcodoForm extends QForm {
+	class QcodoForm extends QcodoWebsiteForm {
 		protected $strPageTitle = 'Home';
 		protected $intNavBarIndex = QApplication::NavAbout;
 		protected $intSubNavIndex = QApplication::NavAboutHome;

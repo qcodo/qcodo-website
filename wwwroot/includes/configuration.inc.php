@@ -23,7 +23,7 @@
 	}
 
 	define('ALLOW_REMOTE_ADMIN', false);
-	define ('__URL_REWRITE__', 'none');
+	define ('__URL_REWRITE__', 'apache');
 
 	define('QCODO_EMAILER', 'Qcodo.com Message <not_moderated@qcodo.com>');
 	define('__SEARCH_INDEXES__', __DOCROOT__ . '/../search_indexes');
