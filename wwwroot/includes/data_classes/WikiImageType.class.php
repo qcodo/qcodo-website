@@ -16,5 +16,9 @@
 	 * @subpackage DataObjects
 	 */
 	abstract class WikiImageType extends WikiImageTypeGen {
+		public static $ExtensionArray = array(
+			1 => 'jpg',
+			2 => 'png',
+			3 => 'gif');
 	}
 ?>

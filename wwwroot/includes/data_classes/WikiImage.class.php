@@ -27,6 +27,51 @@
 			return sprintf('WikiImage Object %s',  $this->intWikiVersionId);
 		}
 
+		/**
+		 * Given a file at a temp file path location, this will save the image to the repository
+		 * and save the db row record.
+		 * @param string $strTemporaryFilePath the temporary file path to the image being saved to the repository
+		 * @return void
+		 */
+		public function SaveFile($strTemporaryFilePath) {
+			// Get Image Info and Ensure a Valid Image
+			$arrValues = getimagesize($strTemporaryFilePath);
+			if (!$arrValues || !count($arrValues) || !$arrValues[0] || !$arrValues[1] || !$arrValues[2])
+				throw new QCallerException('Not a valid image file: ' . $strTemporaryFilePath);
+
+			// Update image metadata info
+			$this->intWidth = $arrValues[0];
+			$this->intHeight = $arrValues[1];
+			switch ($arrValues[2]) {
+				case IMAGETYPE_JPEG:
+					$this->intWikiImageTypeId = WIkiImageType::Jpeg;
+					break;
+				case IMAGETYPE_PNG:
+					$this->intWikiImageTypeId = WIkiImageType::Png;
+					break;
+				case IMAGETYPE_GIF:
+					$this->intWikiImageTypeId = WIkiImageType::Gif;
+					break;
+				default:
+					throw new QCallerException('Not a valid image file: ' . $strTemporaryFilePath);
+			}
+
+			// Save the Row
+			$this->Save();
+
+			// Copy the File
+			QApplication::MakeDirectory($this->GetFolder(), 0777);
+			copy($strTempFilePath, $this->GetPath());
+			chmod($this->GetPath(), 0666);
+		}
+
+		public function GetFolder() {
+			return __WIKI_FILE_REPOSITORY__ . '/' . $this->WikiVersion->WikiItemId . '/' . $this->intWikiVersionId;
+		}
+
+		public function GetPath() {
+			return $this->GetFolder() . '/image.' . WikiImageType::$ExtensionArray[$this->intWikiImageTypeId];
+		}
 
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...

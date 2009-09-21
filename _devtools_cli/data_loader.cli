@@ -23,6 +23,12 @@
 
 	$dttStartDate = new QDateTime('2005-01-01 00:00:00');
 
+	// Wiki Files Repository Directory
+	if (is_dir(__WIKI_FILE_REPOSITORY__))
+		print(exec('rm -r -f ' . __WIKI_FILE_REPOSITORY__));
+	clearstatcache();
+	QApplication::MakeDirectory(__WIKI_FILE_REPOSITORY__, 0777);
+
 	// Setup Sample File Path Array
 	$objDir = opendir(__DOCROOT__ . '/../data_loader_files');
 	$strRandomFilePathArray = array();
@@ -151,8 +157,11 @@
 					break;
 				case WikiItemType::File:
 					$objWikiObject = new WikiImage();
+					$strPath = QDataGen::GenerateFromArray($strRandomFilePathArray);
+					$strArray = pathinfo($strPath);
+					$strFileName = str_replace(' ', '', $strName) . '.' . $strArray['extension'];
 					$strMethodName = 'SaveFile';
-					$arrMethodParameters = array(QDataGen::GenerateFromArrayarray($strRandomFilePathArray));
+					$arrMethodParameters = array($strPath, $strFileName);
 					break;
 				default:
 					throw new Exception('Unknown handler for WikiItemTypeId: ' . $objWikiItem->WikiItemTypeId);

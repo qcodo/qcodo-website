@@ -27,6 +27,35 @@
 			return sprintf('WikiFile Object %s',  $this->intWikiVersionId);
 		}
 
+		/**
+		 * Given a file at a temp file path location, this will save the file to the repository
+		 * and save the db row record.
+		 * @param string $strTemporaryFilePath the temporary file path to the file being saved to the repository
+		 * @param string $strFileName the name of the file that was originally uploaded
+		 * @return void
+		 */
+		public function SaveFile($strTemporaryFilePath, $strFileName) {
+			// Update wiki file metadata
+			$this->FileName = $strFileName;
+			$this->FileSize = filesize($strTemporaryFilePath);
+			$this->FileMime = QMimeType::GetMimeTypeForFilename($strTemporaryFilePath);
+
+			// Save the Row
+			$this->Save();
+
+			// Copy the File
+			QApplication::MakeDirectory($this->GetFolder(), 0777);
+			copy($strTempFilePath, $this->GetPath());
+			chmod($this->GetPath(), 0666);
+		}
+
+		public function GetFolder() {
+			return __WIKI_FILE_REPOSITORY__ . '/' . $this->WikiVersion->WikiItemId . '/' . $this->intWikiVersionId;
+		}
+
+		public function GetPath() {
+			return $this->GetFolder() . '/' . $this->strFileName;
+		}
 
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...
