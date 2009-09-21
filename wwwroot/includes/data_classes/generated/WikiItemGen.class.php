@@ -19,6 +19,8 @@
 	 * @property string $Path the value for strPath (Unique)
 	 * @property integer $WikiItemTypeId the value for intWikiItemTypeId (Not Null)
 	 * @property integer $EditorMinimumPersonTypeId the value for intEditorMinimumPersonTypeId (Not Null)
+	 * @property integer $OverrideNavbarIndex the value for intOverrideNavbarIndex 
+	 * @property integer $OverrideSubnavIndex the value for intOverrideSubnavIndex 
 	 * @property integer $CurrentWikiVersionId the value for intCurrentWikiVersionId (Unique)
 	 * @property string $CurrentName the value for strCurrentName 
 	 * @property integer $CurrentPostedByPersonId the value for intCurrentPostedByPersonId 
@@ -67,6 +69,22 @@
 		 */
 		protected $intEditorMinimumPersonTypeId;
 		const EditorMinimumPersonTypeIdDefault = null;
+
+
+		/**
+		 * Protected member variable that maps to the database column wiki_item.override_navbar_index
+		 * @var integer intOverrideNavbarIndex
+		 */
+		protected $intOverrideNavbarIndex;
+		const OverrideNavbarIndexDefault = null;
+
+
+		/**
+		 * Protected member variable that maps to the database column wiki_item.override_subnav_index
+		 * @var integer intOverrideSubnavIndex
+		 */
+		protected $intOverrideSubnavIndex;
+		const OverrideSubnavIndexDefault = null;
 
 
 		/**
@@ -445,6 +463,8 @@
 			$objBuilder->AddSelectItem($strTableName, 'path', $strAliasPrefix . 'path');
 			$objBuilder->AddSelectItem($strTableName, 'wiki_item_type_id', $strAliasPrefix . 'wiki_item_type_id');
 			$objBuilder->AddSelectItem($strTableName, 'editor_minimum_person_type_id', $strAliasPrefix . 'editor_minimum_person_type_id');
+			$objBuilder->AddSelectItem($strTableName, 'override_navbar_index', $strAliasPrefix . 'override_navbar_index');
+			$objBuilder->AddSelectItem($strTableName, 'override_subnav_index', $strAliasPrefix . 'override_subnav_index');
 			$objBuilder->AddSelectItem($strTableName, 'current_wiki_version_id', $strAliasPrefix . 'current_wiki_version_id');
 			$objBuilder->AddSelectItem($strTableName, 'current_name', $strAliasPrefix . 'current_name');
 			$objBuilder->AddSelectItem($strTableName, 'current_posted_by_person_id', $strAliasPrefix . 'current_posted_by_person_id');
@@ -520,6 +540,10 @@
 			$objToReturn->intWikiItemTypeId = $objDbRow->GetColumn($strAliasName, 'Integer');
 			$strAliasName = array_key_exists($strAliasPrefix . 'editor_minimum_person_type_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'editor_minimum_person_type_id'] : $strAliasPrefix . 'editor_minimum_person_type_id';
 			$objToReturn->intEditorMinimumPersonTypeId = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'override_navbar_index', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'override_navbar_index'] : $strAliasPrefix . 'override_navbar_index';
+			$objToReturn->intOverrideNavbarIndex = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'override_subnav_index', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'override_subnav_index'] : $strAliasPrefix . 'override_subnav_index';
+			$objToReturn->intOverrideSubnavIndex = $objDbRow->GetColumn($strAliasName, 'Integer');
 			$strAliasName = array_key_exists($strAliasPrefix . 'current_wiki_version_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'current_wiki_version_id'] : $strAliasPrefix . 'current_wiki_version_id';
 			$objToReturn->intCurrentWikiVersionId = $objDbRow->GetColumn($strAliasName, 'Integer');
 			$strAliasName = array_key_exists($strAliasPrefix . 'current_name', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'current_name'] : $strAliasPrefix . 'current_name';
@@ -788,6 +812,8 @@
 							`path`,
 							`wiki_item_type_id`,
 							`editor_minimum_person_type_id`,
+							`override_navbar_index`,
+							`override_subnav_index`,
 							`current_wiki_version_id`,
 							`current_name`,
 							`current_posted_by_person_id`,
@@ -796,6 +822,8 @@
 							' . $objDatabase->SqlVariable($this->strPath) . ',
 							' . $objDatabase->SqlVariable($this->intWikiItemTypeId) . ',
 							' . $objDatabase->SqlVariable($this->intEditorMinimumPersonTypeId) . ',
+							' . $objDatabase->SqlVariable($this->intOverrideNavbarIndex) . ',
+							' . $objDatabase->SqlVariable($this->intOverrideSubnavIndex) . ',
 							' . $objDatabase->SqlVariable($this->intCurrentWikiVersionId) . ',
 							' . $objDatabase->SqlVariable($this->strCurrentName) . ',
 							' . $objDatabase->SqlVariable($this->intCurrentPostedByPersonId) . ',
@@ -818,6 +846,8 @@
 							`path` = ' . $objDatabase->SqlVariable($this->strPath) . ',
 							`wiki_item_type_id` = ' . $objDatabase->SqlVariable($this->intWikiItemTypeId) . ',
 							`editor_minimum_person_type_id` = ' . $objDatabase->SqlVariable($this->intEditorMinimumPersonTypeId) . ',
+							`override_navbar_index` = ' . $objDatabase->SqlVariable($this->intOverrideNavbarIndex) . ',
+							`override_subnav_index` = ' . $objDatabase->SqlVariable($this->intOverrideSubnavIndex) . ',
 							`current_wiki_version_id` = ' . $objDatabase->SqlVariable($this->intCurrentWikiVersionId) . ',
 							`current_name` = ' . $objDatabase->SqlVariable($this->strCurrentName) . ',
 							`current_posted_by_person_id` = ' . $objDatabase->SqlVariable($this->intCurrentPostedByPersonId) . ',
@@ -933,6 +963,8 @@
 			$this->strPath = $objReloaded->strPath;
 			$this->WikiItemTypeId = $objReloaded->WikiItemTypeId;
 			$this->EditorMinimumPersonTypeId = $objReloaded->EditorMinimumPersonTypeId;
+			$this->intOverrideNavbarIndex = $objReloaded->intOverrideNavbarIndex;
+			$this->intOverrideSubnavIndex = $objReloaded->intOverrideSubnavIndex;
 			$this->CurrentWikiVersionId = $objReloaded->CurrentWikiVersionId;
 			$this->strCurrentName = $objReloaded->strCurrentName;
 			$this->CurrentPostedByPersonId = $objReloaded->CurrentPostedByPersonId;
@@ -984,6 +1016,20 @@
 					 * @return integer
 					 */
 					return $this->intEditorMinimumPersonTypeId;
+
+				case 'OverrideNavbarIndex':
+					/**
+					 * Gets the value for intOverrideNavbarIndex 
+					 * @return integer
+					 */
+					return $this->intOverrideNavbarIndex;
+
+				case 'OverrideSubnavIndex':
+					/**
+					 * Gets the value for intOverrideSubnavIndex 
+					 * @return integer
+					 */
+					return $this->intOverrideSubnavIndex;
 
 				case 'CurrentWikiVersionId':
 					/**
@@ -1148,6 +1194,32 @@
 					 */
 					try {
 						return ($this->intEditorMinimumPersonTypeId = QType::Cast($mixValue, QType::Integer));
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
+				case 'OverrideNavbarIndex':
+					/**
+					 * Sets the value for intOverrideNavbarIndex 
+					 * @param integer $mixValue
+					 * @return integer
+					 */
+					try {
+						return ($this->intOverrideNavbarIndex = QType::Cast($mixValue, QType::Integer));
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
+				case 'OverrideSubnavIndex':
+					/**
+					 * Sets the value for intOverrideSubnavIndex 
+					 * @param integer $mixValue
+					 * @return integer
+					 */
+					try {
+						return ($this->intOverrideSubnavIndex = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {
 						$objExc->IncrementOffset();
 						throw $objExc;
@@ -1505,6 +1577,8 @@
 			$strToReturn .= '<element name="Path" type="xsd:string"/>';
 			$strToReturn .= '<element name="WikiItemTypeId" type="xsd:int"/>';
 			$strToReturn .= '<element name="EditorMinimumPersonTypeId" type="xsd:int"/>';
+			$strToReturn .= '<element name="OverrideNavbarIndex" type="xsd:int"/>';
+			$strToReturn .= '<element name="OverrideSubnavIndex" type="xsd:int"/>';
 			$strToReturn .= '<element name="CurrentWikiVersion" type="xsd1:WikiVersion"/>';
 			$strToReturn .= '<element name="CurrentName" type="xsd:string"/>';
 			$strToReturn .= '<element name="CurrentPostedByPerson" type="xsd1:Person"/>';
@@ -1541,6 +1615,10 @@
 				$objToReturn->intWikiItemTypeId = $objSoapObject->WikiItemTypeId;
 			if (property_exists($objSoapObject, 'EditorMinimumPersonTypeId'))
 				$objToReturn->intEditorMinimumPersonTypeId = $objSoapObject->EditorMinimumPersonTypeId;
+			if (property_exists($objSoapObject, 'OverrideNavbarIndex'))
+				$objToReturn->intOverrideNavbarIndex = $objSoapObject->OverrideNavbarIndex;
+			if (property_exists($objSoapObject, 'OverrideSubnavIndex'))
+				$objToReturn->intOverrideSubnavIndex = $objSoapObject->OverrideSubnavIndex;
 			if ((property_exists($objSoapObject, 'CurrentWikiVersion')) &&
 				($objSoapObject->CurrentWikiVersion))
 				$objToReturn->CurrentWikiVersion = WikiVersion::GetObjectFromSoapObject($objSoapObject->CurrentWikiVersion);
@@ -1607,6 +1685,10 @@
 					return new QQNode('wiki_item_type_id', 'WikiItemTypeId', 'integer', $this);
 				case 'EditorMinimumPersonTypeId':
 					return new QQNode('editor_minimum_person_type_id', 'EditorMinimumPersonTypeId', 'integer', $this);
+				case 'OverrideNavbarIndex':
+					return new QQNode('override_navbar_index', 'OverrideNavbarIndex', 'integer', $this);
+				case 'OverrideSubnavIndex':
+					return new QQNode('override_subnav_index', 'OverrideSubnavIndex', 'integer', $this);
 				case 'CurrentWikiVersionId':
 					return new QQNode('current_wiki_version_id', 'CurrentWikiVersionId', 'integer', $this);
 				case 'CurrentWikiVersion':
@@ -1651,6 +1733,10 @@
 					return new QQNode('wiki_item_type_id', 'WikiItemTypeId', 'integer', $this);
 				case 'EditorMinimumPersonTypeId':
 					return new QQNode('editor_minimum_person_type_id', 'EditorMinimumPersonTypeId', 'integer', $this);
+				case 'OverrideNavbarIndex':
+					return new QQNode('override_navbar_index', 'OverrideNavbarIndex', 'integer', $this);
+				case 'OverrideSubnavIndex':
+					return new QQNode('override_subnav_index', 'OverrideSubnavIndex', 'integer', $this);
 				case 'CurrentWikiVersionId':
 					return new QQNode('current_wiki_version_id', 'CurrentWikiVersionId', 'integer', $this);
 				case 'CurrentWikiVersion':

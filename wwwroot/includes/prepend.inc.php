@@ -60,52 +60,52 @@
 			public static $NavBarArray = array(
 				array('About', '/', 80, array(
 					array('Home', '/', 50),
-					array('Overview', '/test.php/1/2', 70),
-					array('Presentations', '/test.php/1/3', 80),
-					array('Showcase', '/test.php/1/4', 60))),
-				array('Learn', '/test.php/2', 80, array(
-					array('Demos', '/test.php/2/1', 60),
-					array('Examples Site', '/test.php/2/2', 90),
-					array('API Cheet Sheet', '/test.php/2/3', 100),
-					array('API Online Guide', '/test.php/2/4', 100))),
-				array('Get', '/test.php/3', 80, array(
-					array('Qcodo Release', '/test.php/3/1', 90),
-					array('Community Contributions', '/test.php/3/2', 135))),
+					array('Overview', '/test.php/0/1', 70),
+					array('Presentations', '/test.php/0/2', 80),
+					array('Showcase', '/test.php/0/3', 60))),
+				array('Learn', '/test.php/1', 80, array(
+					array('Demos', '/test.php/1/0', 60),
+					array('Examples Site', '/test.php/1/1', 90),
+					array('API Cheet Sheet', '/test.php/1/2', 100),
+					array('API Online Guide', '/test.php/1/3', 100))),
+				array('Get', '/test.php/2', 80, array(
+					array('Qcodo Release', '/test.php/2/0', 90),
+					array('Community Contributions', '/test.php/2/1', 135))),
 				array('Community', '/forums/', 125, array(
 					array('Forums', '/forums/', 60),
-					array('Wiki', '/test.php/4/2', 60),
-					array('Other Projects', '/test.php/4/3', 98))),
-				array('Development', '/test.php/5', 135, array(
+					array('Wiki', '/test.php/3/1', 60),
+					array('Other Projects', '/test.php/3/2', 98))),
+				array('Development', '/test.php/4', 135, array(
 					array('Bug Tracking', '/issues/', 90),
-					array('Contribute', '/test.php/5/2', 80),
-					array('Donate', '/test.php/5/3', 60)))
+					array('Contribute', '/test.php/4/1', 80),
+					array('Donate', '/test.php/4/2', 60)))
 				);
-			const NavAbout = 1;
-			const NavLearn = 2;
-			const NavGet = 3;
-			const NavCommunity = 4;
-			const NavDevelopment = 5;
+			const NavAbout = 0;
+			const NavLearn = 1;
+			const NavGet = 2;
+			const NavCommunity = 3;
+			const NavDevelopment = 4;
 			
-			const NavAboutHome = 1;
-			const NavAboutOverview = 2;
-			const NavAboutPresentations = 3;
-			const NavAboutShowcase = 4;
+			const NavAboutHome = 0;
+			const NavAboutOverview = 1;
+			const NavAboutPresentations = 2;
+			const NavAboutShowcase = 3;
 			
-			const NavLearnDemos = 1;
-			const NavLearnExamples = 2;
-			const NavLearnApiSheet = 3;
-			const NavLearnApiOnline = 4;
+			const NavLearnDemos = 0;
+			const NavLearnExamples = 1;
+			const NavLearnApiSheet = 2;
+			const NavLearnApiOnline = 3;
 			
-			const NavGetQcodo = 1;
-			const NavGetCommunity = 2;
+			const NavGetQcodo = 0;
+			const NavGetCommunity = 1;
 			
-			const NavCommunityForums = 1;
-			const NavCommunityWiki = 2;
-			const NavCommunityOther = 3;
+			const NavCommunityForums = 0;
+			const NavCommunityWiki = 1;
+			const NavCommunityOther = 2;
 			
-			const NavDevelopmentBugs = 1;
-			const NavDevelopmentContribute = 2;
-			const NavDevelopmentDonate = 3;
+			const NavDevelopmentBugs = 0;
+			const NavDevelopmentContribute = 1;
+			const NavDevelopmentDonate = 2;
 
 			// Login and Authorization/Authentication
 

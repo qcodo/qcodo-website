@@ -27,7 +27,7 @@
 			<!-- Specific Tables to Exclude or Include in the CodeGen process -->
 			<!-- "include" is used to override any "exclude" patterns or lists -->
 			<!-- lists should be a  comma-separated list of table names -->
-			<excludeTables pattern="" list=""/>
+			<excludeTables pattern="" list="_version"/>
 			<includeTables pattern="" list=""/>
 
 			<!-- Support for "Beta 2" version of Manual Queries and Hard Coded Column Names -->

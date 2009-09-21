@@ -24,6 +24,10 @@
 	 * property-read QLabel $WikiItemTypeIdLabel
 	 * property QListBox $EditorMinimumPersonTypeIdControl
 	 * property-read QLabel $EditorMinimumPersonTypeIdLabel
+	 * property QIntegerTextBox $OverrideNavbarIndexControl
+	 * property-read QLabel $OverrideNavbarIndexLabel
+	 * property QIntegerTextBox $OverrideSubnavIndexControl
+	 * property-read QLabel $OverrideSubnavIndexLabel
 	 * property QListBox $CurrentWikiVersionIdControl
 	 * property-read QLabel $CurrentWikiVersionIdLabel
 	 * property QTextBox $CurrentNameControl
@@ -50,6 +54,8 @@
 		protected $txtPath;
 		protected $lstWikiItemType;
 		protected $lstEditorMinimumPersonType;
+		protected $txtOverrideNavbarIndex;
+		protected $txtOverrideSubnavIndex;
 		protected $lstCurrentWikiVersion;
 		protected $txtCurrentName;
 		protected $lstCurrentPostedByPerson;
@@ -59,6 +65,8 @@
 		protected $lblPath;
 		protected $lblWikiItemTypeId;
 		protected $lblEditorMinimumPersonTypeId;
+		protected $lblOverrideNavbarIndex;
+		protected $lblOverrideSubnavIndex;
 		protected $lblCurrentWikiVersionId;
 		protected $lblCurrentName;
 		protected $lblCurrentPostedByPersonId;
@@ -260,6 +268,58 @@
 		}
 
 		/**
+		 * Create and setup QIntegerTextBox txtOverrideNavbarIndex
+		 * @param string $strControlId optional ControlId to use
+		 * @return QIntegerTextBox
+		 */
+		public function txtOverrideNavbarIndex_Create($strControlId = null) {
+			$this->txtOverrideNavbarIndex = new QIntegerTextBox($this->objParentObject, $strControlId);
+			$this->txtOverrideNavbarIndex->Name = QApplication::Translate('Override Navbar Index');
+			$this->txtOverrideNavbarIndex->Text = $this->objWikiItem->OverrideNavbarIndex;
+			return $this->txtOverrideNavbarIndex;
+		}
+
+		/**
+		 * Create and setup QLabel lblOverrideNavbarIndex
+		 * @param string $strControlId optional ControlId to use
+		 * @param string $strFormat optional sprintf format to use
+		 * @return QLabel
+		 */
+		public function lblOverrideNavbarIndex_Create($strControlId = null, $strFormat = null) {
+			$this->lblOverrideNavbarIndex = new QLabel($this->objParentObject, $strControlId);
+			$this->lblOverrideNavbarIndex->Name = QApplication::Translate('Override Navbar Index');
+			$this->lblOverrideNavbarIndex->Text = $this->objWikiItem->OverrideNavbarIndex;
+			$this->lblOverrideNavbarIndex->Format = $strFormat;
+			return $this->lblOverrideNavbarIndex;
+		}
+
+		/**
+		 * Create and setup QIntegerTextBox txtOverrideSubnavIndex
+		 * @param string $strControlId optional ControlId to use
+		 * @return QIntegerTextBox
+		 */
+		public function txtOverrideSubnavIndex_Create($strControlId = null) {
+			$this->txtOverrideSubnavIndex = new QIntegerTextBox($this->objParentObject, $strControlId);
+			$this->txtOverrideSubnavIndex->Name = QApplication::Translate('Override Subnav Index');
+			$this->txtOverrideSubnavIndex->Text = $this->objWikiItem->OverrideSubnavIndex;
+			return $this->txtOverrideSubnavIndex;
+		}
+
+		/**
+		 * Create and setup QLabel lblOverrideSubnavIndex
+		 * @param string $strControlId optional ControlId to use
+		 * @param string $strFormat optional sprintf format to use
+		 * @return QLabel
+		 */
+		public function lblOverrideSubnavIndex_Create($strControlId = null, $strFormat = null) {
+			$this->lblOverrideSubnavIndex = new QLabel($this->objParentObject, $strControlId);
+			$this->lblOverrideSubnavIndex->Name = QApplication::Translate('Override Subnav Index');
+			$this->lblOverrideSubnavIndex->Text = $this->objWikiItem->OverrideSubnavIndex;
+			$this->lblOverrideSubnavIndex->Format = $strFormat;
+			return $this->lblOverrideSubnavIndex;
+		}
+
+		/**
 		 * Create and setup QListBox lstCurrentWikiVersion
 		 * @param string $strControlId optional ControlId to use
 		 * @return QListBox
@@ -428,6 +488,12 @@
 			if ($this->lstEditorMinimumPersonType) $this->lstEditorMinimumPersonType->SelectedValue = $this->objWikiItem->EditorMinimumPersonTypeId;
 			if ($this->lblEditorMinimumPersonTypeId) $this->lblEditorMinimumPersonTypeId->Text = ($this->objWikiItem->EditorMinimumPersonTypeId) ? PersonType::$NameArray[$this->objWikiItem->EditorMinimumPersonTypeId] : null;
 
+			if ($this->txtOverrideNavbarIndex) $this->txtOverrideNavbarIndex->Text = $this->objWikiItem->OverrideNavbarIndex;
+			if ($this->lblOverrideNavbarIndex) $this->lblOverrideNavbarIndex->Text = $this->objWikiItem->OverrideNavbarIndex;
+
+			if ($this->txtOverrideSubnavIndex) $this->txtOverrideSubnavIndex->Text = $this->objWikiItem->OverrideSubnavIndex;
+			if ($this->lblOverrideSubnavIndex) $this->lblOverrideSubnavIndex->Text = $this->objWikiItem->OverrideSubnavIndex;
+
 			if ($this->lstCurrentWikiVersion) {
 					$this->lstCurrentWikiVersion->RemoveAllItems();
 				$this->lstCurrentWikiVersion->AddItem(QApplication::Translate('- Select One -'), null);
@@ -499,6 +565,8 @@
 				if ($this->txtPath) $this->objWikiItem->Path = $this->txtPath->Text;
 				if ($this->lstWikiItemType) $this->objWikiItem->WikiItemTypeId = $this->lstWikiItemType->SelectedValue;
 				if ($this->lstEditorMinimumPersonType) $this->objWikiItem->EditorMinimumPersonTypeId = $this->lstEditorMinimumPersonType->SelectedValue;
+				if ($this->txtOverrideNavbarIndex) $this->objWikiItem->OverrideNavbarIndex = $this->txtOverrideNavbarIndex->Text;
+				if ($this->txtOverrideSubnavIndex) $this->objWikiItem->OverrideSubnavIndex = $this->txtOverrideSubnavIndex->Text;
 				if ($this->lstCurrentWikiVersion) $this->objWikiItem->CurrentWikiVersionId = $this->lstCurrentWikiVersion->SelectedValue;
 				if ($this->txtCurrentName) $this->objWikiItem->CurrentName = $this->txtCurrentName->Text;
 				if ($this->lstCurrentPostedByPerson) $this->objWikiItem->CurrentPostedByPersonId = $this->lstCurrentPostedByPerson->SelectedValue;
@@ -570,6 +638,18 @@
 				case 'EditorMinimumPersonTypeIdLabel':
 					if (!$this->lblEditorMinimumPersonTypeId) return $this->lblEditorMinimumPersonTypeId_Create();
 					return $this->lblEditorMinimumPersonTypeId;
+				case 'OverrideNavbarIndexControl':
+					if (!$this->txtOverrideNavbarIndex) return $this->txtOverrideNavbarIndex_Create();
+					return $this->txtOverrideNavbarIndex;
+				case 'OverrideNavbarIndexLabel':
+					if (!$this->lblOverrideNavbarIndex) return $this->lblOverrideNavbarIndex_Create();
+					return $this->lblOverrideNavbarIndex;
+				case 'OverrideSubnavIndexControl':
+					if (!$this->txtOverrideSubnavIndex) return $this->txtOverrideSubnavIndex_Create();
+					return $this->txtOverrideSubnavIndex;
+				case 'OverrideSubnavIndexLabel':
+					if (!$this->lblOverrideSubnavIndex) return $this->lblOverrideSubnavIndex_Create();
+					return $this->lblOverrideSubnavIndex;
 				case 'CurrentWikiVersionIdControl':
 					if (!$this->lstCurrentWikiVersion) return $this->lstCurrentWikiVersion_Create();
 					return $this->lstCurrentWikiVersion;
@@ -630,6 +710,10 @@
 						return ($this->lstWikiItemType = QType::Cast($mixValue, 'QControl'));
 					case 'EditorMinimumPersonTypeIdControl':
 						return ($this->lstEditorMinimumPersonType = QType::Cast($mixValue, 'QControl'));
+					case 'OverrideNavbarIndexControl':
+						return ($this->txtOverrideNavbarIndex = QType::Cast($mixValue, 'QControl'));
+					case 'OverrideSubnavIndexControl':
+						return ($this->txtOverrideSubnavIndex = QType::Cast($mixValue, 'QControl'));
 					case 'CurrentWikiVersionIdControl':
 						return ($this->lstCurrentWikiVersion = QType::Cast($mixValue, 'QControl'));
 					case 'CurrentNameControl':

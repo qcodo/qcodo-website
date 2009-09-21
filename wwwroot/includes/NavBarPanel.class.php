@@ -18,14 +18,14 @@
 			$intCount = count(QApplication::$NavBarArray);
 			$intSubNavWidth = 0;
 			$blnFoundSelected = false;
-			for ($intIndex = 1; $intIndex <= $intCount; $intIndex++) {
+			for ($intIndex = 0; $intIndex < $intCount; $intIndex++) {
 				if ($intIndex == $intNavIndex) {
 					$blnFoundSelected = true;
-					foreach (QApplication::$NavBarArray[$intIndex - 1][3] as $arrSubNav)
+					foreach (QApplication::$NavBarArray[$intIndex][3] as $arrSubNav)
 						$intSubNavWidth += $arrSubNav[2] + 1;
 				}
 				if ($blnFoundSelected)
-					$this->intSubNavPadding += QApplication::$NavBarArray[$intIndex - 1][2] + 1;
+					$this->intSubNavPadding += QApplication::$NavBarArray[$intIndex][2] + 1;
 			}
 			
 			if ($blnFoundSelected) {
@@ -36,7 +36,7 @@
 
 
 			// Generate Everything
-			$intIndex = 1;
+			$intIndex = 0;
 			foreach (QApplication::$NavBarArray as $arrNavBar) {
 				if ($intNavIndex == $intIndex) {
 					$blnFoundSelected = true;
@@ -46,7 +46,7 @@
 					$ctlNavBar->LinkUrl = $arrNavBar[1];
 					$ctlNavBar->ImageStandard = '/images/gen/nav_' . $intIndex . '_sel.jpg';
 
-					$intSubIndex = 1;
+					$intSubIndex = 0;
 					foreach ($arrNavBar[3] as $arrSubNav) {
 						if ($intSubNavIndex == $intSubIndex) {
 							$ctlSubNav = new QImageRollover($this);
