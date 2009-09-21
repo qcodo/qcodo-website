@@ -9,6 +9,7 @@ INSERT INTO person_type VALUES (4, 'Registered User');
 
 INSERT INTO wiki_item_type VALUES(1, 'Page');
 INSERT INTO wiki_item_type VALUES(2, 'Image');
+INSERT INTO wiki_item_type VALUES(3, 'File');
 
 INSERT INTO wiki_image_type VALUES(1, 'Jpeg');
 INSERT INTO wiki_image_type VALUES(2, 'Png');

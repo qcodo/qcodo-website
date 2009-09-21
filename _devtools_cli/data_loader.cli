@@ -23,6 +23,24 @@
 
 	$dttStartDate = new QDateTime('2005-01-01 00:00:00');
 
+	// Setup Sample File Path Array
+	$objDir = opendir(__DOCROOT__ . '/../data_loader_files');
+	$strRandomFilePathArray = array();
+	$strRandomImagePathArray = array();
+	while ($strName = readdir($objDir)) {
+		if (($strName != '.') && ($strName != '..')) {
+			$strPath = __DOCROOT__ . '/../data_loader_files/' . $strName;
+			$strRandomFilePathArray[] = $strPath;
+			switch (substr($strName, strrpos($strName, '.') + 1)) {
+				case 'jpg':
+				case 'png':
+				case 'gif':
+					$strRandomImagePathArray[] = $strPath;
+					break;
+			}
+		}
+	}
+
 	function GenerateOptionsForField($strFieldName, $strOptionNameArray) {
 		$objIssueField = IssueField::QuerySingle(QQ::Equal(QQN::IssueField()->Name, $strFieldName));
 		$intOrderNumber = 0;
@@ -122,19 +140,25 @@
 				case WikiItemType::Page:
 					$objWikiObject = new WikiPage();
 					$objWikiObject->Content = QDataGen::GenerateContent(rand(1, 5), 20, 40);
-//					$objWikiObject->CompileHtml();
+					$objWikiObject->CompileHtml();
+					$strMethodName = 'Save';
+					$arrMethodParameters = array();
 					break;
 				case WikiItemType::Image:
 					$objWikiObject = new WikiImage();
-					$objWikiObject->WikiImageTypeId = WikiImageType::Jpeg;
-					$objWikiObject->Width = rand(100, 400);
-					$objWikiObject->Height = rand(100, 400);
+					$strMethodName = 'SaveFile';
+					$arrMethodParameters = array(QDataGen::GenerateFromArrayarray($strRandomImagePathArray));
+					break;
+				case WikiItemType::File:
+					$objWikiObject = new WikiImage();
+					$strMethodName = 'SaveFile';
+					$arrMethodParameters = array(QDataGen::GenerateFromArrayarray($strRandomFilePathArray));
 					break;
 				default:
 					throw new Exception('Unknown handler for WikiItemTypeId: ' . $objWikiItem->WikiItemTypeId);
 			}
 
-			$objWikiItem->CreateNewVersion($strName, $objWikiObject, $objPerson, $dttPostDate);
+			$objWikiItem->CreateNewVersion($strName, $objWikiObject, $strMethodName, $arrMethodParameters, $objPerson, $dttPostDate);
 		}
 	}
 	exit();

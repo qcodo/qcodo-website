@@ -20,21 +20,25 @@
 	abstract class WikiItemTypeGen extends QBaseClass {
 		const Page = 1;
 		const Image = 2;
+		const File = 3;
 
-		const MaxId = 2;
+		const MaxId = 3;
 
 		public static $NameArray = array(
 			1 => 'Page',
-			2 => 'Image');
+			2 => 'Image',
+			3 => 'File');
 
 		public static $TokenArray = array(
 			1 => 'Page',
-			2 => 'Image');
+			2 => 'Image',
+			3 => 'File');
 
 		public static function ToString($intWikiItemTypeId) {
 			switch ($intWikiItemTypeId) {
 				case 1: return 'Page';
 				case 2: return 'Image';
+				case 3: return 'File';
 				default:
 					throw new QCallerException(sprintf('Invalid intWikiItemTypeId: %s', $intWikiItemTypeId));
 			}
@@ -44,6 +48,7 @@
 			switch ($intWikiItemTypeId) {
 				case 1: return 'Page';
 				case 2: return 'Image';
+				case 3: return 'File';
 				default:
 					throw new QCallerException(sprintf('Invalid intWikiItemTypeId: %s', $intWikiItemTypeId));
 			}

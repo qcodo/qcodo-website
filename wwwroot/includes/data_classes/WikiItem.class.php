@@ -107,11 +107,13 @@
 		 * The passed in WikiObject will be saved to the database 
 		 * @param string $strName the name of this WikiItem
 		 * @param object $objWikiObject the linked Wiki object (e.g. WikiPage or WikiImage) that is not yet saved or assigned
+		 * @param string $strSaveMethod the name of the Save method to call on the WikiObject
+		 * @param array $arrSaveParameters an array of parameters to pass in to the Save method on the WikiObject
 		 * @param Person $objPerson the Person who posted it
 		 * @param QDateTime $dttPostDate the optional datetime of the post (will use NOW if none passed)
 		 * @return WikiVersion
 		 */
-		public function CreateNewVersion($strName, $objWikiObject, Person $objPerson, QDateTime $dttPostDate = null) {
+		public function CreateNewVersion($strName, $objWikiObject, $strSaveMethod, $arrSaveParameters, Person $objPerson, QDateTime $dttPostDate = null) {
 			// Ensure the WikiObject is not yet saved or assigned
 			if ($objWikiObject->WikiVersionId)
 				throw new QCallerException('WikiObject is already saved or has already been assigned to a version');
@@ -131,7 +133,10 @@
 
 			// Assign the WikiObject
 			$objWikiObject->WikiVersion = $objWikiVersion;
-			$objWikiObject->Save();
+
+			// Save the WikiObject using the MethodName and MethodParameters passed in
+			if (is_null($arrSaveParameters)) $arrSaveParameters = array();
+			call_user_func_array(array($objWikiObject, $strSaveMethod), $arrSaveParameters);
 
 			// Update my metadata
 			$this->SetCurrentVersion($objWikiVersion);

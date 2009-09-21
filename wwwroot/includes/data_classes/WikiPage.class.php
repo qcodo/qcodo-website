@@ -27,6 +27,16 @@
 			return sprintf('WikiPage Object %s',  $this->intWikiVersionId);
 		}
 
+		/**
+		 * Updates this object's CompiledHtml field with the content stored in the Content field,
+		 * using QTextStyle.
+		 * 
+		 * This method does NOT call save on the object, it only updates the field.
+		 * @return void
+		 */
+		public function CompileHtml() {
+			$this->strCompiledHtml = QTextStyle::DisplayAsHtml($this->strContent);
+		}
 
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...
