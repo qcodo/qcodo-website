@@ -153,10 +153,10 @@
 				case WikiItemType::Image:
 					$objWikiObject = new WikiImage();
 					$strMethodName = 'SaveFile';
-					$arrMethodParameters = array(QDataGen::GenerateFromArrayarray($strRandomImagePathArray));
+					$arrMethodParameters = array(QDataGen::GenerateFromArray($strRandomImagePathArray));
 					break;
 				case WikiItemType::File:
-					$objWikiObject = new WikiImage();
+					$objWikiObject = new WikiFile();
 					$strPath = QDataGen::GenerateFromArray($strRandomFilePathArray);
 					$strArray = pathinfo($strPath);
 					$strFileName = str_replace(' ', '', $strName) . '.' . $strArray['extension'];

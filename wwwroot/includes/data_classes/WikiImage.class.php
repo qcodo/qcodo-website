@@ -61,7 +61,7 @@
 
 			// Copy the File
 			QApplication::MakeDirectory($this->GetFolder(), 0777);
-			copy($strTempFilePath, $this->GetPath());
+			copy($strTemporaryFilePath, $this->GetPath());
 			chmod($this->GetPath(), 0666);
 		}
 
