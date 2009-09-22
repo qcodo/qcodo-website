@@ -2,15 +2,15 @@
 	require('../includes/prepend.inc.php');
 
 	class QcodoForm extends QcodoWebsiteForm {
-		protected $strPageTitle = 'Wiki';
+		protected $strPageTitle = 'Wiki - ';
 		protected $intNavBarIndex = QApplication::NavCommunity;
 		protected $intSubNavIndex = QApplication::NavCommunityWiki;
 
 		protected $objWikiItem;
 		protected $objWikiVersion;
 
-		protected $btnButton;
-		protected $lblMessage;
+		protected $pnlVersions;
+		protected $pxyVersions;
 
 		protected function Form_Run() {
 			// Sanitize the Path in the PathInfo
@@ -21,31 +21,40 @@
 		}
 
 		protected function Form_Create() {
-			parent::Form_Create();
-
 			$this->objWikiItem = WikiItem::LoadByPath(QApplication::$PathInfo);
 
 			// If Doesn't Exist, Show the 404 page
 			if (!$this->objWikiItem) {
+				parent::Form_Create();
 				$this->strHtmlIncludeFilePath = dirname(__FILE__) . '/index_404.tpl.php';
+				$this->strPageTitle .= QApplication::$PathInfo;
 				return;
 			}
 
+			// We're with a valid wiki item -- set the template path baed on the wiki item type
 			$this->SetTemplatePath();
+			
+			// Setup NavBar and SubNav stuff (if applicable) and setup PageTitle
+			if (!is_null($this->objWikiItem->OverrideNavbarIndex)) {
+				$this->intNavBarIndex = $this->objWikiItem->OverrideNavbarIndex;
+				$this->intSubNavIndex = $this->objWikiItem->OverrideSubnavIndex;
+				$this->strPageTitle = $this->objWikiItem->CurrentName;
+			} else {
+				$this->strPageTitle .= $this->objWikiItem->CurrentName;
+			}
 
-			// Get the Version
+			// Get the Wiki Version object based on the $_GET variables, or use CurrentWikiVersion if none passed in
 			if (array_key_exists('version', $_GET))
 				$this->objWikiVersion = WikiVersion::LoadByWikiItemIdVersionNumber($this->objWikiItem->Id, $_GET['version']);
-
 			if (!$this->objWikiVersion)
 				$this->objWikiVersion = $this->objWikiItem->CurrentWikiVersion;
 
-			$this->lblMessage = new QLabel($this);
-			$this->lblMessage->Text = 'Click the Button';
+			// Create Controls for Page
+			parent::Form_Create();
 
-			$this->btnButton = new QButton($this);
-			$this->btnButton->Text = 'Test';
-			$this->btnButton->AddAction(new QClickEvent(), new QAjaxAction('btnButton_Click'));
+			$this->pxyVersions = new QControlProxy($this);
+			$this->pxyVersions->AddAction(new QClickEvent(), new QAjaxAction('pxyVersions_Click'));
+			$this->pxyVersions->AddAction(new QClickEvent(), new QTerminateAction());
 		}
 
 		protected function SetTemplatePath() {
@@ -61,8 +70,7 @@
 			}
 		}
 
-		protected function btnButton_Click($strFormId, $strControlId, $strParameter) {
-			$this->lblMessage->Text = 'Hello, World!';
+		protected function pxyVersions_Click($strFormId, $strControlId, $strParameter) {
 		}
 	}
 

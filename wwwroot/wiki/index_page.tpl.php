@@ -1,6 +1,8 @@
 <?php require(__INCLUDES__ . '/header.inc.php'); ?>
 
-	<h1><?php _p($this->objWikiItem->CurrentName); ?></h1>
+	<h1 style="float: left;"><?php _p($this->objWikiItem->CurrentName); ?></h1>
+	<div style="float: right; margin-top: 22px; font-size: 11px; "><a href="#" style="color: #666;" <?php $this->pxyVersions->RenderAsEvents(); ?>>View Versions</a></div>
+	<br clear="all"/>
 
 	<?php _p($this->objWikiVersion->WikiPage->CompiledHtml, false); ?>
 
@@ -8,11 +10,9 @@
 		Version <strong>#<?php _p($this->objWikiVersion->VersionNumber); ?></strong> edited by <strong><?php _p($this->objWikiVersion->PostedByPerson->DisplayName)?></strong> on
 		<strong><?php _p($this->objWikiVersion->PostDate); ?></strong>.
 	</div>
+
 <?php var_dump($_GET); ?>
 <?php var_dump(QApplication::$PathInfo); ?>
 <?php var_dump(QApplication::$RequestUri); ?>
-
-	<p><?php $this->lblMessage->Render(); ?></p>
-	<p><?php $this->btnButton->Render(); ?></p>
 
 <?php require(__INCLUDES__ . '/footer.inc.php'); ?>
