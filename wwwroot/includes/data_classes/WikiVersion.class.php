@@ -27,6 +27,11 @@
 			return sprintf('WikiVersion Object %s',  $this->intId);
 		}
 
+		public function IsCurrentVersion() {
+			if ($this->WikiItemAsCurrent) return true;
+			return false;
+		}
+
 
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...

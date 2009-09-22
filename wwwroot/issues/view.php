@@ -48,8 +48,12 @@
 			$this->dtrVotes->Template = dirname(__FILE__) . '/dtrVotes.tpl.php';
 
 			$this->btnVotes = new RoundedLinkButton($this->pnlVotes);
-			$this->btnVotes->AddAction(new QClickEvent(), new QAjaxAction('pnlVotes_Click'));
+			$this->btnVotes->AddAction(new QClickEvent(), new QAjaxAction('btnVotes_Click'));
 			$this->btnVotes->AddAction(new QClickEvent(), new QTerminateAction());
+			if (QApplication::$Person && (QApplication::$Person->Id == $this->objIssue->PostedByPersonId))
+				$this->btnVotes->Visible = false;
+			$this->btnVotes->SetCustomStyle('margin-top', '10px');
+			$this->btnVotes->SetCustomStyle('margin-bottom', '4px');
 			
 			$this->pnlExampleCode = new QPanel($this, 'ExampleCode');
 			$this->pnlExampleCode->Template = dirname(__FILE__) . '/pnlExample.tpl.php';
@@ -156,26 +160,26 @@
 			}
 		}
 
-		protected function pnlVotes_Click() {
+		protected function btnVotes_Click() {
 			if (!QApplication::$Person) {
 				QApplication::RedirectToLogin();
 			} else if ($this->objIssue->IsPersonVoted(QApplication::$Person)) {
 				$this->objIssue->ClearVote(QApplication::$Person);
 				$this->pnlVotes->Refresh();
+			} else if ($this->objIssue->PostedByPersonId == QApplication::$Person->Id) {
+				QApplication::DisplayAlert('Sorry!  You cannot vote on bugs and issues you posted yourself.');
 			} else {
 				$this->objIssue->SetVote(QApplication::$Person);
 				$this->pnlVotes->Refresh();
 			}
 		}
 
-		protected function btnButton_Click($strFormId, $strControlId, $strParameter) {
-			$this->lblMessage->Text = 'Hello, World!';
-		}
-		
 		protected function dtrVotes_Bind() {
 			$this->dtrVotes->DataSource = $this->objIssue->GetIssueVoteArray(array(QQ::OrderBy(QQN::IssueVote()->Person->DisplayName), QQ::Expand(QQN::IssueVote()->Person->FirstName)));
 			if (count($this->dtrVotes->DataSource) >= 8)
 				$this->dtrVotes->Height = '100px';
+			else if (count($this->dtrVotes->DataSource) <= 3)
+				$this->dtrVotes->Height = '50px';
 			else
 				$this->dtrVotes->Height = null;
 		}
@@ -183,11 +187,11 @@
 		protected function DisplayVoteCount() {
 			$intVoteCount = $this->objIssue->CountIssueVotes();
 			if ($intVoteCount > 1)
-				return 'There are <strong>' . $intVoteCount . ' votes</strong> for this issue';
+				return 'There are <strong>' . $intVoteCount . ' votes</strong> for this issue:';
 			else if ($intVoteCount == 1)
-				return 'There is <strong>1 vote</strong> for this issue';
+				return 'There is <strong>1 vote</strong> for this issue:';
 			else
-				return 'There are <strong>no votes</strong> for this issue';
+				return 'There are <strong>no votes</strong> for this issue.';
 		}
 		
 		protected function DisplayField($strLabel, $strValue, $blnHtmlEntities = true) {

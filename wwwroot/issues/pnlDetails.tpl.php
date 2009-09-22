@@ -14,4 +14,5 @@
 	<?php _p($this->DisplayField('webserver', $this->objIssue->GetFieldOptionValueForIssueFieldToken(IssueField::TokenWebServer)), false); ?>
 	<?php _p($this->DisplayField('os', $this->objIssue->GetFieldOptionValueForIssueFieldToken(IssueField::TokenOperatingSystem)), false); ?>
 	<?php _p($this->DisplayField('browser', $this->objIssue->GetFieldOptionValueForIssueFieldToken(IssueField::TokenBrowser)), false); ?>
+	<br clear="all"/>
 </div>

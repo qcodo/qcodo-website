@@ -1,18 +1,50 @@
 <?php require(__INCLUDES__ . '/header.inc.php'); ?>
+<?php
+	$strRelative = QDateTime::Now()->Difference($this->objWikiVersion->PostDate)->SimpleDisplay();
+	if ($strRelative == 'a day')
+		$strRelative = 'yesterday';
+	else if (!$strRelative)
+		$strRelative = 'just now';
+	else
+		$strRelative .= ' ago';
+?>
 
-	<h1 style="float: left;"><?php _p($this->objWikiItem->CurrentName); ?></h1>
-	<div style="float: right; margin-top: 22px; font-size: 11px; "><a href="#" style="color: #666;" <?php $this->pxyVersions->RenderAsEvents(); ?>>View Versions</a></div>
-	<br clear="all"/>
-
-	<?php _p($this->objWikiVersion->WikiPage->CompiledHtml, false); ?>
-
-	<div style="margin-top: 12px; border-top: 1px solid #666; padding-top: 12px; font-size: 11px; font-style: italic; color: #666;"/>
-		Version <strong>#<?php _p($this->objWikiVersion->VersionNumber); ?></strong> edited by <strong><?php _p($this->objWikiVersion->PostedByPerson->DisplayName)?></strong> on
-		<strong><?php _p($this->objWikiVersion->PostDate); ?></strong>.
+	<div class="searchBar">
+		<div class="title">
+			<span style="font-weight: normal; font-size: 12px;">Wiki Page /</span>
+			<?php _p($this->objWikiVersion->Name); ?>
+		</div>
+		<div class="right">
+			<a href="#" style="color: #ccc; font-size: 10px;" <?php $this->pxyVersions->RenderAsEvents(); ?>>View Versions</a>
+		</div>
 	</div>
 
-<?php var_dump($_GET); ?>
-<?php var_dump(QApplication::$PathInfo); ?>
-<?php var_dump(QApplication::$RequestUri); ?>
+	<div class="wiki">
+		<h3>
+			version:
+			<strong>#<?php _p($this->objWikiVersion->VersionNumber); ?></strong>
+			<?php if ($this->objWikiVersion->IsCurrentVersion()) { ?>
+				(current)
+			<?php } ?>
+
+			&nbsp;|&nbsp;
+
+			last edited by:	
+			<strong><a href="<?php _p($this->objWikiVersion->PostedByPerson->ViewProfileUrl)?>"><?php _p($this->objWikiVersion->PostedByPerson->DisplayName)?></a></strong>
+
+			&nbsp;|&nbsp;
+
+			on: <strong><?php _p($this->strPostStartedLinkText, false); ?></strong> (<?php _p($strRelative); ?>)
+		</h3>
+
+		<?php _p($this->objWikiVersion->WikiPage->CompiledHtml, false); ?>
+
+	</div>
+	
+	<div style="float: right; width: 230px; overflow: hidden; ">
+		<?php var_dump($_GET); ?>
+		<?php var_dump(QApplication::$PathInfo); ?>
+		<?php var_dump(QApplication::$RequestUri); ?>
+	</div>
 
 <?php require(__INCLUDES__ . '/footer.inc.php'); ?>

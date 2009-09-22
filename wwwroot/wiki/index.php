@@ -11,6 +11,8 @@
 
 		protected $pnlVersions;
 		protected $pxyVersions;
+		
+		protected $strPostStartedLinkText;
 
 		protected function Form_Run() {
 			// Sanitize the Path in the PathInfo
@@ -34,20 +36,20 @@
 			// We're with a valid wiki item -- set the template path baed on the wiki item type
 			$this->SetTemplatePath();
 			
-			// Setup NavBar and SubNav stuff (if applicable) and setup PageTitle
-			if (!is_null($this->objWikiItem->OverrideNavbarIndex)) {
-				$this->intNavBarIndex = $this->objWikiItem->OverrideNavbarIndex;
-				$this->intSubNavIndex = $this->objWikiItem->OverrideSubnavIndex;
-				$this->strPageTitle = $this->objWikiItem->CurrentName;
-			} else {
-				$this->strPageTitle .= $this->objWikiItem->CurrentName;
-			}
-
 			// Get the Wiki Version object based on the $_GET variables, or use CurrentWikiVersion if none passed in
 			if (array_key_exists('version', $_GET))
 				$this->objWikiVersion = WikiVersion::LoadByWikiItemIdVersionNumber($this->objWikiItem->Id, $_GET['version']);
 			if (!$this->objWikiVersion)
 				$this->objWikiVersion = $this->objWikiItem->CurrentWikiVersion;
+
+			// Setup NavBar and SubNav stuff (if applicable) and setup PageTitle
+			if (!is_null($this->objWikiItem->OverrideNavbarIndex)) {
+				$this->intNavBarIndex = $this->objWikiItem->OverrideNavbarIndex;
+				$this->intSubNavIndex = $this->objWikiItem->OverrideSubnavIndex;
+				$this->strPageTitle = $this->objWikiVersion->Name;
+			} else {
+				$this->strPageTitle .= $this->objWikiVersion->Name;
+			}
 
 			// Create Controls for Page
 			parent::Form_Create();
@@ -55,6 +57,11 @@
 			$this->pxyVersions = new QControlProxy($this);
 			$this->pxyVersions->AddAction(new QClickEvent(), new QAjaxAction('pxyVersions_Click'));
 			$this->pxyVersions->AddAction(new QClickEvent(), new QTerminateAction());
+
+			// Setup DateTime of Post
+			$dttLocalize = QApplication::LocalizeDateTime($this->objWikiVersion->PostDate);
+			$this->strPostStartedLinkText = strtolower($dttLocalize->__toString('DDDD, MMMM D, YYYY, h:mm z ')) .
+				strtolower(QApplication::DisplayTimezoneLink($dttLocalize, false));
 		}
 
 		protected function SetTemplatePath() {

@@ -2,7 +2,7 @@
 
 	<div class="searchBar">
 		<div class="title">
-			<span style="font-weight: normal; font-size: 12px;">Issue #<?php _p($this->objIssue->Id); ?>: </span>
+			<span style="font-weight: normal; font-size: 12px;">Issue #<?php _p($this->objIssue->Id); ?> / </span>
 			<?php _p($this->objIssue->Title); ?>
 		</div>
 		<div class="right">

@@ -158,6 +158,29 @@
 			$this->Save();
 		}
 
+		/**
+		 * Gets the first WikiVersion for this WikiItem
+		 * @return WikiVersion
+		 */
+		public function GetFirstVersion() {
+			$objArray = $this->GetWikiVersionArray(QQ::OrderBy(QQN::WikiVersion()->VersionNumber));
+			return $objArray[0];
+		}
+
+		/**
+		 * Posts a new message/comment for this WikiItem.  If no Person is specified, then it is assumed
+		 * that this is a "System Message" for this WikiItem.
+		 * @param string $strMessageText the text of the message, itself
+		 * @param Person $objPerson optional person who posted this message or performed the action
+		 * @param QDateTime $dttPostDate
+		 * @return Message
+		 */
+		public function PostMessage($strMessageText, Person $objPerson = null, QDateTime $dttPostDate = null) {
+			$objTopicArray = $this->TopicLink->GetTopicArray();
+			$objTopic = $objTopicArray[0];
+			return $objTopic->PostMessage($strMessageText, $objPerson, $dttPostDate);
+		}
+
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...
 		// but feel free to use these as a starting point)

@@ -261,7 +261,6 @@
 		 * issue.
 		 * @param string $strMessageText the text of the message, itself
 		 * @param Person $objPerson optional person who posted this message or performed the action
-		 * @param boolean $blnSystemFlag whether this is a system message
 		 * @param QDateTime $dttPostDate
 		 * @return Message
 		 */
