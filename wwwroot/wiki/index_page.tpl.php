@@ -40,11 +40,7 @@
 		<?php _p($this->objWikiVersion->WikiPage->CompiledHtml, false); ?>
 
 	</div>
-	
-	<div style="float: right; width: 230px; overflow: hidden; ">
-		<?php var_dump($_GET); ?>
-		<?php var_dump(QApplication::$PathInfo); ?>
-		<?php var_dump(QApplication::$RequestUri); ?>
-	</div>
+
+	<?php $this->pnlVersions->Render(); ?>
 
 <?php require(__INCLUDES__ . '/footer.inc.php'); ?>

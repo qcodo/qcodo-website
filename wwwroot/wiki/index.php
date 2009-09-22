@@ -37,8 +37,9 @@
 			$this->SetTemplatePath();
 			
 			// Get the Wiki Version object based on the $_GET variables, or use CurrentWikiVersion if none passed in
-			if (array_key_exists('version', $_GET))
-				$this->objWikiVersion = WikiVersion::LoadByWikiItemIdVersionNumber($this->objWikiItem->Id, $_GET['version']);
+			$arrGetKeys = array_keys($_GET);
+			if (count($arrGetKeys) == 1)
+				$this->objWikiVersion = WikiVersion::LoadByWikiItemIdVersionNumber($this->objWikiItem->Id, $arrGetKeys[0]);
 			if (!$this->objWikiVersion)
 				$this->objWikiVersion = $this->objWikiItem->CurrentWikiVersion;
 
@@ -58,6 +59,8 @@
 			$this->pxyVersions->AddAction(new QClickEvent(), new QAjaxAction('pxyVersions_Click'));
 			$this->pxyVersions->AddAction(new QClickEvent(), new QTerminateAction());
 
+			$this->pnlVersions = new WikiVersionsPanel($this->objWikiItem, $this);
+			
 			// Setup DateTime of Post
 			$dttLocalize = QApplication::LocalizeDateTime($this->objWikiVersion->PostDate);
 			$this->strPostStartedLinkText = strtolower($dttLocalize->__toString('DDDD, MMMM D, YYYY, h:mm z ')) .
