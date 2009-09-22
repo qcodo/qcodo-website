@@ -102,6 +102,25 @@
 		}
 
 		/**
+		 * Creates the Topic and TopicLink for this Issue object.
+		 * @return Topic
+		 */
+		public function CreateTopicAndTopicLink() {
+			$objTopicLink = new TopicLink();
+			$objTopicLink->TopicLinkTypeId = TopicLinkType::WikiItem;
+			$objTopicLink->WikiItem = $this;
+			$objTopicLink->Save();
+
+			$objTopic = new Topic();
+			$objTopic->TopicLink = $objTopicLink;
+			$objTopic->Name = $this->CurrentName;
+			$objTopic->Person = $this->CurrentPostedByPerson;
+			$objTopic->Save();
+
+			return $objTopic;
+		}
+
+		/**
 		 * Given a Wiki object for this WikiItem, this will post it as a new version.
 		 * 
 		 * The passed in WikiObject will be saved to the database 

@@ -177,6 +177,7 @@
 			}
 
 			$objWikiItem->CreateNewVersion($strName, $objWikiObject, $strMethodName, $arrMethodParameters, $objPerson, $dttPostDate);
+			if ($intIndex == 0) $objWikiItem->CreateTopicAndTopicLink();
 		}
 	}
 
