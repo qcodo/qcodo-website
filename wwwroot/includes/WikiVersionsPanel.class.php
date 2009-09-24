@@ -10,12 +10,13 @@
 			$this->strCssClass = 'wikiVersions';
 
 			$this->dtrVersions = new QDataRepeater($this);
+			$this->dtrVersions->CssClass = 'wikiVersionsDtr';
 			$this->dtrVersions->SetDataBinder('dtrVersions_Bind', $this);
 			$this->dtrVersions->Template = dirname(__FILE__) . '/WikiVersionDataRepeater.tpl.php';
 		}
 
 		public function dtrVersions_Bind() {
-			$this->dtrVersions->DataSource = $this->objWikiItem->GetWikiVersionArray(QQ::OrderBy(QQN::WikiVersion()->VersionNumber));
+			$this->dtrVersions->DataSource = $this->objWikiItem->GetWikiVersionArray(QQ::OrderBy(QQN::WikiVersion()->VersionNumber, false));
 		}
 	}
 ?>
