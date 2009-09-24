@@ -43,6 +43,7 @@
 			} else {
 				// Get the Wiki Version object based on the $_GET variables, or use CurrentWikiVersion if none passed in
 				$arrGetKeys = array_keys($_GET);
+				$objWikiVersion = null;
 				if (count($arrGetKeys) == 1)
 					$objWikiVersion = WikiVersion::LoadByWikiItemIdVersionNumber($this->objWikiItem->Id, $arrGetKeys[0]);
 				if (!$objWikiVersion)
@@ -86,8 +87,9 @@
 		protected function btnOkay_Click() {
 			if (!$this->blnEditMode) {
 				$this->objWikiItem = WikiItem::CreateNewItem(QApplication::$PathInfo, WikiItemType::Page);
+				$this->objWikiItem->CreateTopicAndTopicLink();
 			}
-			
+
 			$objWikiPage = new WikiPage();
 			$objWikiPage->Content = trim($this->txtContent->Text);
 			$objWikiPage->CompileHtml();

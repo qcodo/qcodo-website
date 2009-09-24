@@ -117,7 +117,22 @@
 				$this->btnOkay->Text = 'Post My Comment';
 			}
 		}
+		
+		public function EditMessageHelper_WikiItem(Message $objMessage) {
+			$this->lstForum->RemoveAllItems();
+			$this->lstForum->Visible = false;
 
+			if ($objMessage->Id) {
+				$this->lblHeading->Text = 'Edit My Existing Comment';
+				$this->blnEditMode = true;
+				$this->btnOkay->Text = 'Update My Comment';
+			} else {
+				$this->lblHeading->Text = 'Post a New Comment for this Wiki';
+				$this->blnEditMode = false;
+				$this->btnOkay->Text = 'Post My Comment';
+			}
+		}
+		
 		public function EditMessage(Message $objMessage) {
 			$this->mctMessage->ReplaceObject($objMessage);
 			$this->ShowDialogBox();
@@ -134,6 +149,9 @@
 						break;
 					case TopicLinkType::Issue:
 						$this->EditMessageHelper_Issue($objMessage);
+						break;
+					case TopicLinkType::WikiItem:
+						$this->EditMessageHelper_WikiItem($objMessage);
 						break;
 					default:
 						throw new Exception('Unsupported TopicLinkTypeId: ' . $objMessage->TopicLink->TopicLinkTypeId);

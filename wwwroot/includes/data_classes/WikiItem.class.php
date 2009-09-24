@@ -134,6 +134,16 @@
 		}
 
 		/**
+		 * Updates the linked TopicLink topic name to match the current name for this wiki item.
+		 * @return void
+		 */
+		public function UpdateTopicLinkName() {
+			$objTopic = $this->TopicLink->GetTopic();
+			$objTopic->Name = $this->strCurrentName;
+			$objTopic->Save();
+		}
+
+		/**
 		 * Given a Wiki object for this WikiItem, this will post it as a new version.
 		 * 
 		 * The passed in WikiObject will be saved to the database 
@@ -188,6 +198,8 @@
 			$this->CurrentPostedByPerson = $objWikiVersion->PostedByPerson;
 			$this->CurrentPostDate = $objWikiVersion->PostDate;
 			$this->Save();
+			
+			$this->UpdateTopicLinkName();
 		}
 
 		/**

@@ -1,4 +1,5 @@
-	<div class="topic" style="margin-top: 12px;">
+
+	<div class="topic <?php _p($_CONTROL->strAdditionalCssClass); ?>">
 		<?php $_CONTROL->lblTopicInfo->Render(); ?>
 
 		<div class="controlBar">

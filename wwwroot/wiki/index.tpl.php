@@ -20,5 +20,9 @@
 	<?php $this->pnlContent->Render(); ?>
 
 	<?php $this->pnlVersions->Render(); ?>
+	<br clear="all"/>
+
+	<?php $this->pnlMessages->Render(); ?>
+	<br clear="all"/>
 
 <?php require(__INCLUDES__ . '/footer.inc.php'); ?>

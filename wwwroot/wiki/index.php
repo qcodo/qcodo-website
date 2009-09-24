@@ -1,6 +1,7 @@
 <?php
 	require('../includes/prepend.inc.php');
-
+	require(__INCLUDES__ . '/messages/MessagesPanel.class.php');
+	
 	class QcodoForm extends QcodoWebsiteForm {
 		protected $strPageTitle = 'Wiki - ';
 		protected $intNavBarIndex = QApplication::NavCommunity;
@@ -19,6 +20,8 @@
 		
 		protected $strPostStartedLinkText;
 
+		protected $pnlMessages;
+		
 		protected function Form_Run() {
 			// Sanitize the Path in the PathInfo
 			$strPath = WikiItem::SanitizeForPath(QApplication::$PathInfo);
@@ -92,6 +95,13 @@
 			$dttLocalize = QApplication::LocalizeDateTime($this->objWikiVersion->PostDate);
 			$this->strPostStartedLinkText = strtolower($dttLocalize->__toString('DDDD, MMMM D, YYYY, h:mm z ')) .
 				strtolower(QApplication::DisplayTimezoneLink($dttLocalize, false));
+
+			$this->pnlMessages = new MessagesPanel($this);
+			$this->pnlMessages->SelectTopic($this->objWikiItem->TopicLink->GetTopic());
+			$this->pnlMessages->lblTopicInfo_SetTemplate(__INCLUDES__ . '/messages/lblTopicInfoForWiki.tpl.php');
+			$this->pnlMessages->btnRespond1->Text = 'Post Comment';
+			$this->pnlMessages->btnRespond2->Text = 'Post Comment';
+			$this->pnlMessages->strAdditionalCssClass = 'topicForWiki';
 		}
 
 		public function IsViewingCurrent() {
@@ -119,9 +129,14 @@
 		protected function btnEdit_Click() {
 			if (!QApplication::$Person) QApplication::RedirectToLogin();
 
+			if (!$this->IsViewingCurrent() || $this->pnlVersions->Visible)
+				$strVersion = '?' . $this->objWikiVersion->VersionNumber;
+			else
+				$strVersion = null;
+
 			switch ($this->objWikiItem->WikiItemTypeId) {
 				case WikiItemType::Page:
-					QApplication::Redirect('/wiki/edit_page.php' . $this->objWikiItem->Path . '?' . $this->objWikiVersion->VersionNumber);
+					QApplication::Redirect('/wiki/edit_page.php' . $this->objWikiItem->Path . $strVersion);
 					break;
 				case WikiItemType::File:
 					break;

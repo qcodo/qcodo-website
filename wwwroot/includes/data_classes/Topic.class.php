@@ -35,6 +35,12 @@
 					if ($intMessageCount == 0) return 'no replies';
 					else if ($intMessageCount == 1) return '1 reply';
 					else return $intMessageCount . ' replies';
+				case 'CommentCount':
+					$intMessageCount = $this->MessageCount;
+					if ($intMessageCount == 0) return 'no comments';
+					else if ($intMessageCount == 1) return '1 comment';
+					else return $intMessageCount . ' comments';
+					break;
 				case 'SidenavTitle':
 					return sprintf('[%s] %s', $this->dttLastPostDate->__toString('YYYY-MM-DD'), $this->strName);
 

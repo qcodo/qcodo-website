@@ -7,6 +7,7 @@
 		// Search-Related Stuff
 		public $lblTopicInfo;
 		public $strPostStartedLinkText;
+		public $strAdditionalCssClass;
 
 		public $btnRespond1;
 		public $btnRespond2;
@@ -138,6 +139,16 @@
 				
 				$this->dtrMessages->Paginator->Visible = ($this->dtrMessages->PageCount > 1);
 				$this->dtrMessages->PaginatorAlternate->Visible = ($this->dtrMessages->PageCount > 1);
+				
+				if ($this->dtrMessages->TotalItemCount == 0) {
+					$this->btnRespond2->Visible = false;
+					$this->btnMarkAsViewed2->Visible = false;
+					$this->btnNotify2->Visible = false;
+				} else {
+					$this->btnRespond2->Visible = true;
+					$this->btnMarkAsViewed2->Visible = true;
+					$this->btnNotify2->Visible = true;
+				}
 			}
 		}
 		
@@ -240,9 +251,13 @@
 					QQ::OrderBy(QQN::Message()->Id)
 				);
 
-				$dttLocalize = QApplication::LocalizeDateTime($objFirstMessage->PostDate);
-				$this->strPostStartedLinkText = strtolower($dttLocalize->__toString('DDDD, MMMM D, YYYY, h:mm z ')) .
-					strtolower(QApplication::DisplayTimezoneLink($dttLocalize, false));
+				if ($objFirstMessage) {
+					$dttLocalize = QApplication::LocalizeDateTime($objFirstMessage->PostDate);
+					$this->strPostStartedLinkText = strtolower($dttLocalize->__toString('DDDD, MMMM D, YYYY, h:mm z ')) .
+						strtolower(QApplication::DisplayTimezoneLink($dttLocalize, false));
+				} else {
+					$this->strPostStartedLinkText = 'none'; 	
+				}
 
 				$this->objTopic->MarkAsViewed();
 				
