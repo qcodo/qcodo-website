@@ -38,9 +38,6 @@
 				return;
 			}
 
-			// We're with a valid wiki item -- set the template path baed on the wiki item type
-			$this->SetTemplatePath();
-			
 			// Get the Wiki Version object based on the $_GET variables, or use CurrentWikiVersion if none passed in
 			$arrGetKeys = array_keys($_GET);
 			if (count($arrGetKeys) == 1)
@@ -77,7 +74,9 @@
 
 			$this->pnlContent = new QPanel($this);
 			$this->pnlContent->CssClass = 'wiki';
-			$this->pnlContent->Template = dirname(__FILE__) . '/pnlWikiContent_page.tpl.php';
+
+			// Set the template path baed on the wiki item type
+			$this->SetTemplatePath();
 
 			$this->btnEdit = new RoundedLinkButton($this->pnlContent);
 			$this->btnEdit->AddAction(new QClickEvent(), new QAjaxAction('btnEdit_Click'));
@@ -104,7 +103,7 @@
 				case WikiItemType::Page:
 				case WikiItemType::File:
 				case WikiItemType::Image:
-					$this->pnlContent = dirname(__FILE__) . '/pnlWikiContent_' . strtolower(WikiItemType::$TokenArray[$this->objWikiItem->WikiItemTypeId]) . '.tpl.php';
+					$this->pnlContent->Template = dirname(__FILE__) . '/pnlWikiContent_' . strtolower(WikiItemType::$TokenArray[$this->objWikiItem->WikiItemTypeId]) . '.tpl.php';
 					break;
 
 				default:
