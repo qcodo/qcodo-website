@@ -1,14 +1,15 @@
 <?php require(__INCLUDES__ . '/header.inc.php'); ?>
 	<div class="form">
 
-		<h1><?php _p($this->strHeadline); ?></h1>
+		<h1>Admin Wiki Item</h1>
 
 		<div class="mainForm">
 			<p class="instructions">Fields in <strong>BOLD</strong> are required.</p>
 			<br/>
 
-			<?php $this->txtTitle->RenderSideBySideErrorBelow('Width=346px', 'Name=Title'); ?>
-			<?php $this->txtContent->RenderSideBySideErrorBelow('Width=350px', 'Height=250px', 'Name=Content'); ?>
+			<?php $this->lstEditorMinimum->RenderSideBySideErrorBelow('Name=Minimum Editor Role'); ?>
+			<?php $this->lstNavItem->RenderSideBySideErrorBelow('Name=Nav Item'); ?>
+			<?php $this->lstSubNavItem->RenderSideBySideErrorBelow('Name=SubNav Item'); ?>
 			
 			<br/>
 			
@@ -20,7 +21,7 @@
 		</div>
 
 		<div class="sidebar">
-			<p>Instructions go here about formatting.</p>
+			&nbsp;
 		</div>
 		
 		<br clear="all"/><br/>

@@ -118,13 +118,10 @@
 			 * This shouuld be called on the top of any page that requires authentication.
 			 * This checks to make sure a person is actually logged in on order to view the page.
 			 * This will redirect to the login page if the user is NOT logged in.
-			 * @param $intMinimumPersonTypeId
 			 * @return void
 			 */
-			public static function Authenticate($intMinimumPersonTypeId = null) {
-				if (!QApplication::$Person)
-					QApplication::RedirectToLogin();
-				return QApplication::$Person;
+			public static function Authenticate() {
+				if (!QApplication::$Person) QApplication::RedirectToLogin();
 			}
 
 			/**

@@ -4,8 +4,8 @@
 
 	class QcodoForm extends QcodoWebsiteForm {
 		protected $strPageTitle = 'Edit Wiki Page - ';
-		protected $intNavBarIndex = QApplication::NavDevelopment;
-		protected $intSubNavIndex = QApplication::NavDevelopmentBugs;
+		protected $intNavBarIndex = QApplication::NavCommunity;
+		protected $intSubNavIndex = QApplication::NavCommunityWiki;
 
 		protected $objWikiItem;
 		protected $blnEditMode;

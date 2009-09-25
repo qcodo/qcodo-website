@@ -3,17 +3,15 @@
 	QApplication::Authenticate();
 
 	class QcodoForm extends QcodoWebsiteForm {
-		protected $strPageTitle = 'Edit Wiki Page - ';
-		protected $intNavBarIndex = QApplication::NavDevelopment;
-		protected $intSubNavIndex = QApplication::NavDevelopmentBugs;
+		protected $strPageTitle = 'Admin Wiki Page - ';
+		protected $intNavBarIndex = QApplication::NavCommunity;
+		protected $intSubNavIndex = QApplication::NavCommunityWiki;
 
 		protected $objWikiItem;
-		protected $blnEditMode;
-		
-		protected $strHeadline;
 
-		protected $txtTitle;
-		protected $txtContent;
+		protected $lstEditorMinimum;
+		protected $lstNavItem;
+		protected $lstSubNavItem;
 
 		protected $btnOkay;
 		protected $btnCancel;
@@ -22,56 +20,39 @@
 			// Sanitize the Path in the PathInfo
 			$strPath = WikiItem::SanitizeForPath(QApplication::$PathInfo);
 			if ($strPath != QApplication::$PathInfo) {
-				QApplication::Redirect('/wiki/edit_page.php' . $strPath . QApplication::GenerateQueryString());
+				QApplication::Redirect('/wiki/admin.php' . $strPath . QApplication::GenerateQueryString());
 			}
 		}
 
 		protected function Form_Create() {
 			parent::Form_Create();
 
+			// Get the Wiki Item and confirm that it exists and that he is authorized to admin
 			$this->objWikiItem = WikiItem::LoadByPath(QApplication::$PathInfo);
+			if (!$this->objWikiItem) QApplication::Redirect('/');
+			if (!$this->objWikiItem->IsAdminableForPerson(QApplication::$Person)) QApplication::RedirectToLogin();
 
-			// If Doesn't Exist, Show the 404 page
-			if (!$this->objWikiItem) {
-				$this->objWikiItem = new WikiItem();
-				$objWikiVersion = new WikiVersion();
-				$objWikiPage = new WikiPage();
+			$this->strPageTitle .= $this->objWikiItem->CurrentName;
 
-				$this->blnEditMode = false;
-				$this->strPageTitle = 'Create New Wiki Page';
-				$this->strHeadline = 'Create a New Wiki Page';
-			} else {
-				// Make sure this person is allowed to edit it
-				if (!$this->objWikiItem->IsEditableForPerson(QApplication::$Person)) {
-					QApplication::Redirect($this->objWikiItem->UrlPath);
-				}
-
-				// Get the Wiki Version object based on the $_GET variables, or use CurrentWikiVersion if none passed in
-				$arrGetKeys = array_keys($_GET);
-				$objWikiVersion = null;
-				if (count($arrGetKeys) == 1)
-					$objWikiVersion = WikiVersion::LoadByWikiItemIdVersionNumber($this->objWikiItem->Id, $arrGetKeys[0]);
-				if (!$objWikiVersion)
-					$objWikiVersion = $this->objWikiItem->CurrentWikiVersion;
-
-				$objWikiPage = $objWikiVersion->WikiPage;
-				$this->blnEditMode = true;
-				$this->strPageTitle .= $objWikiVersion->Name;
-				$this->strHeadline = 'Edit Wiki Page';
+			$this->lstEditorMinimum = new QListBox($this);
+			foreach (PersonType::$NameArray as $intTypeId => $strName) {
+				$this->lstEditorMinimum->AddItem($strName, $intTypeId, $intTypeId == $this->objWikiItem->EditorMinimumPersonTypeId);
 			}
 
-			$this->txtTitle = new QTextBox($this);
-			$this->txtTitle->Text = $objWikiVersion->Name;
-			$this->txtTitle->Required = true;
+			$this->lstNavItem = new QListBox($this);
+			$this->lstNavItem->AddItem('- Default -', null);
+			foreach (QApplication::$NavBarArray as $intIndex => $arrItems) {
+				$this->lstNavItem->AddItem($arrItems[0], $intIndex, !is_null($this->objWikiItem->OverrideNavbarIndex) && ($this->objWikiItem->OverrideNavbarIndex == $intIndex));
+			}
+			if (is_null($this->lstNavItem->SelectedValue)) $this->lstNavItem->SelectedIndex = 0;
+			$this->lstNavItem->AddAction(new QChangeEvent(), new QAjaxAction('lstNavItem_Change'));
 
-			$this->txtContent = new QTextBox($this);
-			$this->txtContent->Text = $objWikiPage->Content;
-			$this->txtContent->Required = true;
-			$this->txtContent->TextMode = QTextMode::MultiLine;
-			
+			$this->lstSubNavItem = new QListBox($this);
+			$this->lstNavItem_Change(null, null, null);
+
 			$this->btnOkay = new QButton($this);
 			$this->btnOkay->CausesValidation = true;
-			$this->btnOkay->Text = ($this->blnEditMode) ? 'Update Wiki Page' : 'Save New Wiki Page';
+			$this->btnOkay->Text = 'Update';
 
 			$this->btnCancel = new QLinkButton($this);
 			$this->btnCancel->Text = 'Cancel';
@@ -81,8 +62,19 @@
 
 			$this->btnCancel->AddAction(new QClickEvent(), new QAjaxAction('btnCancel_Click'));
 			$this->btnCancel->AddAction(new QClickEvent(), new QTerminateAction());
+		}
 
-			$this->txtTitle->Focus();
+		protected function lstNavItem_Change($strFormId, $strControlId, $strParameter) {
+			$this->lstSubNavItem->RemoveAllItems();
+			$this->lstSubNavItem->AddItem('- None -', null);
+			if (!is_null($this->lstNavItem->SelectedValue)) {
+				$this->lstSubNavItem->Enabled = true;
+				foreach (QApplication::$NavBarArray[$this->lstNavItem->SelectedValue][3] as $intIndex => $arrItems) {
+					$this->lstSubNavItem->AddItem($arrItems[0], $intIndex, is_null($strFormId) && !is_null($this->objWikiItem->OverrideSubnavIndex) && ($this->objWikiItem->OverrideSubnavIndex == $intIndex));
+				}
+			} else {
+				$this->lstSubNavItem->Enabled = false;
+			}
 		}
 
 		protected function Form_PreRender() {
@@ -90,28 +82,15 @@
 		}
 
 		protected function btnOkay_Click() {
-			if (!$this->blnEditMode) {
-				$this->objWikiItem = WikiItem::CreateNewItem(QApplication::$PathInfo, WikiItemType::Page);
-				$this->objWikiItem->CreateTopicAndTopicLink();
-			}
-
-			$objWikiPage = new WikiPage();
-			$objWikiPage->Content = trim($this->txtContent->Text);
-			$objWikiPage->CompileHtml();
-
-			$this->objWikiItem->CreateNewVersion(trim($this->txtTitle->Text), $objWikiPage, 'Save', array(), QApplication::$Person, null);
-
-			if ($this->blnEditMode) {
-				$strMessage = sprintf("%s made created a new version of this wiki page.", QApplication::$Person->DisplayName);				
-				$this->objWikiItem->PostMessage($strMessage, null);
-				QApplication::Redirect($this->objWikiItem->UrlPath . '?lastpage');
-			} else {
-				QApplication::Redirect($this->objWikiItem->UrlPath);
-			}
+			$this->objWikiItem->EditorMinimumPersonTypeId = $this->lstEditorMinimum->SelectedValue;
+			$this->objWikiItem->OverrideNavbarIndex = $this->lstNavItem->SelectedValue;
+			$this->objWikiItem->OverrideSubnavIndex = $this->lstSubNavItem->SelectedValue;
+			$this->objWikiItem->Save();
+			QApplication::Redirect($this->objWikiItem->UrlPath);
 		}
 
 		protected function btnCancel_Click() {
-			QApplication::Redirect(str_replace('/edit_page.php', null, QApplication::$RequestUri));
+			QApplication::Redirect($this->objWikiItem->UrlPath);
 		}
 	}
 	
