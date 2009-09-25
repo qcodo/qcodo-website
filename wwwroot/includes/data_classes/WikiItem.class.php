@@ -91,6 +91,7 @@
 							$strPath .= $strChar;
 						else if (($strChar == ' ') ||
 								 ($strChar == '.') ||
+								 ($strChar == ':') ||
 								 ($strChar == '-') ||
 								 ($strChar == '/') ||
 								 ($strChar == '(') ||
@@ -127,13 +128,16 @@
 		public static function CreateNewItem($strPath, $intWikiItemTypeId) {
 			// Make sure the path doesn't yet exist
 			$strPath = self::SanitizeForPath($strPath);
-			if (WikiItem::LoadByPath($strPath)) return null;
+			if (WikiItem::LoadByPathWikiItemTypeId($strPath, $intWikiItemTypeId)) return null;
 
 			$objWikiItem = new WikiItem();
 			$objWikiItem->Path = $strPath;
 			$objWikiItem->WikiItemTypeId = $intWikiItemTypeId;
 			$objWikiItem->EditorMinimumPersonTypeId = PersonType::RegisteredUser;
 			$objWikiItem->Save();
+			
+			$objWikiItem->CreateTopicAndTopicLink();
+
 			return $objWikiItem;
 		}
 
@@ -141,7 +145,7 @@
 		 * Creates the Topic and TopicLink for this Issue object.
 		 * @return Topic
 		 */
-		public function CreateTopicAndTopicLink() {
+		protected function CreateTopicAndTopicLink() {
 			$objTopicLink = new TopicLink();
 			$objTopicLink->TopicLinkTypeId = TopicLinkType::WikiItem;
 			$objTopicLink->WikiItem = $this;

@@ -92,7 +92,6 @@
 		protected function btnOkay_Click() {
 			if (!$this->blnEditMode) {
 				$this->objWikiItem = WikiItem::CreateNewItem(QApplication::$PathInfo, WikiItemType::Page);
-				$this->objWikiItem->CreateTopicAndTopicLink();
 			}
 
 			$objWikiPage = new WikiPage();

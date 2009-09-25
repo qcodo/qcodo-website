@@ -123,7 +123,7 @@
 		div.wiki { float: left; }
 			div.wiki h3 { color: #666; padding: 0; margin: 0; margin-top: 12px; font-size: 10px; font-weight: normal; font-family: verdana, arial, helvetica, sans-serif; }
 
-		div.wikiNotice { padding: 4px 0 4px 14px; margin: 0 0 12px 0; border-bottom: 1px solid #686; background-color: #aba; font-size: 10px; font-weight: normal; font-family: verdana, arial, helvetica, sans-serif; }
+		div.wikiNotice { padding: 4px 0 4px 14px; margin: 0 0 0 0; border-bottom: 1px solid #686; background-color: #aba; font-size: 10px; font-weight: normal; font-family: verdana, arial, helvetica, sans-serif; }
 
 		div.wikiVersions { float: right; width: 220px; background-color: #aba; padding: 5px; font-size: 10px; font-weight: normal; font-family: verdana, arial, helvetica, sans-serif; }
 		div.wikiVersions h3 { margin: 0; padding: 2px 0 6px 4px; font-weight: bold; border-bottom: 1px solid #686; margin-bottom: 10px;}

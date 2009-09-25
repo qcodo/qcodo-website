@@ -16,7 +16,7 @@
 	 * @package Qcodo Website
 	 * @subpackage GeneratedDataObjects
 	 * @property-read integer $Id the value for intId (Read-Only PK)
-	 * @property string $Path the value for strPath (Unique)
+	 * @property string $Path the value for strPath (Not Null)
 	 * @property integer $WikiItemTypeId the value for intWikiItemTypeId (Not Null)
 	 * @property integer $EditorMinimumPersonTypeId the value for intEditorMinimumPersonTypeId (Not Null)
 	 * @property integer $OverrideNavbarIndex the value for intOverrideNavbarIndex 
@@ -661,13 +661,17 @@
 			
 		/**
 		 * Load a single WikiItem object,
-		 * by Path Index(es)
+		 * by Path, WikiItemTypeId Index(es)
 		 * @param string $strPath
+		 * @param integer $intWikiItemTypeId
 		 * @return WikiItem
 		*/
-		public static function LoadByPath($strPath) {
+		public static function LoadByPathWikiItemTypeId($strPath, $intWikiItemTypeId) {
 			return WikiItem::QuerySingle(
-				QQ::Equal(QQN::WikiItem()->Path, $strPath)
+				QQ::AndCondition(
+				QQ::Equal(QQN::WikiItem()->Path, $strPath),
+				QQ::Equal(QQN::WikiItem()->WikiItemTypeId, $intWikiItemTypeId)
+				)
 			);
 		}
 			
@@ -998,7 +1002,7 @@
 
 				case 'Path':
 					/**
-					 * Gets the value for strPath (Unique)
+					 * Gets the value for strPath (Not Null)
 					 * @return string
 					 */
 					return $this->strPath;
@@ -1162,7 +1166,7 @@
 				///////////////////
 				case 'Path':
 					/**
-					 * Sets the value for strPath (Unique)
+					 * Sets the value for strPath (Not Null)
 					 * @param string $mixValue
 					 * @return string
 					 */

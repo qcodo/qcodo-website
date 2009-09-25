@@ -184,8 +184,10 @@
 					QApplication::Redirect('/wiki/edit_page.php' . $this->objWikiItem->Path . $strVersion);
 					break;
 				case WikiItemType::File:
+					QApplication::Redirect('/wiki/edit_file.php' . $this->objWikiItem->Path . $strVersion);
 					break;
 				case WikiItemType::Image:
+					QApplication::Redirect('/wiki/edit_image.php' . $this->objWikiItem->Path . $strVersion);
 					break;
 				default:
 					throw new Exception('Unhandled Wiki Item Type Id: ' . $this->objWikiItem->WikiItemTypeId);
