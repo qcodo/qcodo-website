@@ -20,5 +20,9 @@
 			1 => 'jpg',
 			2 => 'png',
 			3 => 'gif');
+		public static $ContentTypeArray = array(
+			1 => 'image/jpeg',
+			2 => 'image/png',
+			3 => 'image/gif');
 	}
 ?>

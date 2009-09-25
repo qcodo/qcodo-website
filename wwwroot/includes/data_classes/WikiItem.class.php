@@ -90,6 +90,7 @@
 						else if (($intOrd >= ord('0')) && ($intOrd <= ord('9')))
 							$strPath .= $strChar;
 						else if (($strChar == ' ') ||
+								 ($strChar == '.') ||
 								 ($strChar == '-') ||
 								 ($strChar == '/') ||
 								 ($strChar == '(') ||
