@@ -293,6 +293,7 @@
 			}
 
 			// Go ahead and set up other stuff if the Topic is set
+			$this->objTopic->MarkAsViewed();
 			$this->pnlMessages->SelectTopic($this->objTopic);
 		}
 

@@ -40,7 +40,29 @@
 					}
 			}
 		}
-		
+
+		/**
+		 * Is this Wiki Item editable for the given person
+		 * @param Person $objPerson
+		 * @return boolean
+		 */
+		public function IsEditableForPerson(Person $objPerson = null) {
+			if (!$objPerson) return false;
+			if ($objPerson->PersonTypeId <= $this->intEditorMinimumPersonTypeId)
+				return true;
+			else
+				return false;
+		}
+
+		/**
+		 * Is this Wiki Item adminable for the given person
+		 * @param Person $objPerson
+		 * @return boolean
+		 */
+		public function IsAdminableForPerson(Person $objPerson = null) {
+			if (!$objPerson) return false;
+			return ($objPerson->PersonTypeId == PersonType::Administrator);
+		}
 
 		/**
 		 * Sanitizes any string to be used as a good-looking WikiItem path.

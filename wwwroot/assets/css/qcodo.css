@@ -217,11 +217,10 @@
 					span.paginatorTextbox span.break { color: #666; margin: 0 5px 0 5px; }
 					span.paginatorTextbox span.ellipsis { color: #666; }
 
-			div.topic div.controlBar { font: 10px arial, helvetica; margin-top: 15px; height: 15px; }
-			div.topic div.controlBar div.controls { float: left; width: 350px; }
-				div.topic div.controlBar div.controls div.spacer { float: left; margin-left: 8px; width: 0px; }				
-
-			div.topic div.controlBar div.paginator { float: right; margin-top: 1px; }
+		div.controlBar { font: 10px arial, helvetica; margin-top: 15px; height: 15px; }
+		div.controlBar div.controls { float: left; width: 350px; }
+			div.controlBar div.controls div.spacer { float: left; margin-left: 8px; width: 0px; }				
+			div.controlBar div.paginator { float: right; margin-top: 1px; }
 
 
 		input.forumTopicName { background-color: #efe; width: 400px; border: 1px solid #aba; padding: 2px;}

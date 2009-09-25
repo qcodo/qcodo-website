@@ -256,6 +256,24 @@
 			}
 
 			/**
+			 * Updates the cookie to specify whether or not this user is viewing comments in the wiki
+			 * @param boolean $blnShow 
+			 * @return void
+			 */
+			public static function SetWikiViewComments($blnShow) {
+				setcookie('blnWikiViewComments', ($blnShow) ? 1 : 0, null, '/', /* '.qcodo.com' */ null);
+				
+			}
+
+			/**
+			 * Returns whether or not the user is viewing comments in the wiki
+			 * @return boolean
+			 */
+			public static function IsWikiViewComments() {
+				return (array_key_exists('blnWikiViewComments', $_COOKIE) && $_COOKIE['blnWikiViewComments']);
+			}
+
+			/**
 			 * Using an email template, this will queue up an email into the email queue to be sent out.
 			 * @param string $strTemplateName the name of the template to use
 			 * @param string $strSubject the subject of the email

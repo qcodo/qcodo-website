@@ -259,8 +259,6 @@
 					$this->strPostStartedLinkText = 'none'; 	
 				}
 
-				$this->objTopic->MarkAsViewed();
-				
 				$this->UpdateNotifyButtons();
 				$this->UpdateMarkAsViewedButtons();
 			} else {

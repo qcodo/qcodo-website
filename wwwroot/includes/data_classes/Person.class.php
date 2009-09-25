@@ -74,6 +74,9 @@
 				case 'SmtpEmailAddress':
 					return $this->strFirstName . ' ' . $this->strLastName . ' <' . $this->strEmail . '>';
 
+				case 'Type':
+					return PersonType::$NameArray[$this->intPersonTypeId];
+
 				default:
 					try {
 						return parent::__get($strName);

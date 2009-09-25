@@ -70,8 +70,10 @@
 			$this->pnlActualOutput = new QPanel($this, 'ActualOutput');
 			$this->pnlActualOutput->Template = dirname(__FILE__) . '/pnlExample.tpl.php';
 
+			$objTopic = $this->objIssue->TopicLink->GetTopic();
+			$objTopic->MarkAsViewed();
 			$this->pnlMessages = new MessagesPanel($this);
-			$this->pnlMessages->SelectTopic($this->objIssue->TopicLink->GetTopic());
+			$this->pnlMessages->SelectTopic($objTopic);
 			$this->pnlMessages->lblTopicInfo_SetTemplate(__INCLUDES__ . '/messages/lblTopicInfoForIssue.tpl.php');
 			if (QApplication::PathInfo(1) == 'lastpage')
 				$this->pnlMessages->SetPageNumber(QPaginatedControl::LastPage);

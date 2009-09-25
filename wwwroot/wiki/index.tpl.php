@@ -6,14 +6,16 @@
 			<?php _p($this->objWikiVersion->Name); ?>
 		</div>
 		<div class="right">
-			<?php $this->btnToggleVersions->Render(); ?>
+			&nbsp;
 		</div>
 	</div>
 
 	<?php if (!$this->IsViewingCurrent()) { ?>
 		<div class="wikiNotice">You are currently viewing an alternate version (#<?php _p($this->objWikiVersion->VersionNumber); ?>).
-			&nbsp;
-			<?php $this->btnSetAsCurrentVersion->Render(); ?>
+			<?php if ($this->btnSetAsCurrentVersion) { ?>
+				&nbsp;
+				<?php $this->btnSetAsCurrentVersion->Render(); ?>
+			<?php } ?>
 		</div>
 	<?php } ?>
 
