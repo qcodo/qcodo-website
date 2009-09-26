@@ -3,12 +3,14 @@
 	QApplication::Authenticate();
 
 	class QcodoForm extends QcodoWebsiteForm {
-		protected $strPageTitle = 'Admin Wiki Page - ';
+		protected $strPageTitle = 'Admin Wiki Item - ';
 		protected $intNavBarIndex = QApplication::NavCommunity;
 		protected $intSubNavIndex = QApplication::NavCommunityWiki;
 
 		protected $objWikiItem;
-
+		protected $intWikiItemTypeId;
+		protected $strSanitizedPath;
+		
 		protected $lstEditorMinimum;
 		protected $lstNavItem;
 		protected $lstSubNavItem;
@@ -18,17 +20,19 @@
 
 		protected function Form_Run() {
 			// Sanitize the Path in the PathInfo
-			$strPath = WikiItem::SanitizeForPath(QApplication::$PathInfo);
-			if ($strPath != QApplication::$PathInfo) {
-				QApplication::Redirect('/wiki/admin.php' . $strPath . QApplication::GenerateQueryString());
+			$strSanitizedFullPath = WikiItem::ValidateOrGenerateSanitizedFullPath(QApplication::$PathInfo);
+			if ($strSanitizedFullPath) {
+				QApplication::Redirect('/wiki/admin.php' . $strSanitizedFullPath . QApplication::GenerateQueryString());
 			}
 		}
-
+		
 		protected function Form_Create() {
 			parent::Form_Create();
 
 			// Get the Wiki Item and confirm that it exists and that he is authorized to admin
-			$this->objWikiItem = WikiItem::LoadByPath(QApplication::$PathInfo);
+			$this->strSanitizedPath = WikiItem::SanitizeForPath(QApplication::$PathInfo, $this->intWikiItemTypeId);
+			$this->objWikiItem = WikiItem::LoadByPathWikiItemTypeId($this->strSanitizedPath, $this->intWikiItemTypeId);
+
 			if (!$this->objWikiItem) QApplication::Redirect('/');
 			if (!$this->objWikiItem->IsAdminableForPerson(QApplication::$Person)) QApplication::RedirectToLogin();
 

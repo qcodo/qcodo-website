@@ -169,7 +169,7 @@
 		}
 
 		protected function btnAdmin_Click() {
-			QApplication::Redirect('/wiki/admin.php' . $this->objWikiItem->Path);
+			QApplication::Redirect('/wiki/admin.php' . $this->objWikiItem->FullPath);
 		}
 
 		protected function btnEdit_Click() {
@@ -184,7 +184,7 @@
 			else
 				$strVersion = null;
 
-			QApplication::Redirect('/wiki/edit.php' . WikiItem::GenerateFullPath($this->objWikiItem->Path, $this->objWikiItem->WikiItemTypeId));
+			QApplication::Redirect('/wiki/edit.php' . $this->objWikiItem->FullPath);
 		}
 
 		protected function btnToggleVersions_Click($strFormId, $strControlId, $strParameter) {

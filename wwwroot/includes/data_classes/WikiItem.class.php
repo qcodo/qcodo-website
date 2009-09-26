@@ -32,6 +32,9 @@
 				case 'UrlPath':
 					return '/wiki' . WikiItem::GenerateFullPath($this->strPath, $this->intWikiItemTypeId);
 
+				case 'FullPath':
+					return WikiItem::GenerateFullPath($this->strPath, $this->intWikiItemTypeId);
+
 				default:
 					try {
 						return parent::__get($strName);
