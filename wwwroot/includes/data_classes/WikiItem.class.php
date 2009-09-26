@@ -29,7 +29,8 @@
 
 		public function __get($strName) {
 			switch ($strName) {
-				case 'UrlPath': return '/wiki' . $this->strPath;
+				case 'UrlPath':
+					return '/wiki' . WikiItem::GenerateFullPath($this->strPath, $this->intWikiItemTypeId);
 
 				default:
 					try {

@@ -1,45 +1,43 @@
 <?php
-	require('../includes/prepend.inc.php');
-	QApplication::Authenticate();
+	class EditWikiForm extends QcodoWebsiteForm {
+		protected $intWikiItemTypeId;
 
-	class QcodoForm extends QcodoWebsiteForm {
-		protected $strPageTitle = 'Edit Wiki Page - ';
 		protected $intNavBarIndex = QApplication::NavCommunity;
 		protected $intSubNavIndex = QApplication::NavCommunityWiki;
 
 		protected $objWikiItem;
-		protected $blnEditMode;
-		
-		protected $strHeadline;
+		protected $strSanitizedPath;
+		protected $intVersionNumber;
 
-		protected $txtTitle;
-		protected $txtContent;
+		protected $blnEditMode;
+
+		protected $strHeadline;
 
 		protected $btnOkay;
 		protected $btnCancel;
 
-		protected function Form_Run() {
-			// Sanitize the Path in the PathInfo
-			$strPath = WikiItem::SanitizeForPath(QApplication::$PathInfo);
-			if ($strPath != QApplication::$PathInfo) {
-				QApplication::Redirect('/wiki/edit_page.php' . $strPath . QApplication::GenerateQueryString());
-			}
-		}
+		protected function CreateControlsForWikiVersionAndObject(WikiVersion $objWikiVersion, $objWikiObject) {}
+		protected function SaveWikiVersion() {}
 
 		protected function Form_Create() {
 			parent::Form_Create();
 
-			$this->objWikiItem = WikiItem::LoadByPath(QApplication::$PathInfo);
+			$this->strSanitizedPath = WikiItem::SanitizeForPath(QApplication::$PathInfo, $intWikiItemTypeId);
+			if ($this->intWikiItemTypeId != $intWikiItemTypeId) throw new Exception('WikiItemTypeId Mismatch');
+			$this->objWikiItem = WikiItem::LoadByPathWikiItemTypeId($this->strSanitizedPath, $this->intWikiItemTypeId);
 
-			// If Doesn't Exist, Show the 404 page
+			$strWikiType = WikiItemType::$TokenArray[$this->intWikiItemTypeId];
+			$strWikiClassName = 'Wiki' . $strWikiType;
+
+			// See if we're editing or creating new
 			if (!$this->objWikiItem) {
 				$this->objWikiItem = new WikiItem();
 				$objWikiVersion = new WikiVersion();
-				$objWikiPage = new WikiPage();
+				$objWikiObject = new $strWikiClassName();
 
 				$this->blnEditMode = false;
-				$this->strPageTitle = 'Create New Wiki Page';
-				$this->strHeadline = 'Create a New Wiki Page';
+				$this->strPageTitle = 'Create New Wiki ' . $strWikiType;
+				$this->strHeadline = 'Create a New Wiki ' . $strWikiType;
 			} else {
 				// Make sure this person is allowed to edit it
 				if (!$this->objWikiItem->IsEditableForPerson(QApplication::$Person)) {
@@ -54,24 +52,21 @@
 				if (!$objWikiVersion)
 					$objWikiVersion = $this->objWikiItem->CurrentWikiVersion;
 
-				$objWikiPage = $objWikiVersion->WikiPage;
+				if (!$objWikiVersion->IsCurrentVersion())
+					$this->intVersionNumber = $objWikiVersion->VersionNumber; 
+
+				$objWikiObject = $objWikiVersion->__get($strWikiClassName);
 				$this->blnEditMode = true;
 				$this->strPageTitle .= $objWikiVersion->Name;
-				$this->strHeadline = 'Edit Wiki Page';
+				$this->strHeadline = 'Edit Wiki ' . $strWikiType;
 			}
-
-			$this->txtTitle = new QTextBox($this);
-			$this->txtTitle->Text = $objWikiVersion->Name;
-			$this->txtTitle->Required = true;
-
-			$this->txtContent = new QTextBox($this);
-			$this->txtContent->Text = $objWikiPage->Content;
-			$this->txtContent->Required = true;
-			$this->txtContent->TextMode = QTextMode::MultiLine;
 			
+			$this->CreateControlsForWikiVersionAndObject($objWikiVersion, $objWikiObject);
+
 			$this->btnOkay = new QButton($this);
 			$this->btnOkay->CausesValidation = true;
-			$this->btnOkay->Text = ($this->blnEditMode) ? 'Update Wiki Page' : 'Save New Wiki Page';
+			$this->btnOkay->Text = ($this->blnEditMode) ? 'Update Wiki ' : 'Save New Wiki ';
+			$this->btnOkay->Text .= $strWikiType;
 
 			$this->btnCancel = new QLinkButton($this);
 			$this->btnCancel->Text = 'Cancel';
@@ -91,17 +86,14 @@
 
 		protected function btnOkay_Click() {
 			if (!$this->blnEditMode) {
-				$this->objWikiItem = WikiItem::CreateNewItem(QApplication::$PathInfo, WikiItemType::Page);
+				$this->objWikiItem = WikiItem::CreateNewItem($this->strSanitizedPath, $this->intWikiItemTypeId);
 			}
 
-			$objWikiPage = new WikiPage();
-			$objWikiPage->Content = trim($this->txtContent->Text);
-			$objWikiPage->CompileHtml();
-
-			$this->objWikiItem->CreateNewVersion(trim($this->txtTitle->Text), $objWikiPage, 'Save', array(), QApplication::$Person, null);
+			$objWikiVersion = $this->SaveWikiVersion();
 
 			if ($this->blnEditMode) {
-				$strMessage = sprintf("%s made created a new version of this wiki page.", QApplication::$Person->DisplayName);				
+				$strMessage = sprintf('%s made created a new version (#%s) of this wiki %s.',
+					QApplication::$Person->DisplayName, $objWikiVersion->VersionNumber, strtolower(WikiItemType::$NameArray[$this->intWikiItemTypeId]));				
 				$this->objWikiItem->PostMessage($strMessage, null);
 				QApplication::Redirect($this->objWikiItem->UrlPath . '?lastpage');
 			} else {
@@ -110,9 +102,10 @@
 		}
 
 		protected function btnCancel_Click() {
-			QApplication::Redirect(str_replace('/edit_page.php', null, QApplication::$RequestUri));
+			if ($this->intVersionNumber)
+				QApplication::Redirect('/wiki' . WikiItem::GenerateFullPath($this->strSanitizedPath, $this->intWikiItemTypeId) . '?' . $this->intVersionNumber);
+			else
+				QApplication::Redirect('/wiki' . WikiItem::GenerateFullPath($this->strSanitizedPath, $this->intWikiItemTypeId));
 		}
 	}
-	
-	QcodoForm::Run('QcodoForm');
 ?>

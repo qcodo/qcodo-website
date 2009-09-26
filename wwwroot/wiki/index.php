@@ -3,12 +3,14 @@
 	require(__INCLUDES__ . '/messages/MessagesPanel.class.php');
 	
 	class QcodoForm extends QcodoWebsiteForm {
-		protected $strPageTitle = 'Wiki - ';
+		protected $strPageTitle = 'Wiki';
 		protected $intNavBarIndex = QApplication::NavCommunity;
 		protected $intSubNavIndex = QApplication::NavCommunityWiki;
 
 		protected $objWikiItem;
 		protected $objWikiVersion;
+		protected $intWikiItemTypeId;
+		protected $strSanitizedPath;
 
 		protected $pnlVersions;
 
@@ -33,8 +35,10 @@
 		}
 
 		protected function Form_Create() {
-			$strPath = WikiItem::SanitizeForPath(QApplication::$PathInfo, $intWikiItemTypeId);
-			$this->objWikiItem = WikiItem::LoadByPathWikiItemTypeId($strPath, $intWikiItemTypeId);
+			$this->strSanitizedPath = WikiItem::SanitizeForPath(QApplication::$PathInfo, $this->intWikiItemTypeId);
+			$this->objWikiItem = WikiItem::LoadByPathWikiItemTypeId($this->strSanitizedPath, $this->intWikiItemTypeId);
+
+			$this->strPageTitle .= sprintf(' %s - ', WikiItemType::$NameArray[$this->intWikiItemTypeId]);
 
 			// If Doesn't Exist, Show the 404 page
 			if (!$this->objWikiItem) {
@@ -180,19 +184,7 @@
 			else
 				$strVersion = null;
 
-			switch ($this->objWikiItem->WikiItemTypeId) {
-				case WikiItemType::Page:
-					QApplication::Redirect('/wiki/edit_page.php' . $this->objWikiItem->Path . $strVersion);
-					break;
-				case WikiItemType::File:
-					QApplication::Redirect('/wiki/edit_file.php' . $this->objWikiItem->Path . $strVersion);
-					break;
-				case WikiItemType::Image:
-					QApplication::Redirect('/wiki/edit_image.php' . $this->objWikiItem->Path . $strVersion);
-					break;
-				default:
-					throw new Exception('Unhandled Wiki Item Type Id: ' . $this->objWikiItem->WikiItemTypeId);
-			}
+			QApplication::Redirect('/wiki/edit.php' . WikiItem::GenerateFullPath($this->objWikiItem->Path, $this->objWikiItem->WikiItemTypeId));
 		}
 
 		protected function btnToggleVersions_Click($strFormId, $strControlId, $strParameter) {
@@ -229,6 +221,8 @@
 
 		protected function pnlMessages_Show() {
 			QApplication::SetWikiViewComments(true);
+			$this->pnlMessages->objTopic->MarkAsViewed();
+			$this->pnlMessages->UpdateMarkAsViewedButtons();
 			$this->btnToggleMessages->Text = 'Hide Comments';
 			$this->btnToggleMessages->RemoveCssClass('roundedLinkGray');
 			$this->pnlMessages->Visible = true;
