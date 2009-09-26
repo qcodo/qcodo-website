@@ -63,19 +63,80 @@
 			if (!$objPerson) return false;
 			return ($objPerson->PersonTypeId == PersonType::Administrator);
 		}
+		
+		/**
+		 * Given a full path (typically from QApplication::PathInfo)
+		 * this will validate that it is properly sanitized.  If so, it will
+		 * return null.  If not, it will generate and return a sanitized version
+		 * of that full path.
+		 * @param string $strFullPath
+		 * @return mixed null if valid, or the sanitized full path if not
+		 */
+		public static function ValidateOrGenerateSanitizedFullPath($strFullPath) {
+			$strPath = WikiItem::SanitizeForPath($strFullPath, $intWikiItemTypeId);
+			$strSanitizedFullPath = WikiItem::GenerateFullPath($strPath, $intWikiItemTypeId);
+			if ($strFullPath == $strSanitizedFullPath)
+				return null;
+			else
+				return $strSanitizedFullPath;
+		}
+		
+		/**
+		 * Assuming an already sanitized Path, this will generate
+		 * a "full path", including the wikitype prefix (e.g. "file:" or "image:")
+		 * for a given WikiItemType and return the full path to use in the URL.
+		 * @param string $strPath
+		 * @param integer $intWikiItemTypeId
+		 * @return string
+		 */
+		public static function GenerateFullPath($strPath, $intWikiItemTypeId) {
+			// Remove the leading slash ("/")
+			$strPath = substr($strPath, 1);
+
+			switch ($intWikiItemTypeId) {
+				case WikiItemType::Page:
+					return '/' . $strPath;
+
+				case WikiItemType::Image:
+				case WikiItemType::File:
+					return sprintf('/%s:%s', strtolower(WikiItemType::$NameArray[$intWikiItemTypeId]), $strPath);
+
+				throw new Exception('Unhandled WikiItemTypeId: ' . $intWikiItemTypeId);
+			}
+		}
 
 		/**
 		 * Sanitizes any string to be used as a good-looking WikiItem path.
 		 * Result will only contain lower-case alphanumeric characters, 
-		 * underscores and forward-slashes.
+		 * underscores and forward-slashes.  If a type prefix exists,
+		 * (e.g. "file:" or "image:") then the type prefix is stripped
+		 * out and the type id is returned as an output parameter.  If
+		 * there is no valid type prefix, a type of Wiki Page is assumed.
 		 * @param string $strPath the path to sanitize
+		 * @param integer $intWikiItemTypeId the wiki item type is returned
 		 * @return string
 		 */
-		public static function SanitizeForPath($strPath) {
+		public static function SanitizeForPath($strPath, &$intWikiItemTypeId) {
+			$strPath = strtolower($strPath);
+			$intWikiItemTypeId = null;
+
+			// Figure out and strip any wiki type prefix
+			foreach (WikiItemType::$NameArray as $intId => $strWikiType) {
+				$strWikiTypePrefix = sprintf('/%s:', strtolower($strWikiType));
+				if (substr($strPath, 0, strlen($strWikiTypePrefix)) == $strWikiTypePrefix) {
+					$strPath = '/' . substr($strPath, strlen($strWikiTypePrefix));
+					$intWikiItemTypeId = $intId;
+					break;
+				}
+			}
+
+			if (is_null($intWikiItemTypeId))
+				$intWikiItemTypeId = WikiItemType::Page;
+
 			$strPathParts = explode('/', $strPath);
 			$strToReturn = '/';
 			foreach ($strPathParts as $strPathPart) {
-				$strPathPart = trim(strtolower($strPathPart));
+				$strPathPart = trim($strPathPart);
 				$intLength = strlen($strPathPart);
 
 				if ($intLength) {
@@ -114,6 +175,11 @@
 
 			// Take off trailing '/' if applicable
 			if (strlen($strToReturn) > 1) $strToReturn = substr($strToReturn, 0, strlen($strToReturn) - 1);
+
+			// Any blank path MUST be set to an itemtype of wikipage
+			if ($strToReturn == '/')
+				$intWikiItemTypeId = WikiItemType::Page;
+
 			return $strToReturn;
 		}
 
@@ -127,7 +193,7 @@
 		 */
 		public static function CreateNewItem($strPath, $intWikiItemTypeId) {
 			// Make sure the path doesn't yet exist
-			$strPath = self::SanitizeForPath($strPath);
+			$strPath = self::SanitizeForPath($strPath, $intId);
 			if (WikiItem::LoadByPathWikiItemTypeId($strPath, $intWikiItemTypeId)) return null;
 
 			$objWikiItem = new WikiItem();

@@ -26,14 +26,15 @@
 
 		protected function Form_Run() {
 			// Sanitize the Path in the PathInfo
-			$strPath = WikiItem::SanitizeForPath(QApplication::$PathInfo);
-			if ($strPath != QApplication::$PathInfo) {
-				QApplication::Redirect('/wiki' . $strPath . QApplication::GenerateQueryString());
+			$strSanitizedFullPath = WikiItem::ValidateOrGenerateSanitizedFullPath(QApplication::$PathInfo);
+			if ($strSanitizedFullPath) {
+				QApplication::Redirect('/wiki' . $strSanitizedFullPath . QApplication::GenerateQueryString());
 			}
 		}
 
 		protected function Form_Create() {
-			$this->objWikiItem = WikiItem::LoadByPath(QApplication::$PathInfo);
+			$strPath = WikiItem::SanitizeForPath(QApplication::$PathInfo, $intWikiItemTypeId);
+			$this->objWikiItem = WikiItem::LoadByPathWikiItemTypeId($strPath, $intWikiItemTypeId);
 
 			// If Doesn't Exist, Show the 404 page
 			if (!$this->objWikiItem) {

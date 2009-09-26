@@ -132,10 +132,16 @@
 	//////////////////////
 
 	while (QDataGen::DisplayWhileTask('Generating Wiki Items...', GENERATE_WIKI)) {
+		$intWikiItemTypeId = rand(1, WikiItemType::MaxId);
 		$intPathLength = rand(1, 3);
-		$strPath = '';
+		if ($intWikiItemTypeId == WikiItemType::Page)
+			$strPath = '';
+		else {
+			$strPath = '';
+			for ($intIndex = 0; $intIndex < $intPathLength; $intIndex++) $strPath .= '/' . QDataGen::GenerateTitle(1, 2);
+		}
 
-		while (!($objWikiItem = WikiItem::CreateNewItem($strPath, rand(1, WikiItemType::MaxId)))) {
+		while (!($objWikiItem = WikiItem::CreateNewItem($strPath, $intWikiItemTypeId))) {
 			$strPath = '';
 			for ($intIndex = 0; $intIndex < $intPathLength; $intIndex++) $strPath .= '/' . QDataGen::GenerateTitle(1, 2);
 		}
