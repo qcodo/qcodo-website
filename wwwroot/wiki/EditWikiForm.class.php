@@ -72,9 +72,9 @@
 			$this->btnCancel->Text = 'Cancel';
 			
 			$this->btnOkay->AddAction(new QClickEvent(), new QToggleEnableAction($this->btnOkay));
-			$this->btnOkay->AddAction(new QClickEvent(), new QAjaxAction('btnOkay_Click'));
+			$this->btnOkay->AddAction(new QClickEvent(), new QServerAction('btnOkay_Click'));
 
-			$this->btnCancel->AddAction(new QClickEvent(), new QAjaxAction('btnCancel_Click'));
+			$this->btnCancel->AddAction(new QClickEvent(), new QServerAction('btnCancel_Click'));
 			$this->btnCancel->AddAction(new QClickEvent(), new QTerminateAction());
 
 			$this->txtTitle->Focus();
@@ -89,7 +89,8 @@
 				$this->objWikiItem = WikiItem::CreateNewItem($this->strSanitizedPath, $this->intWikiItemTypeId);
 			}
 
-			$objWikiVersion = $this->SaveWikiVersion();
+			if (!($objWikiVersion = $this->SaveWikiVersion()))
+				return;
 
 			if ($this->blnEditMode) {
 				$strMessage = sprintf('%s made created a new version (#%s) of this wiki %s.',

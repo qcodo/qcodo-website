@@ -81,7 +81,7 @@
 			$this->btnRespond1->AddCssClass('roundedLinkGray');
 			$this->btnRespond2->AddCssClass('roundedLinkGray');
 
-			$this->dlgMessage = new MessageEditDialogBox($this);
+			$this->dlgMessage = new MessageEditDialogBox($this, 'foobar');
 			$this->pxyEditMessage = new QControlProxy($this);
 
 			// Add Control actions

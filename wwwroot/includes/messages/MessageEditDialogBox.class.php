@@ -49,7 +49,7 @@
 			$this->btnCancel->AddAction(new QClickEvent(), new QAjaxControlAction($this, 'btnCancel_Click'));
 			$this->btnCancel->AddAction(new QClickEvent(), new QTerminateAction());
 			
-			$this->HideDialogBox();
+			$this->Display = false;
 			$this->blnMatteClickable = false;
 		}
 
