@@ -4,7 +4,8 @@
 
 		protected $txtTitle;
 		protected $flcImage;
-
+		protected $txtDescription;
+		
 		protected function CreateControlsForWikiVersionAndObject(WikiVersion $objWikiVersion, $objWikiObject) {
 			$this->txtTitle = new QTextBox($this);
 			$this->txtTitle->Text = $objWikiVersion->Name;
@@ -12,6 +13,10 @@
 
 			$this->flcImage = new QFileControl($this, 'flc');
 			$this->flcImage->Required = true;
+
+			$this->txtDescription = new QTextBox($this);
+			$this->txtDescription->Text = $objWikiObject->Description;
+			$this->txtDescription->TextMode = QTextMode::MultiLine;
 		}
 
 		protected function SaveWikiVersion() {
@@ -28,6 +33,7 @@
 
 			// Create the Parameters for Save
 			$objWikiImage = new WikiImage();
+			$objWikiImage->Description = trim($this->txtDescription->Text);
 			$arrMethodParameters = array($this->flcImage->File);
 
 			$objWikiVersion = $this->objWikiItem->CreateNewVersion(trim($this->txtTitle->Text), $objWikiImage, 'SaveFile', $arrMethodParameters, QApplication::$Person, null);
