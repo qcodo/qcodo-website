@@ -278,6 +278,7 @@
 				case 'FileName': return QQN::WikiFile()->FileName;
 				case 'FileSize': return QQN::WikiFile()->FileSize;
 				case 'FileMime': return QQN::WikiFile()->FileMime;
+				case 'Description': return QQN::WikiFile()->Description;
 				default: throw new QCallerException('Simple Property not found in WikiFileDataGrid content: ' . $mixContent);
 			} else if ($mixContent instanceof QQAssociationNode)
 				throw new QCallerException('Content QQNode cannot go through any "To Many" association nodes.');

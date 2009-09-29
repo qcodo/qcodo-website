@@ -24,6 +24,8 @@
 	 * property-read QLabel $FileSizeLabel
 	 * property QTextBox $FileMimeControl
 	 * property-read QLabel $FileMimeLabel
+	 * property QTextBox $DescriptionControl
+	 * property-read QLabel $DescriptionLabel
 	 * property-read string $TitleVerb a verb indicating whether or not this is being edited or created
 	 * property-read boolean $EditMode a boolean indicating whether or not this is being edited or created
 	 */
@@ -40,12 +42,14 @@
 		protected $txtFileName;
 		protected $txtFileSize;
 		protected $txtFileMime;
+		protected $txtDescription;
 
 		// Controls that allow the viewing of WikiFile's individual data fields
 		protected $lblWikiVersionId;
 		protected $lblFileName;
 		protected $lblFileSize;
 		protected $lblFileMime;
+		protected $lblDescription;
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
 
@@ -254,6 +258,31 @@
 			return $this->lblFileMime;
 		}
 
+		/**
+		 * Create and setup QTextBox txtDescription
+		 * @param string $strControlId optional ControlId to use
+		 * @return QTextBox
+		 */
+		public function txtDescription_Create($strControlId = null) {
+			$this->txtDescription = new QTextBox($this->objParentObject, $strControlId);
+			$this->txtDescription->Name = QApplication::Translate('Description');
+			$this->txtDescription->Text = $this->objWikiFile->Description;
+			$this->txtDescription->TextMode = QTextMode::MultiLine;
+			return $this->txtDescription;
+		}
+
+		/**
+		 * Create and setup QLabel lblDescription
+		 * @param string $strControlId optional ControlId to use
+		 * @return QLabel
+		 */
+		public function lblDescription_Create($strControlId = null) {
+			$this->lblDescription = new QLabel($this->objParentObject, $strControlId);
+			$this->lblDescription->Name = QApplication::Translate('Description');
+			$this->lblDescription->Text = $this->objWikiFile->Description;
+			return $this->lblDescription;
+		}
+
 
 
 		/**
@@ -288,6 +317,9 @@
 			if ($this->txtFileMime) $this->txtFileMime->Text = $this->objWikiFile->FileMime;
 			if ($this->lblFileMime) $this->lblFileMime->Text = $this->objWikiFile->FileMime;
 
+			if ($this->txtDescription) $this->txtDescription->Text = $this->objWikiFile->Description;
+			if ($this->lblDescription) $this->lblDescription->Text = $this->objWikiFile->Description;
+
 		}
 
 
@@ -315,6 +347,7 @@
 				if ($this->txtFileName) $this->objWikiFile->FileName = $this->txtFileName->Text;
 				if ($this->txtFileSize) $this->objWikiFile->FileSize = $this->txtFileSize->Text;
 				if ($this->txtFileMime) $this->objWikiFile->FileMime = $this->txtFileMime->Text;
+				if ($this->txtDescription) $this->objWikiFile->Description = $this->txtDescription->Text;
 
 				// Update any UniqueReverseReferences (if any) for controls that have been created for it
 
@@ -381,6 +414,12 @@
 				case 'FileMimeLabel':
 					if (!$this->lblFileMime) return $this->lblFileMime_Create();
 					return $this->lblFileMime;
+				case 'DescriptionControl':
+					if (!$this->txtDescription) return $this->txtDescription_Create();
+					return $this->txtDescription;
+				case 'DescriptionLabel':
+					if (!$this->lblDescription) return $this->lblDescription_Create();
+					return $this->lblDescription;
 				default:
 					try {
 						return parent::__get($strName);
@@ -411,6 +450,8 @@
 						return ($this->txtFileSize = QType::Cast($mixValue, 'QControl'));
 					case 'FileMimeControl':
 						return ($this->txtFileMime = QType::Cast($mixValue, 'QControl'));
+					case 'DescriptionControl':
+						return ($this->txtDescription = QType::Cast($mixValue, 'QControl'));
 					default:
 						return parent::__set($strName, $mixValue);
 				}

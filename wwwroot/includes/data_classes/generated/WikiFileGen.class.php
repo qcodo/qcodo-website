@@ -19,6 +19,7 @@
 	 * @property string $FileName the value for strFileName 
 	 * @property integer $FileSize the value for intFileSize 
 	 * @property string $FileMime the value for strFileMime 
+	 * @property string $Description the value for strDescription 
 	 * @property WikiVersion $WikiVersion the value for the WikiVersion object referenced by intWikiVersionId (PK)
 	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
@@ -67,6 +68,14 @@
 		protected $strFileMime;
 		const FileMimeMaxLength = 100;
 		const FileMimeDefault = null;
+
+
+		/**
+		 * Protected member variable that maps to the database column wiki_file.description
+		 * @var string strDescription
+		 */
+		protected $strDescription;
+		const DescriptionDefault = null;
 
 
 		/**
@@ -368,6 +377,7 @@
 			$objBuilder->AddSelectItem($strTableName, 'file_name', $strAliasPrefix . 'file_name');
 			$objBuilder->AddSelectItem($strTableName, 'file_size', $strAliasPrefix . 'file_size');
 			$objBuilder->AddSelectItem($strTableName, 'file_mime', $strAliasPrefix . 'file_mime');
+			$objBuilder->AddSelectItem($strTableName, 'description', $strAliasPrefix . 'description');
 		}
 
 
@@ -408,6 +418,8 @@
 			$objToReturn->intFileSize = $objDbRow->GetColumn($strAliasName, 'Integer');
 			$strAliasName = array_key_exists($strAliasPrefix . 'file_mime', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'file_mime'] : $strAliasPrefix . 'file_mime';
 			$objToReturn->strFileMime = $objDbRow->GetColumn($strAliasName, 'VarChar');
+			$strAliasName = array_key_exists($strAliasPrefix . 'description', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'description'] : $strAliasPrefix . 'description';
+			$objToReturn->strDescription = $objDbRow->GetColumn($strAliasName, 'Blob');
 
 			// Instantiate Virtual Attributes
 			foreach ($objDbRow->GetColumnNameArray() as $strColumnName => $mixValue) {
@@ -520,12 +532,14 @@
 							`wiki_version_id`,
 							`file_name`,
 							`file_size`,
-							`file_mime`
+							`file_mime`,
+							`description`
 						) VALUES (
 							' . $objDatabase->SqlVariable($this->intWikiVersionId) . ',
 							' . $objDatabase->SqlVariable($this->strFileName) . ',
 							' . $objDatabase->SqlVariable($this->intFileSize) . ',
-							' . $objDatabase->SqlVariable($this->strFileMime) . '
+							' . $objDatabase->SqlVariable($this->strFileMime) . ',
+							' . $objDatabase->SqlVariable($this->strDescription) . '
 						)
 					');
 
@@ -543,7 +557,8 @@
 							`wiki_version_id` = ' . $objDatabase->SqlVariable($this->intWikiVersionId) . ',
 							`file_name` = ' . $objDatabase->SqlVariable($this->strFileName) . ',
 							`file_size` = ' . $objDatabase->SqlVariable($this->intFileSize) . ',
-							`file_mime` = ' . $objDatabase->SqlVariable($this->strFileMime) . '
+							`file_mime` = ' . $objDatabase->SqlVariable($this->strFileMime) . ',
+							`description` = ' . $objDatabase->SqlVariable($this->strDescription) . '
 						WHERE
 							`wiki_version_id` = ' . $objDatabase->SqlVariable($this->__intWikiVersionId) . '
 					');
@@ -628,6 +643,7 @@
 			$this->strFileName = $objReloaded->strFileName;
 			$this->intFileSize = $objReloaded->intFileSize;
 			$this->strFileMime = $objReloaded->strFileMime;
+			$this->strDescription = $objReloaded->strDescription;
 		}
 
 
@@ -675,6 +691,13 @@
 					 * @return string
 					 */
 					return $this->strFileMime;
+
+				case 'Description':
+					/**
+					 * Gets the value for strDescription 
+					 * @return string
+					 */
+					return $this->strDescription;
 
 
 				///////////////////
@@ -780,6 +803,19 @@
 						throw $objExc;
 					}
 
+				case 'Description':
+					/**
+					 * Sets the value for strDescription 
+					 * @param string $mixValue
+					 * @return string
+					 */
+					try {
+						return ($this->strDescription = QType::Cast($mixValue, QType::String));
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
 
 				///////////////////
 				// Member Objects
@@ -857,6 +893,7 @@
 			$strToReturn .= '<element name="FileName" type="xsd:string"/>';
 			$strToReturn .= '<element name="FileSize" type="xsd:int"/>';
 			$strToReturn .= '<element name="FileMime" type="xsd:string"/>';
+			$strToReturn .= '<element name="Description" type="xsd:string"/>';
 			$strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
 			$strToReturn .= '</sequence></complexType>';
 			return $strToReturn;
@@ -889,6 +926,8 @@
 				$objToReturn->intFileSize = $objSoapObject->FileSize;
 			if (property_exists($objSoapObject, 'FileMime'))
 				$objToReturn->strFileMime = $objSoapObject->FileMime;
+			if (property_exists($objSoapObject, 'Description'))
+				$objToReturn->strDescription = $objSoapObject->Description;
 			if (property_exists($objSoapObject, '__blnRestored'))
 				$objToReturn->__blnRestored = $objSoapObject->__blnRestored;
 			return $objToReturn;
@@ -941,6 +980,8 @@
 					return new QQNode('file_size', 'FileSize', 'integer', $this);
 				case 'FileMime':
 					return new QQNode('file_mime', 'FileMime', 'string', $this);
+				case 'Description':
+					return new QQNode('description', 'Description', 'string', $this);
 
 				case '_PrimaryKeyNode':
 					return new QQNodeWikiVersion('wiki_version_id', 'WikiVersionId', 'integer', $this);
@@ -971,6 +1012,8 @@
 					return new QQNode('file_size', 'FileSize', 'integer', $this);
 				case 'FileMime':
 					return new QQNode('file_mime', 'FileMime', 'string', $this);
+				case 'Description':
+					return new QQNode('description', 'Description', 'string', $this);
 
 				case '_PrimaryKeyNode':
 					return new QQNodeWikiVersion('wiki_version_id', 'WikiVersionId', 'integer', $this);

@@ -19,6 +19,7 @@
 	 * @property integer $WikiImageTypeId the value for intWikiImageTypeId (Not Null)
 	 * @property integer $Width the value for intWidth 
 	 * @property integer $Height the value for intHeight 
+	 * @property string $Description the value for strDescription 
 	 * @property WikiVersion $WikiVersion the value for the WikiVersion object referenced by intWikiVersionId (PK)
 	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
@@ -65,6 +66,14 @@
 		 */
 		protected $intHeight;
 		const HeightDefault = null;
+
+
+		/**
+		 * Protected member variable that maps to the database column wiki_image.description
+		 * @var string strDescription
+		 */
+		protected $strDescription;
+		const DescriptionDefault = null;
 
 
 		/**
@@ -366,6 +375,7 @@
 			$objBuilder->AddSelectItem($strTableName, 'wiki_image_type_id', $strAliasPrefix . 'wiki_image_type_id');
 			$objBuilder->AddSelectItem($strTableName, 'width', $strAliasPrefix . 'width');
 			$objBuilder->AddSelectItem($strTableName, 'height', $strAliasPrefix . 'height');
+			$objBuilder->AddSelectItem($strTableName, 'description', $strAliasPrefix . 'description');
 		}
 
 
@@ -406,6 +416,8 @@
 			$objToReturn->intWidth = $objDbRow->GetColumn($strAliasName, 'Integer');
 			$strAliasName = array_key_exists($strAliasPrefix . 'height', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'height'] : $strAliasPrefix . 'height';
 			$objToReturn->intHeight = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'description', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'description'] : $strAliasPrefix . 'description';
+			$objToReturn->strDescription = $objDbRow->GetColumn($strAliasName, 'Blob');
 
 			// Instantiate Virtual Attributes
 			foreach ($objDbRow->GetColumnNameArray() as $strColumnName => $mixValue) {
@@ -550,12 +562,14 @@
 							`wiki_version_id`,
 							`wiki_image_type_id`,
 							`width`,
-							`height`
+							`height`,
+							`description`
 						) VALUES (
 							' . $objDatabase->SqlVariable($this->intWikiVersionId) . ',
 							' . $objDatabase->SqlVariable($this->intWikiImageTypeId) . ',
 							' . $objDatabase->SqlVariable($this->intWidth) . ',
-							' . $objDatabase->SqlVariable($this->intHeight) . '
+							' . $objDatabase->SqlVariable($this->intHeight) . ',
+							' . $objDatabase->SqlVariable($this->strDescription) . '
 						)
 					');
 
@@ -573,7 +587,8 @@
 							`wiki_version_id` = ' . $objDatabase->SqlVariable($this->intWikiVersionId) . ',
 							`wiki_image_type_id` = ' . $objDatabase->SqlVariable($this->intWikiImageTypeId) . ',
 							`width` = ' . $objDatabase->SqlVariable($this->intWidth) . ',
-							`height` = ' . $objDatabase->SqlVariable($this->intHeight) . '
+							`height` = ' . $objDatabase->SqlVariable($this->intHeight) . ',
+							`description` = ' . $objDatabase->SqlVariable($this->strDescription) . '
 						WHERE
 							`wiki_version_id` = ' . $objDatabase->SqlVariable($this->__intWikiVersionId) . '
 					');
@@ -658,6 +673,7 @@
 			$this->WikiImageTypeId = $objReloaded->WikiImageTypeId;
 			$this->intWidth = $objReloaded->intWidth;
 			$this->intHeight = $objReloaded->intHeight;
+			$this->strDescription = $objReloaded->strDescription;
 		}
 
 
@@ -705,6 +721,13 @@
 					 * @return integer
 					 */
 					return $this->intHeight;
+
+				case 'Description':
+					/**
+					 * Gets the value for strDescription 
+					 * @return string
+					 */
+					return $this->strDescription;
 
 
 				///////////////////
@@ -810,6 +833,19 @@
 						throw $objExc;
 					}
 
+				case 'Description':
+					/**
+					 * Sets the value for strDescription 
+					 * @param string $mixValue
+					 * @return string
+					 */
+					try {
+						return ($this->strDescription = QType::Cast($mixValue, QType::String));
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
 
 				///////////////////
 				// Member Objects
@@ -887,6 +923,7 @@
 			$strToReturn .= '<element name="WikiImageTypeId" type="xsd:int"/>';
 			$strToReturn .= '<element name="Width" type="xsd:int"/>';
 			$strToReturn .= '<element name="Height" type="xsd:int"/>';
+			$strToReturn .= '<element name="Description" type="xsd:string"/>';
 			$strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
 			$strToReturn .= '</sequence></complexType>';
 			return $strToReturn;
@@ -919,6 +956,8 @@
 				$objToReturn->intWidth = $objSoapObject->Width;
 			if (property_exists($objSoapObject, 'Height'))
 				$objToReturn->intHeight = $objSoapObject->Height;
+			if (property_exists($objSoapObject, 'Description'))
+				$objToReturn->strDescription = $objSoapObject->Description;
 			if (property_exists($objSoapObject, '__blnRestored'))
 				$objToReturn->__blnRestored = $objSoapObject->__blnRestored;
 			return $objToReturn;
@@ -971,6 +1010,8 @@
 					return new QQNode('width', 'Width', 'integer', $this);
 				case 'Height':
 					return new QQNode('height', 'Height', 'integer', $this);
+				case 'Description':
+					return new QQNode('description', 'Description', 'string', $this);
 
 				case '_PrimaryKeyNode':
 					return new QQNodeWikiVersion('wiki_version_id', 'WikiVersionId', 'integer', $this);
@@ -1001,6 +1042,8 @@
 					return new QQNode('width', 'Width', 'integer', $this);
 				case 'Height':
 					return new QQNode('height', 'Height', 'integer', $this);
+				case 'Description':
+					return new QQNode('description', 'Description', 'string', $this);
 
 				case '_PrimaryKeyNode':
 					return new QQNodeWikiVersion('wiki_version_id', 'WikiVersionId', 'integer', $this);

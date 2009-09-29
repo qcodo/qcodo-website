@@ -278,6 +278,7 @@
 				case 'WikiImageTypeId': return QQN::WikiImage()->WikiImageTypeId;
 				case 'Width': return QQN::WikiImage()->Width;
 				case 'Height': return QQN::WikiImage()->Height;
+				case 'Description': return QQN::WikiImage()->Description;
 				default: throw new QCallerException('Simple Property not found in WikiImageDataGrid content: ' . $mixContent);
 			} else if ($mixContent instanceof QQAssociationNode)
 				throw new QCallerException('Content QQNode cannot go through any "To Many" association nodes.');
