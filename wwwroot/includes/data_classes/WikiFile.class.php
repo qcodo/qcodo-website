@@ -56,6 +56,10 @@
 		public function GetPath() {
 			return $this->GetFolder() . '/' . $this->strFileName;
 		}
+		
+		public function GetDownloadUrl() {
+			return sprintf('/wiki/download_file.php/%s/%s', $this->intWikiVersionId, $this->strFileName);
+		}
 
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...

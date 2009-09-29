@@ -162,7 +162,7 @@
 		protected function btnSetAsCurrentVersion_Click() {
 			$this->objWikiItem->SetCurrentVersion($this->objWikiVersion);
 
-			$strMessage = sprintf("%s switched the current version of this wiki page to version #%s.", QApplication::$Person->DisplayName, $this->objWikiVersion->VersionNumber);				
+			$strMessage = sprintf("%s switched the current version of this wiki %s to version #%s.", QApplication::$Person->DisplayName, strtolower(WikiItemType::$NameArray[$this->objWikiItem->WikiItemTypeId]), $this->objWikiVersion->VersionNumber);				
 			$this->objWikiItem->PostMessage($strMessage, null);
 
 			QApplication::Redirect($this->objWikiItem->UrlPath . '?lastpage');

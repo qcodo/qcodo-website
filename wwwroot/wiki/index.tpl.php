@@ -2,7 +2,7 @@
 
 	<div class="searchBar">
 		<div class="title">
-			<span style="font-weight: normal; font-size: 12px;">Wiki Page /</span>
+			<span style="font-weight: normal; font-size: 12px;">Wiki <?php _p(WikiItemType::$NameArray[$this->objWikiItem->WikiItemTypeId]); ?> /</span>
 			<?php _p($this->objWikiVersion->Name); ?>
 		</div>
 		<div class="right">

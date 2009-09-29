@@ -324,6 +324,28 @@
 				if ($blnDisplayOutput) print $strToReturn;
 				return $strToReturn;
 			}
+			
+			public static function DisplayByteSize($intBytes) {
+				if (is_null($intBytes)) return 'n/a';
+				if ($intBytes == 0) return '0 KB';
+
+				$strToReturn = '';
+				if ($intBytes < 0) {
+					$intBytes = $intBytes * -1;
+					$strToReturn .= '-';
+				}
+
+				if ($intBytes < 1024)
+					$strToReturn .= $intBytes . ' bytes';
+				else if ($intBytes < (1024 * 1024))
+					$strToReturn .= sprintf('%.2f KB', $intBytes / (1024));
+				else if ($intBytes < (1024 * 1024 * 1024))
+					$strToReturn .= sprintf('%.2f MB', $intBytes / (1024*1024));
+				else
+					$strToReturn .= sprintf('%.2f GB', $intBytes / (1024*1024*1024));
+
+				return $strToReturn;
+			}
 		}
 
 
