@@ -18,3 +18,7 @@
 		file size: <strong><?php _p(QApplication::DisplayByteSize($this->objWikiVersion->WikiFile->FileSize)); ?></strong>
 	</h3>
 </div>
+
+<br clear="all"/><br clear="all"/>
+
+<?php _b($this->objWikiVersion->WikiFile->Description); ?>
