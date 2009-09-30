@@ -224,5 +224,10 @@
 			return sprintf('<wikiImage position="%s" path="%s"/>' . "\n\n", $strPosition, $strPath);
 //			return sprintf('<div class="wikiThumb%s"><a href="/wiki%s"><img src="/wiki/view_thumb.php%s"/></a></div>' . "\n\n", $strStyle, $strFullPath, $strPath);
 		}
+
+		protected static function ProcessFile($strBlockContent, $strBlockIdentifier, $strStyle = null, $strOptions = null) {
+			$strPath = WikiItem::SanitizeForPath($strBlockContent, $intWikiItemTypeId);
+			return sprintf('<wikiFile path="%s"/>' . "\n\n", $strPath);
+		}
 	}
 ?>

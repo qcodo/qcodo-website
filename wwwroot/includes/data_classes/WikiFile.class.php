@@ -61,6 +61,47 @@
 			return sprintf('/wiki/download_file.php/%s/%s', $this->intWikiVersionId, $this->strFileName);
 		}
 
+		public function DisplayDownloadLink($blnDisplayLinkToWiki = false) {
+			$strToReturn = sprintf('
+				<div style="float: left;">
+				<a href="%s" title="Download %s"><img src="/images/download.png"/></a>
+				</div><div style="float: left; font-size: 11px; padding-top: 25px; padding-left: 4px; ">
+				<a href="%s" title="Download %s" style="font-size: 18px;">Download <strong>%s</strong></a>',
+				$this->GetDownloadUrl(), QApplication::HtmlEntities($this->FileName), $this->GetDownloadUrl(), QApplication::HtmlEntities($this->FileName), QApplication::HtmlEntities($this->FileName));
+
+			if ($blnDisplayLinkToWiki) {
+				$strToReturn .= sprintf(' &nbsp;|&nbsp; <a href="%s" title="View the Wiki Page for this file">view in wiki</a>', $this->WikiVersion->WikiItem->UrlPath);
+			}
+
+			$strToReturn .= sprintf('
+				<h3>
+				filename:
+				<strong>%s</strong>
+				&nbsp;|&nbsp;
+				mime type: <strong>%s</strong>
+				&nbsp;|&nbsp;
+				file size: <strong>%s</strong>
+				</h3>
+				</div><br clear="all"/>', 
+				QApplication::HtmlEntities($this->FileName), QApplication::HtmlEntities($this->FileMime), QApplication::DisplayByteSize($this->FileSize));
+
+			return $strToReturn;
+		}
+		
+		public static function DisplayUploadNewLinkForPath($strPath) {
+			$strFullPath = WikiItem::GenerateFullPath($strPath, WikiItemType::File);
+
+			$strToReturn = sprintf('
+				<div style="float: left;">
+				<a href="/wiki/edit.php%s" title="Create Wiki File"><img src="/images/download_404.png"/></a>
+				</div><div style="float: left; font-size: 11px; padding-top: 25px; padding-left: 4px; ">
+				<a href="/wiki/edit.php%s" title="Create Wiki File" style="font-size: 18px;">Create Wiki File for <strong>%s</strong></a>
+				</div><br clear="all"/>', $strFullPath, $strFullPath, $strPath
+			);
+
+			return $strToReturn;
+		}
+
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...
 		// but feel free to use these as a starting point)

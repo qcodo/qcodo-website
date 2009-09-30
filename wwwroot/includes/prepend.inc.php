@@ -354,7 +354,24 @@
 			 * @return string
 			 */
 			public static function DisplayWithWikiLinks($strContent) {
-				$strContent = (preg_replace('/<wikiImage position="(Left|Right)" path="\\/([a-z0-9\\_\\/]*)"\\/>/', '<div class="wikiThumb wikiThumb${1}"><a href="/wiki/image:${2}"><img src="/wiki/view_thumb.php/${2}"/></a></div>', $strContent));
+				// Fix up for images
+				$strContent = (preg_replace('/<wikiImage position="(Left|Right)" path="\\/([a-z0-9\\_\\/]*)"\\/>/', '<div class="wikiThumb wikiThumb${1}"><a href="/wiki/image:${2}" title="Edit This Image"><img src="/wiki/view_thumb.php/${2}"/></a></div>', $strContent));
+
+				// Fix up for files
+				$intCount = preg_match_all('/<wikiFile path="([a-z0-9\\_\\/]*)"\\/>/', $strContent, $arrMatches);
+				for ($intMatch = 0; $intMatch < $intCount; $intMatch++) {
+					$strTagToReplace = $arrMatches[0][$intMatch];
+					$strPath = $arrMatches[1][$intMatch];
+
+					$objWikiItem = WikiItem::LoadByPathWikiItemTypeId($strPath, WikiItemType::File);
+					
+					if ($objWikiItem) {
+						$strContent = str_replace($strTagToReplace, $objWikiItem->CurrentWikiVersion->WikiFile->DisplayDownloadLink(true), $strContent);
+					} else {
+						$strContent = str_replace($strTagToReplace, WikiFile::DisplayUploadNewLinkForPath($strPath), $strContent);
+					}
+				}
+
 				return $strContent;
 			}
 		}

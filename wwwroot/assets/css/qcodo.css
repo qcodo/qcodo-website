@@ -132,6 +132,7 @@
 			div.wikiVersions div.selected { background-color: #efe; font-weight: bold; }
 
 		div.wikiThumb { width: 240px; border: 1px solid #666; margin-bottom: 12px; text-align: center; padding: 0; }
+		div.wikiThumb a { display: block; }
 		div.wikiThumbLeft { float: left; margin-right: 10px; clear: left; }
 		div.wikiThumbRight { float: right; margin-left: 10px; clear: right; }
 

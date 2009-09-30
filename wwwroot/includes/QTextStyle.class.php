@@ -376,4 +376,5 @@
 
 	QTextStyle::$LinkProtocolArray['wiki'] = 'ProcessLinkLocationWikiPage';
 	QTextStyle::$BlockProcessorArray['image'] = 'ProcessImage';
+	QTextStyle::$BlockProcessorArray['file'] = 'ProcessFile';
 ?>
