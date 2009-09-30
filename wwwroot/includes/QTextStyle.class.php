@@ -373,4 +373,7 @@
 
 	class QTextStyle extends QTextStyleBase {
 	}
+
+	QTextStyle::$LinkProtocolArray['wiki'] = 'ProcessLinkLocationWikiPage';
+	QTextStyle::$BlockProcessorArray['image'] = 'ProcessImage';
 ?>

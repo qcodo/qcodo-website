@@ -307,7 +307,7 @@
 
 			if (array_key_exists($objLinkProtocolState->Buffer, QTextStyle::$LinkProtocolArray)) {
 				$strProcessorCommand = QTextStyle::$LinkProtocolArray[$objLinkProtocolState->Buffer];
-				self::$strProcessorCommand($chrCurrent);
+				QTextStyleInline::$strProcessorCommand($chrCurrent);
 			} else {
 				throw new Exception('Could not determine a valid Link Protocol');
 			}
@@ -465,5 +465,45 @@
 	}
 
 	class QTextStyleInline extends QTextStyleInlineBase {
+		protected static function ProcessLinkLocationWikiPage($chrCurrent = null) {
+			// Pop off LinkLocation
+			$objState = self::$objStateStack->Pop();
+			$strLocation = $objState->Buffer;
+
+			// Pop off LinkProtocol
+			$objState = self::$objStateStack->Pop();
+			$strProtocol = $objState->Buffer;
+
+			// Pop off End Quote
+			$objState = self::$objStateStack->Pop();
+			if ($objState->State != QTextStyle::StateEndQuote)
+				throw new Exception('Could not find In-LinkContent EndQuote State');
+
+			// Cancel everything through the matching start quote
+			self::CancelToState(QTextStyle::StateStartQuote);
+
+			// Pop off the Start Quote at the top of the stack
+			$objState = self::$objStateStack->Pop();
+			$strContent = $objState->Buffer;
+
+			// Clean up the Location string so that it starts with one and exactly one forward slash
+			$strLocation = '/' . $strLocation;
+			while (strpos($strLocation, '//') === 0) $strLocation = substr($strLocation, 1);
+
+			// Calculate end-of-location
+			$strNeedle = '/[A-Za-z0-9\\_\\/\\:]/';
+			$intValue = QString::StringReversePosition($strLocation, $strNeedle);
+
+			// Clean Up the URL Path for a Wiki Link
+			$strPath = WikiItem::SanitizeForPath(substr($strLocation, 0, $intValue + 1), $intWikiItemTypeId);
+			$strSanitizedFullPath = WikiItem::GenerateFullPath($strPath, $intWikiItemTypeId);
+
+			// Process as a URL-based link to the wiki
+			$strUrlLink = sprintf('<a href="/wiki%s">%s</a>', $strSanitizedFullPath, $strContent);
+			self::$objStateStack->AddToTopBuffer($strUrlLink);
+
+			// Add any tail/unprocessed stuff back to the content stack
+			QTextStyleInline::$strInlineContent = substr($strLocation, $intValue + 1) . QTextStyleInline::$strInlineContent;
+		}
 	}
 ?>

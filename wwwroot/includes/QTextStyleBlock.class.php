@@ -208,5 +208,12 @@
 	}
 
 	class QTextStyleBlock extends QTextStyleBlockBase {
+		protected static function ProcessImage($strBlockContent, $strBlockIdentifier, $strStyle = null, $strOptions = null) {
+			$strPath = WikiItem::SanitizeForPath($strBlockContent, $intWikiItemTypeId);
+			$strFullPath = WikiItem::GenerateFullPath($strPath, WikiItemType::Image);
+
+			if ($strStyle) $strStyle = ' style="' . $strStyle . '"';
+			return sprintf('<div%s><a href="/wiki%s"><img src="/wiki/view_thumb.php%s"/></a></div>' . "\n\n", $strStyle, $strFullPath, $strPath);
+		}
 	}
 ?>
