@@ -38,7 +38,7 @@
 			// Update wiki file metadata
 			$this->FileName = $strFileName;
 			$this->FileSize = filesize($strTemporaryFilePath);
-			$this->FileMime = QMimeType::GetMimeTypeForFilename($strTemporaryFilePath);
+			$this->FileMime = QMimeType::GetMimeTypeForFilename($strFileName);
 
 			// Save the Row
 			$this->Save();
