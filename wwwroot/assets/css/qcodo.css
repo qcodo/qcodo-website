@@ -131,9 +131,9 @@
 			div.wikiVersions div.wikiVersion a { text-decoration: none; }
 			div.wikiVersions div.selected { background-color: #efe; font-weight: bold; }
 
-		div.wikiThumb { }
-		div.wikiThumbLeft {float: left; margin-right: 10px; clear: left;}
-		div.wikiThumbRight {float: right; margin-left: 10px; clear: right;}
+		div.wikiThumb { width: 240px; border: 1px solid #666; margin-bottom: 12px; text-align: center; padding: 0; }
+		div.wikiThumbLeft { float: left; margin-right: 10px; clear: left; }
+		div.wikiThumbRight { float: right; margin-left: 10px; clear: right; }
 
 /* FORUMS */
 		div.searchBar { background-color: #393939; -moz-border-radius: 8px 8px 0 0; height: 22px; padding: 4px 14px 0 14px; border: 1px solid #222; }
@@ -146,7 +146,7 @@
 			div.searchTextBox input.none { background: url(/images/search_blank.png) no-repeat; }
 
 	div.toolbar { background: url(/images/gen/bottom.jpg) repeat; font-size: 10px; color: #fff; height: 22px; padding-top: 6px;}
-	h2 div.right {float: right; font-size: 10px; font-weight: normal; padding-top: 4px;}
+	h2 div.right { float: right; font-size: 10px; font-weight: normal; padding-top: 4px; }
 		h2 div.right input { font-size:10px; border: 1px solid #aaa; padding-left: 2px;}
 		h2 div.right select { font-size:10px; border: 1px solid #aaa; }
 

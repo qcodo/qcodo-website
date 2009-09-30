@@ -1,18 +1,21 @@
 <?php
 	require('../includes/prepend.inc.php');
 
-	$strPath = WikiItem::SanitizeForPath(QApplication::PathInfo(0), $intWikiItemTypeId);
+	$strPath = WikiItem::SanitizeForPath(QApplication::$PathInfo, $intWikiItemTypeId);
 	$objWikiItem = WikiItem::LoadByPathWikiItemTypeId($strPath, WikiItemType::Image);
 
 	if ($objWikiItem) {
 		$objWikiImage = $objWikiItem->CurrentWikiVersion->WikiImage;
 
 		if (!file_exists($objWikiImage->GetThumbPath())) {
+			QApplication::MakeDirectory($objWikiImage->GetThumbFolder(), 0777);
+
 			$objImageControl = new QImageControl(null);
 			$objImageControl->ImagePath = $objWikiImage->GetPath();
 			$objImageControl->Width = 240;
 			$objImageControl->Height = 240;
 			$objImageControl->ScaleCanvasDown = true;
+			$objImageControl->ScaleImageUp = false;
 			$objImageControl->RenderImage($objWikiImage->GetThumbPath());
 		}
 

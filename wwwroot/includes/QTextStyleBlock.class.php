@@ -210,18 +210,19 @@
 	class QTextStyleBlock extends QTextStyleBlockBase {
 		protected static function ProcessImage($strBlockContent, $strBlockIdentifier, $strStyle = null, $strOptions = null) {
 			$strPath = WikiItem::SanitizeForPath($strBlockContent, $intWikiItemTypeId);
-			$strFullPath = WikiItem::GenerateFullPath($strPath, WikiItemType::Image);
-			
+
+			// Figure out the positioning -- the default is align-right
 			switch (trim($strStyle)) {
 				case 'text-align:left;':
-					$strStyle = 'Left';
+					$strPosition = 'Left';
 					break;
 				default:
-					$strStyle = 'Right';
+					$strPosition = 'Right';
 					break;
 			}
 
-			return sprintf('<div class="wikiThumb%s"><a href="/wiki%s"><img src="/wiki/view_thumb.php%s"/></a></div>' . "\n\n", $strStyle, $strFullPath, $strPath);
+			return sprintf('<wikiImage position="%s" path="%s"/>' . "\n\n", $strPosition, $strPath);
+//			return sprintf('<div class="wikiThumb%s"><a href="/wiki%s"><img src="/wiki/view_thumb.php%s"/></a></div>' . "\n\n", $strStyle, $strFullPath, $strPath);
 		}
 	}
 ?>

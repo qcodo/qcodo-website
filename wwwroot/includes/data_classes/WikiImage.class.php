@@ -73,8 +73,12 @@
 			return $this->GetFolder() . '/image.' . WikiImageType::$ExtensionArray[$this->intWikiImageTypeId];
 		}
 
+		public function GetThumbFolder() {
+			return __WIKI_FILE_THUMBNAILS__ . '/' . $this->WikiVersion->WikiItemId . '/' . $this->intWikiVersionId;
+		}
+
 		public function GetThumbPath() {
-			return $this->GetFolder() . '/thumb.' . WikiImageType::$ExtensionArray[$this->intWikiImageTypeId];
+			return $this->GetThumbFolder() . '/thumb.' . WikiImageType::$ExtensionArray[$this->intWikiImageTypeId];
 		}
 
 		public function GetImageSourceUrl() {

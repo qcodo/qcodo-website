@@ -1,2 +1,2 @@
 <?php $_FORM->pnlContentHeadline->Render(); ?>
-<?php _p($_FORM->objWikiVersion->WikiPage->CompiledHtml, false); ?>
+<?php _p(QApplication::DisplayWithWikiLinks($_FORM->objWikiVersion->WikiPage->CompiledHtml), false); ?>

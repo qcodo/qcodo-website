@@ -346,6 +346,17 @@
 
 				return $strToReturn;
 			}
+			
+			/**
+			 * Given QTextStyle-generated HTML content, this will return the same content, with any wiki-based links
+			 * reconciled against actual data in the wiki database.
+			 * @param string $strContent
+			 * @return string
+			 */
+			public static function DisplayWithWikiLinks($strContent) {
+				$strContent = (preg_replace('/<wikiImage position="(Left|Right)" path="\\/([a-z0-9\\_\\/]*)"\\/>/', '<div class="wikiThumb wikiThumb${1}"><a href="/wiki/image:${2}"><img src="/wiki/view_thumb.php/${2}"/></a></div>', $strContent));
+				return $strContent;
+			}
 		}
 
 
