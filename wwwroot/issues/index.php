@@ -108,10 +108,10 @@
 		public function dtgIssues_Bind() {
 			$objCondition = QQ::All();
 
-			if ($this->txtSummary->Text) {
+			if (trim($this->txtSummary->Text)) {
 				$objCondition = QQ::AndCondition(
 					$objCondition,
-					QQ::Like(QQN::Issue()->Title, '%' . $this->txtSummary->Text . '%')
+					QQ::Like(QQN::Issue()->Title, '%' . trim($this->txtSummary->Text) . '%')
 				);
 			}
 			
@@ -137,17 +137,17 @@
 				);
 			}
 			
-			if ($this->txtPostedBy->Text) {
+			if (trim($this->txtPostedBy->Text)) {
 				$objCondition = QQ::AndCondition(
 					$objCondition,
-					QQ::Like(QQN::Issue()->PostedByPerson->DisplayName, $this->txtPostedBy->Text . '%')
+					QQ::Like(QQN::Issue()->PostedByPerson->DisplayName, trim($this->txtPostedBy->Text) . '%')
 				);
 			}
 			
-			if ($this->txtAssignedTo->Text) {
+			if (trim($this->txtAssignedTo->Text)) {
 				$objCondition = QQ::AndCondition(
 					$objCondition,
-					QQ::Like(QQN::Issue()->AssignedToPerson->DisplayName, $this->txtAssignedTo->Text . '%')
+					QQ::Like(QQN::Issue()->AssignedToPerson->DisplayName, trim($this->txtAssignedTo->Text) . '%')
 				);
 			}
 
