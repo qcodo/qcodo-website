@@ -30,11 +30,11 @@
 
 		public function __get($strName) {
 			switch ($strName) {
-				case 'ReplyCount': 
-					$intMessageCount = $this->MessageCount - 1;
-					if ($intMessageCount == 0) return 'no replies';
-					else if ($intMessageCount == 1) return '1 reply';
-					else return $intMessageCount . ' replies';
+				case 'MessageCountWithLabel': 
+					$intMessageCount = $this->MessageCount;
+					if ($intMessageCount == 0) return 'no messages';
+					else if ($intMessageCount == 1) return '1 message';
+					else return $intMessageCount . ' messages';
 				case 'CommentCount':
 					$intMessageCount = $this->MessageCount;
 					if ($intMessageCount == 0) return 'no comments';
@@ -74,7 +74,7 @@
 		 */
 		public function RefreshReplyNumbering() {
 			// Update Reply Numbering
-			$intNumber = 0;
+			$intNumber = 1;
 			foreach ($this->GetMessageArray(QQ::OrderBy(QQN::Message()->PostDate)) as $objMessage) {
 				if (!$intNumber) {
 					if (!is_null($objMessage->ReplyNumber)) {
@@ -201,6 +201,9 @@
 		 * @return void
 		 */
 		public function RefreshSearchIndex($objIndex = null) {
+			// Currently only implemented for Forum-based topic/message searches
+			if (!$this->TopicLink->Forum) return;
+
 			if (!$objIndex) {
 				$objIndex = new Zend_Search_Lucene(__SEARCH_INDEXES__ . '/topics');
 				$blnIndexProvided = false;
@@ -274,6 +277,14 @@
 			return $objMessage;
 		}
 
+		public function GetNextReplyNumber() {
+			if ((!$this->intId) || ($this->CountMessages() == 0)) {
+				return 1;
+			} else {
+				$objResult = Message::GetDatabase()->Query('SELECT MAX(reply_number) AS max_reply_number FROM message WHERE topic_id=' . $this->intId);
+				return ($objResult->GetNextRow()->GetColumn('max_reply_number') + 1);
+			}
+		}
 
 		/**
 		 * Specifies whether or not the "current user" is being notified on updates

@@ -130,11 +130,12 @@
 
 			// Update the MessagePanel Header template based on the View State
 			switch ($this->intViewState) {
-				case 3:
 				case 4:
 					$this->pnlMessages->lblTopicInfo_SetTemplate(__INCLUDES__ . '/messages/lblTopicInfoWithForumName.tpl.php');
 					break;
 				case 1:
+				case 3:
+				case 5:
 					// No Topic is Selected -- therefore, no template
 					break;
 				default:
@@ -293,8 +294,10 @@
 			}
 
 			// Go ahead and set up other stuff if the Topic is set
-			$this->objTopic->MarkAsViewed();
-			$this->pnlMessages->SelectTopic($this->objTopic);
+			if ($this->objTopic) {
+				$this->objTopic->MarkAsViewed();
+				$this->pnlMessages->SelectTopic($this->objTopic);
+			}
 		}
 
 		public function dtrTopics_Bind() {

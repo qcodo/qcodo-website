@@ -16,7 +16,7 @@
 	<br/>
 
 	thread:
-	<strong><?php _p($_CONTROL->ParentControl->objTopic->ReplyCount); ?></strong>
+	<strong><?php _p($_CONTROL->ParentControl->objTopic->MessageCountWithLabel); ?></strong>
 	
 	&nbsp;|&nbsp;
 

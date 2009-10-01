@@ -17,8 +17,8 @@
 
 	&nbsp;|&nbsp;
 
-	comments:
-	<strong><?php _p($_CONTROL->ParentControl->objTopic->ReplyCount); ?></strong>
+	messages:
+	<strong><?php _p($_CONTROL->ParentControl->objTopic->MessageCountWithLabel); ?></strong>
 	
 	&nbsp;|&nbsp;
 

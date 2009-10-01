@@ -68,6 +68,9 @@
 				} else {
 					$this->mctMessage->Message->PostDate = QDateTime::Now();
 				}
+				
+				// Set the Reply Number for this New Message
+				$this->mctMessage->Message->ReplyNumber = $this->mctMessage->Message->Topic->GetNextReplyNumber();
 			}
 
 			// Save Everything Else
