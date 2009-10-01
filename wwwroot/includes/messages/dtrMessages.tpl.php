@@ -6,17 +6,10 @@
 	<div class="name">
 <?php
 	if ($_CONTROL->ParentControl->IsMessageEditable($_ITEM)) {
-		if ($_ITEM->ReplyNumber) {
-			printf('<span class="replyNumber"><a href="#" title="Edit This Post" %s>Reply #%s</a> &nbsp;|&nbsp; </span>',
-				$_CONTROL->ParentControl->pxyEditMessage->RenderAsEvents($_ITEM->Id, false), $_ITEM->ReplyNumber);
-		} else {
-			printf('<span class="replyNumber"><a href="#" title="Edit This Post" %s>Edit</a> &nbsp;|&nbsp; </span>',
-				$_CONTROL->ParentControl->pxyEditMessage->RenderAsEvents($_ITEM->Id, false));
-		}
+		printf('<span class="replyNumber">#%s (<a href="#" title="Edit This Post" %s>Edit</a>) &nbsp;|&nbsp; </span>',
+			$_ITEM->ReplyNumber, $_CONTROL->ParentControl->pxyEditMessage->RenderAsEvents($_ITEM->Id, false));
 	} else {
-		if ($_ITEM->ReplyNumber) {
-			printf('<span class="replyNumber">Reply #%s &nbsp;|&nbsp; </span>', $_ITEM->ReplyNumber);
-		}
+		printf('<span class="replyNumber">#%s &nbsp;|&nbsp; </span>', $_ITEM->ReplyNumber);
 	}
 ?>
 	<?php _p(($_ITEM->Person) ? $_ITEM->Person->DisplayForForums : '&lsaquo;&lsaquo; Qcodo System Message &rsaquo;&rsaquo;', false); ?>

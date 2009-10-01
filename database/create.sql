@@ -1,6 +1,34 @@
 /* SQLEditor (MySQL)*/
 
 
+CREATE TABLE `topic_link_type`
+(
+`id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
+`name` VARCHAR(40) NOT NULL UNIQUE,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+
+
+
+CREATE TABLE `issue_status_type`
+(
+`id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
+`name` VARCHAR(60) NOT NULL UNIQUE,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+
+
+
+CREATE TABLE `country`
+(
+`id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
+`name` VARCHAR(255),
+`code` VARCHAR(2) UNIQUE,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+
+
+
 CREATE TABLE `download_category`
 (
 `id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
@@ -10,6 +38,17 @@ CREATE TABLE `download_category`
 `description` VARCHAR(200),
 `note` VARCHAR(200),
 `last_post_date` DATETIME,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+
+
+
+CREATE TABLE `counter`
+(
+`id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
+`filename` VARCHAR(100),
+`token` VARCHAR(100) UNIQUE,
+`counter` INTEGER,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 
@@ -56,72 +95,6 @@ PRIMARY KEY (`id`)
 
 
 
-CREATE TABLE `announcement`
-(
-`id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
-`announcement` TEXT,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
-
-
-
-CREATE TABLE `article_section`
-(
-`id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
-`name` VARCHAR(100),
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
-
-
-
-CREATE TABLE `wiki_image_type`
-(
-`id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
-`name` VARCHAR(40) NOT NULL UNIQUE,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
-
-
-
-CREATE TABLE `forum`
-(
-`id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
-`order_number` INTEGER,
-`name` VARCHAR(100) NOT NULL,
-`announce_only_flag` BOOLEAN,
-`description` VARCHAR(200),
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
-
-
-
-CREATE TABLE `issue_priority_type`
-(
-`id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
-`name` VARCHAR(60) NOT NULL UNIQUE,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
-
-
-
-CREATE TABLE `issue_resolution_type`
-(
-`id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
-`name` VARCHAR(60) NOT NULL UNIQUE,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
-
-
-
-CREATE TABLE `person_type`
-(
-`id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
-`name` VARCHAR(50) NOT NULL UNIQUE,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
-
-
-
 CREATE TABLE `issue_field`
 (
 `id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
@@ -161,44 +134,10 @@ PRIMARY KEY (`wiki_version_id`)
 
 
 
-CREATE TABLE `wiki_page`
-(
-`wiki_version_id` INTEGER unsigned  NOT NULL,
-`content` TEXT,
-`compiled_html` TEXT,
-PRIMARY KEY (`wiki_version_id`)
-) ENGINE=InnoDB;
-
-
-
-CREATE TABLE `wiki_image`
-(
-`wiki_version_id` INTEGER unsigned  NOT NULL,
-`wiki_image_type_id` INTEGER unsigned  NOT NULL,
-`width` INTEGER,
-`height` INTEGER,
-`description` TEXT,
-PRIMARY KEY (`wiki_version_id`)
-) ENGINE=InnoDB;
-
-
-
-CREATE TABLE `counter`
+CREATE TABLE `person_type`
 (
 `id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
-`filename` VARCHAR(100),
-`token` VARCHAR(100) UNIQUE,
-`counter` INTEGER,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
-
-
-
-CREATE TABLE `country`
-(
-`id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
-`name` VARCHAR(255),
-`code` VARCHAR(2) UNIQUE,
+`name` VARCHAR(50) NOT NULL UNIQUE,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 
@@ -238,15 +177,11 @@ PRIMARY KEY (`topic_id`,`person_id`)
 
 
 
-CREATE TABLE `wiki_version`
+CREATE TABLE `email_topic_person_assn`
 (
-`id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
-`wiki_item_id` INTEGER unsigned  NOT NULL,
-`version_number` INTEGER unsigned  NOT NULL,
-`name` VARCHAR(200),
-`posted_by_person_id` INTEGER unsigned  NOT NULL,
-`post_date` DATETIME NOT NULL,
-PRIMARY KEY (`id`)
+`topic_id` INTEGER unsigned  NOT NULL,
+`person_id` INTEGER unsigned  NOT NULL,
+PRIMARY KEY (`topic_id`,`person_id`)
 ) ENGINE=InnoDB;
 
 
@@ -268,27 +203,32 @@ PRIMARY KEY (`id`)
 
 
 
-CREATE TABLE `read_topic_person_assn`
+CREATE TABLE `wiki_version`
 (
-`topic_id` INTEGER unsigned  NOT NULL,
-`person_id` INTEGER unsigned  NOT NULL,
-PRIMARY KEY (`topic_id`,`person_id`)
+`id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
+`wiki_item_id` INTEGER unsigned  NOT NULL,
+`version_number` INTEGER unsigned  NOT NULL,
+`name` VARCHAR(200),
+`posted_by_person_id` INTEGER unsigned  NOT NULL,
+`post_date` DATETIME NOT NULL,
+PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 
 
 
-CREATE TABLE `download`
+CREATE TABLE `announcement`
 (
 `id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
-`parent_download_id` INTEGER unsigned,
-`download_category_id` INTEGER unsigned  NOT NULL,
-`person_id` INTEGER unsigned  NOT NULL,
-`name` VARCHAR(200) NOT NULL,
-`version` VARCHAR(40),
-`description` TEXT,
-`filename` VARCHAR(100),
-`download_count` INTEGER,
-`post_date` DATETIME NOT NULL,
+`announcement` TEXT,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+
+
+
+CREATE TABLE `issue_resolution_type`
+(
+`id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
+`name` VARCHAR(60) NOT NULL UNIQUE,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 
@@ -303,7 +243,31 @@ PRIMARY KEY (`id`)
 
 
 
-CREATE TABLE `issue_status_type`
+CREATE TABLE `article_section`
+(
+`id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
+`name` VARCHAR(100),
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+
+
+
+CREATE TABLE `article`
+(
+`id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
+`article_section_id` INTEGER unsigned  NOT NULL,
+`title` VARCHAR(200) NOT NULL,
+`description` TEXT,
+`byline` VARCHAR(200),
+`article` TEXT,
+`post_date` DATETIME,
+`last_updated_date` DATETIME,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+
+
+
+CREATE TABLE `issue_priority_type`
 (
 `id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
 `name` VARCHAR(60) NOT NULL UNIQUE,
@@ -357,34 +321,34 @@ PRIMARY KEY (`id`)
 
 
 
-CREATE TABLE `article`
+CREATE TABLE `wiki_image_type`
 (
 `id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
-`article_section_id` INTEGER unsigned  NOT NULL,
-`title` VARCHAR(200) NOT NULL,
-`description` TEXT,
-`byline` VARCHAR(200),
-`article` TEXT,
-`post_date` DATETIME,
-`last_updated_date` DATETIME,
+`name` VARCHAR(40) NOT NULL UNIQUE,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 
 
 
-CREATE TABLE `email_topic_person_assn`
+CREATE TABLE `wiki_image`
 (
-`topic_id` INTEGER unsigned  NOT NULL,
-`person_id` INTEGER unsigned  NOT NULL,
-PRIMARY KEY (`topic_id`,`person_id`)
+`wiki_version_id` INTEGER unsigned  NOT NULL,
+`wiki_image_type_id` INTEGER unsigned  NOT NULL,
+`width` INTEGER,
+`height` INTEGER,
+`description` TEXT,
+PRIMARY KEY (`wiki_version_id`)
 ) ENGINE=InnoDB;
 
 
 
-CREATE TABLE `topic_link_type`
+CREATE TABLE `forum`
 (
 `id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
-`name` VARCHAR(40) NOT NULL UNIQUE,
+`order_number` INTEGER,
+`name` VARCHAR(100) NOT NULL,
+`announce_only_flag` BOOLEAN,
+`description` VARCHAR(200),
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 
@@ -427,7 +391,43 @@ CREATE TABLE `message`
 `person_id` INTEGER unsigned,
 `message` TEXT,
 `compiled_html` TEXT,
-`reply_number` INTEGER unsigned,
+`reply_number` INTEGER unsigned  NOT NULL,
+`post_date` DATETIME NOT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+
+
+
+CREATE TABLE `read_topic_person_assn`
+(
+`topic_id` INTEGER unsigned  NOT NULL,
+`person_id` INTEGER unsigned  NOT NULL,
+PRIMARY KEY (`topic_id`,`person_id`)
+) ENGINE=InnoDB;
+
+
+
+CREATE TABLE `wiki_page`
+(
+`wiki_version_id` INTEGER unsigned  NOT NULL,
+`content` TEXT,
+`compiled_html` TEXT,
+PRIMARY KEY (`wiki_version_id`)
+) ENGINE=InnoDB;
+
+
+
+CREATE TABLE `download`
+(
+`id` INTEGER unsigned  NOT NULL AUTO_INCREMENT,
+`parent_download_id` INTEGER unsigned,
+`download_category_id` INTEGER unsigned  NOT NULL,
+`person_id` INTEGER unsigned  NOT NULL,
+`name` VARCHAR(200) NOT NULL,
+`version` VARCHAR(40),
+`description` TEXT,
+`filename` VARCHAR(100),
+`download_count` INTEGER,
 `post_date` DATETIME NOT NULL,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
@@ -442,12 +442,6 @@ CREATE UNIQUE INDEX `issue_field_option_idx` ON `issue_field_option` (`issue_fie
 CREATE INDEX `issue_field_option_idx_1` ON `issue_field_option` (`issue_field_id`,`active_flag`);
 CREATE INDEX `wiki_file_wiki_version_id_idxfk`  ON `wiki_file`(`wiki_version_id`);
 ALTER TABLE `wiki_file` ADD FOREIGN KEY wiki_version_id_idxfk(`wiki_version_id`) REFERENCES `wiki_version`(`id`);
-CREATE INDEX `wiki_page_wiki_version_id_idxfk`  ON `wiki_page`(`wiki_version_id`);
-ALTER TABLE `wiki_page` ADD FOREIGN KEY wiki_version_id_idxfk(`wiki_version_id`) REFERENCES `wiki_version`(`id`);
-CREATE INDEX `wiki_image_wiki_version_id_idxfk`  ON `wiki_image`(`wiki_version_id`);
-ALTER TABLE `wiki_image` ADD FOREIGN KEY wiki_version_id_idxfk(`wiki_version_id`) REFERENCES `wiki_version`(`id`);
-CREATE INDEX `wiki_image_type_id_idx`  ON `wiki_image`(`wiki_image_type_id`);
-ALTER TABLE `wiki_image` ADD FOREIGN KEY wiki_image_type_id_idxfk(`wiki_image_type_id`) REFERENCES `wiki_image_type`(`id`);
 CREATE INDEX `person_type_id_idx`  ON `person`(`person_type_id`);
 ALTER TABLE `person` ADD FOREIGN KEY person_type_id_idxfk(`person_type_id`) REFERENCES `person_type`(`id`);
 ALTER TABLE `person` ADD FOREIGN KEY country_id_idxfk(`country_id`) REFERENCES `country`(`id`);
@@ -456,11 +450,10 @@ CREATE INDEX `read_once_topic_person_assn_topic_id_idxfk`  ON `read_once_topic_p
 ALTER TABLE `read_once_topic_person_assn` ADD FOREIGN KEY topic_id_idxfk(`topic_id`) REFERENCES `topic`(`id`);
 CREATE INDEX `read_once_topic_person_assn_person_id_idxfk`  ON `read_once_topic_person_assn`(`person_id`);
 ALTER TABLE `read_once_topic_person_assn` ADD FOREIGN KEY person_id_idxfk(`person_id`) REFERENCES `person`(`id`);
-CREATE INDEX `wiki_version_wiki_item_id_idx`  ON `wiki_version`(`wiki_item_id`);
-ALTER TABLE `wiki_version` ADD FOREIGN KEY wiki_item_id_idxfk(`wiki_item_id`) REFERENCES `wiki_item`(`id`);
-CREATE INDEX `wiki_version_posted_by_person_id_idx`  ON `wiki_version`(`posted_by_person_id`);
-ALTER TABLE `wiki_version` ADD FOREIGN KEY posted_by_person_id_idxfk(`posted_by_person_id`) REFERENCES `person`(`id`);
-CREATE UNIQUE INDEX `wiki_version_idx` ON `wiki_version` (`wiki_item_id`,`version_number`);
+CREATE INDEX `email_topic_person_assn_topic_id_idxfk`  ON `email_topic_person_assn`(`topic_id`);
+ALTER TABLE `email_topic_person_assn` ADD FOREIGN KEY topic_id_idxfk(`topic_id`) REFERENCES `topic`(`id`);
+CREATE INDEX `email_topic_person_assn_person_id_idxfk`  ON `email_topic_person_assn`(`person_id`);
+ALTER TABLE `email_topic_person_assn` ADD FOREIGN KEY person_id_idxfk(`person_id`) REFERENCES `person`(`id`);
 CREATE INDEX `wiki_item_type_id_idx`  ON `wiki_item`(`wiki_item_type_id`);
 ALTER TABLE `wiki_item` ADD FOREIGN KEY wiki_item_type_id_idxfk(`wiki_item_type_id`) REFERENCES `wiki_item_type`(`id`);
 CREATE INDEX `wiki_item_editor_minimum_person_type_id_idx`  ON `wiki_item`(`editor_minimum_person_type_id`);
@@ -470,18 +463,15 @@ ALTER TABLE `wiki_item` ADD FOREIGN KEY current_wiki_version_id_idxfk(`current_w
 CREATE INDEX `wiki_item_current_posted_by_person_id_idx`  ON `wiki_item`(`current_posted_by_person_id`);
 ALTER TABLE `wiki_item` ADD FOREIGN KEY current_posted_by_person_id_idxfk(`current_posted_by_person_id`) REFERENCES `person`(`id`);
 CREATE UNIQUE INDEX `wiki_item_idx` ON `wiki_item` (`path`,`wiki_item_type_id`);
-CREATE INDEX `read_topic_person_assn_topic_id_idxfk`  ON `read_topic_person_assn`(`topic_id`);
-ALTER TABLE `read_topic_person_assn` ADD FOREIGN KEY topic_id_idxfk(`topic_id`) REFERENCES `topic`(`id`);
-CREATE INDEX `read_topic_person_assn_person_id_idxfk`  ON `read_topic_person_assn`(`person_id`);
-ALTER TABLE `read_topic_person_assn` ADD FOREIGN KEY person_id_idxfk(`person_id`) REFERENCES `person`(`id`);
-CREATE INDEX `download_parent_download_id_idx`  ON `download`(`parent_download_id`);
-ALTER TABLE `download` ADD FOREIGN KEY parent_download_id_idxfk(`parent_download_id`) REFERENCES `download`(`id`);
-CREATE INDEX `download_category_id_idx`  ON `download`(`download_category_id`);
-ALTER TABLE `download` ADD FOREIGN KEY download_category_id_idxfk(`download_category_id`) REFERENCES `download_category`(`id`);
-CREATE INDEX `download_person_id_idx`  ON `download`(`person_id`);
-ALTER TABLE `download` ADD FOREIGN KEY person_id_idxfk(`person_id`) REFERENCES `person`(`id`);
+CREATE INDEX `wiki_version_wiki_item_id_idx`  ON `wiki_version`(`wiki_item_id`);
+ALTER TABLE `wiki_version` ADD FOREIGN KEY wiki_item_id_idxfk(`wiki_item_id`) REFERENCES `wiki_item`(`id`);
+CREATE INDEX `wiki_version_posted_by_person_id_idx`  ON `wiki_version`(`posted_by_person_id`);
+ALTER TABLE `wiki_version` ADD FOREIGN KEY posted_by_person_id_idxfk(`posted_by_person_id`) REFERENCES `person`(`id`);
+CREATE UNIQUE INDEX `wiki_version_idx` ON `wiki_version` (`wiki_item_id`,`version_number`);
 CREATE INDEX `login_ticket_person_id_idx`  ON `login_ticket`(`person_id`);
 ALTER TABLE `login_ticket` ADD FOREIGN KEY person_id_idxfk(`person_id`) REFERENCES `person`(`id`);
+CREATE INDEX `article_section_id_idx`  ON `article`(`article_section_id`);
+ALTER TABLE `article` ADD FOREIGN KEY article_section_id_idxfk(`article_section_id`) REFERENCES `article_section`(`id`);
 CREATE INDEX `issue_priority_type_id_idx`  ON `issue`(`issue_priority_type_id`);
 ALTER TABLE `issue` ADD FOREIGN KEY issue_priority_type_id_idxfk(`issue_priority_type_id`) REFERENCES `issue_priority_type`(`id`);
 CREATE INDEX `issue_status_type_id_idx`  ON `issue`(`issue_status_type_id`);
@@ -505,12 +495,10 @@ ALTER TABLE `issue_vote` ADD FOREIGN KEY issue_id_idxfk(`issue_id`) REFERENCES `
 CREATE INDEX `issue_vote_person_id_idx`  ON `issue_vote`(`person_id`);
 ALTER TABLE `issue_vote` ADD FOREIGN KEY person_id_idxfk(`person_id`) REFERENCES `person`(`id`);
 CREATE UNIQUE INDEX `issue_vote_idx` ON `issue_vote` (`issue_id`,`person_id`);
-CREATE INDEX `article_section_id_idx`  ON `article`(`article_section_id`);
-ALTER TABLE `article` ADD FOREIGN KEY article_section_id_idxfk(`article_section_id`) REFERENCES `article_section`(`id`);
-CREATE INDEX `email_topic_person_assn_topic_id_idxfk`  ON `email_topic_person_assn`(`topic_id`);
-ALTER TABLE `email_topic_person_assn` ADD FOREIGN KEY topic_id_idxfk(`topic_id`) REFERENCES `topic`(`id`);
-CREATE INDEX `email_topic_person_assn_person_id_idxfk`  ON `email_topic_person_assn`(`person_id`);
-ALTER TABLE `email_topic_person_assn` ADD FOREIGN KEY person_id_idxfk(`person_id`) REFERENCES `person`(`id`);
+CREATE INDEX `wiki_image_wiki_version_id_idxfk`  ON `wiki_image`(`wiki_version_id`);
+ALTER TABLE `wiki_image` ADD FOREIGN KEY wiki_version_id_idxfk(`wiki_version_id`) REFERENCES `wiki_version`(`id`);
+CREATE INDEX `wiki_image_type_id_idx`  ON `wiki_image`(`wiki_image_type_id`);
+ALTER TABLE `wiki_image` ADD FOREIGN KEY wiki_image_type_id_idxfk(`wiki_image_type_id`) REFERENCES `wiki_image_type`(`id`);
 CREATE INDEX `topic_link_type_id_idx`  ON `topic_link`(`topic_link_type_id`);
 ALTER TABLE `topic_link` ADD FOREIGN KEY topic_link_type_id_idxfk(`topic_link_type_id`) REFERENCES `topic_link_type`(`id`);
 CREATE INDEX `topic_link_forum_id_idxfk`  ON `topic_link`(`forum_id`);
@@ -529,3 +517,15 @@ CREATE INDEX `message_topic_link_id_idx`  ON `message`(`topic_link_id`);
 ALTER TABLE `message` ADD FOREIGN KEY topic_link_id_idxfk(`topic_link_id`) REFERENCES `topic_link`(`id`);
 CREATE INDEX `message_person_id_idx`  ON `message`(`person_id`);
 ALTER TABLE `message` ADD FOREIGN KEY person_id_idxfk(`person_id`) REFERENCES `person`(`id`);
+CREATE INDEX `read_topic_person_assn_topic_id_idxfk`  ON `read_topic_person_assn`(`topic_id`);
+ALTER TABLE `read_topic_person_assn` ADD FOREIGN KEY topic_id_idxfk(`topic_id`) REFERENCES `topic`(`id`);
+CREATE INDEX `read_topic_person_assn_person_id_idxfk`  ON `read_topic_person_assn`(`person_id`);
+ALTER TABLE `read_topic_person_assn` ADD FOREIGN KEY person_id_idxfk(`person_id`) REFERENCES `person`(`id`);
+CREATE INDEX `wiki_page_wiki_version_id_idxfk`  ON `wiki_page`(`wiki_version_id`);
+ALTER TABLE `wiki_page` ADD FOREIGN KEY wiki_version_id_idxfk(`wiki_version_id`) REFERENCES `wiki_version`(`id`);
+CREATE INDEX `download_parent_download_id_idx`  ON `download`(`parent_download_id`);
+ALTER TABLE `download` ADD FOREIGN KEY parent_download_id_idxfk(`parent_download_id`) REFERENCES `download`(`id`);
+CREATE INDEX `download_category_id_idx`  ON `download`(`download_category_id`);
+ALTER TABLE `download` ADD FOREIGN KEY download_category_id_idxfk(`download_category_id`) REFERENCES `download_category`(`id`);
+CREATE INDEX `download_person_id_idx`  ON `download`(`person_id`);
+ALTER TABLE `download` ADD FOREIGN KEY person_id_idxfk(`person_id`) REFERENCES `person`(`id`);

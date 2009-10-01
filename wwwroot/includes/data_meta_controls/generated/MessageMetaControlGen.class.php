@@ -332,6 +332,7 @@
 			$this->txtReplyNumber = new QIntegerTextBox($this->objParentObject, $strControlId);
 			$this->txtReplyNumber->Name = QApplication::Translate('Reply Number');
 			$this->txtReplyNumber->Text = $this->objMessage->ReplyNumber;
+			$this->txtReplyNumber->Required = true;
 			return $this->txtReplyNumber;
 		}
 
@@ -345,6 +346,7 @@
 			$this->lblReplyNumber = new QLabel($this->objParentObject, $strControlId);
 			$this->lblReplyNumber->Name = QApplication::Translate('Reply Number');
 			$this->lblReplyNumber->Text = $this->objMessage->ReplyNumber;
+			$this->lblReplyNumber->Required = true;
 			$this->lblReplyNumber->Format = $strFormat;
 			return $this->lblReplyNumber;
 		}

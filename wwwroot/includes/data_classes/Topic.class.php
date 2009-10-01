@@ -260,7 +260,7 @@
 			$objMessage->PostDate = ($dttPostDate) ? $dttPostDate : QDateTime::Now();
 
 			if ($this->CountMessages() == 0) {
-				$objMessage->ReplyNumber = null;
+				$objMessage->ReplyNumber = 1;
 			} else {
 				$objResult = Message::GetDatabase()->Query('SELECT MAX(reply_number) AS max_reply_number FROM message WHERE topic_id=' . $this->intId);
 				$objMessage->ReplyNumber = $objResult->GetNextRow()->GetColumn('max_reply_number') + 1;

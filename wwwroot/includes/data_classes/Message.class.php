@@ -31,22 +31,6 @@
 			$this->strCompiledHtml = QTextStyle::DisplayAsHtml($this->strMessage);
 		}
 
-//		/**
-//		 * Save this Message
-//		 * @param bool $blnForceInsert
-//		 * @param bool $blnForceUpdate
-//		 * @return int
-//		 */
-//		public function Save($blnForceInsert = false, $blnForceUpdate = false) {
-//print strlen($this->strMessage) . " - ";
-//$fltStartTime = microtime(true);
-//			$intReturn = parent::Save($blnForceInsert, $blnForceUpdate);
-//$fltEndTime = microtime(true);
-//print ($fltEndTime - $fltStartTime);
-//print " - " . $intReturn . " - " . $this->intId . "\r\n";
-//			return $intReturn;
-//		}
-
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...
 		// but feel free to use these as a starting point)

@@ -21,7 +21,7 @@
 	 * @property integer $PersonId the value for intPersonId 
 	 * @property string $Message the value for strMessage 
 	 * @property string $CompiledHtml the value for strCompiledHtml 
-	 * @property integer $ReplyNumber the value for intReplyNumber 
+	 * @property integer $ReplyNumber the value for intReplyNumber (Not Null)
 	 * @property QDateTime $PostDate the value for dttPostDate (Not Null)
 	 * @property Topic $Topic the value for the Topic object referenced by intTopicId (Not Null)
 	 * @property TopicLink $TopicLink the value for the TopicLink object referenced by intTopicLinkId (Not Null)
@@ -871,7 +871,7 @@
 
 				case 'ReplyNumber':
 					/**
-					 * Gets the value for intReplyNumber 
+					 * Gets the value for intReplyNumber (Not Null)
 					 * @return integer
 					 */
 					return $this->intReplyNumber;
@@ -1032,7 +1032,7 @@
 
 				case 'ReplyNumber':
 					/**
-					 * Sets the value for intReplyNumber 
+					 * Sets the value for intReplyNumber (Not Null)
 					 * @param integer $mixValue
 					 * @return integer
 					 */
