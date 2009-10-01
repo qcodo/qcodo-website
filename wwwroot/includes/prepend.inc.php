@@ -393,6 +393,15 @@
 				$strVersion = QApplication::GetQcodoVersion($blnStableVersion);
 				return QDateTime::FromTimestamp(filemtime(__QCODO_BUILDS__ . '/qcodo-' . $strVersion . '.tar.gz'));
 			}
+
+			/**
+			 * @return string
+			 */
+			public static function GetQcodoVersionSize($blnStableVersion = true, $blnTarGz = true) {
+				$strVersion = QApplication::GetQcodoVersion($blnStableVersion);
+				$strExtension = ($blnTarGz) ? '.tar.gz' : '.zip';
+				return QApplication::DisplayByteSize(filesize(__QCODO_BUILDS__ . '/qcodo-' . $strVersion . $strExtension));
+			}
 		}
 
 
