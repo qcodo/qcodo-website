@@ -1,8 +1,15 @@
 <?php require(__INCLUDES__ . '/header.inc.php'); ?>
 
-	<?php $this->txtId->RenderForForm(); ?>
+	<div class="searchBar">
+		<div class="title">Qcodo Bugs and Issues</div>
+		<div class="right issue">
+			Go to Issue ID: 
+			<?php $this->txtId->Render('CssClass=searchIssueTextBox','MaxLength=6'); ?>
+		</div>
+	</div>
 	
-	<div style="background-color: #edd; padding: 10px;">
+	<div style="background-color: #ddd; padding: 5px 10px; border-bottom: 1px solid #999;">
+		
 
 		<div style="float: left; font-size: 11px; font-weight: bold; margin-right: 15px;">
 			Summary<br/>
