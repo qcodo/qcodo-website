@@ -374,6 +374,25 @@
 
 				return $strContent;
 			}
+
+			public static function GetQcodoVersion($blnStableVersion = true) {
+				if ($blnStableVersion)
+					return trim(file_get_contents(__QCODO_BUILDS__ . '/STABLE'));
+				else
+					return trim(file_get_contents(__QCODO_BUILDS__ . '/DEVELOPMENT'));
+			}
+
+			public static function GetQcodoChangelog() {
+				return file_get_contents(__QCODO_BUILDS__ . '/changelog.txt');
+			}
+
+			/**
+			 * @return QDateTime
+			 */
+			public static function GetQcodoVersionDate($blnStableVersion = true) {
+				$strVersion = QApplication::GetQcodoVersion($blnStableVersion);
+				return QDateTime::FromTimestamp(filemtime(__QCODO_BUILDS__ . '/qcodo-' . $strVersion . '.tar.gz'));
+			}
 		}
 
 

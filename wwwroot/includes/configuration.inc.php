@@ -26,10 +26,12 @@
 	define ('__URL_REWRITE__', 'apache');
 
 	define('QCODO_EMAILER', 'Qcodo.com Message <not_moderated@qcodo.com>');
+
 	define('__SEARCH_INDEXES__', __DOCROOT__ . '/../search_indexes');
 	define('__WIKI_FILE_REPOSITORY__', __DOCROOT__ . '/../wiki_assets');
 	define('__WIKI_FILE_THUMBNAILS__', __DOCROOT__ . '/../wiki_assets/thumbnails');
-	
+	define('__QCODO_BUILDS__', '/var/www/qcodo_builds');
+
 	define ('__DEVTOOLS_CLI__', __DOCROOT__ . __SUBDIRECTORY__ . '/../_devtools_cli');
 	define ('__INCLUDES__', __DOCROOT__ .  __SUBDIRECTORY__ . '/includes');
 	define ('__QCODO__', __INCLUDES__ . '/qcodo');

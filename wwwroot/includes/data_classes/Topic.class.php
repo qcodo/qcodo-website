@@ -27,6 +27,13 @@
 			return sprintf('Topic Object %s',  $this->intId);
 		}
 
+		/**
+		 * Returns the first Message of this topic
+		 * @return Message
+		 */
+		public function GetFirstMessage() {
+			return Message::QuerySingle(QQ::Equal(QQN::Message()->TopicId, $this->intId), QQ::Clause(QQ::OrderBy(QQN::Message()->Id), QQ::LimitInfo(1)));
+		}
 
 		public function __get($strName) {
 			switch ($strName) {

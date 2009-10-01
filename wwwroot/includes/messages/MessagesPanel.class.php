@@ -55,7 +55,7 @@
 			$this->dtrMessages->PaginatorAlternate = new QPaginator($this);
 			$this->dtrMessages->Paginator->Visible = false;
 			$this->dtrMessages->PaginatorAlternate->Visible = false;
-			$this->dtrMessages->ItemsPerPage = 5;
+			$this->dtrMessages->ItemsPerPage = 10;
 			$this->dtrMessages->UseAjax = true;
 			
 			$this->lblTopicInfo = new QLabel($this);

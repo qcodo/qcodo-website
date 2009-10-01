@@ -5,13 +5,18 @@
 		protected $strPageTitle = 'Home';
 		protected $intNavBarIndex = QApplication::NavAbout;
 		protected $intSubNavIndex = QApplication::NavAboutHome;
+		
+		protected $objBlogTopicArray;
 
 		protected function Form_Create() {
 			parent::Form_Create();
-		}
-
-		protected function btnButton_Click($strFormId, $strControlId, $strParameter) {
-			$this->lblMessage->Text = 'Hello, World!';
+			$this->objBlogTopicArray = Topic::QueryArray(
+				QQ::Equal(QQN::Topic()->TopicLink->ForumId, 5),
+				QQ::Clause(
+					QQ::OrderBy(QQN::Topic()->Id, false),
+					QQ::LimitInfo(4)
+				)
+			);
 		}
 	}
 

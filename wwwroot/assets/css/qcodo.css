@@ -213,7 +213,7 @@
 					span.paginator span.arrow { font-weight: bold; color: #ccc; margin: 0; padding: 0 3px 0 3px; }
 					span.paginator span.arrow a { font-weight: bold; color: #444; text-decoration: none; }
 					span.paginator span.arrow a:hover { text-decoration: underline; color: #000; }
-					span.paginator span.selected { font-weight: bold; background-color: #ccf; padding: 0 3px 0 3px; margin: 0 2px 0 2px; border: 1px; border-style: solid; }
+					span.paginator span.selected { font-weight: bold; background-color: #cb9; padding: 0 3px 0 3px; margin: 0 2px 0 2px; border: 1px; border-style: solid; }
 					span.paginator span.break { color: #666; margin: 0 5px 0 5px; }
 					span.paginator span.ellipsis { color: #666; }
 
@@ -263,19 +263,21 @@
 		
 		
 	/* QDataGrid */
-	table.datagrid { border: 1px solid #aaf; }
+	table.datagrid { border: 1px solid #ba8; }
 		table.datagrid caption, table.datagrid tfoot { padding-bottom: 4px; overflow: auto; }
 			table.datagrid span.left { float: left; font-size: 10px; display: block; }
 			table.datagrid span.right { float: right; font-size: 10px; display: block; }
 		table.datagrid tr { background-color: #fff; }
-			table.datagrid tr.alternate { background-color: #eef; }
-		table.datagrid th { background-color: #aaf; padding: 3px 5px 3px 5px; text-align: left; }
+			table.datagrid tr.alternate { background-color: #ffe; }
+		table.datagrid th { background-color: #ba8; padding: 3px 5px 3px 5px; text-align: left; }
 			table.datagrid th a { color: #000; text-decoration: none; }
 			table.datagrid th a:hover { color: #000; text-decoration: underline;}
-		table.datagrid td { padding: 5px; }
+		table.datagrid td { padding: 5px; border-bottom: 1px solid #ba8; }
 			table.datagrid td a { color: #000; }
 			table.datagrid td a:hover { color: #000; text-decoration: none; }
-		table.datagrid tfoot { border-top: 1px solid #aaf;} 
+		table.datagrid tfoot { border-top: 1px solid #ba8;}
+
+	table.datagrid tr:hover { background-color: #ded; }
 
 	table.issuesDataGrid { font-size: 11px; }
 		table.issuesDataGrid td { vertical-align: top; }

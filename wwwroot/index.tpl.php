@@ -2,32 +2,49 @@
 
    	
 <style>
-	div#sidebar { float: right; width: 250px; padding: 5px; background-color: #fed;
+	div.mainSidebar { float: right; width: 250px; margin-left: 25px; font-size: 11px; }
+
+	div.mainSidebar a {font-weight: normal; }
+	div.mainSidebar h1 { font-size: 14px; -moz-border-radius: 5px 5px 0 0; background-color: #ba8; color: #484030; font-weight: bold; padding: 4px 10px; margin: 0; }
+	div.mainSidebar div.sbContent {padding: 0 10px; background-color: #ffe;
 		font-size: 11px;
 		font-family: verdana;
 		border: 1px;
 		border-style: solid;
-		border-color: #850;
-		margin-left: 25px;
-		margin-top: 5px;
-		margin-right: 5px;
+		border-color: #ba8;
 	}
-	
-	div#sidebar a {font-weight: normal; }
-	div#sidebar h1 { color: #740; font-size: 16px; }
+
+	div.mainContent p { font-size: 16px; }
+	div.mainContent ul { font-size: 16px; padding-left: 60px; }
 </style>
-<div id="sidebar">
+<div class="mainSidebar">
 	<h1>News &amp; Announcements</h1>
-	<p><strong>Thursday, September 20</strong><br/><a href="#">Qcodo 0.3.33 Released</a></p>
-	<p><strong>Thursday, September 20</strong><br/><a href="#">Qcodo 0.3.33 Released</a></p>
+	<div class="sbContent">
+<?php
+		foreach ($this->objBlogTopicArray as $objTopic) {
+			$objMessage = $objTopic->GetFirstMessage();
+			$strDate = $objMessage->PostDate->__toString('DDDD, MMMM D');
+			$strTitle = $objTopic->Name;
+			if ($intPosition = strpos($strTitle, ' - ')) $strTitle = substr($strTitle, $intPosition + 3);
+?>
+			<p><strong><?php _p($strDate); ?></strong><br/><a href="/forums/forum.php/5/<?php _p($objTopic->Id); ?>/"><?php _p($strTitle); ?></a></p>
+<?php
+		}
+?>
+	</div>
 	<br/>
 	<h1>Qcodo Release Information</h1>
-	<p><strong>Current Dev Release</strong><br/><a href="#">Qcodo v0.3.37</a><br/>Monday, September 24, 2007</p>
-	<p><strong>Current Stable Release</strong><br/><a href="#">Qcodo v0.3.32</a><br/>Monday, September 7, 2007</p>
+	<div class="sbContent">
+		<p><strong>Current Dev Release</strong><br/><a href="/downloads/">Qcodo v<?php _p(QApplication::GetQcodoVersion(false)); ?></a><br/><?php _p(QApplication::GetQcodoVersionDate(false)->__toString('DDDD, MMMM D, YYYY')); ?></p>
+		<p><strong>Current Stable Release</strong><br/><a href="/downloads/">Qcodo v<?php _p(QApplication::GetQcodoVersion(true)); ?></a><br/><?php _p(QApplication::GetQcodoVersionDate(true)->__toString('DDDD, MMMM D, YYYY')); ?></p>
+	</div>
 </div>
+
 <h1>Code Less. Do More.</h1>
 
-<p>The <strong>Qcodo Development Framework</strong> is an open-source <a href="http://www.php.net/">PHP 5</a> framework
+<div class="mainContent">
+
+<p>The <strong>Qcodo Development Framework</strong> is an open-source <a href="http://www.php.net/">PHP</a> framework
 that focuses on freeing developers from unnecessary tedious, mundane coding. The result is that developers can do what they do best:
 <ul>
 <li>Focus on implementing <b>functionality</b> and <b>usability</b></li>
@@ -52,7 +69,9 @@ framework</strong> that is already being used for everything from <strong>large 
 <li>Object oriented database querying library (no SQL required)</li>
 <li>Built-in database profiling tools</li>
 <li>Internationalization support</li>
-<li>And much more...</li>
+<li><a href="/wiki/qcodo/overview">And much more...</a></li>
 </ul>
 </p>
+
+</div>
 <?php require(__INCLUDES__ . '/footer.inc.php'); ?>
