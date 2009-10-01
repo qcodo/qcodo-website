@@ -34,7 +34,7 @@
 	</h3>
 
 	<div style="margin-left: 25px; margin-top: 12px; font-size: 18px;">
-		<strong><a href="/view.php/release_stable_targz/qcodo-<?php _p($strStableVersion); ?>.tar.gz" class="link">qcodo-<?php _p($strStableVersion); ?>.tar.gz</a></strong>
+		<strong><a href="/downloads/get.php/release_stable_targz/qcodo-<?php _p($strStableVersion); ?>.tar.gz" class="link">qcodo-<?php _p($strStableVersion); ?>.tar.gz</a></strong>
 		<h3>
 			type: <strong>Mac OS X, Linux, and Unix Tarball</strong>
 			&nbsp;|&nbsp;
@@ -43,7 +43,7 @@
 	</div>
 
 	<div style="margin-left: 25px; margin-top: 12px; font-size: 18px;">
-		<strong><a href="/view.php/release_stable_zip/qcodo-<?php _p($strStableVersion); ?>.zip" class="link">qcodo-<?php _p($strStableVersion); ?>.zip</a></strong>
+		<strong><a href="/downloads/get.php/release_stable_zip/qcodo-<?php _p($strStableVersion); ?>.zip" class="link">qcodo-<?php _p($strStableVersion); ?>.zip</a></strong>
 		<h3>
 			type: <strong>Windows ZIP</strong>
 			&nbsp;|&nbsp;
@@ -60,7 +60,7 @@
 	</h3>
 
 	<div style="margin-left: 25px; margin-top: 12px; font-size: 18px;">
-		<strong><a href="/view.php/release_dev_targz/qcodo-<?php _p($strDevVersion); ?>.tar.gz" class="link">qcodo-<?php _p($strDevVersion); ?>.tar.gz</a></strong>
+		<strong><a href="/downloads/get.php/release_dev_targz/qcodo-<?php _p($strDevVersion); ?>.tar.gz" class="link">qcodo-<?php _p($strDevVersion); ?>.tar.gz</a></strong>
 		<h3>
 			type: <strong>Mac OS X, Linux, and Unix Tarball</strong>
 			&nbsp;|&nbsp;
@@ -69,7 +69,7 @@
 	</div>
 
 	<div style="margin-left: 25px; margin-top: 12px; font-size: 18px;">
-		<strong><a href="/view.php/release_dev_zip/qcodo-<?php _p($strDevVersion); ?>.zip" class="link">qcodo-<?php _p($strDevVersion); ?>.zip</a></strong>
+		<strong><a href="/downloads/get.php/release_dev_zip/qcodo-<?php _p($strDevVersion); ?>.zip" class="link">qcodo-<?php _p($strDevVersion); ?>.zip</a></strong>
 		<h3>
 			type: <strong>Windows ZIP</strong>
 			&nbsp;|&nbsp;

@@ -60,7 +60,8 @@ level by providing the <strong>capability of bringing the application to maturit
 <br/>
 
 <p>The following is just a sample of the <strong>many features</strong> of Qcodo that make it a <strong>robust, scalable PHP development
-framework</strong> that is already being used for everything from <strong>large scale enterprise applications</strong> to <strong>agile Web 2.0 startups</strong>:
+framework</strong> that is already being used for everything from
+<a href="/showcase/"><strong>large scale enterprise applications</strong></a> to <a href="/showcase/"><strong>agile Web 2.0 startups</strong></a>:
 <ul>
 
 <li>Code generation-based object relational model</li>

@@ -13,8 +13,11 @@
 		</div>
 	</div>
 
-	<p>The Qcodo Discussion Forums provide a community to post, discuss, ask, and converse about the current state of the framework,
-	as well as giving an opportunity for members to discuss the future direction of Qcodo.</p>
+	<div style="background-color: #ddd; padding: 5px 10px; border-bottom: 1px solid #999;">
+		The Qcodo Discussion Forums provide a community to post, discuss, ask, and converse about the current state of the framework,
+		as well as giving an opportunity for members to discuss the future direction of Qcodo.
+	</div>
+	<br/>
 
 	<?php $this->dtrForums->Render(); ?>
 
