@@ -20,7 +20,7 @@
 			$this->mctMessage = new MessageMetaControl($this, new Message());
 
 			$this->lblHeading = new QLabel($this);
-			$this->lblHeading->TagName = 'h3';
+			$this->lblHeading->TagName = 'h4';
 			$this->lblHeading->SetCustomStyle('margin', '0');
 			
 			$this->lstForum = new QListBox($this);

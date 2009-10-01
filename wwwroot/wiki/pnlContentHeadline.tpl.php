@@ -7,7 +7,7 @@
 	else
 		$strRelative .= ' ago';
 ?>
-	<h3>
+	<h3 style="margin-top: 12px;">
 		version:
 		<strong>#<?php _p($_FORM->objWikiVersion->VersionNumber); ?></strong>
 		<?php if ($_FORM->objWikiVersion->IsCurrentVersion()) { ?>
