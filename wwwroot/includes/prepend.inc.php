@@ -60,25 +60,25 @@
 			public static $NavBarArray = array(
 				array('About', '/', 80, array(
 					array('Home', '/', 50),
-					array('Overview', '/test.php/0/1', 70),
-					array('Presentations', '/test.php/0/2', 80),
-					array('Showcase', '/test.php/0/3', 60))),
-				array('Learn', '/test.php/1', 80, array(
-					array('Demos', '/test.php/1/0', 60),
-					array('Examples Site', '/test.php/1/1', 90),
-					array('API Cheet Sheet', '/test.php/1/2', 100),
-					array('API Online Guide', '/test.php/1/3', 100))),
-				array('Get', '/test.php/2', 80, array(
-					array('Qcodo Release', '/test.php/2/0', 90),
-					array('Community Contributions', '/test.php/2/1', 135))),
+					array('Overview', '/wiki/qcodo/overview/', 70),
+					array('Presentations', '/wiki/qcodo/presentations/', 80),
+					array('Showcase', '/showcase/', 60))),
+				array('Learn', '/wiki/qcodo/learn/', 80, array(
+					array('Demos', '/wiki/qcodo/demos/', 60),
+					array('Examples Site', 'http://examples.qcodo.com/', 90),
+					array('API Cheet Sheet', '/wiki/qcodo/api/', 100),
+					array('API Online Guide', 'http://api.qcodo.com/', 100))),
+				array('Get', '/downloads/', 80, array(
+					array('Qcodo Release', '/downloads/', 90),
+					array('Community Contributions', '/plugins/', 135))),
 				array('Community', '/forums/', 125, array(
 					array('Forums', '/forums/', 60),
 					array('Wiki', '/wiki/', 60),
-					array('Other Projects', '/test.php/3/2', 98))),
-				array('Development', '/test.php/4', 135, array(
+					array('Other Projects', '/wiki/qcodo/other_projects/', 98))),
+				array('Development', '/wiki/qcodo/development/', 135, array(
 					array('Bug Tracking', '/issues/', 90),
-					array('Contribute', '/test.php/4/1', 80),
-					array('Donate', '/test.php/4/2', 60)))
+					array('Contribute', '/wiki/qcodo/development/contribute/', 80),
+					array('Donate', '/donate/', 60)))
 				);
 			const NavAbout = 0;
 			const NavLearn = 1;
