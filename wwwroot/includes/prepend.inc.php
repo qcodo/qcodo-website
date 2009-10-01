@@ -70,7 +70,7 @@
 					array('API Online Guide', 'http://api.qcodo.com/', 100))),
 				array('Get', '/downloads/', 80, array(
 					array('Qcodo Release', '/downloads/', 90),
-					array('Community Contributions', '/plugins/', 135))),
+					array('Community Contributions', '/qpm/', 135))),
 				array('Community', '/forums/', 125, array(
 					array('Forums', '/forums/', 60),
 					array('Wiki', '/wiki/', 60),
