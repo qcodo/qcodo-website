@@ -5,8 +5,8 @@
 			<span style="font-weight: normal; font-size: 12px;">Wiki <?php _p(WikiItemType::$NameArray[$this->objWikiItem->WikiItemTypeId]); ?> /</span>
 			<?php _p($this->objWikiVersion->Name); ?>
 		</div>
-		<div class="right">
-			&nbsp;
+		<div class="right wiki">
+			<a title="View the Full Directory of Qcodo Wiki Documents" href="/wiki/directory.php">wiki directory</a> 
 		</div>
 	</div>
 

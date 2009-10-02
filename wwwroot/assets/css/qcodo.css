@@ -147,6 +147,7 @@
 		div.searchBar div.right { float: right; padding-top: 1px; margin-left: 10px;}
 
 		div.searchBar div.issue { font-size: 11px; color: #ddd; font-weight: bold; }
+		div.searchBar div.wiki { font-size: 10px; color: #aaa; font-weight: normal; }
 		input.searchIssueTextBox { border: 0; background-color: #ddd; width: 50px; font-size: 10px; padding: 1px 2px; }
 		div.searchTextBox { width: 196px; height: 16px; padding: 0 0 0 4px; margin: 0; font-size: 1px; -moz-border-radius: 7px; background-color: #eee; }
 			div.searchTextBox img { position: relative; top: 2px; border: 0; }
@@ -268,7 +269,7 @@
 			table.datagrid span.left { float: left; font-size: 10px; display: block; }
 			table.datagrid span.right { float: right; font-size: 10px; display: block; }
 		table.datagrid tr { background-color: #fff; }
-			table.datagrid tr.alternate { background-color: #ffe; }
+			table.datagrid tr.alternate { background-color: #f0ffee; }
 		table.datagrid th { background-color: #ba8; padding: 3px 5px 3px 5px; text-align: left; }
 			table.datagrid th a { color: #000; text-decoration: none; }
 			table.datagrid th a:hover { color: #000; text-decoration: underline;}
