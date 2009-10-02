@@ -16,7 +16,7 @@
 	 * @package Qcodo Website
 	 * @subpackage GeneratedDataObjects
 	 * @property integer $WikiVersionId the value for intWikiVersionId (PK)
-	 * @property integer $WikiImageTypeId the value for intWikiImageTypeId (Not Null)
+	 * @property integer $ImageFileTypeId the value for intImageFileTypeId (Not Null)
 	 * @property integer $Width the value for intWidth 
 	 * @property integer $Height the value for intHeight 
 	 * @property string $Description the value for strDescription 
@@ -45,11 +45,11 @@
 		protected $__intWikiVersionId;
 
 		/**
-		 * Protected member variable that maps to the database column wiki_image.wiki_image_type_id
-		 * @var integer intWikiImageTypeId
+		 * Protected member variable that maps to the database column wiki_image.image_file_type_id
+		 * @var integer intImageFileTypeId
 		 */
-		protected $intWikiImageTypeId;
-		const WikiImageTypeIdDefault = null;
+		protected $intImageFileTypeId;
+		const ImageFileTypeIdDefault = null;
 
 
 		/**
@@ -372,7 +372,7 @@
 			}
 
 			$objBuilder->AddSelectItem($strTableName, 'wiki_version_id', $strAliasPrefix . 'wiki_version_id');
-			$objBuilder->AddSelectItem($strTableName, 'wiki_image_type_id', $strAliasPrefix . 'wiki_image_type_id');
+			$objBuilder->AddSelectItem($strTableName, 'image_file_type_id', $strAliasPrefix . 'image_file_type_id');
 			$objBuilder->AddSelectItem($strTableName, 'width', $strAliasPrefix . 'width');
 			$objBuilder->AddSelectItem($strTableName, 'height', $strAliasPrefix . 'height');
 			$objBuilder->AddSelectItem($strTableName, 'description', $strAliasPrefix . 'description');
@@ -410,8 +410,8 @@
 			$strAliasName = array_key_exists($strAliasPrefix . 'wiki_version_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'wiki_version_id'] : $strAliasPrefix . 'wiki_version_id';
 			$objToReturn->intWikiVersionId = $objDbRow->GetColumn($strAliasName, 'Integer');
 			$objToReturn->__intWikiVersionId = $objDbRow->GetColumn($strAliasName, 'Integer');
-			$strAliasName = array_key_exists($strAliasPrefix . 'wiki_image_type_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'wiki_image_type_id'] : $strAliasPrefix . 'wiki_image_type_id';
-			$objToReturn->intWikiImageTypeId = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'image_file_type_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'image_file_type_id'] : $strAliasPrefix . 'image_file_type_id';
+			$objToReturn->intImageFileTypeId = $objDbRow->GetColumn($strAliasName, 'Integer');
 			$strAliasName = array_key_exists($strAliasPrefix . 'width', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'width'] : $strAliasPrefix . 'width';
 			$objToReturn->intWidth = $objDbRow->GetColumn($strAliasName, 'Integer');
 			$strAliasName = array_key_exists($strAliasPrefix . 'height', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'height'] : $strAliasPrefix . 'height';
@@ -499,16 +499,16 @@
 			
 		/**
 		 * Load an array of WikiImage objects,
-		 * by WikiImageTypeId Index(es)
-		 * @param integer $intWikiImageTypeId
+		 * by ImageFileTypeId Index(es)
+		 * @param integer $intImageFileTypeId
 		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @return WikiImage[]
 		*/
-		public static function LoadArrayByWikiImageTypeId($intWikiImageTypeId, $objOptionalClauses = null) {
-			// Call WikiImage::QueryArray to perform the LoadArrayByWikiImageTypeId query
+		public static function LoadArrayByImageFileTypeId($intImageFileTypeId, $objOptionalClauses = null) {
+			// Call WikiImage::QueryArray to perform the LoadArrayByImageFileTypeId query
 			try {
 				return WikiImage::QueryArray(
-					QQ::Equal(QQN::WikiImage()->WikiImageTypeId, $intWikiImageTypeId),
+					QQ::Equal(QQN::WikiImage()->ImageFileTypeId, $intImageFileTypeId),
 					$objOptionalClauses);
 			} catch (QCallerException $objExc) {
 				$objExc->IncrementOffset();
@@ -518,14 +518,14 @@
 
 		/**
 		 * Count WikiImages
-		 * by WikiImageTypeId Index(es)
-		 * @param integer $intWikiImageTypeId
+		 * by ImageFileTypeId Index(es)
+		 * @param integer $intImageFileTypeId
 		 * @return int
 		*/
-		public static function CountByWikiImageTypeId($intWikiImageTypeId) {
-			// Call WikiImage::QueryCount to perform the CountByWikiImageTypeId query
+		public static function CountByImageFileTypeId($intImageFileTypeId) {
+			// Call WikiImage::QueryCount to perform the CountByImageFileTypeId query
 			return WikiImage::QueryCount(
-				QQ::Equal(QQN::WikiImage()->WikiImageTypeId, $intWikiImageTypeId)
+				QQ::Equal(QQN::WikiImage()->ImageFileTypeId, $intImageFileTypeId)
 			);
 		}
 
@@ -560,13 +560,13 @@
 					$objDatabase->NonQuery('
 						INSERT INTO `wiki_image` (
 							`wiki_version_id`,
-							`wiki_image_type_id`,
+							`image_file_type_id`,
 							`width`,
 							`height`,
 							`description`
 						) VALUES (
 							' . $objDatabase->SqlVariable($this->intWikiVersionId) . ',
-							' . $objDatabase->SqlVariable($this->intWikiImageTypeId) . ',
+							' . $objDatabase->SqlVariable($this->intImageFileTypeId) . ',
 							' . $objDatabase->SqlVariable($this->intWidth) . ',
 							' . $objDatabase->SqlVariable($this->intHeight) . ',
 							' . $objDatabase->SqlVariable($this->strDescription) . '
@@ -585,7 +585,7 @@
 							`wiki_image`
 						SET
 							`wiki_version_id` = ' . $objDatabase->SqlVariable($this->intWikiVersionId) . ',
-							`wiki_image_type_id` = ' . $objDatabase->SqlVariable($this->intWikiImageTypeId) . ',
+							`image_file_type_id` = ' . $objDatabase->SqlVariable($this->intImageFileTypeId) . ',
 							`width` = ' . $objDatabase->SqlVariable($this->intWidth) . ',
 							`height` = ' . $objDatabase->SqlVariable($this->intHeight) . ',
 							`description` = ' . $objDatabase->SqlVariable($this->strDescription) . '
@@ -670,7 +670,7 @@
 			// Update $this's local variables to match
 			$this->WikiVersionId = $objReloaded->WikiVersionId;
 			$this->__intWikiVersionId = $this->intWikiVersionId;
-			$this->WikiImageTypeId = $objReloaded->WikiImageTypeId;
+			$this->ImageFileTypeId = $objReloaded->ImageFileTypeId;
 			$this->intWidth = $objReloaded->intWidth;
 			$this->intHeight = $objReloaded->intHeight;
 			$this->strDescription = $objReloaded->strDescription;
@@ -701,12 +701,12 @@
 					 */
 					return $this->intWikiVersionId;
 
-				case 'WikiImageTypeId':
+				case 'ImageFileTypeId':
 					/**
-					 * Gets the value for intWikiImageTypeId (Not Null)
+					 * Gets the value for intImageFileTypeId (Not Null)
 					 * @return integer
 					 */
-					return $this->intWikiImageTypeId;
+					return $this->intImageFileTypeId;
 
 				case 'Width':
 					/**
@@ -794,14 +794,14 @@
 						throw $objExc;
 					}
 
-				case 'WikiImageTypeId':
+				case 'ImageFileTypeId':
 					/**
-					 * Sets the value for intWikiImageTypeId (Not Null)
+					 * Sets the value for intImageFileTypeId (Not Null)
 					 * @param integer $mixValue
 					 * @return integer
 					 */
 					try {
-						return ($this->intWikiImageTypeId = QType::Cast($mixValue, QType::Integer));
+						return ($this->intImageFileTypeId = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {
 						$objExc->IncrementOffset();
 						throw $objExc;
@@ -920,7 +920,7 @@
 		public static function GetSoapComplexTypeXml() {
 			$strToReturn = '<complexType name="WikiImage"><sequence>';
 			$strToReturn .= '<element name="WikiVersion" type="xsd1:WikiVersion"/>';
-			$strToReturn .= '<element name="WikiImageTypeId" type="xsd:int"/>';
+			$strToReturn .= '<element name="ImageFileTypeId" type="xsd:int"/>';
 			$strToReturn .= '<element name="Width" type="xsd:int"/>';
 			$strToReturn .= '<element name="Height" type="xsd:int"/>';
 			$strToReturn .= '<element name="Description" type="xsd:string"/>';
@@ -950,8 +950,8 @@
 			if ((property_exists($objSoapObject, 'WikiVersion')) &&
 				($objSoapObject->WikiVersion))
 				$objToReturn->WikiVersion = WikiVersion::GetObjectFromSoapObject($objSoapObject->WikiVersion);
-			if (property_exists($objSoapObject, 'WikiImageTypeId'))
-				$objToReturn->intWikiImageTypeId = $objSoapObject->WikiImageTypeId;
+			if (property_exists($objSoapObject, 'ImageFileTypeId'))
+				$objToReturn->intImageFileTypeId = $objSoapObject->ImageFileTypeId;
 			if (property_exists($objSoapObject, 'Width'))
 				$objToReturn->intWidth = $objSoapObject->Width;
 			if (property_exists($objSoapObject, 'Height'))
@@ -1004,8 +1004,8 @@
 					return new QQNode('wiki_version_id', 'WikiVersionId', 'integer', $this);
 				case 'WikiVersion':
 					return new QQNodeWikiVersion('wiki_version_id', 'WikiVersion', 'integer', $this);
-				case 'WikiImageTypeId':
-					return new QQNode('wiki_image_type_id', 'WikiImageTypeId', 'integer', $this);
+				case 'ImageFileTypeId':
+					return new QQNode('image_file_type_id', 'ImageFileTypeId', 'integer', $this);
 				case 'Width':
 					return new QQNode('width', 'Width', 'integer', $this);
 				case 'Height':
@@ -1036,8 +1036,8 @@
 					return new QQNode('wiki_version_id', 'WikiVersionId', 'integer', $this);
 				case 'WikiVersion':
 					return new QQNodeWikiVersion('wiki_version_id', 'WikiVersion', 'integer', $this);
-				case 'WikiImageTypeId':
-					return new QQNode('wiki_image_type_id', 'WikiImageTypeId', 'integer', $this);
+				case 'ImageFileTypeId':
+					return new QQNode('image_file_type_id', 'ImageFileTypeId', 'integer', $this);
 				case 'Width':
 					return new QQNode('width', 'Width', 'integer', $this);
 				case 'Height':

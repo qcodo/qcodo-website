@@ -16,6 +16,7 @@
 	 * @package Qcodo Website
 	 * @subpackage GeneratedDataObjects
 	 * @property-read integer $Id the value for intId (Read-Only PK)
+	 * @property integer $ImageFileTypeId the value for intImageFileTypeId (Not Null)
 	 * @property integer $PersonId the value for intPersonId (Not Null)
 	 * @property string $Name the value for strName 
 	 * @property string $Description the value for strDescription 
@@ -36,6 +37,14 @@
 		 */
 		protected $intId;
 		const IdDefault = null;
+
+
+		/**
+		 * Protected member variable that maps to the database column showcase_item.image_file_type_id
+		 * @var integer intImageFileTypeId
+		 */
+		protected $intImageFileTypeId;
+		const ImageFileTypeIdDefault = null;
 
 
 		/**
@@ -376,6 +385,7 @@
 			}
 
 			$objBuilder->AddSelectItem($strTableName, 'id', $strAliasPrefix . 'id');
+			$objBuilder->AddSelectItem($strTableName, 'image_file_type_id', $strAliasPrefix . 'image_file_type_id');
 			$objBuilder->AddSelectItem($strTableName, 'person_id', $strAliasPrefix . 'person_id');
 			$objBuilder->AddSelectItem($strTableName, 'name', $strAliasPrefix . 'name');
 			$objBuilder->AddSelectItem($strTableName, 'description', $strAliasPrefix . 'description');
@@ -414,6 +424,8 @@
 
 			$strAliasName = array_key_exists($strAliasPrefix . 'id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'id'] : $strAliasPrefix . 'id';
 			$objToReturn->intId = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'image_file_type_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'image_file_type_id'] : $strAliasPrefix . 'image_file_type_id';
+			$objToReturn->intImageFileTypeId = $objDbRow->GetColumn($strAliasName, 'Integer');
 			$strAliasName = array_key_exists($strAliasPrefix . 'person_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'person_id'] : $strAliasPrefix . 'person_id';
 			$objToReturn->intPersonId = $objDbRow->GetColumn($strAliasName, 'Integer');
 			$strAliasName = array_key_exists($strAliasPrefix . 'name', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'name'] : $strAliasPrefix . 'name';
@@ -500,6 +512,38 @@
 		public static function LoadById($intId) {
 			return ShowcaseItem::QuerySingle(
 				QQ::Equal(QQN::ShowcaseItem()->Id, $intId)
+			);
+		}
+			
+		/**
+		 * Load an array of ShowcaseItem objects,
+		 * by ImageFileTypeId Index(es)
+		 * @param integer $intImageFileTypeId
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @return ShowcaseItem[]
+		*/
+		public static function LoadArrayByImageFileTypeId($intImageFileTypeId, $objOptionalClauses = null) {
+			// Call ShowcaseItem::QueryArray to perform the LoadArrayByImageFileTypeId query
+			try {
+				return ShowcaseItem::QueryArray(
+					QQ::Equal(QQN::ShowcaseItem()->ImageFileTypeId, $intImageFileTypeId),
+					$objOptionalClauses);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+		}
+
+		/**
+		 * Count ShowcaseItems
+		 * by ImageFileTypeId Index(es)
+		 * @param integer $intImageFileTypeId
+		 * @return int
+		*/
+		public static function CountByImageFileTypeId($intImageFileTypeId) {
+			// Call ShowcaseItem::QueryCount to perform the CountByImageFileTypeId query
+			return ShowcaseItem::QueryCount(
+				QQ::Equal(QQN::ShowcaseItem()->ImageFileTypeId, $intImageFileTypeId)
 			);
 		}
 			
@@ -597,12 +641,14 @@
 					// Perform an INSERT query
 					$objDatabase->NonQuery('
 						INSERT INTO `showcase_item` (
+							`image_file_type_id`,
 							`person_id`,
 							`name`,
 							`description`,
 							`url`,
 							`live_flag`
 						) VALUES (
+							' . $objDatabase->SqlVariable($this->intImageFileTypeId) . ',
 							' . $objDatabase->SqlVariable($this->intPersonId) . ',
 							' . $objDatabase->SqlVariable($this->strName) . ',
 							' . $objDatabase->SqlVariable($this->strDescription) . ',
@@ -623,6 +669,7 @@
 						UPDATE
 							`showcase_item`
 						SET
+							`image_file_type_id` = ' . $objDatabase->SqlVariable($this->intImageFileTypeId) . ',
 							`person_id` = ' . $objDatabase->SqlVariable($this->intPersonId) . ',
 							`name` = ' . $objDatabase->SqlVariable($this->strName) . ',
 							`description` = ' . $objDatabase->SqlVariable($this->strDescription) . ',
@@ -706,6 +753,7 @@
 			$objReloaded = ShowcaseItem::Load($this->intId);
 
 			// Update $this's local variables to match
+			$this->ImageFileTypeId = $objReloaded->ImageFileTypeId;
 			$this->PersonId = $objReloaded->PersonId;
 			$this->strName = $objReloaded->strName;
 			$this->strDescription = $objReloaded->strDescription;
@@ -737,6 +785,13 @@
 					 * @return integer
 					 */
 					return $this->intId;
+
+				case 'ImageFileTypeId':
+					/**
+					 * Gets the value for intImageFileTypeId (Not Null)
+					 * @return integer
+					 */
+					return $this->intImageFileTypeId;
 
 				case 'PersonId':
 					/**
@@ -824,6 +879,19 @@
 				///////////////////
 				// Member Variables
 				///////////////////
+				case 'ImageFileTypeId':
+					/**
+					 * Sets the value for intImageFileTypeId (Not Null)
+					 * @param integer $mixValue
+					 * @return integer
+					 */
+					try {
+						return ($this->intImageFileTypeId = QType::Cast($mixValue, QType::Integer));
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
 				case 'PersonId':
 					/**
 					 * Sets the value for intPersonId (Not Null)
@@ -964,6 +1032,7 @@
 		public static function GetSoapComplexTypeXml() {
 			$strToReturn = '<complexType name="ShowcaseItem"><sequence>';
 			$strToReturn .= '<element name="Id" type="xsd:int"/>';
+			$strToReturn .= '<element name="ImageFileTypeId" type="xsd:int"/>';
 			$strToReturn .= '<element name="Person" type="xsd1:Person"/>';
 			$strToReturn .= '<element name="Name" type="xsd:string"/>';
 			$strToReturn .= '<element name="Description" type="xsd:string"/>';
@@ -994,6 +1063,8 @@
 			$objToReturn = new ShowcaseItem();
 			if (property_exists($objSoapObject, 'Id'))
 				$objToReturn->intId = $objSoapObject->Id;
+			if (property_exists($objSoapObject, 'ImageFileTypeId'))
+				$objToReturn->intImageFileTypeId = $objSoapObject->ImageFileTypeId;
 			if ((property_exists($objSoapObject, 'Person')) &&
 				($objSoapObject->Person))
 				$objToReturn->Person = Person::GetObjectFromSoapObject($objSoapObject->Person);
@@ -1049,6 +1120,8 @@
 			switch ($strName) {
 				case 'Id':
 					return new QQNode('id', 'Id', 'integer', $this);
+				case 'ImageFileTypeId':
+					return new QQNode('image_file_type_id', 'ImageFileTypeId', 'integer', $this);
 				case 'PersonId':
 					return new QQNode('person_id', 'PersonId', 'integer', $this);
 				case 'Person':
@@ -1083,6 +1156,8 @@
 			switch ($strName) {
 				case 'Id':
 					return new QQNode('id', 'Id', 'integer', $this);
+				case 'ImageFileTypeId':
+					return new QQNode('image_file_type_id', 'ImageFileTypeId', 'integer', $this);
 				case 'PersonId':
 					return new QQNode('person_id', 'PersonId', 'integer', $this);
 				case 'Person':

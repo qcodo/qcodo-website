@@ -14,9 +14,9 @@ INSERT INTO wiki_item_type VALUES(1, 'Page');
 INSERT INTO wiki_item_type VALUES(2, 'Image');
 INSERT INTO wiki_item_type VALUES(3, 'File');
 
-INSERT INTO wiki_image_type VALUES(1, 'Jpeg');
-INSERT INTO wiki_image_type VALUES(2, 'Png');
-INSERT INTO wiki_image_type VALUES(3, 'Gif');
+INSERT INTO image_file_type VALUES(1, 'Jpeg');
+INSERT INTO image_file_type VALUES(2, 'Png');
+INSERT INTO image_file_type VALUES(3, 'Gif');
 
 
 INSERT INTO person(person_type_id, username, first_name, last_name, email, password, display_real_name_flag, display_email_flag, opt_in_flag, donated_flag, location, country_id, url, registration_date, display_name) VALUES

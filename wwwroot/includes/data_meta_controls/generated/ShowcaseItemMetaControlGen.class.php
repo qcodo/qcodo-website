@@ -18,6 +18,8 @@
 	 * property-read ShowcaseItem $ShowcaseItem the actual ShowcaseItem data class being edited
 	 * property QLabel $IdControl
 	 * property-read QLabel $IdLabel
+	 * property QListBox $ImageFileTypeIdControl
+	 * property-read QLabel $ImageFileTypeIdLabel
 	 * property QListBox $PersonIdControl
 	 * property-read QLabel $PersonIdLabel
 	 * property QTextBox $NameControl
@@ -41,6 +43,7 @@
 
 		// Controls that allow the editing of ShowcaseItem's individual data fields
 		protected $lblId;
+		protected $lstImageFileType;
 		protected $lstPerson;
 		protected $txtName;
 		protected $txtDescription;
@@ -48,6 +51,7 @@
 		protected $chkLiveFlag;
 
 		// Controls that allow the viewing of ShowcaseItem's individual data fields
+		protected $lblImageFileTypeId;
 		protected $lblPersonId;
 		protected $lblName;
 		protected $lblDescription;
@@ -164,6 +168,33 @@
 			else
 				$this->lblId->Text = 'N/A';
 			return $this->lblId;
+		}
+
+		/**
+		 * Create and setup QListBox lstImageFileType
+		 * @param string $strControlId optional ControlId to use
+		 * @return QListBox
+		 */
+		public function lstImageFileType_Create($strControlId = null) {
+			$this->lstImageFileType = new QListBox($this->objParentObject, $strControlId);
+			$this->lstImageFileType->Name = QApplication::Translate('Image File Type');
+			$this->lstImageFileType->Required = true;
+			foreach (ImageFileType::$NameArray as $intId => $strValue)
+				$this->lstImageFileType->AddItem(new QListItem($strValue, $intId, $this->objShowcaseItem->ImageFileTypeId == $intId));
+			return $this->lstImageFileType;
+		}
+
+		/**
+		 * Create and setup QLabel lblImageFileTypeId
+		 * @param string $strControlId optional ControlId to use
+		 * @return QLabel
+		 */
+		public function lblImageFileTypeId_Create($strControlId = null) {
+			$this->lblImageFileTypeId = new QLabel($this->objParentObject, $strControlId);
+			$this->lblImageFileTypeId->Name = QApplication::Translate('Image File Type');
+			$this->lblImageFileTypeId->Text = ($this->objShowcaseItem->ImageFileTypeId) ? ImageFileType::$NameArray[$this->objShowcaseItem->ImageFileTypeId] : null;
+			$this->lblImageFileTypeId->Required = true;
+			return $this->lblImageFileTypeId;
 		}
 
 		/**
@@ -312,6 +343,9 @@
 
 			if ($this->lblId) if ($this->blnEditMode) $this->lblId->Text = $this->objShowcaseItem->Id;
 
+			if ($this->lstImageFileType) $this->lstImageFileType->SelectedValue = $this->objShowcaseItem->ImageFileTypeId;
+			if ($this->lblImageFileTypeId) $this->lblImageFileTypeId->Text = ($this->objShowcaseItem->ImageFileTypeId) ? ImageFileType::$NameArray[$this->objShowcaseItem->ImageFileTypeId] : null;
+
 			if ($this->lstPerson) {
 					$this->lstPerson->RemoveAllItems();
 				if (!$this->blnEditMode)
@@ -361,6 +395,7 @@
 		public function SaveShowcaseItem() {
 			try {
 				// Update any fields for controls that have been created
+				if ($this->lstImageFileType) $this->objShowcaseItem->ImageFileTypeId = $this->lstImageFileType->SelectedValue;
 				if ($this->lstPerson) $this->objShowcaseItem->PersonId = $this->lstPerson->SelectedValue;
 				if ($this->txtName) $this->objShowcaseItem->Name = $this->txtName->Text;
 				if ($this->txtDescription) $this->objShowcaseItem->Description = $this->txtDescription->Text;
@@ -414,6 +449,12 @@
 				case 'IdLabel':
 					if (!$this->lblId) return $this->lblId_Create();
 					return $this->lblId;
+				case 'ImageFileTypeIdControl':
+					if (!$this->lstImageFileType) return $this->lstImageFileType_Create();
+					return $this->lstImageFileType;
+				case 'ImageFileTypeIdLabel':
+					if (!$this->lblImageFileTypeId) return $this->lblImageFileTypeId_Create();
+					return $this->lblImageFileTypeId;
 				case 'PersonIdControl':
 					if (!$this->lstPerson) return $this->lstPerson_Create();
 					return $this->lstPerson;
@@ -468,6 +509,8 @@
 					// Controls that point to ShowcaseItem fields
 					case 'IdControl':
 						return ($this->lblId = QType::Cast($mixValue, 'QControl'));
+					case 'ImageFileTypeIdControl':
+						return ($this->lstImageFileType = QType::Cast($mixValue, 'QControl'));
 					case 'PersonIdControl':
 						return ($this->lstPerson = QType::Cast($mixValue, 'QControl'));
 					case 'NameControl':

@@ -275,7 +275,7 @@
 			} else if (is_string($mixContent)) switch ($mixContent) {
 				case 'WikiVersionId': return QQN::WikiImage()->WikiVersionId;
 				case 'WikiVersion': return QQN::WikiImage()->WikiVersion;
-				case 'WikiImageTypeId': return QQN::WikiImage()->WikiImageTypeId;
+				case 'ImageFileTypeId': return QQN::WikiImage()->ImageFileTypeId;
 				case 'Width': return QQN::WikiImage()->Width;
 				case 'Height': return QQN::WikiImage()->Height;
 				case 'Description': return QQN::WikiImage()->Description;

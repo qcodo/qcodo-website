@@ -274,6 +274,7 @@
 					throw new QCallerException('Content QQNode has a root table of "' . $mixContent->_RootTableName . '". Must be a root of "showcase_item".');
 			} else if (is_string($mixContent)) switch ($mixContent) {
 				case 'Id': return QQN::ShowcaseItem()->Id;
+				case 'ImageFileTypeId': return QQN::ShowcaseItem()->ImageFileTypeId;
 				case 'PersonId': return QQN::ShowcaseItem()->PersonId;
 				case 'Person': return QQN::ShowcaseItem()->Person;
 				case 'Name': return QQN::ShowcaseItem()->Name;

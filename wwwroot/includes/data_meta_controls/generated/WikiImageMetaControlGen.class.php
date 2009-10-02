@@ -18,8 +18,8 @@
 	 * property-read WikiImage $WikiImage the actual WikiImage data class being edited
 	 * property QListBox $WikiVersionIdControl
 	 * property-read QLabel $WikiVersionIdLabel
-	 * property QListBox $WikiImageTypeIdControl
-	 * property-read QLabel $WikiImageTypeIdLabel
+	 * property QListBox $ImageFileTypeIdControl
+	 * property-read QLabel $ImageFileTypeIdLabel
 	 * property QIntegerTextBox $WidthControl
 	 * property-read QLabel $WidthLabel
 	 * property QIntegerTextBox $HeightControl
@@ -39,14 +39,14 @@
 
 		// Controls that allow the editing of WikiImage's individual data fields
 		protected $lstWikiVersion;
-		protected $lstWikiImageType;
+		protected $lstImageFileType;
 		protected $txtWidth;
 		protected $txtHeight;
 		protected $txtDescription;
 
 		// Controls that allow the viewing of WikiImage's individual data fields
 		protected $lblWikiVersionId;
-		protected $lblWikiImageTypeId;
+		protected $lblImageFileTypeId;
 		protected $lblWidth;
 		protected $lblHeight;
 		protected $lblDescription;
@@ -183,30 +183,30 @@
 		}
 
 		/**
-		 * Create and setup QListBox lstWikiImageType
+		 * Create and setup QListBox lstImageFileType
 		 * @param string $strControlId optional ControlId to use
 		 * @return QListBox
 		 */
-		public function lstWikiImageType_Create($strControlId = null) {
-			$this->lstWikiImageType = new QListBox($this->objParentObject, $strControlId);
-			$this->lstWikiImageType->Name = QApplication::Translate('Wiki Image Type');
-			$this->lstWikiImageType->Required = true;
-			foreach (WikiImageType::$NameArray as $intId => $strValue)
-				$this->lstWikiImageType->AddItem(new QListItem($strValue, $intId, $this->objWikiImage->WikiImageTypeId == $intId));
-			return $this->lstWikiImageType;
+		public function lstImageFileType_Create($strControlId = null) {
+			$this->lstImageFileType = new QListBox($this->objParentObject, $strControlId);
+			$this->lstImageFileType->Name = QApplication::Translate('Image File Type');
+			$this->lstImageFileType->Required = true;
+			foreach (ImageFileType::$NameArray as $intId => $strValue)
+				$this->lstImageFileType->AddItem(new QListItem($strValue, $intId, $this->objWikiImage->ImageFileTypeId == $intId));
+			return $this->lstImageFileType;
 		}
 
 		/**
-		 * Create and setup QLabel lblWikiImageTypeId
+		 * Create and setup QLabel lblImageFileTypeId
 		 * @param string $strControlId optional ControlId to use
 		 * @return QLabel
 		 */
-		public function lblWikiImageTypeId_Create($strControlId = null) {
-			$this->lblWikiImageTypeId = new QLabel($this->objParentObject, $strControlId);
-			$this->lblWikiImageTypeId->Name = QApplication::Translate('Wiki Image Type');
-			$this->lblWikiImageTypeId->Text = ($this->objWikiImage->WikiImageTypeId) ? WikiImageType::$NameArray[$this->objWikiImage->WikiImageTypeId] : null;
-			$this->lblWikiImageTypeId->Required = true;
-			return $this->lblWikiImageTypeId;
+		public function lblImageFileTypeId_Create($strControlId = null) {
+			$this->lblImageFileTypeId = new QLabel($this->objParentObject, $strControlId);
+			$this->lblImageFileTypeId->Name = QApplication::Translate('Image File Type');
+			$this->lblImageFileTypeId->Text = ($this->objWikiImage->ImageFileTypeId) ? ImageFileType::$NameArray[$this->objWikiImage->ImageFileTypeId] : null;
+			$this->lblImageFileTypeId->Required = true;
+			return $this->lblImageFileTypeId;
 		}
 
 		/**
@@ -311,8 +311,8 @@
 			}
 			if ($this->lblWikiVersionId) $this->lblWikiVersionId->Text = ($this->objWikiImage->WikiVersion) ? $this->objWikiImage->WikiVersion->__toString() : null;
 
-			if ($this->lstWikiImageType) $this->lstWikiImageType->SelectedValue = $this->objWikiImage->WikiImageTypeId;
-			if ($this->lblWikiImageTypeId) $this->lblWikiImageTypeId->Text = ($this->objWikiImage->WikiImageTypeId) ? WikiImageType::$NameArray[$this->objWikiImage->WikiImageTypeId] : null;
+			if ($this->lstImageFileType) $this->lstImageFileType->SelectedValue = $this->objWikiImage->ImageFileTypeId;
+			if ($this->lblImageFileTypeId) $this->lblImageFileTypeId->Text = ($this->objWikiImage->ImageFileTypeId) ? ImageFileType::$NameArray[$this->objWikiImage->ImageFileTypeId] : null;
 
 			if ($this->txtWidth) $this->txtWidth->Text = $this->objWikiImage->Width;
 			if ($this->lblWidth) $this->lblWidth->Text = $this->objWikiImage->Width;
@@ -347,7 +347,7 @@
 			try {
 				// Update any fields for controls that have been created
 				if ($this->lstWikiVersion) $this->objWikiImage->WikiVersionId = $this->lstWikiVersion->SelectedValue;
-				if ($this->lstWikiImageType) $this->objWikiImage->WikiImageTypeId = $this->lstWikiImageType->SelectedValue;
+				if ($this->lstImageFileType) $this->objWikiImage->ImageFileTypeId = $this->lstImageFileType->SelectedValue;
 				if ($this->txtWidth) $this->objWikiImage->Width = $this->txtWidth->Text;
 				if ($this->txtHeight) $this->objWikiImage->Height = $this->txtHeight->Text;
 				if ($this->txtDescription) $this->objWikiImage->Description = $this->txtDescription->Text;
@@ -399,12 +399,12 @@
 				case 'WikiVersionIdLabel':
 					if (!$this->lblWikiVersionId) return $this->lblWikiVersionId_Create();
 					return $this->lblWikiVersionId;
-				case 'WikiImageTypeIdControl':
-					if (!$this->lstWikiImageType) return $this->lstWikiImageType_Create();
-					return $this->lstWikiImageType;
-				case 'WikiImageTypeIdLabel':
-					if (!$this->lblWikiImageTypeId) return $this->lblWikiImageTypeId_Create();
-					return $this->lblWikiImageTypeId;
+				case 'ImageFileTypeIdControl':
+					if (!$this->lstImageFileType) return $this->lstImageFileType_Create();
+					return $this->lstImageFileType;
+				case 'ImageFileTypeIdLabel':
+					if (!$this->lblImageFileTypeId) return $this->lblImageFileTypeId_Create();
+					return $this->lblImageFileTypeId;
 				case 'WidthControl':
 					if (!$this->txtWidth) return $this->txtWidth_Create();
 					return $this->txtWidth;
@@ -447,8 +447,8 @@
 					// Controls that point to WikiImage fields
 					case 'WikiVersionIdControl':
 						return ($this->lstWikiVersion = QType::Cast($mixValue, 'QControl'));
-					case 'WikiImageTypeIdControl':
-						return ($this->lstWikiImageType = QType::Cast($mixValue, 'QControl'));
+					case 'ImageFileTypeIdControl':
+						return ($this->lstImageFileType = QType::Cast($mixValue, 'QControl'));
 					case 'WidthControl':
 						return ($this->txtWidth = QType::Cast($mixValue, 'QControl'));
 					case 'HeightControl':
