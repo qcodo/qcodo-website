@@ -19,8 +19,10 @@
 	<div class="issueLeftColumn">
 		<?php $this->pnlDetails->Render(); ?>
 <?php if ($this->objIssue->IsEditableForPerson(QApplication::$Person)) { ?>
-		<div class="roundedLink roundedLinkGray"><a href="/issues/edit.php/<?php _p($this->objIssue->Id); ?>" title="Edit This Issue" style="">Edit Issue</a></div><br clear="all"/><br/>
+		<div class="roundedLink roundedLinkGray"><a href="/issues/edit.php/<?php _p($this->objIssue->Id); ?>" title="Edit this issue" style="">Edit Issue</a></div><br clear="all"/><br/>
 <?php } ?>
+<?php if ($this->btnSubmitFix) { $this->btnSubmitFix->Render(); print('<br clear="all"/><br/>'); } ?>
+
 		<?php $this->pnlVotes->Render(); ?>
 
 		<?php $this->pnlExampleCode->Render(); ?>
@@ -31,6 +33,7 @@
 		<?php $this->dlgZoom->Render(); ?>
 	</div>
 
+	<?php $this->pnlNotice->Render(); ?>
 	<?php $this->pnlMessages->Render(); ?>
 	<br clear="all"/>
 

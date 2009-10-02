@@ -3,8 +3,13 @@
 	<div class="searchBar">
 		<div class="title">Qcodo Bugs and Issues</div>
 		<div class="right issue">
+			&nbsp;
+			&nbsp;
 			Go to Issue ID: 
 			<?php $this->txtId->Render('CssClass=searchIssueTextBox','MaxLength=6'); ?>
+		</div>
+		<div class="right">
+			<?php $this->btnNew->Render('Text=Report an Issue'); ?>
 		</div>
 	</div>
 	

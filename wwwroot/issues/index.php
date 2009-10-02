@@ -13,6 +13,7 @@
 		protected $dtgIssues;
 
 		protected $txtId;
+		protected $btnNew;
 
 		protected $txtSummary;
 		protected $lstCategory;
@@ -59,6 +60,11 @@
 			$this->txtId->AddAction(new QEnterKeyEvent(), new QTerminateAction());
 			$this->txtId->CausesValidation = $this->txtId;
 
+			$this->btnNew = new RoundedLinkButton($this);
+			$this->btnNew->CssClass = 'searchOption';
+			$this->btnNew->ToolTip = 'Report a new bug or issue';
+			$this->btnNew->LinkUrl = '/issues/edit.php/new';
+			
 			$this->txtSummary = new QTextBox($this);
 			$this->txtSummary->Name = 'Summary';
 			$this->txtSummary->AddAction(new QChangeEvent(), new QAjaxAction('Refresh'));

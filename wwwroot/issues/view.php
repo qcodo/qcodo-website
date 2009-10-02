@@ -11,6 +11,15 @@
 
 		protected $pnlDetails;
 
+		protected $btnSubmitFix;
+		protected $pxySubmitFix;
+
+		protected $dlgSubmitFix;
+		protected $txtSubmitFixLink;
+		protected $txtSubmitFixNotes;
+		protected $btnSubmitFixOkay;
+		protected $btnSubmitFixCancel;
+
 		protected $pnlVotes;
 		protected $dtrVotes;
 		protected $btnVotes;
@@ -27,6 +36,7 @@
 		protected $lblZoomHeadline;
 		protected $pnlZoomCode;
 		
+		protected $pnlNotice;
 		protected $pnlMessages;
 
 		protected function Form_Create() {
@@ -38,7 +48,51 @@
 
 			$this->pnlDetails = new QPanel($this);
 			$this->pnlDetails->Template = dirname(__FILE__) . '/pnlDetails.tpl.php';
+
+			$objTopic = $this->objIssue->TopicLink->GetTopic();
+			$objTopic->MarkAsViewed();
+			$this->pnlMessages = new MessagesPanel($this);
+			$this->pnlMessages->SelectTopic($objTopic);
+			$this->pnlMessages->lblTopicInfo_SetTemplate(__INCLUDES__ . '/messages/lblTopicInfoForIssue.tpl.php');
+			if (QApplication::PathInfo(1) == 'lastpage')
+				$this->pnlMessages->SetPageNumber(QPaginatedControl::LastPage);
+
+			$this->SetupIssueInformationControls();
+			$this->SetupVotingControls();
+			$this->SetupSubmitFixControls();
+		}
+
+		protected function SetupSubmitFixControls() {
+			if ($this->objIssue->IssueStatusTypeId != IssueStatusType::Closed) {
+				$this->btnSubmitFix = new RoundedLinkButton($this);
+				$this->btnSubmitFix->Text = 'Submit a Fix';
+				$this->btnSubmitFix->AddCssClass('roundedLinkGray');
+				$this->btnSubmitFix->AddAction(new QClickEvent(), new QAjaxAction('btnSubmitFix_Click'));
+				$this->btnSubmitFix->AddAction(new QClickEvent(), new QTerminateAction());
+			}
 			
+			$this->pxySubmitFix = new QControlProxy($this);
+			$this->pxySubmitFix->AddAction(new QClickEvent(), new QAjaxAction('btnSubmitFix_Click'));
+			$this->pxySubmitFix->AddAction(new QClickEvent(), new QTerminateAction());
+
+			$this->pnlNotice = new QPanel($this);
+			$this->pnlNotice->CssClass = 'issueNotice';
+			if (QApplication::$Person &&
+				($this->objIssue->AssignedToPersonId == QApplication::$Person->Id) &&
+				($this->objIssue->IssueStatusTypeId != IssueStatusType::Closed)) {
+				$this->pnlNotice->Text = 'Your are currently assigned to resolve this issue. <a href="#" ' . $this->pxySubmitFix->RenderAsEvents(null, false) . ' title="Submit a proposed fix">submit a fix</a>';
+			} else {
+				$this->pnlNotice->Visible = false;
+			}
+
+//			protected $dlgSubmitFix;
+//			protected $txtSubmitFixLink;
+//			protected $txtSubmitFixNotes;
+//			protected $btnSubmitFixOkay;
+//			protected $btnSubmitFixCancel;
+		}
+		
+		protected function SetupVotingControls() {
 			$this->pnlVotes = new QPanel($this);
 			$this->pnlVotes->CssClass = 'pnlVotes';
 			$this->pnlVotes->Template = dirname(__FILE__) . '/pnlVotes.tpl.php';
@@ -54,7 +108,9 @@
 				$this->btnVotes->Visible = false;
 			$this->btnVotes->SetCustomStyle('margin-top', '10px');
 			$this->btnVotes->SetCustomStyle('margin-bottom', '4px');
-			
+		}
+		
+		protected function SetupIssueInformationControls() {
 			$this->pnlExampleCode = new QPanel($this, 'ExampleCode');
 			$this->pnlExampleCode->Template = dirname(__FILE__) . '/pnlExample.tpl.php';
 
@@ -70,14 +126,6 @@
 			$this->pnlActualOutput = new QPanel($this, 'ActualOutput');
 			$this->pnlActualOutput->Template = dirname(__FILE__) . '/pnlExample.tpl.php';
 
-			$objTopic = $this->objIssue->TopicLink->GetTopic();
-			$objTopic->MarkAsViewed();
-			$this->pnlMessages = new MessagesPanel($this);
-			$this->pnlMessages->SelectTopic($objTopic);
-			$this->pnlMessages->lblTopicInfo_SetTemplate(__INCLUDES__ . '/messages/lblTopicInfoForIssue.tpl.php');
-			if (QApplication::PathInfo(1) == 'lastpage')
-				$this->pnlMessages->SetPageNumber(QPaginatedControl::LastPage);
-				
 			$this->pxyZoom = new QControlProxy($this);
 			$this->pxyZoom->AddAction(new QClickEvent(), new QAjaxAction('pxyZoom_Click'));
 			$this->pxyZoom->AddAction(new QClickEvent(), new QTerminateAction());
