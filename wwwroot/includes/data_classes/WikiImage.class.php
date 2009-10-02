@@ -44,13 +44,13 @@
 			$this->intHeight = $arrValues[1];
 			switch ($arrValues[2]) {
 				case IMAGETYPE_JPEG:
-					$this->intWikiImageTypeId = WIkiImageType::Jpeg;
+					$this->intImageFileTypeId = ImageFileType::Jpeg;
 					break;
 				case IMAGETYPE_PNG:
-					$this->intWikiImageTypeId = WIkiImageType::Png;
+					$this->intImageFileTypeId = ImageFileType::Png;
 					break;
 				case IMAGETYPE_GIF:
-					$this->intWikiImageTypeId = WIkiImageType::Gif;
+					$this->intImageFileTypeId = ImageFileType::Gif;
 					break;
 				default:
 					throw new QCallerException('Not a valid image file: ' . $strTemporaryFilePath);
@@ -70,7 +70,7 @@
 		}
 
 		public function GetPath() {
-			return $this->GetFolder() . '/image.' . WikiImageType::$ExtensionArray[$this->intWikiImageTypeId];
+			return $this->GetFolder() . '/image.' . ImageFileType::$ExtensionArray[$this->intImageFileTypeId];
 		}
 
 		protected function GetThumbFolder() {
@@ -84,7 +84,7 @@
 		 */
 		public function GetThumbPath() {
 			// calculate the web/docroot-relative path
-			$strThumbPath = $this->GetThumbFolder() . '/' . $this->intWikiVersionId . '.' . WikiImageType::$ExtensionArray[$this->intWikiImageTypeId];
+			$strThumbPath = $this->GetThumbFolder() . '/' . $this->intWikiVersionId . '.' . ImageFileType::$ExtensionArray[$this->intImageFileTypeId];
 
 			// See if the thumbnail image, itself exists
 			if (file_exists(__DOCROOT__ . $strThumbPath))
