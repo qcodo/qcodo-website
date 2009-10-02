@@ -73,12 +73,35 @@
 			return $this->GetFolder() . '/image.' . WikiImageType::$ExtensionArray[$this->intWikiImageTypeId];
 		}
 
-		public function GetThumbFolder() {
-			return __WIKI_FILE_THUMBNAILS__ . '/' . $this->WikiVersion->WikiItemId . '/' . $this->intWikiVersionId;
+		protected function GetThumbFolder() {
+			return __IMAGES_CACHED__ . '/WikiImage/' . $this->WikiVersion->WikiItemId;
 		}
 
+		/**
+		 * This will return the web/docroot-relative path for the thumbnail image for this wiki image
+		 * NOTE: if the thumbnail does not exist, this will also CREATE the thumbnail
+		 * @return string
+		 */
 		public function GetThumbPath() {
-			return $this->GetThumbFolder() . '/thumb.' . WikiImageType::$ExtensionArray[$this->intWikiImageTypeId];
+			// calculate the web/docroot-relative path
+			$strThumbPath = $this->GetThumbFolder() . '/' . $this->intWikiVersionId . '.' . WikiImageType::$ExtensionArray[$this->intWikiImageTypeId];
+
+			// See if the thumbnail image, itself exists
+			if (file_exists(__DOCROOT__ . $strThumbPath))
+				return $strThumbPath;
+
+			// It does NOT exist -- we need to create it first
+			QApplication::MakeDirectory(__DOCROOT__ . $this->GetThumbFolder(), 0777);
+
+			$objImageControl = new QImageControl(null);
+			$objImageControl->ImagePath = $this->GetPath();
+			$objImageControl->Width = 240;
+			$objImageControl->Height = 240;
+			$objImageControl->ScaleCanvasDown = true;
+			$objImageControl->ScaleImageUp = false;
+			$objImageControl->RenderImage(__DOCROOT__ . $strThumbPath);
+
+			return $strThumbPath;
 		}
 
 		public function GetImageSourceUrl() {

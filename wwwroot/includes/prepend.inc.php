@@ -355,7 +355,26 @@
 			 */
 			public static function DisplayWithWikiLinks($strContent) {
 				// Fix up for images
-				$strContent = (preg_replace('/<wikiImage position="(Left|Right)" path="\\/([a-z0-9\\_\\/]*)"\\/>/', '<div class="wikiThumb wikiThumb${1}"><a href="/wiki/image:${2}" title="Edit This Image"><img src="/wiki/view_thumb.php/${2}"/></a></div>', $strContent));
+				$intCount = preg_match_all('/<wikiImage position="(Left|Right)" path="([a-z0-9\\_\\/]*)"\\/>/', $strContent, $arrMatches);
+				for ($intMatch = 0; $intMatch < $intCount; $intMatch++) {
+					$strTagToReplace = $arrMatches[0][$intMatch];
+					$strPosition = $arrMatches[1][$intMatch];
+					$strPath = $arrMatches[2][$intMatch];
+					
+					$objWikiItem = WikiItem::LoadByPathWikiItemTypeId($strPath, WikiItemType::Image);
+
+					if ($objWikiItem) {
+						$strReplacement = sprintf('<div class="wikiThumb wikiThumb%s"><a href="/wiki/image:%s" title="View This Image"><img src="%s"/></a></div>',
+							$strPosition, substr($strPath, 1), $objWikiItem->CurrentWikiVersion->WikiImage->GetThumbPath());
+					} else {
+						$strReplacement = sprintf('<div class="wikiThumb wikiThumb%s"><a href="/wiki/edit.php/image:%s" title="Create This Image"><img src="/images/no_image.png"/></a></div>',
+							$strPosition, substr($strPath, 1));
+					}
+
+					$strContent = str_replace($strTagToReplace, $strReplacement, $strContent);
+				}
+
+//				$strContent = (preg_replace('/<wikiImage position="(Left|Right)" path="\\/([a-z0-9\\_\\/]*)"\\/>/', '<div class="wikiThumb wikiThumb${1}"><a href="/wiki/image:${2}" title="Edit This Image"><img src="/wiki/view_thumb.php/${2}"/></a></div>', $strContent));
 
 				// Fix up for files
 				$intCount = preg_match_all('/<wikiFile path="([a-z0-9\\_\\/]*)"\\/>/', $strContent, $arrMatches);

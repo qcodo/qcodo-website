@@ -30,7 +30,6 @@
 	define('__DATA_ASSETS__', __DOCROOT__ . '/../data_assets');
 	define('__SEARCH_INDEXES__', __DATA_ASSETS__ . '/search_indexes');
 	define('__WIKI_FILE_REPOSITORY__', __DATA_ASSETS__ . '/wiki_assets');
-	define('__WIKI_FILE_THUMBNAILS__', __DATA_ASSETS__ . '/wiki_assets/thumbnails');
 	define('__SHOWCASE_IMAGES__', __DATA_ASSETS__ . '/showcase_images');
 
 	define('__QCODO_BUILDS__', '/var/www/qcodo_builds');
@@ -53,6 +52,8 @@
 	define ('__CSS_ASSETS__', __SUBDIRECTORY__ . '/assets/css');
 	define ('__IMAGE_ASSETS__', __SUBDIRECTORY__ . '/assets/images');
 	define ('__PHP_ASSETS__', __SUBDIRECTORY__ . '/assets/php');
+
+	define ('__IMAGES_CACHED__', '/images/cached');
 
 	if ((function_exists('date_default_timezone_set')) && (!ini_get('date.timezone')))
 		date_default_timezone_set('America/Los_Angeles');

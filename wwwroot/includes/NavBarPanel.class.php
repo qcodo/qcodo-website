@@ -83,7 +83,7 @@
 			// Other Stuff
 			$this->ctlWelcomeImage = new SubNavIdentityImage($this);
 			$this->ctlWelcomeImage->Width = 249;
-			$this->ctlWelcomeImage->CacheFolder = '/images/cached';
+			$this->ctlWelcomeImage->CacheFolder = __IMAGES_CACHED__ . '/NavBarPanel';
 			$this->ctlLoginOut = new QImageRollover($this);
 			$this->ctlRegisterProfile = new QImageRollover($this);
 
