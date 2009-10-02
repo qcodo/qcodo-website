@@ -32,27 +32,39 @@
 		}
 
 		public function GetImagePath() {
-			return $this->GetImageFolder() . '/image.jpg';
+			return $this->GetImageFolder() . '/image.' . ImageFileType::$ExtensionArray[$this->intImageFileTypeId];
 		}
 
-		public function GetThumbPath() {
-			return $this->GetImageFolder() . '/thumb.jpg';
-		}
+//		public function GetThumbPath() {
+//			return $this->GetImageFolder() . '/thumb.jpg';
+//		}
 
-		public function SaveImage($strImageTempPath) {
+		public function SaveWithImage($strTemporaryFilePath) {
+			// Get Image Info and Ensure a Valid Image
+			$arrValues = getimagesize($strTemporaryFilePath);
+			if (!$arrValues || !count($arrValues) || !$arrValues[0] || !$arrValues[1] || !$arrValues[2])
+				throw new QCallerException('Not a valid image file: ' . $strTemporaryFilePath);
+
+			// Update image metadata info
+			switch ($arrValues[2]) {
+				case IMAGETYPE_JPEG:
+					$this->intImageFileTypeId = ImageFileType::Jpeg;
+					break;
+				case IMAGETYPE_PNG:
+					$this->intImageFileTypeId = ImageFileType::Png;
+					break;
+				case IMAGETYPE_GIF:
+					$this->intImageFileTypeId = ImageFileType::Gif;
+					break;
+				default:
+					throw new QCallerException('Not a valid image file: ' . $strTemporaryFilePath);
+			}
+
+			$this->Save();
+
 			QApplication::MakeDirectory($this->GetImageFolder(), 0777);
-
-			$objImageControl = new QImageControl(null);
-			$objImageControl->ImagePath = $strImageTempPath;
-			$objImageControl->ScaleCanvasDown = false;
-			$objImageControl->ScaleImageUp = true;
-			$objImageControl->Width = 60;
-			$objImageControl->Height = 60;
-			$objImageControl->RenderImage($this->GetThumbPath());
-
-			copy($strImageTempPath, $this->GetImagePath());
+			copy($strTemporaryFilePath, $this->GetImagePath());
 			chmod($this->GetImagePath(), 0666);
-			chmod($this->GetThumbPath(), 0666);
 		}
 
 		// Override or Create New Load/Count methods

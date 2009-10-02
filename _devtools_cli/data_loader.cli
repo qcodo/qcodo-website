@@ -39,6 +39,11 @@
 	clearstatcache();
 	QApplication::MakeDirectory(__DATA_ASSETS__, 0777);
 
+	// Image Cached Directory
+	if (is_dir(__DOCROOT__ . __IMAGES_CACHED__))
+		print(exec('rm -r -f ' . __DOCROOT__ . __IMAGES_CACHED__));
+	clearstatcache();
+
 	// Setup Sample File Path Array
 	$objDir = opendir(__DOCROOT__ . '/../data_loader_files');
 	$strRandomFilePathArray = array();
@@ -136,8 +141,7 @@
 		$objShowcase->Description = QDataGen::GenerateContent(rand(1, 2), 20, 40);
 		$objShowcase->Url = 'http://www.foobar.com/';
 		$objShowcase->LiveFlag = rand(0, 4);
-		$objShowcase->Save();
-		$objShowcase->SaveImage(QDataGen::GenerateFromArray($strRandomImagePathArray));
+		$objShowcase->SaveWithImage(QDataGen::GenerateFromArray($strRandomImagePathArray));
 	}
 
 
