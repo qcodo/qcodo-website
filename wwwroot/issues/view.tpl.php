@@ -37,4 +37,5 @@
 	<?php $this->pnlMessages->Render(); ?>
 	<br clear="all"/>
 
+<?php $this->dlgSubmitFix->Render(); ?>
 <?php require(__INCLUDES__ . '/footer.inc.php'); ?>

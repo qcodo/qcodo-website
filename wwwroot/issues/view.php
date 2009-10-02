@@ -85,13 +85,79 @@
 				$this->pnlNotice->Visible = false;
 			}
 
-//			protected $dlgSubmitFix;
-//			protected $txtSubmitFixLink;
-//			protected $txtSubmitFixNotes;
-//			protected $btnSubmitFixOkay;
-//			protected $btnSubmitFixCancel;
+			$this->dlgSubmitFix = new QDialogBox($this);
+			$this->dlgSubmitFix->Width = '600px';
+			$this->dlgSubmitFix->Template = dirname(__FILE__) . '/dlgSubmitFix.tpl.php';
+			$this->dlgSubmitFix->MatteClickable = false;
+
+			$this->txtSubmitFixLink = new QTextBox($this->dlgSubmitFix);
+			$this->txtSubmitFixLink->Required = true;
+			
+			$this->txtSubmitFixNotes = new QTextBox($this->dlgSubmitFix);
+			$this->txtSubmitFixNotes->TextMode = QTextMode::MultiLine;
+
+			$this->btnSubmitFixOkay = new QButton($this->dlgSubmitFix);
+			$this->btnSubmitFixOkay->Text = 'Submit Fix';
+			$this->btnSubmitFixOkay->CausesValidation = $this->txtSubmitFixLink;
+			$this->btnSubmitFixOkay->AddAction(new QClickEvent(), new QAjaxAction('btnSubmitFixOkay_Click'));
+			
+			$this->btnSubmitFixCancel = new QLinkButton($this->dlgSubmitFix);
+			$this->btnSubmitFixCancel->Text = 'Cancel';
+			$this->btnSubmitFixCancel->AddAction(new QClickEvent(), new QHideDialogBox($this->dlgSubmitFix));
+			$this->btnSubmitFixCancel->AddAction(new QClickEvent(), new QTerminateAction());
+
+			$this->dlgSubmitFix->HideDialogBox();
 		}
 		
+		protected function btnSubmitFix_Click() {
+			// Make sure it is not closed and make sure there is a person logged in
+			if ($this->objIssue->IssueStatusTypeId == IssueStatusType::Closed) return;
+			if (!QApplication::$Person) QApplication::RedirectToLogin();
+
+			$this->txtSubmitFixLink->Text = sprintf('%s/issue_%s', QApplication::$Person->Username, $this->objIssue->Id);
+			$this->txtSubmitFixNotes->Text = null;
+			$this->dlgSubmitFix->ShowDialogBox();
+		}
+		
+		
+		protected function btnSubmitFixOkay_Click() {
+			// Get Old Version of the issue (before any changes are made)
+			$objOldVersionOfIssue = Issue::Load($this->objIssue->Id);
+
+			// Render out the SubmitFix Message that we will post
+			$strMessage = sprintf('A fix to this issue was posted by *%s* at *%s*', QApplication::$Person->DisplayName, trim($this->txtSubmitFixLink->Text));
+			if ($strNotes = trim($this->txtSubmitFixNotes->Text))
+				$strMessage .= sprintf(":\r\n\r\n%s", $strNotes);
+
+			// Update the status to fixed
+			$this->objIssue->IssueStatusTypeId = IssueStatusType::Fixed;
+
+			// Change the assignment (if applicable)
+			if ($this->objIssue->AssignedToPersonId != QApplication::$Person->Id) {
+				$this->objIssue->AssignedToPerson = null;
+				$this->objIssue->DueDate = null;
+			}
+
+			// Save It!
+			$this->objIssue->Save();
+
+			// Lookup Differences between thew new and the old and add it to the SubmitFix Message
+			$strTextArray = $this->objIssue->GetDifferenceArray($objOldVersionOfIssue);
+			if (count($strTextArray)) {
+				$strMessage .= sprintf("\r\n\r\nThe following changes were made to this issue:\r\n\r\n* %s",
+					implode("\r\n* ", $strTextArray));
+			}
+
+			// Post the SubmitFix  Message
+			$this->objIssue->PostMessage($strMessage, null);
+
+			// Refresh the Screen
+			$this->pnlDetails->Refresh();
+			$this->pnlMessages->dtrMessages->PageNumber = QPaginatedControl::LastPage;
+			$this->dlgSubmitFix->HideDialogBox();
+		}
+
+
 		protected function SetupVotingControls() {
 			$this->pnlVotes = new QPanel($this);
 			$this->pnlVotes->CssClass = 'pnlVotes';
