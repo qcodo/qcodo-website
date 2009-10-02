@@ -35,9 +35,36 @@
 			return $this->GetImageFolder() . '/image.' . ImageFileType::$ExtensionArray[$this->intImageFileTypeId];
 		}
 
-//		public function GetThumbPath() {
-//			return $this->GetImageFolder() . '/thumb.jpg';
-//		}
+		protected function GetThumbFolder() {
+			return __IMAGES_CACHED__ . '/ShowcaseItem';
+		}
+
+		/**
+		 * This will return the web/docroot-relative path for the thumbnail image for this wiki image
+		 * NOTE: if the thumbnail does not exist, this will also CREATE the thumbnail
+		 * @return string
+		 */
+		public function GetThumbPath() {
+			// calculate the web/docroot-relative path
+			$strThumbPath = $this->GetThumbFolder() . '/' . $this->intId . '.' . ImageFileType::$ExtensionArray[$this->intImageFileTypeId];
+
+			// See if the thumbnail image, itself exists
+			if (file_exists(__DOCROOT__ . $strThumbPath))
+				return $strThumbPath;
+
+			// It does NOT exist -- we need to create it first
+			QApplication::MakeDirectory(__DOCROOT__ . $this->GetThumbFolder(), 0777);
+
+			$objImageControl = new QImageControl(null);
+			$objImageControl->ImagePath = $this->GetImagePath();
+			$objImageControl->Width = 100;
+			$objImageControl->Height = 100;
+			$objImageControl->ScaleCanvasDown = false;
+			$objImageControl->ScaleImageUp = true;
+			$objImageControl->RenderImage(__DOCROOT__ . $strThumbPath);
+
+			return $strThumbPath;
+		}
 
 		public function SaveWithImage($strTemporaryFilePath) {
 			// Get Image Info and Ensure a Valid Image
