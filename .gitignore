@@ -5,4 +5,4 @@
 .DS_Store
 /wwwroot/images/gen
 /wwwroot/images/cached
-/assets
+/data_assets
