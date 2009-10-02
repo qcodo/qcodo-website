@@ -4,6 +4,7 @@
 	
 	// Define Amounts to Generate
 	define('GENERATE_PEOPLE', 200);
+	define('GENERATE_SHOWCASE', 50);
 	define('GENERATE_WIKI', 250);
 	define('GENERATE_ISSUES', 100);
 	define('GENERATE_FORUM_TOPICS', 100);
@@ -33,10 +34,10 @@
 	$dttStartDate = new QDateTime('2005-01-01 00:00:00');
 
 	// Wiki Files Repository Directory
-	if (is_dir(__WIKI_FILE_REPOSITORY__))
-		print(exec('rm -r -f ' . __WIKI_FILE_REPOSITORY__));
+	if (is_dir(__DATA_ASSETS__))
+		print(exec('rm -r -f ' . __DATA_ASSETS__));
 	clearstatcache();
-	QApplication::MakeDirectory(__WIKI_FILE_REPOSITORY__, 0777);
+	QApplication::MakeDirectory(__DATA_ASSETS__, 0777);
 
 	// Setup Sample File Path Array
 	$objDir = opendir(__DOCROOT__ . '/../data_loader_files');
@@ -124,6 +125,20 @@
 	}
 
 
+
+	//////////////////////
+	// Showcase Tables and Classes
+	//////////////////////
+	while (QDataGen::DisplayWhileTask('Generating Showcase Items...', GENERATE_SHOWCASE)) {
+		$objShowcase = new ShowcaseItem();
+		$objShowcase->Person = Person::Load(rand(1, $intMaxPersonId));
+		$objShowcase->Name = QDataGen::GenerateTitle(1, 8);
+		$objShowcase->Description = QDataGen::GenerateContent(rand(1, 2), 20, 40);
+		$objShowcase->Url = 'http://www.foobar.com/';
+		$objShowcase->LiveFlag = rand(0, 4);
+		$objShowcase->Save();
+		$objShowcase->SaveImage(QDataGen::GenerateFromArray($strRandomImagePathArray));
+	}
 
 
 

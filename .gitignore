@@ -3,7 +3,6 @@
 .cache
 .buildpath
 .DS_Store
-wwwroot/images/gen
-wwwroot/images/cached
-search_indexes/
-wiki_assets/
+/wwwroot/images/gen
+/wwwroot/images/cached
+/assets

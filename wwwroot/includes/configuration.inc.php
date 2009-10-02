@@ -27,9 +27,12 @@
 
 	define('QCODO_EMAILER', 'Qcodo.com Message <not_moderated@qcodo.com>');
 
-	define('__SEARCH_INDEXES__', __DOCROOT__ . '/../search_indexes');
-	define('__WIKI_FILE_REPOSITORY__', __DOCROOT__ . '/../wiki_assets');
-	define('__WIKI_FILE_THUMBNAILS__', __DOCROOT__ . '/../wiki_assets/thumbnails');
+	define('__DATA_ASSETS__', __DOCROOT__ . '/../data_assets');
+	define('__SEARCH_INDEXES__', __DATA_ASSETS__ . '/search_indexes');
+	define('__WIKI_FILE_REPOSITORY__', __DATA_ASSETS__ . '/wiki_assets');
+	define('__WIKI_FILE_THUMBNAILS__', __DATA_ASSETS__ . '/wiki_assets/thumbnails');
+	define('__SHOWCASE_IMAGES__', __DATA_ASSETS__ . '/showcase_images');
+
 	define('__QCODO_BUILDS__', '/var/www/qcodo_builds');
 
 	define ('__DEVTOOLS_CLI__', __DOCROOT__ . __SUBDIRECTORY__ . '/../_devtools_cli');

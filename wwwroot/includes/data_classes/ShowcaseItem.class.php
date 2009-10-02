@@ -27,6 +27,33 @@
 			return sprintf('ShowcaseItem Object %s',  $this->intId);
 		}
 
+		public function GetImageFolder() {
+			return __SHOWCASE_IMAGES__ . '/' . $this->intId;
+		}
+
+		public function GetImagePath() {
+			return $this->GetImageFolder() . '/image.jpg';
+		}
+
+		public function GetThumbPath() {
+			return $this->GetImageFolder() . '/thumb.jpg';
+		}
+
+		public function SaveImage($strImageTempPath) {
+			QApplication::MakeDirectory($this->GetImageFolder(), 0777);
+
+			$objImageControl = new QImageControl(null);
+			$objImageControl->ImagePath = $strImageTempPath;
+			$objImageControl->ScaleCanvasDown = false;
+			$objImageControl->ScaleImageUp = true;
+			$objImageControl->Width = 60;
+			$objImageControl->Height = 60;
+			$objImageControl->RenderImage($this->GetThumbPath());
+
+			copy($strImageTempPath, $this->GetImagePath());
+			chmod($this->GetImagePath(), 0666);
+			chmod($this->GetThumbPath(), 0666);
+		}
 
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...
