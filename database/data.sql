@@ -40,16 +40,6 @@ INSERT INTO topic_link(topic_link_type_id, topic_count, message_count, forum_id)
 INSERT INTO topic_link(topic_link_type_id, topic_count, message_count, forum_id) VALUES (1, 0, 0, 8);
 INSERT INTO topic_link(topic_link_type_id, topic_count, message_count, forum_id) VALUES (1, 0, 0, 9);
 
-INSERT INTO `download_category` VALUES
-	(1,1,'Official Releases',1,'For Official Qcodo Releases','For the latest DEVELOPMENT snapshot, please go to the <a href=\"/support/\" class=\"link_body\">Support</a> page.', NULL),
-	(2,2,'Qform Controls',0,'For Community-Contributed Qform Classes','Custom Qform class files are typically installed in wwwroot/includes/qform, inside qform_objects', NULL),
-	(3,4,'Other',0,'For other Community-Contributed classes, utilities, and code-snippets','', NULL),
-	(4,3,'Language Files',0,'A place to share language files and language file updates for Internationalized Qcodo.','These are files that should be placed within the core at /includes/qcodo/i18n.  As files are uploaded and perfected, and as authors grant permission, we will put them into the core in future releases.', NULL);
-
-INSERT INTO article_section VALUES(1, 'Getting Started');
-INSERT INTO article_section VALUES(2, 'Harnessing the Power of Qcodo');
-INSERT INTO article_section VALUES(3, 'Advanced Topics');
-
 INSERT INTO issue_priority_type(id, name) VALUES (1, 'Critical');
 INSERT INTO issue_priority_type(id, name) VALUES (10, 'High');
 INSERT INTO issue_priority_type(id, name) VALUES (50, 'Standard');

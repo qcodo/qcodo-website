@@ -1,9 +1,9 @@
 <?php
 	/**
 	 * This is the "Meta" DataGrid class for the List functionality
-	 * of the TopicLink class.  This code-generated class
+	 * of the PackageVersion class.  This code-generated class
 	 * contains a QDataGrid class which can be used by any QForm or QPanel,
-	 * listing a collection of TopicLink objects.  It includes
+	 * listing a collection of PackageVersion objects.  It includes
 	 * functionality to perform pagination and sorting on columns.
 	 *
 	 * To take advantage of some (or all) of these control objects, you
@@ -16,7 +16,7 @@
 	 * @subpackage MetaControls
 	 * 
 	 */
-	class TopicLinkDataGridGen extends QDataGrid {
+	class PackageVersionDataGridGen extends QDataGrid {
 		/**
 		 * Standard DataGrid constructor which also pre-configures the DataBinder
 		 * to its own SimpleDataBinder.  Also pre-configures UseAjax to true.
@@ -33,9 +33,9 @@
 
 		/**
 		 * Given the description of the Column's contents, this is a simple, express
-		 * way of adding a column to this TopicLink datagrid.  The description of a column's
+		 * way of adding a column to this PackageVersion datagrid.  The description of a column's
 		 * content can be either a text string description of a simple field name
-		 * in the TopicLink object, or it can be any QQNode extending from QQN::TopicLink().
+		 * in the PackageVersion object, or it can be any QQNode extending from QQN::PackageVersion().
 		 * 
 		 * MetaAddColumn will automatically pre-configure the column with the name, html
 		 * and sort rules given the content being specified.
@@ -43,7 +43,7 @@
 		 * Any of these things can be overridden with OverrideParameters.
 		 * 
 		 * Finally, $mixContents can also be an array of contents, if displaying and/or
-		 * sorting using two fields from the TopicLink object.
+		 * sorting using two fields from the PackageVersion object.
 		 *
 		 * @param mixed $mixContents
 		 * @param string $objOverrideParameters[]
@@ -125,7 +125,7 @@
 		 * 
 		 * Also, $mixContent cannot be an array.  Only a single field can be specified.
 		 *
-		 * @param mixed $mixContent string or QQNode from TopicLink
+		 * @param mixed $mixContent string or QQNode from PackageVersion
 		 * @param string $strTypeClassName the name of the TypeClass to use $NameArray against
 		 * @param mixed $objOverrideParameters
 		 */
@@ -226,7 +226,7 @@
 		public function MetaDataBinder() {
 			// Remember!  We need to first set the TotalItemCount, which will affect the calcuation of LimitClause below
 			if ($this->Paginator) {
-				$this->TotalItemCount = TopicLink::CountAll();
+				$this->TotalItemCount = PackageVersion::CountAll();
 			}
 
 			// Setup the $objClauses Array
@@ -241,16 +241,16 @@
 			if ($objClause = $this->LimitClause)
 				array_push($objClauses, $objClause);
 
-			// Set the DataSource to be a Query result from TopicLink, given the clauses above
-			$this->DataSource = TopicLink::LoadAll($objClauses);
+			// Set the DataSource to be a Query result from PackageVersion, given the clauses above
+			$this->DataSource = PackageVersion::LoadAll($objClauses);
 		}
 
 
 		/**
 		 * Used internally by the Meta-based Add Column tools.
 		 *
-		 * Given a QQNode or a Text String, this will return a TopicLink-based QQNode.
-		 * It will also verify that it is a proper TopicLink-based QQNode, and will throw an exception otherwise.
+		 * Given a QQNode or a Text String, this will return a PackageVersion-based QQNode.
+		 * It will also verify that it is a proper PackageVersion-based QQNode, and will throw an exception otherwise.
 		 *
 		 * @param mixed $mixContent
 		 * @return QQNode
@@ -259,7 +259,7 @@
 			if ($mixContent instanceof QQNode) {
 				if (!$mixContent->_ParentNode)
 					throw new QCallerException('Content QQNode cannot be a Top Level Node');
-				if ($mixContent->_RootTableName == 'topic_link') {
+				if ($mixContent->_RootTableName == 'package_version') {
 					if (($mixContent instanceof QQReverseReferenceNode) && !($mixContent->_PropertyName))
 						throw new QCallerException('Content QQNode cannot go through any "To Many" association nodes.');
 					$objCurrentNode = $mixContent;
@@ -271,22 +271,16 @@
 					}
 					return $mixContent;
 				} else
-					throw new QCallerException('Content QQNode has a root table of "' . $mixContent->_RootTableName . '". Must be a root of "topic_link".');
+					throw new QCallerException('Content QQNode has a root table of "' . $mixContent->_RootTableName . '". Must be a root of "package_version".');
 			} else if (is_string($mixContent)) switch ($mixContent) {
-				case 'Id': return QQN::TopicLink()->Id;
-				case 'TopicLinkTypeId': return QQN::TopicLink()->TopicLinkTypeId;
-				case 'TopicCount': return QQN::TopicLink()->TopicCount;
-				case 'MessageCount': return QQN::TopicLink()->MessageCount;
-				case 'LastPostDate': return QQN::TopicLink()->LastPostDate;
-				case 'ForumId': return QQN::TopicLink()->ForumId;
-				case 'Forum': return QQN::TopicLink()->Forum;
-				case 'IssueId': return QQN::TopicLink()->IssueId;
-				case 'Issue': return QQN::TopicLink()->Issue;
-				case 'WikiItemId': return QQN::TopicLink()->WikiItemId;
-				case 'WikiItem': return QQN::TopicLink()->WikiItem;
-				case 'PackageId': return QQN::TopicLink()->PackageId;
-				case 'Package': return QQN::TopicLink()->Package;
-				default: throw new QCallerException('Simple Property not found in TopicLinkDataGrid content: ' . $mixContent);
+				case 'Id': return QQN::PackageVersion()->Id;
+				case 'PackageContributionId': return QQN::PackageVersion()->PackageContributionId;
+				case 'PackageContribution': return QQN::PackageVersion()->PackageContribution;
+				case 'VersionNumber': return QQN::PackageVersion()->VersionNumber;
+				case 'Notes': return QQN::PackageVersion()->Notes;
+				case 'PostDate': return QQN::PackageVersion()->PostDate;
+				case 'DownloadCount': return QQN::PackageVersion()->DownloadCount;
+				default: throw new QCallerException('Simple Property not found in PackageVersionDataGrid content: ' . $mixContent);
 			} else if ($mixContent instanceof QQAssociationNode)
 				throw new QCallerException('Content QQNode cannot go through any "To Many" association nodes.');
 			else

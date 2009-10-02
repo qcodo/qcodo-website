@@ -1,25 +1,4 @@
 <?php 
-	// ClassPaths for the Announcement class
-		QApplicationBase::$ClassFile['announcement'] = __DATA_CLASSES__ . '/Announcement.class.php';
-		QApplicationBase::$ClassFile['qqnodeannouncement'] = __DATA_CLASSES__ . '/Announcement.class.php';
-		QApplicationBase::$ClassFile['qqreversereferencenodeannouncement'] = __DATA_CLASSES__ . '/Announcement.class.php';
-		QApplicationBase::$ClassFile['announcementmetacontrol'] = __DATA_META_CONTROLS__ . '/AnnouncementMetaControl.class.php';
-		QApplicationBase::$ClassFile['announcementdatagrid'] = __DATA_META_CONTROLS__ . '/AnnouncementDataGrid.class.php';
-
-	// ClassPaths for the Article class
-		QApplicationBase::$ClassFile['article'] = __DATA_CLASSES__ . '/Article.class.php';
-		QApplicationBase::$ClassFile['qqnodearticle'] = __DATA_CLASSES__ . '/Article.class.php';
-		QApplicationBase::$ClassFile['qqreversereferencenodearticle'] = __DATA_CLASSES__ . '/Article.class.php';
-		QApplicationBase::$ClassFile['articlemetacontrol'] = __DATA_META_CONTROLS__ . '/ArticleMetaControl.class.php';
-		QApplicationBase::$ClassFile['articledatagrid'] = __DATA_META_CONTROLS__ . '/ArticleDataGrid.class.php';
-
-	// ClassPaths for the ArticleSection class
-		QApplicationBase::$ClassFile['articlesection'] = __DATA_CLASSES__ . '/ArticleSection.class.php';
-		QApplicationBase::$ClassFile['qqnodearticlesection'] = __DATA_CLASSES__ . '/ArticleSection.class.php';
-		QApplicationBase::$ClassFile['qqreversereferencenodearticlesection'] = __DATA_CLASSES__ . '/ArticleSection.class.php';
-		QApplicationBase::$ClassFile['articlesectionmetacontrol'] = __DATA_META_CONTROLS__ . '/ArticleSectionMetaControl.class.php';
-		QApplicationBase::$ClassFile['articlesectiondatagrid'] = __DATA_META_CONTROLS__ . '/ArticleSectionDataGrid.class.php';
-
 	// ClassPaths for the Counter class
 		QApplicationBase::$ClassFile['counter'] = __DATA_CLASSES__ . '/Counter.class.php';
 		QApplicationBase::$ClassFile['qqnodecounter'] = __DATA_CLASSES__ . '/Counter.class.php';
@@ -33,20 +12,6 @@
 		QApplicationBase::$ClassFile['qqreversereferencenodecountry'] = __DATA_CLASSES__ . '/Country.class.php';
 		QApplicationBase::$ClassFile['countrymetacontrol'] = __DATA_META_CONTROLS__ . '/CountryMetaControl.class.php';
 		QApplicationBase::$ClassFile['countrydatagrid'] = __DATA_META_CONTROLS__ . '/CountryDataGrid.class.php';
-
-	// ClassPaths for the Download class
-		QApplicationBase::$ClassFile['download'] = __DATA_CLASSES__ . '/Download.class.php';
-		QApplicationBase::$ClassFile['qqnodedownload'] = __DATA_CLASSES__ . '/Download.class.php';
-		QApplicationBase::$ClassFile['qqreversereferencenodedownload'] = __DATA_CLASSES__ . '/Download.class.php';
-		QApplicationBase::$ClassFile['downloadmetacontrol'] = __DATA_META_CONTROLS__ . '/DownloadMetaControl.class.php';
-		QApplicationBase::$ClassFile['downloaddatagrid'] = __DATA_META_CONTROLS__ . '/DownloadDataGrid.class.php';
-
-	// ClassPaths for the DownloadCategory class
-		QApplicationBase::$ClassFile['downloadcategory'] = __DATA_CLASSES__ . '/DownloadCategory.class.php';
-		QApplicationBase::$ClassFile['qqnodedownloadcategory'] = __DATA_CLASSES__ . '/DownloadCategory.class.php';
-		QApplicationBase::$ClassFile['qqreversereferencenodedownloadcategory'] = __DATA_CLASSES__ . '/DownloadCategory.class.php';
-		QApplicationBase::$ClassFile['downloadcategorymetacontrol'] = __DATA_META_CONTROLS__ . '/DownloadCategoryMetaControl.class.php';
-		QApplicationBase::$ClassFile['downloadcategorydatagrid'] = __DATA_META_CONTROLS__ . '/DownloadCategoryDataGrid.class.php';
 
 	// ClassPaths for the EmailQueue class
 		QApplicationBase::$ClassFile['emailqueue'] = __DATA_CLASSES__ . '/EmailQueue.class.php';
@@ -111,12 +76,47 @@
 		QApplicationBase::$ClassFile['messagemetacontrol'] = __DATA_META_CONTROLS__ . '/MessageMetaControl.class.php';
 		QApplicationBase::$ClassFile['messagedatagrid'] = __DATA_META_CONTROLS__ . '/MessageDataGrid.class.php';
 
+	// ClassPaths for the Package class
+		QApplicationBase::$ClassFile['package'] = __DATA_CLASSES__ . '/Package.class.php';
+		QApplicationBase::$ClassFile['qqnodepackage'] = __DATA_CLASSES__ . '/Package.class.php';
+		QApplicationBase::$ClassFile['qqreversereferencenodepackage'] = __DATA_CLASSES__ . '/Package.class.php';
+		QApplicationBase::$ClassFile['packagemetacontrol'] = __DATA_META_CONTROLS__ . '/PackageMetaControl.class.php';
+		QApplicationBase::$ClassFile['packagedatagrid'] = __DATA_META_CONTROLS__ . '/PackageDataGrid.class.php';
+
+	// ClassPaths for the PackageCategory class
+		QApplicationBase::$ClassFile['packagecategory'] = __DATA_CLASSES__ . '/PackageCategory.class.php';
+		QApplicationBase::$ClassFile['qqnodepackagecategory'] = __DATA_CLASSES__ . '/PackageCategory.class.php';
+		QApplicationBase::$ClassFile['qqreversereferencenodepackagecategory'] = __DATA_CLASSES__ . '/PackageCategory.class.php';
+		QApplicationBase::$ClassFile['packagecategorymetacontrol'] = __DATA_META_CONTROLS__ . '/PackageCategoryMetaControl.class.php';
+		QApplicationBase::$ClassFile['packagecategorydatagrid'] = __DATA_META_CONTROLS__ . '/PackageCategoryDataGrid.class.php';
+
+	// ClassPaths for the PackageContribution class
+		QApplicationBase::$ClassFile['packagecontribution'] = __DATA_CLASSES__ . '/PackageContribution.class.php';
+		QApplicationBase::$ClassFile['qqnodepackagecontribution'] = __DATA_CLASSES__ . '/PackageContribution.class.php';
+		QApplicationBase::$ClassFile['qqreversereferencenodepackagecontribution'] = __DATA_CLASSES__ . '/PackageContribution.class.php';
+		QApplicationBase::$ClassFile['packagecontributionmetacontrol'] = __DATA_META_CONTROLS__ . '/PackageContributionMetaControl.class.php';
+		QApplicationBase::$ClassFile['packagecontributiondatagrid'] = __DATA_META_CONTROLS__ . '/PackageContributionDataGrid.class.php';
+
+	// ClassPaths for the PackageVersion class
+		QApplicationBase::$ClassFile['packageversion'] = __DATA_CLASSES__ . '/PackageVersion.class.php';
+		QApplicationBase::$ClassFile['qqnodepackageversion'] = __DATA_CLASSES__ . '/PackageVersion.class.php';
+		QApplicationBase::$ClassFile['qqreversereferencenodepackageversion'] = __DATA_CLASSES__ . '/PackageVersion.class.php';
+		QApplicationBase::$ClassFile['packageversionmetacontrol'] = __DATA_META_CONTROLS__ . '/PackageVersionMetaControl.class.php';
+		QApplicationBase::$ClassFile['packageversiondatagrid'] = __DATA_META_CONTROLS__ . '/PackageVersionDataGrid.class.php';
+
 	// ClassPaths for the Person class
 		QApplicationBase::$ClassFile['person'] = __DATA_CLASSES__ . '/Person.class.php';
 		QApplicationBase::$ClassFile['qqnodeperson'] = __DATA_CLASSES__ . '/Person.class.php';
 		QApplicationBase::$ClassFile['qqreversereferencenodeperson'] = __DATA_CLASSES__ . '/Person.class.php';
 		QApplicationBase::$ClassFile['personmetacontrol'] = __DATA_META_CONTROLS__ . '/PersonMetaControl.class.php';
 		QApplicationBase::$ClassFile['persondatagrid'] = __DATA_META_CONTROLS__ . '/PersonDataGrid.class.php';
+
+	// ClassPaths for the ShowcaseItem class
+		QApplicationBase::$ClassFile['showcaseitem'] = __DATA_CLASSES__ . '/ShowcaseItem.class.php';
+		QApplicationBase::$ClassFile['qqnodeshowcaseitem'] = __DATA_CLASSES__ . '/ShowcaseItem.class.php';
+		QApplicationBase::$ClassFile['qqreversereferencenodeshowcaseitem'] = __DATA_CLASSES__ . '/ShowcaseItem.class.php';
+		QApplicationBase::$ClassFile['showcaseitemmetacontrol'] = __DATA_META_CONTROLS__ . '/ShowcaseItemMetaControl.class.php';
+		QApplicationBase::$ClassFile['showcaseitemdatagrid'] = __DATA_META_CONTROLS__ . '/ShowcaseItemDataGrid.class.php';
 
 	// ClassPaths for the Timezone class
 		QApplicationBase::$ClassFile['timezone'] = __DATA_CLASSES__ . '/Timezone.class.php';

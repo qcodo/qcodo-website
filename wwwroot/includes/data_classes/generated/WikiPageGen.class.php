@@ -18,6 +18,7 @@
 	 * @property integer $WikiVersionId the value for intWikiVersionId (PK)
 	 * @property string $Content the value for strContent 
 	 * @property string $CompiledHtml the value for strCompiledHtml 
+	 * @property integer $ViewCount the value for intViewCount 
 	 * @property WikiVersion $WikiVersion the value for the WikiVersion object referenced by intWikiVersionId (PK)
 	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
@@ -56,6 +57,14 @@
 		 */
 		protected $strCompiledHtml;
 		const CompiledHtmlDefault = null;
+
+
+		/**
+		 * Protected member variable that maps to the database column wiki_page.view_count
+		 * @var integer intViewCount
+		 */
+		protected $intViewCount;
+		const ViewCountDefault = null;
 
 
 		/**
@@ -356,6 +365,7 @@
 			$objBuilder->AddSelectItem($strTableName, 'wiki_version_id', $strAliasPrefix . 'wiki_version_id');
 			$objBuilder->AddSelectItem($strTableName, 'content', $strAliasPrefix . 'content');
 			$objBuilder->AddSelectItem($strTableName, 'compiled_html', $strAliasPrefix . 'compiled_html');
+			$objBuilder->AddSelectItem($strTableName, 'view_count', $strAliasPrefix . 'view_count');
 		}
 
 
@@ -394,6 +404,8 @@
 			$objToReturn->strContent = $objDbRow->GetColumn($strAliasName, 'Blob');
 			$strAliasName = array_key_exists($strAliasPrefix . 'compiled_html', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'compiled_html'] : $strAliasPrefix . 'compiled_html';
 			$objToReturn->strCompiledHtml = $objDbRow->GetColumn($strAliasName, 'Blob');
+			$strAliasName = array_key_exists($strAliasPrefix . 'view_count', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'view_count'] : $strAliasPrefix . 'view_count';
+			$objToReturn->intViewCount = $objDbRow->GetColumn($strAliasName, 'Integer');
 
 			// Instantiate Virtual Attributes
 			foreach ($objDbRow->GetColumnNameArray() as $strColumnName => $mixValue) {
@@ -505,11 +517,13 @@
 						INSERT INTO `wiki_page` (
 							`wiki_version_id`,
 							`content`,
-							`compiled_html`
+							`compiled_html`,
+							`view_count`
 						) VALUES (
 							' . $objDatabase->SqlVariable($this->intWikiVersionId) . ',
 							' . $objDatabase->SqlVariable($this->strContent) . ',
-							' . $objDatabase->SqlVariable($this->strCompiledHtml) . '
+							' . $objDatabase->SqlVariable($this->strCompiledHtml) . ',
+							' . $objDatabase->SqlVariable($this->intViewCount) . '
 						)
 					');
 
@@ -526,7 +540,8 @@
 						SET
 							`wiki_version_id` = ' . $objDatabase->SqlVariable($this->intWikiVersionId) . ',
 							`content` = ' . $objDatabase->SqlVariable($this->strContent) . ',
-							`compiled_html` = ' . $objDatabase->SqlVariable($this->strCompiledHtml) . '
+							`compiled_html` = ' . $objDatabase->SqlVariable($this->strCompiledHtml) . ',
+							`view_count` = ' . $objDatabase->SqlVariable($this->intViewCount) . '
 						WHERE
 							`wiki_version_id` = ' . $objDatabase->SqlVariable($this->__intWikiVersionId) . '
 					');
@@ -610,6 +625,7 @@
 			$this->__intWikiVersionId = $this->intWikiVersionId;
 			$this->strContent = $objReloaded->strContent;
 			$this->strCompiledHtml = $objReloaded->strCompiledHtml;
+			$this->intViewCount = $objReloaded->intViewCount;
 		}
 
 
@@ -650,6 +666,13 @@
 					 * @return string
 					 */
 					return $this->strCompiledHtml;
+
+				case 'ViewCount':
+					/**
+					 * Gets the value for intViewCount 
+					 * @return integer
+					 */
+					return $this->intViewCount;
 
 
 				///////////////////
@@ -742,6 +765,19 @@
 						throw $objExc;
 					}
 
+				case 'ViewCount':
+					/**
+					 * Sets the value for intViewCount 
+					 * @param integer $mixValue
+					 * @return integer
+					 */
+					try {
+						return ($this->intViewCount = QType::Cast($mixValue, QType::Integer));
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
 
 				///////////////////
 				// Member Objects
@@ -818,6 +854,7 @@
 			$strToReturn .= '<element name="WikiVersion" type="xsd1:WikiVersion"/>';
 			$strToReturn .= '<element name="Content" type="xsd:string"/>';
 			$strToReturn .= '<element name="CompiledHtml" type="xsd:string"/>';
+			$strToReturn .= '<element name="ViewCount" type="xsd:int"/>';
 			$strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
 			$strToReturn .= '</sequence></complexType>';
 			return $strToReturn;
@@ -848,6 +885,8 @@
 				$objToReturn->strContent = $objSoapObject->Content;
 			if (property_exists($objSoapObject, 'CompiledHtml'))
 				$objToReturn->strCompiledHtml = $objSoapObject->CompiledHtml;
+			if (property_exists($objSoapObject, 'ViewCount'))
+				$objToReturn->intViewCount = $objSoapObject->ViewCount;
 			if (property_exists($objSoapObject, '__blnRestored'))
 				$objToReturn->__blnRestored = $objSoapObject->__blnRestored;
 			return $objToReturn;
@@ -898,6 +937,8 @@
 					return new QQNode('content', 'Content', 'string', $this);
 				case 'CompiledHtml':
 					return new QQNode('compiled_html', 'CompiledHtml', 'string', $this);
+				case 'ViewCount':
+					return new QQNode('view_count', 'ViewCount', 'integer', $this);
 
 				case '_PrimaryKeyNode':
 					return new QQNodeWikiVersion('wiki_version_id', 'WikiVersionId', 'integer', $this);
@@ -926,6 +967,8 @@
 					return new QQNode('content', 'Content', 'string', $this);
 				case 'CompiledHtml':
 					return new QQNode('compiled_html', 'CompiledHtml', 'string', $this);
+				case 'ViewCount':
+					return new QQNode('view_count', 'ViewCount', 'integer', $this);
 
 				case '_PrimaryKeyNode':
 					return new QQNodeWikiVersion('wiki_version_id', 'WikiVersionId', 'integer', $this);

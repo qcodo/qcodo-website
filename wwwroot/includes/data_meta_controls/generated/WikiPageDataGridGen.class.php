@@ -277,6 +277,7 @@
 				case 'WikiVersion': return QQN::WikiPage()->WikiVersion;
 				case 'Content': return QQN::WikiPage()->Content;
 				case 'CompiledHtml': return QQN::WikiPage()->CompiledHtml;
+				case 'ViewCount': return QQN::WikiPage()->ViewCount;
 				default: throw new QCallerException('Simple Property not found in WikiPageDataGrid content: ' . $mixContent);
 			} else if ($mixContent instanceof QQAssociationNode)
 				throw new QCallerException('Content QQNode cannot go through any "To Many" association nodes.');

@@ -32,6 +32,8 @@
 	 * property-read QLabel $IssueIdLabel
 	 * property QListBox $WikiItemIdControl
 	 * property-read QLabel $WikiItemIdLabel
+	 * property QListBox $PackageIdControl
+	 * property-read QLabel $PackageIdLabel
 	 * property-read string $TitleVerb a verb indicating whether or not this is being edited or created
 	 * property-read boolean $EditMode a boolean indicating whether or not this is being edited or created
 	 */
@@ -52,6 +54,7 @@
 		protected $lstForum;
 		protected $lstIssue;
 		protected $lstWikiItem;
+		protected $lstPackage;
 
 		// Controls that allow the viewing of TopicLink's individual data fields
 		protected $lblTopicLinkTypeId;
@@ -61,6 +64,7 @@
 		protected $lblForumId;
 		protected $lblIssueId;
 		protected $lblWikiItemId;
+		protected $lblPackageId;
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
 
@@ -375,6 +379,37 @@
 			return $this->lblWikiItemId;
 		}
 
+		/**
+		 * Create and setup QListBox lstPackage
+		 * @param string $strControlId optional ControlId to use
+		 * @return QListBox
+		 */
+		public function lstPackage_Create($strControlId = null) {
+			$this->lstPackage = new QListBox($this->objParentObject, $strControlId);
+			$this->lstPackage->Name = QApplication::Translate('Package');
+			$this->lstPackage->AddItem(QApplication::Translate('- Select One -'), null);
+			$objPackageArray = Package::LoadAll();
+			if ($objPackageArray) foreach ($objPackageArray as $objPackage) {
+				$objListItem = new QListItem($objPackage->__toString(), $objPackage->Id);
+				if (($this->objTopicLink->Package) && ($this->objTopicLink->Package->Id == $objPackage->Id))
+					$objListItem->Selected = true;
+				$this->lstPackage->AddItem($objListItem);
+			}
+			return $this->lstPackage;
+		}
+
+		/**
+		 * Create and setup QLabel lblPackageId
+		 * @param string $strControlId optional ControlId to use
+		 * @return QLabel
+		 */
+		public function lblPackageId_Create($strControlId = null) {
+			$this->lblPackageId = new QLabel($this->objParentObject, $strControlId);
+			$this->lblPackageId->Name = QApplication::Translate('Package');
+			$this->lblPackageId->Text = ($this->objTopicLink->Package) ? $this->objTopicLink->Package->__toString() : null;
+			return $this->lblPackageId;
+		}
+
 
 
 		/**
@@ -439,6 +474,19 @@
 			}
 			if ($this->lblWikiItemId) $this->lblWikiItemId->Text = ($this->objTopicLink->WikiItem) ? $this->objTopicLink->WikiItem->__toString() : null;
 
+			if ($this->lstPackage) {
+					$this->lstPackage->RemoveAllItems();
+				$this->lstPackage->AddItem(QApplication::Translate('- Select One -'), null);
+				$objPackageArray = Package::LoadAll();
+				if ($objPackageArray) foreach ($objPackageArray as $objPackage) {
+					$objListItem = new QListItem($objPackage->__toString(), $objPackage->Id);
+					if (($this->objTopicLink->Package) && ($this->objTopicLink->Package->Id == $objPackage->Id))
+						$objListItem->Selected = true;
+					$this->lstPackage->AddItem($objListItem);
+				}
+			}
+			if ($this->lblPackageId) $this->lblPackageId->Text = ($this->objTopicLink->Package) ? $this->objTopicLink->Package->__toString() : null;
+
 		}
 
 
@@ -469,6 +517,7 @@
 				if ($this->lstForum) $this->objTopicLink->ForumId = $this->lstForum->SelectedValue;
 				if ($this->lstIssue) $this->objTopicLink->IssueId = $this->lstIssue->SelectedValue;
 				if ($this->lstWikiItem) $this->objTopicLink->WikiItemId = $this->lstWikiItem->SelectedValue;
+				if ($this->lstPackage) $this->objTopicLink->PackageId = $this->lstPackage->SelectedValue;
 
 				// Update any UniqueReverseReferences (if any) for controls that have been created for it
 
@@ -559,6 +608,12 @@
 				case 'WikiItemIdLabel':
 					if (!$this->lblWikiItemId) return $this->lblWikiItemId_Create();
 					return $this->lblWikiItemId;
+				case 'PackageIdControl':
+					if (!$this->lstPackage) return $this->lstPackage_Create();
+					return $this->lstPackage;
+				case 'PackageIdLabel':
+					if (!$this->lblPackageId) return $this->lblPackageId_Create();
+					return $this->lblPackageId;
 				default:
 					try {
 						return parent::__get($strName);
@@ -597,6 +652,8 @@
 						return ($this->lstIssue = QType::Cast($mixValue, 'QControl'));
 					case 'WikiItemIdControl':
 						return ($this->lstWikiItem = QType::Cast($mixValue, 'QControl'));
+					case 'PackageIdControl':
+						return ($this->lstPackage = QType::Cast($mixValue, 'QControl'));
 					default:
 						return parent::__set($strName, $mixValue);
 				}

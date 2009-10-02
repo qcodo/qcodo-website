@@ -22,6 +22,8 @@
 	 * property-read QLabel $ContentLabel
 	 * property QTextBox $CompiledHtmlControl
 	 * property-read QLabel $CompiledHtmlLabel
+	 * property QIntegerTextBox $ViewCountControl
+	 * property-read QLabel $ViewCountLabel
 	 * property-read string $TitleVerb a verb indicating whether or not this is being edited or created
 	 * property-read boolean $EditMode a boolean indicating whether or not this is being edited or created
 	 */
@@ -37,11 +39,13 @@
 		protected $lstWikiVersion;
 		protected $txtContent;
 		protected $txtCompiledHtml;
+		protected $txtViewCount;
 
 		// Controls that allow the viewing of WikiPage's individual data fields
 		protected $lblWikiVersionId;
 		protected $lblContent;
 		protected $lblCompiledHtml;
+		protected $lblViewCount;
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
 
@@ -224,6 +228,32 @@
 			return $this->lblCompiledHtml;
 		}
 
+		/**
+		 * Create and setup QIntegerTextBox txtViewCount
+		 * @param string $strControlId optional ControlId to use
+		 * @return QIntegerTextBox
+		 */
+		public function txtViewCount_Create($strControlId = null) {
+			$this->txtViewCount = new QIntegerTextBox($this->objParentObject, $strControlId);
+			$this->txtViewCount->Name = QApplication::Translate('View Count');
+			$this->txtViewCount->Text = $this->objWikiPage->ViewCount;
+			return $this->txtViewCount;
+		}
+
+		/**
+		 * Create and setup QLabel lblViewCount
+		 * @param string $strControlId optional ControlId to use
+		 * @param string $strFormat optional sprintf format to use
+		 * @return QLabel
+		 */
+		public function lblViewCount_Create($strControlId = null, $strFormat = null) {
+			$this->lblViewCount = new QLabel($this->objParentObject, $strControlId);
+			$this->lblViewCount->Name = QApplication::Translate('View Count');
+			$this->lblViewCount->Text = $this->objWikiPage->ViewCount;
+			$this->lblViewCount->Format = $strFormat;
+			return $this->lblViewCount;
+		}
+
 
 
 		/**
@@ -255,6 +285,9 @@
 			if ($this->txtCompiledHtml) $this->txtCompiledHtml->Text = $this->objWikiPage->CompiledHtml;
 			if ($this->lblCompiledHtml) $this->lblCompiledHtml->Text = $this->objWikiPage->CompiledHtml;
 
+			if ($this->txtViewCount) $this->txtViewCount->Text = $this->objWikiPage->ViewCount;
+			if ($this->lblViewCount) $this->lblViewCount->Text = $this->objWikiPage->ViewCount;
+
 		}
 
 
@@ -281,6 +314,7 @@
 				if ($this->lstWikiVersion) $this->objWikiPage->WikiVersionId = $this->lstWikiVersion->SelectedValue;
 				if ($this->txtContent) $this->objWikiPage->Content = $this->txtContent->Text;
 				if ($this->txtCompiledHtml) $this->objWikiPage->CompiledHtml = $this->txtCompiledHtml->Text;
+				if ($this->txtViewCount) $this->objWikiPage->ViewCount = $this->txtViewCount->Text;
 
 				// Update any UniqueReverseReferences (if any) for controls that have been created for it
 
@@ -341,6 +375,12 @@
 				case 'CompiledHtmlLabel':
 					if (!$this->lblCompiledHtml) return $this->lblCompiledHtml_Create();
 					return $this->lblCompiledHtml;
+				case 'ViewCountControl':
+					if (!$this->txtViewCount) return $this->txtViewCount_Create();
+					return $this->txtViewCount;
+				case 'ViewCountLabel':
+					if (!$this->lblViewCount) return $this->lblViewCount_Create();
+					return $this->lblViewCount;
 				default:
 					try {
 						return parent::__get($strName);
@@ -369,6 +409,8 @@
 						return ($this->txtContent = QType::Cast($mixValue, 'QControl'));
 					case 'CompiledHtmlControl':
 						return ($this->txtCompiledHtml = QType::Cast($mixValue, 'QControl'));
+					case 'ViewCountControl':
+						return ($this->txtViewCount = QType::Cast($mixValue, 'QControl'));
 					default:
 						return parent::__set($strName, $mixValue);
 				}

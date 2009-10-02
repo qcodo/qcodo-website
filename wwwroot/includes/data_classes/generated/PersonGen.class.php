@@ -41,8 +41,6 @@
 	 * @property-read Topic[] $_TopicAsReadOnceArray the value for the private _objTopicAsReadOnceArray (Read-Only) if set due to an ExpandAsArray on the read_once_topic_person_assn association table
 	 * @property-read Topic $_TopicAsRead the value for the private _objTopicAsRead (Read-Only) if set due to an expansion on the read_topic_person_assn association table
 	 * @property-read Topic[] $_TopicAsReadArray the value for the private _objTopicAsReadArray (Read-Only) if set due to an ExpandAsArray on the read_topic_person_assn association table
-	 * @property-read Download $_Download the value for the private _objDownload (Read-Only) if set due to an expansion on the download.person_id reverse relationship
-	 * @property-read Download[] $_DownloadArray the value for the private _objDownloadArray (Read-Only) if set due to an ExpandAsArray on the download.person_id reverse relationship
 	 * @property-read Issue $_IssueAsPostedBy the value for the private _objIssueAsPostedBy (Read-Only) if set due to an expansion on the issue.posted_by_person_id reverse relationship
 	 * @property-read Issue[] $_IssueAsPostedByArray the value for the private _objIssueAsPostedByArray (Read-Only) if set due to an ExpandAsArray on the issue.posted_by_person_id reverse relationship
 	 * @property-read Issue $_IssueAsAssignedTo the value for the private _objIssueAsAssignedTo (Read-Only) if set due to an expansion on the issue.assigned_to_person_id reverse relationship
@@ -53,6 +51,12 @@
 	 * @property-read LoginTicket[] $_LoginTicketArray the value for the private _objLoginTicketArray (Read-Only) if set due to an ExpandAsArray on the login_ticket.person_id reverse relationship
 	 * @property-read Message $_Message the value for the private _objMessage (Read-Only) if set due to an expansion on the message.person_id reverse relationship
 	 * @property-read Message[] $_MessageArray the value for the private _objMessageArray (Read-Only) if set due to an ExpandAsArray on the message.person_id reverse relationship
+	 * @property-read Package $_PackageAsLastPostedBy the value for the private _objPackageAsLastPostedBy (Read-Only) if set due to an expansion on the package.last_posted_by_person_id reverse relationship
+	 * @property-read Package[] $_PackageAsLastPostedByArray the value for the private _objPackageAsLastPostedByArray (Read-Only) if set due to an ExpandAsArray on the package.last_posted_by_person_id reverse relationship
+	 * @property-read PackageContribution $_PackageContribution the value for the private _objPackageContribution (Read-Only) if set due to an expansion on the package_contribution.person_id reverse relationship
+	 * @property-read PackageContribution[] $_PackageContributionArray the value for the private _objPackageContributionArray (Read-Only) if set due to an ExpandAsArray on the package_contribution.person_id reverse relationship
+	 * @property-read ShowcaseItem $_ShowcaseItem the value for the private _objShowcaseItem (Read-Only) if set due to an expansion on the showcase_item.person_id reverse relationship
+	 * @property-read ShowcaseItem[] $_ShowcaseItemArray the value for the private _objShowcaseItemArray (Read-Only) if set due to an ExpandAsArray on the showcase_item.person_id reverse relationship
 	 * @property-read Topic $_Topic the value for the private _objTopic (Read-Only) if set due to an expansion on the topic.person_id reverse relationship
 	 * @property-read Topic[] $_TopicArray the value for the private _objTopicArray (Read-Only) if set due to an ExpandAsArray on the topic.person_id reverse relationship
 	 * @property-read WikiItem $_WikiItemAsCurrentPostedBy the value for the private _objWikiItemAsCurrentPostedBy (Read-Only) if set due to an expansion on the wiki_item.current_posted_by_person_id reverse relationship
@@ -268,22 +272,6 @@
 		private $_objTopicAsReadArray = array();
 
 		/**
-		 * Private member variable that stores a reference to a single Download object
-		 * (of type Download), if this Person object was restored with
-		 * an expansion on the download association table.
-		 * @var Download _objDownload;
-		 */
-		private $_objDownload;
-
-		/**
-		 * Private member variable that stores a reference to an array of Download objects
-		 * (of type Download[]), if this Person object was restored with
-		 * an ExpandAsArray on the download association table.
-		 * @var Download[] _objDownloadArray;
-		 */
-		private $_objDownloadArray = array();
-
-		/**
 		 * Private member variable that stores a reference to a single IssueAsPostedBy object
 		 * (of type Issue), if this Person object was restored with
 		 * an expansion on the issue association table.
@@ -362,6 +350,54 @@
 		 * @var Message[] _objMessageArray;
 		 */
 		private $_objMessageArray = array();
+
+		/**
+		 * Private member variable that stores a reference to a single PackageAsLastPostedBy object
+		 * (of type Package), if this Person object was restored with
+		 * an expansion on the package association table.
+		 * @var Package _objPackageAsLastPostedBy;
+		 */
+		private $_objPackageAsLastPostedBy;
+
+		/**
+		 * Private member variable that stores a reference to an array of PackageAsLastPostedBy objects
+		 * (of type Package[]), if this Person object was restored with
+		 * an ExpandAsArray on the package association table.
+		 * @var Package[] _objPackageAsLastPostedByArray;
+		 */
+		private $_objPackageAsLastPostedByArray = array();
+
+		/**
+		 * Private member variable that stores a reference to a single PackageContribution object
+		 * (of type PackageContribution), if this Person object was restored with
+		 * an expansion on the package_contribution association table.
+		 * @var PackageContribution _objPackageContribution;
+		 */
+		private $_objPackageContribution;
+
+		/**
+		 * Private member variable that stores a reference to an array of PackageContribution objects
+		 * (of type PackageContribution[]), if this Person object was restored with
+		 * an ExpandAsArray on the package_contribution association table.
+		 * @var PackageContribution[] _objPackageContributionArray;
+		 */
+		private $_objPackageContributionArray = array();
+
+		/**
+		 * Private member variable that stores a reference to a single ShowcaseItem object
+		 * (of type ShowcaseItem), if this Person object was restored with
+		 * an expansion on the showcase_item association table.
+		 * @var ShowcaseItem _objShowcaseItem;
+		 */
+		private $_objShowcaseItem;
+
+		/**
+		 * Private member variable that stores a reference to an array of ShowcaseItem objects
+		 * (of type ShowcaseItem[]), if this Person object was restored with
+		 * an ExpandAsArray on the showcase_item association table.
+		 * @var ShowcaseItem[] _objShowcaseItemArray;
+		 */
+		private $_objShowcaseItemArray = array();
 
 		/**
 		 * Private member variable that stores a reference to a single Topic object
@@ -814,20 +850,6 @@
 				}
 
 
-				$strAlias = $strAliasPrefix . 'download__id';
-				$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
-				if ((array_key_exists($strAlias, $strExpandAsArrayNodes)) &&
-					(!is_null($objDbRow->GetColumn($strAliasName)))) {
-					if ($intPreviousChildItemCount = count($objPreviousItem->_objDownloadArray)) {
-						$objPreviousChildItem = $objPreviousItem->_objDownloadArray[$intPreviousChildItemCount - 1];
-						$objChildItem = Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'download__', $strExpandAsArrayNodes, $objPreviousChildItem, $strColumnAliasArray);
-						if ($objChildItem)
-							$objPreviousItem->_objDownloadArray[] = $objChildItem;
-					} else
-						$objPreviousItem->_objDownloadArray[] = Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'download__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
-					$blnExpandedViaArray = true;
-				}
-
 				$strAlias = $strAliasPrefix . 'issueaspostedby__id';
 				$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
 				if ((array_key_exists($strAlias, $strExpandAsArrayNodes)) &&
@@ -895,6 +917,48 @@
 							$objPreviousItem->_objMessageArray[] = $objChildItem;
 					} else
 						$objPreviousItem->_objMessageArray[] = Message::InstantiateDbRow($objDbRow, $strAliasPrefix . 'message__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+					$blnExpandedViaArray = true;
+				}
+
+				$strAlias = $strAliasPrefix . 'packageaslastpostedby__id';
+				$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+				if ((array_key_exists($strAlias, $strExpandAsArrayNodes)) &&
+					(!is_null($objDbRow->GetColumn($strAliasName)))) {
+					if ($intPreviousChildItemCount = count($objPreviousItem->_objPackageAsLastPostedByArray)) {
+						$objPreviousChildItem = $objPreviousItem->_objPackageAsLastPostedByArray[$intPreviousChildItemCount - 1];
+						$objChildItem = Package::InstantiateDbRow($objDbRow, $strAliasPrefix . 'packageaslastpostedby__', $strExpandAsArrayNodes, $objPreviousChildItem, $strColumnAliasArray);
+						if ($objChildItem)
+							$objPreviousItem->_objPackageAsLastPostedByArray[] = $objChildItem;
+					} else
+						$objPreviousItem->_objPackageAsLastPostedByArray[] = Package::InstantiateDbRow($objDbRow, $strAliasPrefix . 'packageaslastpostedby__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+					$blnExpandedViaArray = true;
+				}
+
+				$strAlias = $strAliasPrefix . 'packagecontribution__id';
+				$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+				if ((array_key_exists($strAlias, $strExpandAsArrayNodes)) &&
+					(!is_null($objDbRow->GetColumn($strAliasName)))) {
+					if ($intPreviousChildItemCount = count($objPreviousItem->_objPackageContributionArray)) {
+						$objPreviousChildItem = $objPreviousItem->_objPackageContributionArray[$intPreviousChildItemCount - 1];
+						$objChildItem = PackageContribution::InstantiateDbRow($objDbRow, $strAliasPrefix . 'packagecontribution__', $strExpandAsArrayNodes, $objPreviousChildItem, $strColumnAliasArray);
+						if ($objChildItem)
+							$objPreviousItem->_objPackageContributionArray[] = $objChildItem;
+					} else
+						$objPreviousItem->_objPackageContributionArray[] = PackageContribution::InstantiateDbRow($objDbRow, $strAliasPrefix . 'packagecontribution__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+					$blnExpandedViaArray = true;
+				}
+
+				$strAlias = $strAliasPrefix . 'showcaseitem__id';
+				$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+				if ((array_key_exists($strAlias, $strExpandAsArrayNodes)) &&
+					(!is_null($objDbRow->GetColumn($strAliasName)))) {
+					if ($intPreviousChildItemCount = count($objPreviousItem->_objShowcaseItemArray)) {
+						$objPreviousChildItem = $objPreviousItem->_objShowcaseItemArray[$intPreviousChildItemCount - 1];
+						$objChildItem = ShowcaseItem::InstantiateDbRow($objDbRow, $strAliasPrefix . 'showcaseitem__', $strExpandAsArrayNodes, $objPreviousChildItem, $strColumnAliasArray);
+						if ($objChildItem)
+							$objPreviousItem->_objShowcaseItemArray[] = $objChildItem;
+					} else
+						$objPreviousItem->_objShowcaseItemArray[] = ShowcaseItem::InstantiateDbRow($objDbRow, $strAliasPrefix . 'showcaseitem__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 					$blnExpandedViaArray = true;
 				}
 
@@ -1045,16 +1109,6 @@
 			}
 
 
-			// Check for Download Virtual Binding
-			$strAlias = $strAliasPrefix . 'download__id';
-			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
-			if (!is_null($objDbRow->GetColumn($strAliasName))) {
-				if (($strExpandAsArrayNodes) && (array_key_exists($strAlias, $strExpandAsArrayNodes)))
-					$objToReturn->_objDownloadArray[] = Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'download__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
-				else
-					$objToReturn->_objDownload = Download::InstantiateDbRow($objDbRow, $strAliasPrefix . 'download__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
-			}
-
 			// Check for IssueAsPostedBy Virtual Binding
 			$strAlias = $strAliasPrefix . 'issueaspostedby__id';
 			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
@@ -1103,6 +1157,36 @@
 					$objToReturn->_objMessageArray[] = Message::InstantiateDbRow($objDbRow, $strAliasPrefix . 'message__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 				else
 					$objToReturn->_objMessage = Message::InstantiateDbRow($objDbRow, $strAliasPrefix . 'message__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+			}
+
+			// Check for PackageAsLastPostedBy Virtual Binding
+			$strAlias = $strAliasPrefix . 'packageaslastpostedby__id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+			if (!is_null($objDbRow->GetColumn($strAliasName))) {
+				if (($strExpandAsArrayNodes) && (array_key_exists($strAlias, $strExpandAsArrayNodes)))
+					$objToReturn->_objPackageAsLastPostedByArray[] = Package::InstantiateDbRow($objDbRow, $strAliasPrefix . 'packageaslastpostedby__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+				else
+					$objToReturn->_objPackageAsLastPostedBy = Package::InstantiateDbRow($objDbRow, $strAliasPrefix . 'packageaslastpostedby__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+			}
+
+			// Check for PackageContribution Virtual Binding
+			$strAlias = $strAliasPrefix . 'packagecontribution__id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+			if (!is_null($objDbRow->GetColumn($strAliasName))) {
+				if (($strExpandAsArrayNodes) && (array_key_exists($strAlias, $strExpandAsArrayNodes)))
+					$objToReturn->_objPackageContributionArray[] = PackageContribution::InstantiateDbRow($objDbRow, $strAliasPrefix . 'packagecontribution__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+				else
+					$objToReturn->_objPackageContribution = PackageContribution::InstantiateDbRow($objDbRow, $strAliasPrefix . 'packagecontribution__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+			}
+
+			// Check for ShowcaseItem Virtual Binding
+			$strAlias = $strAliasPrefix . 'showcaseitem__id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+			if (!is_null($objDbRow->GetColumn($strAliasName))) {
+				if (($strExpandAsArrayNodes) && (array_key_exists($strAlias, $strExpandAsArrayNodes)))
+					$objToReturn->_objShowcaseItemArray[] = ShowcaseItem::InstantiateDbRow($objDbRow, $strAliasPrefix . 'showcaseitem__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+				else
+					$objToReturn->_objShowcaseItem = ShowcaseItem::InstantiateDbRow($objDbRow, $strAliasPrefix . 'showcaseitem__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 			}
 
 			// Check for Topic Virtual Binding
@@ -1829,22 +1913,6 @@
 					 */
 					return (array) $this->_objTopicAsReadArray;
 
-				case '_Download':
-					/**
-					 * Gets the value for the private _objDownload (Read-Only)
-					 * if set due to an expansion on the download.person_id reverse relationship
-					 * @return Download
-					 */
-					return $this->_objDownload;
-
-				case '_DownloadArray':
-					/**
-					 * Gets the value for the private _objDownloadArray (Read-Only)
-					 * if set due to an ExpandAsArray on the download.person_id reverse relationship
-					 * @return Download[]
-					 */
-					return (array) $this->_objDownloadArray;
-
 				case '_IssueAsPostedBy':
 					/**
 					 * Gets the value for the private _objIssueAsPostedBy (Read-Only)
@@ -1924,6 +1992,54 @@
 					 * @return Message[]
 					 */
 					return (array) $this->_objMessageArray;
+
+				case '_PackageAsLastPostedBy':
+					/**
+					 * Gets the value for the private _objPackageAsLastPostedBy (Read-Only)
+					 * if set due to an expansion on the package.last_posted_by_person_id reverse relationship
+					 * @return Package
+					 */
+					return $this->_objPackageAsLastPostedBy;
+
+				case '_PackageAsLastPostedByArray':
+					/**
+					 * Gets the value for the private _objPackageAsLastPostedByArray (Read-Only)
+					 * if set due to an ExpandAsArray on the package.last_posted_by_person_id reverse relationship
+					 * @return Package[]
+					 */
+					return (array) $this->_objPackageAsLastPostedByArray;
+
+				case '_PackageContribution':
+					/**
+					 * Gets the value for the private _objPackageContribution (Read-Only)
+					 * if set due to an expansion on the package_contribution.person_id reverse relationship
+					 * @return PackageContribution
+					 */
+					return $this->_objPackageContribution;
+
+				case '_PackageContributionArray':
+					/**
+					 * Gets the value for the private _objPackageContributionArray (Read-Only)
+					 * if set due to an ExpandAsArray on the package_contribution.person_id reverse relationship
+					 * @return PackageContribution[]
+					 */
+					return (array) $this->_objPackageContributionArray;
+
+				case '_ShowcaseItem':
+					/**
+					 * Gets the value for the private _objShowcaseItem (Read-Only)
+					 * if set due to an expansion on the showcase_item.person_id reverse relationship
+					 * @return ShowcaseItem
+					 */
+					return $this->_objShowcaseItem;
+
+				case '_ShowcaseItemArray':
+					/**
+					 * Gets the value for the private _objShowcaseItemArray (Read-Only)
+					 * if set due to an ExpandAsArray on the showcase_item.person_id reverse relationship
+					 * @return ShowcaseItem[]
+					 */
+					return (array) $this->_objShowcaseItemArray;
 
 				case '_Topic':
 					/**
@@ -2317,156 +2433,6 @@
 		///////////////////////////////
 		// ASSOCIATED OBJECTS' METHODS
 		///////////////////////////////
-
-			
-		
-		// Related Objects' Methods for Download
-		//-------------------------------------------------------------------
-
-		/**
-		 * Gets all associated Downloads as an array of Download objects
-		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
-		 * @return Download[]
-		*/ 
-		public function GetDownloadArray($objOptionalClauses = null) {
-			if ((is_null($this->intId)))
-				return array();
-
-			try {
-				return Download::LoadArrayByPersonId($this->intId, $objOptionalClauses);
-			} catch (QCallerException $objExc) {
-				$objExc->IncrementOffset();
-				throw $objExc;
-			}
-		}
-
-		/**
-		 * Counts all associated Downloads
-		 * @return int
-		*/ 
-		public function CountDownloads() {
-			if ((is_null($this->intId)))
-				return 0;
-
-			return Download::CountByPersonId($this->intId);
-		}
-
-		/**
-		 * Associates a Download
-		 * @param Download $objDownload
-		 * @return void
-		*/ 
-		public function AssociateDownload(Download $objDownload) {
-			if ((is_null($this->intId)))
-				throw new QUndefinedPrimaryKeyException('Unable to call AssociateDownload on this unsaved Person.');
-			if ((is_null($objDownload->Id)))
-				throw new QUndefinedPrimaryKeyException('Unable to call AssociateDownload on this Person with an unsaved Download.');
-
-			// Get the Database Object for this Class
-			$objDatabase = Person::GetDatabase();
-
-			// Perform the SQL Query
-			$objDatabase->NonQuery('
-				UPDATE
-					`download`
-				SET
-					`person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
-				WHERE
-					`id` = ' . $objDatabase->SqlVariable($objDownload->Id) . '
-			');
-		}
-
-		/**
-		 * Unassociates a Download
-		 * @param Download $objDownload
-		 * @return void
-		*/ 
-		public function UnassociateDownload(Download $objDownload) {
-			if ((is_null($this->intId)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateDownload on this unsaved Person.');
-			if ((is_null($objDownload->Id)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateDownload on this Person with an unsaved Download.');
-
-			// Get the Database Object for this Class
-			$objDatabase = Person::GetDatabase();
-
-			// Perform the SQL Query
-			$objDatabase->NonQuery('
-				UPDATE
-					`download`
-				SET
-					`person_id` = null
-				WHERE
-					`id` = ' . $objDatabase->SqlVariable($objDownload->Id) . ' AND
-					`person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
-			');
-		}
-
-		/**
-		 * Unassociates all Downloads
-		 * @return void
-		*/ 
-		public function UnassociateAllDownloads() {
-			if ((is_null($this->intId)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateDownload on this unsaved Person.');
-
-			// Get the Database Object for this Class
-			$objDatabase = Person::GetDatabase();
-
-			// Perform the SQL Query
-			$objDatabase->NonQuery('
-				UPDATE
-					`download`
-				SET
-					`person_id` = null
-				WHERE
-					`person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
-			');
-		}
-
-		/**
-		 * Deletes an associated Download
-		 * @param Download $objDownload
-		 * @return void
-		*/ 
-		public function DeleteAssociatedDownload(Download $objDownload) {
-			if ((is_null($this->intId)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateDownload on this unsaved Person.');
-			if ((is_null($objDownload->Id)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateDownload on this Person with an unsaved Download.');
-
-			// Get the Database Object for this Class
-			$objDatabase = Person::GetDatabase();
-
-			// Perform the SQL Query
-			$objDatabase->NonQuery('
-				DELETE FROM
-					`download`
-				WHERE
-					`id` = ' . $objDatabase->SqlVariable($objDownload->Id) . ' AND
-					`person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
-			');
-		}
-
-		/**
-		 * Deletes all associated Downloads
-		 * @return void
-		*/ 
-		public function DeleteAllDownloads() {
-			if ((is_null($this->intId)))
-				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateDownload on this unsaved Person.');
-
-			// Get the Database Object for this Class
-			$objDatabase = Person::GetDatabase();
-
-			// Perform the SQL Query
-			$objDatabase->NonQuery('
-				DELETE FROM
-					`download`
-				WHERE
-					`person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
-			');
-		}
 
 			
 		
@@ -3213,6 +3179,456 @@
 			$objDatabase->NonQuery('
 				DELETE FROM
 					`message`
+				WHERE
+					`person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+			');
+		}
+
+			
+		
+		// Related Objects' Methods for PackageAsLastPostedBy
+		//-------------------------------------------------------------------
+
+		/**
+		 * Gets all associated PackagesAsLastPostedBy as an array of Package objects
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @return Package[]
+		*/ 
+		public function GetPackageAsLastPostedByArray($objOptionalClauses = null) {
+			if ((is_null($this->intId)))
+				return array();
+
+			try {
+				return Package::LoadArrayByLastPostedByPersonId($this->intId, $objOptionalClauses);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+		}
+
+		/**
+		 * Counts all associated PackagesAsLastPostedBy
+		 * @return int
+		*/ 
+		public function CountPackagesAsLastPostedBy() {
+			if ((is_null($this->intId)))
+				return 0;
+
+			return Package::CountByLastPostedByPersonId($this->intId);
+		}
+
+		/**
+		 * Associates a PackageAsLastPostedBy
+		 * @param Package $objPackage
+		 * @return void
+		*/ 
+		public function AssociatePackageAsLastPostedBy(Package $objPackage) {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call AssociatePackageAsLastPostedBy on this unsaved Person.');
+			if ((is_null($objPackage->Id)))
+				throw new QUndefinedPrimaryKeyException('Unable to call AssociatePackageAsLastPostedBy on this Person with an unsaved Package.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Person::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				UPDATE
+					`package`
+				SET
+					`last_posted_by_person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+				WHERE
+					`id` = ' . $objDatabase->SqlVariable($objPackage->Id) . '
+			');
+		}
+
+		/**
+		 * Unassociates a PackageAsLastPostedBy
+		 * @param Package $objPackage
+		 * @return void
+		*/ 
+		public function UnassociatePackageAsLastPostedBy(Package $objPackage) {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociatePackageAsLastPostedBy on this unsaved Person.');
+			if ((is_null($objPackage->Id)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociatePackageAsLastPostedBy on this Person with an unsaved Package.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Person::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				UPDATE
+					`package`
+				SET
+					`last_posted_by_person_id` = null
+				WHERE
+					`id` = ' . $objDatabase->SqlVariable($objPackage->Id) . ' AND
+					`last_posted_by_person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+			');
+		}
+
+		/**
+		 * Unassociates all PackagesAsLastPostedBy
+		 * @return void
+		*/ 
+		public function UnassociateAllPackagesAsLastPostedBy() {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociatePackageAsLastPostedBy on this unsaved Person.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Person::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				UPDATE
+					`package`
+				SET
+					`last_posted_by_person_id` = null
+				WHERE
+					`last_posted_by_person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+			');
+		}
+
+		/**
+		 * Deletes an associated PackageAsLastPostedBy
+		 * @param Package $objPackage
+		 * @return void
+		*/ 
+		public function DeleteAssociatedPackageAsLastPostedBy(Package $objPackage) {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociatePackageAsLastPostedBy on this unsaved Person.');
+			if ((is_null($objPackage->Id)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociatePackageAsLastPostedBy on this Person with an unsaved Package.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Person::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				DELETE FROM
+					`package`
+				WHERE
+					`id` = ' . $objDatabase->SqlVariable($objPackage->Id) . ' AND
+					`last_posted_by_person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+			');
+		}
+
+		/**
+		 * Deletes all associated PackagesAsLastPostedBy
+		 * @return void
+		*/ 
+		public function DeleteAllPackagesAsLastPostedBy() {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociatePackageAsLastPostedBy on this unsaved Person.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Person::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				DELETE FROM
+					`package`
+				WHERE
+					`last_posted_by_person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+			');
+		}
+
+			
+		
+		// Related Objects' Methods for PackageContribution
+		//-------------------------------------------------------------------
+
+		/**
+		 * Gets all associated PackageContributions as an array of PackageContribution objects
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @return PackageContribution[]
+		*/ 
+		public function GetPackageContributionArray($objOptionalClauses = null) {
+			if ((is_null($this->intId)))
+				return array();
+
+			try {
+				return PackageContribution::LoadArrayByPersonId($this->intId, $objOptionalClauses);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+		}
+
+		/**
+		 * Counts all associated PackageContributions
+		 * @return int
+		*/ 
+		public function CountPackageContributions() {
+			if ((is_null($this->intId)))
+				return 0;
+
+			return PackageContribution::CountByPersonId($this->intId);
+		}
+
+		/**
+		 * Associates a PackageContribution
+		 * @param PackageContribution $objPackageContribution
+		 * @return void
+		*/ 
+		public function AssociatePackageContribution(PackageContribution $objPackageContribution) {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call AssociatePackageContribution on this unsaved Person.');
+			if ((is_null($objPackageContribution->Id)))
+				throw new QUndefinedPrimaryKeyException('Unable to call AssociatePackageContribution on this Person with an unsaved PackageContribution.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Person::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				UPDATE
+					`package_contribution`
+				SET
+					`person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+				WHERE
+					`id` = ' . $objDatabase->SqlVariable($objPackageContribution->Id) . '
+			');
+		}
+
+		/**
+		 * Unassociates a PackageContribution
+		 * @param PackageContribution $objPackageContribution
+		 * @return void
+		*/ 
+		public function UnassociatePackageContribution(PackageContribution $objPackageContribution) {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociatePackageContribution on this unsaved Person.');
+			if ((is_null($objPackageContribution->Id)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociatePackageContribution on this Person with an unsaved PackageContribution.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Person::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				UPDATE
+					`package_contribution`
+				SET
+					`person_id` = null
+				WHERE
+					`id` = ' . $objDatabase->SqlVariable($objPackageContribution->Id) . ' AND
+					`person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+			');
+		}
+
+		/**
+		 * Unassociates all PackageContributions
+		 * @return void
+		*/ 
+		public function UnassociateAllPackageContributions() {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociatePackageContribution on this unsaved Person.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Person::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				UPDATE
+					`package_contribution`
+				SET
+					`person_id` = null
+				WHERE
+					`person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+			');
+		}
+
+		/**
+		 * Deletes an associated PackageContribution
+		 * @param PackageContribution $objPackageContribution
+		 * @return void
+		*/ 
+		public function DeleteAssociatedPackageContribution(PackageContribution $objPackageContribution) {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociatePackageContribution on this unsaved Person.');
+			if ((is_null($objPackageContribution->Id)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociatePackageContribution on this Person with an unsaved PackageContribution.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Person::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				DELETE FROM
+					`package_contribution`
+				WHERE
+					`id` = ' . $objDatabase->SqlVariable($objPackageContribution->Id) . ' AND
+					`person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+			');
+		}
+
+		/**
+		 * Deletes all associated PackageContributions
+		 * @return void
+		*/ 
+		public function DeleteAllPackageContributions() {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociatePackageContribution on this unsaved Person.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Person::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				DELETE FROM
+					`package_contribution`
+				WHERE
+					`person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+			');
+		}
+
+			
+		
+		// Related Objects' Methods for ShowcaseItem
+		//-------------------------------------------------------------------
+
+		/**
+		 * Gets all associated ShowcaseItems as an array of ShowcaseItem objects
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @return ShowcaseItem[]
+		*/ 
+		public function GetShowcaseItemArray($objOptionalClauses = null) {
+			if ((is_null($this->intId)))
+				return array();
+
+			try {
+				return ShowcaseItem::LoadArrayByPersonId($this->intId, $objOptionalClauses);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+		}
+
+		/**
+		 * Counts all associated ShowcaseItems
+		 * @return int
+		*/ 
+		public function CountShowcaseItems() {
+			if ((is_null($this->intId)))
+				return 0;
+
+			return ShowcaseItem::CountByPersonId($this->intId);
+		}
+
+		/**
+		 * Associates a ShowcaseItem
+		 * @param ShowcaseItem $objShowcaseItem
+		 * @return void
+		*/ 
+		public function AssociateShowcaseItem(ShowcaseItem $objShowcaseItem) {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call AssociateShowcaseItem on this unsaved Person.');
+			if ((is_null($objShowcaseItem->Id)))
+				throw new QUndefinedPrimaryKeyException('Unable to call AssociateShowcaseItem on this Person with an unsaved ShowcaseItem.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Person::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				UPDATE
+					`showcase_item`
+				SET
+					`person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+				WHERE
+					`id` = ' . $objDatabase->SqlVariable($objShowcaseItem->Id) . '
+			');
+		}
+
+		/**
+		 * Unassociates a ShowcaseItem
+		 * @param ShowcaseItem $objShowcaseItem
+		 * @return void
+		*/ 
+		public function UnassociateShowcaseItem(ShowcaseItem $objShowcaseItem) {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateShowcaseItem on this unsaved Person.');
+			if ((is_null($objShowcaseItem->Id)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateShowcaseItem on this Person with an unsaved ShowcaseItem.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Person::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				UPDATE
+					`showcase_item`
+				SET
+					`person_id` = null
+				WHERE
+					`id` = ' . $objDatabase->SqlVariable($objShowcaseItem->Id) . ' AND
+					`person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+			');
+		}
+
+		/**
+		 * Unassociates all ShowcaseItems
+		 * @return void
+		*/ 
+		public function UnassociateAllShowcaseItems() {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateShowcaseItem on this unsaved Person.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Person::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				UPDATE
+					`showcase_item`
+				SET
+					`person_id` = null
+				WHERE
+					`person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+			');
+		}
+
+		/**
+		 * Deletes an associated ShowcaseItem
+		 * @param ShowcaseItem $objShowcaseItem
+		 * @return void
+		*/ 
+		public function DeleteAssociatedShowcaseItem(ShowcaseItem $objShowcaseItem) {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateShowcaseItem on this unsaved Person.');
+			if ((is_null($objShowcaseItem->Id)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateShowcaseItem on this Person with an unsaved ShowcaseItem.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Person::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				DELETE FROM
+					`showcase_item`
+				WHERE
+					`id` = ' . $objDatabase->SqlVariable($objShowcaseItem->Id) . ' AND
+					`person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
+			');
+		}
+
+		/**
+		 * Deletes all associated ShowcaseItems
+		 * @return void
+		*/ 
+		public function DeleteAllShowcaseItems() {
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Unable to call UnassociateShowcaseItem on this unsaved Person.');
+
+			// Get the Database Object for this Class
+			$objDatabase = Person::GetDatabase();
+
+			// Perform the SQL Query
+			$objDatabase->NonQuery('
+				DELETE FROM
+					`showcase_item`
 				WHERE
 					`person_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 			');
@@ -4299,8 +4715,6 @@
 					return new QQNodePersonTopicAsReadOnce($this);
 				case 'TopicAsRead':
 					return new QQNodePersonTopicAsRead($this);
-				case 'Download':
-					return new QQReverseReferenceNodeDownload($this, 'download', 'reverse_reference', 'person_id');
 				case 'IssueAsPostedBy':
 					return new QQReverseReferenceNodeIssue($this, 'issueaspostedby', 'reverse_reference', 'posted_by_person_id');
 				case 'IssueAsAssignedTo':
@@ -4311,6 +4725,12 @@
 					return new QQReverseReferenceNodeLoginTicket($this, 'loginticket', 'reverse_reference', 'person_id');
 				case 'Message':
 					return new QQReverseReferenceNodeMessage($this, 'message', 'reverse_reference', 'person_id');
+				case 'PackageAsLastPostedBy':
+					return new QQReverseReferenceNodePackage($this, 'packageaslastpostedby', 'reverse_reference', 'last_posted_by_person_id');
+				case 'PackageContribution':
+					return new QQReverseReferenceNodePackageContribution($this, 'packagecontribution', 'reverse_reference', 'person_id');
+				case 'ShowcaseItem':
+					return new QQReverseReferenceNodeShowcaseItem($this, 'showcaseitem', 'reverse_reference', 'person_id');
 				case 'Topic':
 					return new QQReverseReferenceNodeTopic($this, 'topic', 'reverse_reference', 'person_id');
 				case 'WikiItemAsCurrentPostedBy':
@@ -4383,8 +4803,6 @@
 					return new QQNodePersonTopicAsReadOnce($this);
 				case 'TopicAsRead':
 					return new QQNodePersonTopicAsRead($this);
-				case 'Download':
-					return new QQReverseReferenceNodeDownload($this, 'download', 'reverse_reference', 'person_id');
 				case 'IssueAsPostedBy':
 					return new QQReverseReferenceNodeIssue($this, 'issueaspostedby', 'reverse_reference', 'posted_by_person_id');
 				case 'IssueAsAssignedTo':
@@ -4395,6 +4813,12 @@
 					return new QQReverseReferenceNodeLoginTicket($this, 'loginticket', 'reverse_reference', 'person_id');
 				case 'Message':
 					return new QQReverseReferenceNodeMessage($this, 'message', 'reverse_reference', 'person_id');
+				case 'PackageAsLastPostedBy':
+					return new QQReverseReferenceNodePackage($this, 'packageaslastpostedby', 'reverse_reference', 'last_posted_by_person_id');
+				case 'PackageContribution':
+					return new QQReverseReferenceNodePackageContribution($this, 'packagecontribution', 'reverse_reference', 'person_id');
+				case 'ShowcaseItem':
+					return new QQReverseReferenceNodeShowcaseItem($this, 'showcaseitem', 'reverse_reference', 'person_id');
 				case 'Topic':
 					return new QQReverseReferenceNodeTopic($this, 'topic', 'reverse_reference', 'person_id');
 				case 'WikiItemAsCurrentPostedBy':

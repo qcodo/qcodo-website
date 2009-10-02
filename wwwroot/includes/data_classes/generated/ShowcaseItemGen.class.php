@@ -1,78 +1,62 @@
 <?php
 	/**
-	 * The abstract WikiFileGen class defined here is
+	 * The abstract ShowcaseItemGen class defined here is
 	 * code-generated and contains all the basic CRUD-type functionality as well as
 	 * basic methods to handle relationships and index-based loading.
 	 *
-	 * To use, you should use the WikiFile subclass which
-	 * extends this WikiFileGen class.
+	 * To use, you should use the ShowcaseItem subclass which
+	 * extends this ShowcaseItemGen class.
 	 *
 	 * Because subsequent re-code generations will overwrite any changes to this
 	 * file, you should leave this file unaltered to prevent yourself from losing
 	 * any information or code changes.  All customizations should be done by
 	 * overriding existing or implementing new methods, properties and variables
-	 * in the WikiFile class.
+	 * in the ShowcaseItem class.
 	 * 
 	 * @package Qcodo Website
 	 * @subpackage GeneratedDataObjects
-	 * @property integer $WikiVersionId the value for intWikiVersionId (PK)
-	 * @property string $FileName the value for strFileName 
-	 * @property integer $FileSize the value for intFileSize 
-	 * @property string $FileMime the value for strFileMime 
+	 * @property-read integer $Id the value for intId (Read-Only PK)
+	 * @property integer $PersonId the value for intPersonId (Not Null)
+	 * @property string $Name the value for strName 
 	 * @property string $Description the value for strDescription 
-	 * @property integer $DownloadCount the value for intDownloadCount 
-	 * @property WikiVersion $WikiVersion the value for the WikiVersion object referenced by intWikiVersionId (PK)
+	 * @property string $Url the value for strUrl 
+	 * @property boolean $LiveFlag the value for blnLiveFlag (Not Null)
+	 * @property Person $Person the value for the Person object referenced by intPersonId (Not Null)
 	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
-	class WikiFileGen extends QBaseClass {
+	class ShowcaseItemGen extends QBaseClass {
 
 		///////////////////////////////////////////////////////////////////////
 		// PROTECTED MEMBER VARIABLES and TEXT FIELD MAXLENGTHS (if applicable)
 		///////////////////////////////////////////////////////////////////////
 		
 		/**
-		 * Protected member variable that maps to the database PK column wiki_file.wiki_version_id
-		 * @var integer intWikiVersionId
+		 * Protected member variable that maps to the database PK Identity column showcase_item.id
+		 * @var integer intId
 		 */
-		protected $intWikiVersionId;
-		const WikiVersionIdDefault = null;
+		protected $intId;
+		const IdDefault = null;
 
 
 		/**
-		 * Protected internal member variable that stores the original version of the PK column value (if restored)
-		 * Used by Save() to update a PK column during UPDATE
-		 * @var integer __intWikiVersionId;
+		 * Protected member variable that maps to the database column showcase_item.person_id
+		 * @var integer intPersonId
 		 */
-		protected $__intWikiVersionId;
-
-		/**
-		 * Protected member variable that maps to the database column wiki_file.file_name
-		 * @var string strFileName
-		 */
-		protected $strFileName;
-		const FileNameMaxLength = 255;
-		const FileNameDefault = null;
+		protected $intPersonId;
+		const PersonIdDefault = null;
 
 
 		/**
-		 * Protected member variable that maps to the database column wiki_file.file_size
-		 * @var integer intFileSize
+		 * Protected member variable that maps to the database column showcase_item.name
+		 * @var string strName
 		 */
-		protected $intFileSize;
-		const FileSizeDefault = null;
+		protected $strName;
+		const NameMaxLength = 255;
+		const NameDefault = null;
 
 
 		/**
-		 * Protected member variable that maps to the database column wiki_file.file_mime
-		 * @var string strFileMime
-		 */
-		protected $strFileMime;
-		const FileMimeMaxLength = 100;
-		const FileMimeDefault = null;
-
-
-		/**
-		 * Protected member variable that maps to the database column wiki_file.description
+		 * Protected member variable that maps to the database column showcase_item.description
 		 * @var string strDescription
 		 */
 		protected $strDescription;
@@ -80,11 +64,20 @@
 
 
 		/**
-		 * Protected member variable that maps to the database column wiki_file.download_count
-		 * @var integer intDownloadCount
+		 * Protected member variable that maps to the database column showcase_item.url
+		 * @var string strUrl
 		 */
-		protected $intDownloadCount;
-		const DownloadCountDefault = null;
+		protected $strUrl;
+		const UrlMaxLength = 255;
+		const UrlDefault = null;
+
+
+		/**
+		 * Protected member variable that maps to the database column showcase_item.live_flag
+		 * @var boolean blnLiveFlag
+		 */
+		protected $blnLiveFlag;
+		const LiveFlagDefault = null;
 
 
 		/**
@@ -111,13 +104,13 @@
 
 		/**
 		 * Protected member variable that contains the object pointed by the reference
-		 * in the database column wiki_file.wiki_version_id.
+		 * in the database column showcase_item.person_id.
 		 *
-		 * NOTE: Always use the WikiVersion property getter to correctly retrieve this WikiVersion object.
+		 * NOTE: Always use the Person property getter to correctly retrieve this Person object.
 		 * (Because this class implements late binding, this variable reference MAY be null.)
-		 * @var WikiVersion objWikiVersion
+		 * @var Person objPerson
 		 */
-		protected $objWikiVersion;
+		protected $objPerson;
 
 
 
@@ -136,26 +129,26 @@
 		}
 
 		/**
-		 * Load a WikiFile from PK Info
-		 * @param integer $intWikiVersionId
-		 * @return WikiFile
+		 * Load a ShowcaseItem from PK Info
+		 * @param integer $intId
+		 * @return ShowcaseItem
 		 */
-		public static function Load($intWikiVersionId) {
+		public static function Load($intId) {
 			// Use QuerySingle to Perform the Query
-			return WikiFile::QuerySingle(
-				QQ::Equal(QQN::WikiFile()->WikiVersionId, $intWikiVersionId)
+			return ShowcaseItem::QuerySingle(
+				QQ::Equal(QQN::ShowcaseItem()->Id, $intId)
 			);
 		}
 
 		/**
-		 * Load all WikiFiles
+		 * Load all ShowcaseItems
 		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
-		 * @return WikiFile[]
+		 * @return ShowcaseItem[]
 		 */
 		public static function LoadAll($objOptionalClauses = null) {
-			// Call WikiFile::QueryArray to perform the LoadAll query
+			// Call ShowcaseItem::QueryArray to perform the LoadAll query
 			try {
-				return WikiFile::QueryArray(QQ::All(), $objOptionalClauses);
+				return ShowcaseItem::QueryArray(QQ::All(), $objOptionalClauses);
 			} catch (QCallerException $objExc) {
 				$objExc->IncrementOffset();
 				throw $objExc;
@@ -163,12 +156,12 @@
 		}
 
 		/**
-		 * Count all WikiFiles
+		 * Count all ShowcaseItems
 		 * @return int
 		 */
 		public static function CountAll() {
-			// Call WikiFile::QueryCount to perform the CountAll query
-			return WikiFile::QueryCount(QQ::All());
+			// Call ShowcaseItem::QueryCount to perform the CountAll query
+			return ShowcaseItem::QueryCount(QQ::All());
 		}
 
 
@@ -190,12 +183,12 @@
 		 */
 		protected static function BuildQueryStatement(&$objQueryBuilder, QQCondition $objConditions, $objOptionalClauses, $mixParameterArray, $blnCountOnly) {
 			// Get the Database Object for this Class
-			$objDatabase = WikiFile::GetDatabase();
+			$objDatabase = ShowcaseItem::GetDatabase();
 
-			// Create/Build out the QueryBuilder object with WikiFile-specific SELET and FROM fields
-			$objQueryBuilder = new QQueryBuilder($objDatabase, 'wiki_file');
-			WikiFile::GetSelectFields($objQueryBuilder);
-			$objQueryBuilder->AddFromItem('wiki_file');
+			// Create/Build out the QueryBuilder object with ShowcaseItem-specific SELET and FROM fields
+			$objQueryBuilder = new QQueryBuilder($objDatabase, 'showcase_item');
+			ShowcaseItem::GetSelectFields($objQueryBuilder);
+			$objQueryBuilder->AddFromItem('showcase_item');
 
 			// Set "CountOnly" option (if applicable)
 			if ($blnCountOnly)
@@ -242,39 +235,39 @@
 		}
 
 		/**
-		 * Static Qcodo Query method to query for a single WikiFile object.
+		 * Static Qcodo Query method to query for a single ShowcaseItem object.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
 		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
-		 * @return WikiFile the queried object
+		 * @return ShowcaseItem the queried object
 		 */
 		public static function QuerySingle(QQCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
 			// Get the Query Statement
 			try {
-				$strQuery = WikiFile::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+				$strQuery = ShowcaseItem::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
 			} catch (QCallerException $objExc) {
 				$objExc->IncrementOffset();
 				throw $objExc;
 			}
 
-			// Perform the Query, Get the First Row, and Instantiate a new WikiFile object
+			// Perform the Query, Get the First Row, and Instantiate a new ShowcaseItem object
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return WikiFile::InstantiateDbRow($objDbResult->GetNextRow(), null, null, null, $objQueryBuilder->ColumnAliasArray);
+			return ShowcaseItem::InstantiateDbRow($objDbResult->GetNextRow(), null, null, null, $objQueryBuilder->ColumnAliasArray);
 		}
 
 		/**
-		 * Static Qcodo Query method to query for an array of WikiFile objects.
+		 * Static Qcodo Query method to query for an array of ShowcaseItem objects.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
 		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
-		 * @return WikiFile[] the queried objects as an array
+		 * @return ShowcaseItem[] the queried objects as an array
 		 */
 		public static function QueryArray(QQCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
 			// Get the Query Statement
 			try {
-				$strQuery = WikiFile::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+				$strQuery = ShowcaseItem::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
 			} catch (QCallerException $objExc) {
 				$objExc->IncrementOffset();
 				throw $objExc;
@@ -282,11 +275,11 @@
 
 			// Perform the Query and Instantiate the Array Result
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return WikiFile::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNodes, $objQueryBuilder->ColumnAliasArray);
+			return ShowcaseItem::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNodes, $objQueryBuilder->ColumnAliasArray);
 		}
 
 		/**
-		 * Static Qcodo Query method to query for a count of WikiFile objects.
+		 * Static Qcodo Query method to query for a count of ShowcaseItem objects.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
 		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
@@ -296,7 +289,7 @@
 		public static function QueryCount(QQCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
 			// Get the Query Statement
 			try {
-				$strQuery = WikiFile::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, true);
+				$strQuery = ShowcaseItem::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, true);
 			} catch (QCallerException $objExc) {
 				$objExc->IncrementOffset();
 				throw $objExc;
@@ -327,15 +320,15 @@
 
 /*		public static function QueryArrayCached($strConditions, $mixParameterArray = null) {
 			// Get the Database Object for this Class
-			$objDatabase = WikiFile::GetDatabase();
+			$objDatabase = ShowcaseItem::GetDatabase();
 
 			// Lookup the QCache for This Query Statement
-			$objCache = new QCache('query', 'wiki_file_' . serialize($strConditions));
+			$objCache = new QCache('query', 'showcase_item_' . serialize($strConditions));
 			if (!($strQuery = $objCache->GetData())) {
-				// Not Found -- Go ahead and Create/Build out a new QueryBuilder object with WikiFile-specific fields
+				// Not Found -- Go ahead and Create/Build out a new QueryBuilder object with ShowcaseItem-specific fields
 				$objQueryBuilder = new QQueryBuilder($objDatabase);
-				WikiFile::GetSelectFields($objQueryBuilder);
-				WikiFile::GetFromFields($objQueryBuilder);
+				ShowcaseItem::GetSelectFields($objQueryBuilder);
+				ShowcaseItem::GetFromFields($objQueryBuilder);
 
 				// Ensure the Passed-in Conditions is a string
 				try {
@@ -365,11 +358,11 @@
 
 			// Perform the Query and Instantiate the Array Result
 			$objDbResult = $objDatabase->Query($strQuery);
-			return WikiFile::InstantiateDbResult($objDbResult);
+			return ShowcaseItem::InstantiateDbResult($objDbResult);
 		}*/
 
 		/**
-		 * Updates a QQueryBuilder with the SELECT fields for this WikiFile
+		 * Updates a QQueryBuilder with the SELECT fields for this ShowcaseItem
 		 * @param QQueryBuilder $objBuilder the Query Builder object to update
 		 * @param string $strPrefix optional prefix to add to the SELECT fields
 		 */
@@ -378,16 +371,16 @@
 				$strTableName = $strPrefix;
 				$strAliasPrefix = $strPrefix . '__';
 			} else {
-				$strTableName = 'wiki_file';
+				$strTableName = 'showcase_item';
 				$strAliasPrefix = '';
 			}
 
-			$objBuilder->AddSelectItem($strTableName, 'wiki_version_id', $strAliasPrefix . 'wiki_version_id');
-			$objBuilder->AddSelectItem($strTableName, 'file_name', $strAliasPrefix . 'file_name');
-			$objBuilder->AddSelectItem($strTableName, 'file_size', $strAliasPrefix . 'file_size');
-			$objBuilder->AddSelectItem($strTableName, 'file_mime', $strAliasPrefix . 'file_mime');
+			$objBuilder->AddSelectItem($strTableName, 'id', $strAliasPrefix . 'id');
+			$objBuilder->AddSelectItem($strTableName, 'person_id', $strAliasPrefix . 'person_id');
+			$objBuilder->AddSelectItem($strTableName, 'name', $strAliasPrefix . 'name');
 			$objBuilder->AddSelectItem($strTableName, 'description', $strAliasPrefix . 'description');
-			$objBuilder->AddSelectItem($strTableName, 'download_count', $strAliasPrefix . 'download_count');
+			$objBuilder->AddSelectItem($strTableName, 'url', $strAliasPrefix . 'url');
+			$objBuilder->AddSelectItem($strTableName, 'live_flag', $strAliasPrefix . 'live_flag');
 		}
 
 
@@ -398,16 +391,16 @@
 		///////////////////////////////
 
 		/**
-		 * Instantiate a WikiFile from a Database Row.
+		 * Instantiate a ShowcaseItem from a Database Row.
 		 * Takes in an optional strAliasPrefix, used in case another Object::InstantiateDbRow
-		 * is calling this WikiFile::InstantiateDbRow in order to perform
+		 * is calling this ShowcaseItem::InstantiateDbRow in order to perform
 		 * early binding on referenced objects.
 		 * @param DatabaseRowBase $objDbRow
 		 * @param string $strAliasPrefix
 		 * @param string $strExpandAsArrayNodes
 		 * @param QBaseClass $objPreviousItem
 		 * @param string[] $strColumnAliasArray
-		 * @return WikiFile
+		 * @return ShowcaseItem
 		*/
 		public static function InstantiateDbRow($objDbRow, $strAliasPrefix = null, $strExpandAsArrayNodes = null, $objPreviousItem = null, $strColumnAliasArray = array()) {
 			// If blank row, return null
@@ -415,23 +408,22 @@
 				return null;
 
 
-			// Create a new instance of the WikiFile object
-			$objToReturn = new WikiFile();
+			// Create a new instance of the ShowcaseItem object
+			$objToReturn = new ShowcaseItem();
 			$objToReturn->__blnRestored = true;
 
-			$strAliasName = array_key_exists($strAliasPrefix . 'wiki_version_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'wiki_version_id'] : $strAliasPrefix . 'wiki_version_id';
-			$objToReturn->intWikiVersionId = $objDbRow->GetColumn($strAliasName, 'Integer');
-			$objToReturn->__intWikiVersionId = $objDbRow->GetColumn($strAliasName, 'Integer');
-			$strAliasName = array_key_exists($strAliasPrefix . 'file_name', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'file_name'] : $strAliasPrefix . 'file_name';
-			$objToReturn->strFileName = $objDbRow->GetColumn($strAliasName, 'VarChar');
-			$strAliasName = array_key_exists($strAliasPrefix . 'file_size', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'file_size'] : $strAliasPrefix . 'file_size';
-			$objToReturn->intFileSize = $objDbRow->GetColumn($strAliasName, 'Integer');
-			$strAliasName = array_key_exists($strAliasPrefix . 'file_mime', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'file_mime'] : $strAliasPrefix . 'file_mime';
-			$objToReturn->strFileMime = $objDbRow->GetColumn($strAliasName, 'VarChar');
+			$strAliasName = array_key_exists($strAliasPrefix . 'id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'id'] : $strAliasPrefix . 'id';
+			$objToReturn->intId = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'person_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'person_id'] : $strAliasPrefix . 'person_id';
+			$objToReturn->intPersonId = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'name', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'name'] : $strAliasPrefix . 'name';
+			$objToReturn->strName = $objDbRow->GetColumn($strAliasName, 'VarChar');
 			$strAliasName = array_key_exists($strAliasPrefix . 'description', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'description'] : $strAliasPrefix . 'description';
 			$objToReturn->strDescription = $objDbRow->GetColumn($strAliasName, 'Blob');
-			$strAliasName = array_key_exists($strAliasPrefix . 'download_count', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'download_count'] : $strAliasPrefix . 'download_count';
-			$objToReturn->intDownloadCount = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'url', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'url'] : $strAliasPrefix . 'url';
+			$objToReturn->strUrl = $objDbRow->GetColumn($strAliasName, 'VarChar');
+			$strAliasName = array_key_exists($strAliasPrefix . 'live_flag', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'live_flag'] : $strAliasPrefix . 'live_flag';
+			$objToReturn->blnLiveFlag = $objDbRow->GetColumn($strAliasName, 'Bit');
 
 			// Instantiate Virtual Attributes
 			foreach ($objDbRow->GetColumnNameArray() as $strColumnName => $mixValue) {
@@ -443,13 +435,13 @@
 
 			// Prepare to Check for Early/Virtual Binding
 			if (!$strAliasPrefix)
-				$strAliasPrefix = 'wiki_file__';
+				$strAliasPrefix = 'showcase_item__';
 
-			// Check for WikiVersion Early Binding
-			$strAlias = $strAliasPrefix . 'wiki_version_id__id';
+			// Check for Person Early Binding
+			$strAlias = $strAliasPrefix . 'person_id__id';
 			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
 			if (!is_null($objDbRow->GetColumn($strAliasName)))
-				$objToReturn->objWikiVersion = WikiVersion::InstantiateDbRow($objDbRow, $strAliasPrefix . 'wiki_version_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+				$objToReturn->objPerson = Person::InstantiateDbRow($objDbRow, $strAliasPrefix . 'person_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 
 
 
@@ -458,11 +450,11 @@
 		}
 
 		/**
-		 * Instantiate an array of WikiFiles from a Database Result
+		 * Instantiate an array of ShowcaseItems from a Database Result
 		 * @param DatabaseResultBase $objDbResult
 		 * @param string $strExpandAsArrayNodes
 		 * @param string[] $strColumnAliasArray
-		 * @return WikiFile[]
+		 * @return ShowcaseItem[]
 		 */
 		public static function InstantiateDbResult(QDatabaseResultBase $objDbResult, $strExpandAsArrayNodes = null, $strColumnAliasArray = null) {
 			$objToReturn = array();
@@ -478,7 +470,7 @@
 			if ($strExpandAsArrayNodes) {
 				$objLastRowItem = null;
 				while ($objDbRow = $objDbResult->GetNextRow()) {
-					$objItem = WikiFile::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, $objLastRowItem, $strColumnAliasArray);
+					$objItem = ShowcaseItem::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, $objLastRowItem, $strColumnAliasArray);
 					if ($objItem) {
 						$objToReturn[] = $objItem;
 						$objLastRowItem = $objItem;
@@ -486,7 +478,7 @@
 				}
 			} else {
 				while ($objDbRow = $objDbResult->GetNextRow())
-					$objToReturn[] = WikiFile::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
+					$objToReturn[] = ShowcaseItem::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
 			}
 
 			return $objToReturn;
@@ -500,14 +492,78 @@
 		///////////////////////////////////////////////////
 			
 		/**
-		 * Load a single WikiFile object,
-		 * by WikiVersionId Index(es)
-		 * @param integer $intWikiVersionId
-		 * @return WikiFile
+		 * Load a single ShowcaseItem object,
+		 * by Id Index(es)
+		 * @param integer $intId
+		 * @return ShowcaseItem
 		*/
-		public static function LoadByWikiVersionId($intWikiVersionId) {
-			return WikiFile::QuerySingle(
-				QQ::Equal(QQN::WikiFile()->WikiVersionId, $intWikiVersionId)
+		public static function LoadById($intId) {
+			return ShowcaseItem::QuerySingle(
+				QQ::Equal(QQN::ShowcaseItem()->Id, $intId)
+			);
+		}
+			
+		/**
+		 * Load an array of ShowcaseItem objects,
+		 * by PersonId Index(es)
+		 * @param integer $intPersonId
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @return ShowcaseItem[]
+		*/
+		public static function LoadArrayByPersonId($intPersonId, $objOptionalClauses = null) {
+			// Call ShowcaseItem::QueryArray to perform the LoadArrayByPersonId query
+			try {
+				return ShowcaseItem::QueryArray(
+					QQ::Equal(QQN::ShowcaseItem()->PersonId, $intPersonId),
+					$objOptionalClauses);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+		}
+
+		/**
+		 * Count ShowcaseItems
+		 * by PersonId Index(es)
+		 * @param integer $intPersonId
+		 * @return int
+		*/
+		public static function CountByPersonId($intPersonId) {
+			// Call ShowcaseItem::QueryCount to perform the CountByPersonId query
+			return ShowcaseItem::QueryCount(
+				QQ::Equal(QQN::ShowcaseItem()->PersonId, $intPersonId)
+			);
+		}
+			
+		/**
+		 * Load an array of ShowcaseItem objects,
+		 * by LiveFlag Index(es)
+		 * @param boolean $blnLiveFlag
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @return ShowcaseItem[]
+		*/
+		public static function LoadArrayByLiveFlag($blnLiveFlag, $objOptionalClauses = null) {
+			// Call ShowcaseItem::QueryArray to perform the LoadArrayByLiveFlag query
+			try {
+				return ShowcaseItem::QueryArray(
+					QQ::Equal(QQN::ShowcaseItem()->LiveFlag, $blnLiveFlag),
+					$objOptionalClauses);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+		}
+
+		/**
+		 * Count ShowcaseItems
+		 * by LiveFlag Index(es)
+		 * @param boolean $blnLiveFlag
+		 * @return int
+		*/
+		public static function CountByLiveFlag($blnLiveFlag) {
+			// Call ShowcaseItem::QueryCount to perform the CountByLiveFlag query
+			return ShowcaseItem::QueryCount(
+				QQ::Equal(QQN::ShowcaseItem()->LiveFlag, $blnLiveFlag)
 			);
 		}
 
@@ -525,14 +581,14 @@
 		//////////////////////////
 
 		/**
-		 * Save this WikiFile
+		 * Save this ShowcaseItem
 		 * @param bool $blnForceInsert
 		 * @param bool $blnForceUpdate
-		 * @return void
+		 * @return int
 		 */
 		public function Save($blnForceInsert = false, $blnForceUpdate = false) {
 			// Get the Database Object for this Class
-			$objDatabase = WikiFile::GetDatabase();
+			$objDatabase = ShowcaseItem::GetDatabase();
 
 			$mixToReturn = null;
 
@@ -540,24 +596,23 @@
 				if ((!$this->__blnRestored) || ($blnForceInsert)) {
 					// Perform an INSERT query
 					$objDatabase->NonQuery('
-						INSERT INTO `wiki_file` (
-							`wiki_version_id`,
-							`file_name`,
-							`file_size`,
-							`file_mime`,
+						INSERT INTO `showcase_item` (
+							`person_id`,
+							`name`,
 							`description`,
-							`download_count`
+							`url`,
+							`live_flag`
 						) VALUES (
-							' . $objDatabase->SqlVariable($this->intWikiVersionId) . ',
-							' . $objDatabase->SqlVariable($this->strFileName) . ',
-							' . $objDatabase->SqlVariable($this->intFileSize) . ',
-							' . $objDatabase->SqlVariable($this->strFileMime) . ',
+							' . $objDatabase->SqlVariable($this->intPersonId) . ',
+							' . $objDatabase->SqlVariable($this->strName) . ',
 							' . $objDatabase->SqlVariable($this->strDescription) . ',
-							' . $objDatabase->SqlVariable($this->intDownloadCount) . '
+							' . $objDatabase->SqlVariable($this->strUrl) . ',
+							' . $objDatabase->SqlVariable($this->blnLiveFlag) . '
 						)
 					');
 
-
+					// Update Identity column and return its value
+					$mixToReturn = $this->intId = $objDatabase->InsertId('showcase_item', 'id');
 				} else {
 					// Perform an UPDATE query
 
@@ -566,16 +621,15 @@
 					// Perform the UPDATE query
 					$objDatabase->NonQuery('
 						UPDATE
-							`wiki_file`
+							`showcase_item`
 						SET
-							`wiki_version_id` = ' . $objDatabase->SqlVariable($this->intWikiVersionId) . ',
-							`file_name` = ' . $objDatabase->SqlVariable($this->strFileName) . ',
-							`file_size` = ' . $objDatabase->SqlVariable($this->intFileSize) . ',
-							`file_mime` = ' . $objDatabase->SqlVariable($this->strFileMime) . ',
+							`person_id` = ' . $objDatabase->SqlVariable($this->intPersonId) . ',
+							`name` = ' . $objDatabase->SqlVariable($this->strName) . ',
 							`description` = ' . $objDatabase->SqlVariable($this->strDescription) . ',
-							`download_count` = ' . $objDatabase->SqlVariable($this->intDownloadCount) . '
+							`url` = ' . $objDatabase->SqlVariable($this->strUrl) . ',
+							`live_flag` = ' . $objDatabase->SqlVariable($this->blnLiveFlag) . '
 						WHERE
-							`wiki_version_id` = ' . $objDatabase->SqlVariable($this->__intWikiVersionId) . '
+							`id` = ' . $objDatabase->SqlVariable($this->intId) . '
 					');
 				}
 
@@ -586,7 +640,6 @@
 
 			// Update __blnRestored and any Non-Identity PK Columns (if applicable)
 			$this->__blnRestored = true;
-			$this->__intWikiVersionId = $this->intWikiVersionId;
 
 
 			// Return 
@@ -594,72 +647,70 @@
 		}
 
 		/**
-		 * Delete this WikiFile
+		 * Delete this ShowcaseItem
 		 * @return void
 		 */
 		public function Delete() {
-			if ((is_null($this->intWikiVersionId)))
-				throw new QUndefinedPrimaryKeyException('Cannot delete this WikiFile with an unset primary key.');
+			if ((is_null($this->intId)))
+				throw new QUndefinedPrimaryKeyException('Cannot delete this ShowcaseItem with an unset primary key.');
 
 			// Get the Database Object for this Class
-			$objDatabase = WikiFile::GetDatabase();
+			$objDatabase = ShowcaseItem::GetDatabase();
 
 
 			// Perform the SQL Query
 			$objDatabase->NonQuery('
 				DELETE FROM
-					`wiki_file`
+					`showcase_item`
 				WHERE
-					`wiki_version_id` = ' . $objDatabase->SqlVariable($this->intWikiVersionId) . '');
+					`id` = ' . $objDatabase->SqlVariable($this->intId) . '');
 		}
 
 		/**
-		 * Delete all WikiFiles
+		 * Delete all ShowcaseItems
 		 * @return void
 		 */
 		public static function DeleteAll() {
 			// Get the Database Object for this Class
-			$objDatabase = WikiFile::GetDatabase();
+			$objDatabase = ShowcaseItem::GetDatabase();
 
 			// Perform the Query
 			$objDatabase->NonQuery('
 				DELETE FROM
-					`wiki_file`');
+					`showcase_item`');
 		}
 
 		/**
-		 * Truncate wiki_file table
+		 * Truncate showcase_item table
 		 * @return void
 		 */
 		public static function Truncate() {
 			// Get the Database Object for this Class
-			$objDatabase = WikiFile::GetDatabase();
+			$objDatabase = ShowcaseItem::GetDatabase();
 
 			// Perform the Query
 			$objDatabase->NonQuery('
-				TRUNCATE `wiki_file`');
+				TRUNCATE `showcase_item`');
 		}
 
 		/**
-		 * Reload this WikiFile from the database.
+		 * Reload this ShowcaseItem from the database.
 		 * @return void
 		 */
 		public function Reload() {
 			// Make sure we are actually Restored from the database
 			if (!$this->__blnRestored)
-				throw new QCallerException('Cannot call Reload() on a new, unsaved WikiFile object.');
+				throw new QCallerException('Cannot call Reload() on a new, unsaved ShowcaseItem object.');
 
 			// Reload the Object
-			$objReloaded = WikiFile::Load($this->intWikiVersionId);
+			$objReloaded = ShowcaseItem::Load($this->intId);
 
 			// Update $this's local variables to match
-			$this->WikiVersionId = $objReloaded->WikiVersionId;
-			$this->__intWikiVersionId = $this->intWikiVersionId;
-			$this->strFileName = $objReloaded->strFileName;
-			$this->intFileSize = $objReloaded->intFileSize;
-			$this->strFileMime = $objReloaded->strFileMime;
+			$this->PersonId = $objReloaded->PersonId;
+			$this->strName = $objReloaded->strName;
 			$this->strDescription = $objReloaded->strDescription;
-			$this->intDownloadCount = $objReloaded->intDownloadCount;
+			$this->strUrl = $objReloaded->strUrl;
+			$this->blnLiveFlag = $objReloaded->blnLiveFlag;
 		}
 
 
@@ -680,33 +731,26 @@
 				///////////////////
 				// Member Variables
 				///////////////////
-				case 'WikiVersionId':
+				case 'Id':
 					/**
-					 * Gets the value for intWikiVersionId (PK)
+					 * Gets the value for intId (Read-Only PK)
 					 * @return integer
 					 */
-					return $this->intWikiVersionId;
+					return $this->intId;
 
-				case 'FileName':
+				case 'PersonId':
 					/**
-					 * Gets the value for strFileName 
-					 * @return string
-					 */
-					return $this->strFileName;
-
-				case 'FileSize':
-					/**
-					 * Gets the value for intFileSize 
+					 * Gets the value for intPersonId (Not Null)
 					 * @return integer
 					 */
-					return $this->intFileSize;
+					return $this->intPersonId;
 
-				case 'FileMime':
+				case 'Name':
 					/**
-					 * Gets the value for strFileMime 
+					 * Gets the value for strName 
 					 * @return string
 					 */
-					return $this->strFileMime;
+					return $this->strName;
 
 				case 'Description':
 					/**
@@ -715,26 +759,33 @@
 					 */
 					return $this->strDescription;
 
-				case 'DownloadCount':
+				case 'Url':
 					/**
-					 * Gets the value for intDownloadCount 
-					 * @return integer
+					 * Gets the value for strUrl 
+					 * @return string
 					 */
-					return $this->intDownloadCount;
+					return $this->strUrl;
+
+				case 'LiveFlag':
+					/**
+					 * Gets the value for blnLiveFlag (Not Null)
+					 * @return boolean
+					 */
+					return $this->blnLiveFlag;
 
 
 				///////////////////
 				// Member Objects
 				///////////////////
-				case 'WikiVersion':
+				case 'Person':
 					/**
-					 * Gets the value for the WikiVersion object referenced by intWikiVersionId (PK)
-					 * @return WikiVersion
+					 * Gets the value for the Person object referenced by intPersonId (Not Null)
+					 * @return Person
 					 */
 					try {
-						if ((!$this->objWikiVersion) && (!is_null($this->intWikiVersionId)))
-							$this->objWikiVersion = WikiVersion::Load($this->intWikiVersionId);
-						return $this->objWikiVersion;
+						if ((!$this->objPerson) && (!is_null($this->intPersonId)))
+							$this->objPerson = Person::Load($this->intPersonId);
+						return $this->objPerson;
 					} catch (QCallerException $objExc) {
 						$objExc->IncrementOffset();
 						throw $objExc;
@@ -773,54 +824,28 @@
 				///////////////////
 				// Member Variables
 				///////////////////
-				case 'WikiVersionId':
+				case 'PersonId':
 					/**
-					 * Sets the value for intWikiVersionId (PK)
+					 * Sets the value for intPersonId (Not Null)
 					 * @param integer $mixValue
 					 * @return integer
 					 */
 					try {
-						$this->objWikiVersion = null;
-						return ($this->intWikiVersionId = QType::Cast($mixValue, QType::Integer));
+						$this->objPerson = null;
+						return ($this->intPersonId = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {
 						$objExc->IncrementOffset();
 						throw $objExc;
 					}
 
-				case 'FileName':
+				case 'Name':
 					/**
-					 * Sets the value for strFileName 
+					 * Sets the value for strName 
 					 * @param string $mixValue
 					 * @return string
 					 */
 					try {
-						return ($this->strFileName = QType::Cast($mixValue, QType::String));
-					} catch (QCallerException $objExc) {
-						$objExc->IncrementOffset();
-						throw $objExc;
-					}
-
-				case 'FileSize':
-					/**
-					 * Sets the value for intFileSize 
-					 * @param integer $mixValue
-					 * @return integer
-					 */
-					try {
-						return ($this->intFileSize = QType::Cast($mixValue, QType::Integer));
-					} catch (QCallerException $objExc) {
-						$objExc->IncrementOffset();
-						throw $objExc;
-					}
-
-				case 'FileMime':
-					/**
-					 * Sets the value for strFileMime 
-					 * @param string $mixValue
-					 * @return string
-					 */
-					try {
-						return ($this->strFileMime = QType::Cast($mixValue, QType::String));
+						return ($this->strName = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
 						$objExc->IncrementOffset();
 						throw $objExc;
@@ -839,14 +864,27 @@
 						throw $objExc;
 					}
 
-				case 'DownloadCount':
+				case 'Url':
 					/**
-					 * Sets the value for intDownloadCount 
-					 * @param integer $mixValue
-					 * @return integer
+					 * Sets the value for strUrl 
+					 * @param string $mixValue
+					 * @return string
 					 */
 					try {
-						return ($this->intDownloadCount = QType::Cast($mixValue, QType::Integer));
+						return ($this->strUrl = QType::Cast($mixValue, QType::String));
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
+				case 'LiveFlag':
+					/**
+					 * Sets the value for blnLiveFlag (Not Null)
+					 * @param boolean $mixValue
+					 * @return boolean
+					 */
+					try {
+						return ($this->blnLiveFlag = QType::Cast($mixValue, QType::Boolean));
 					} catch (QCallerException $objExc) {
 						$objExc->IncrementOffset();
 						throw $objExc;
@@ -856,32 +894,32 @@
 				///////////////////
 				// Member Objects
 				///////////////////
-				case 'WikiVersion':
+				case 'Person':
 					/**
-					 * Sets the value for the WikiVersion object referenced by intWikiVersionId (PK)
-					 * @param WikiVersion $mixValue
-					 * @return WikiVersion
+					 * Sets the value for the Person object referenced by intPersonId (Not Null)
+					 * @param Person $mixValue
+					 * @return Person
 					 */
 					if (is_null($mixValue)) {
-						$this->intWikiVersionId = null;
-						$this->objWikiVersion = null;
+						$this->intPersonId = null;
+						$this->objPerson = null;
 						return null;
 					} else {
-						// Make sure $mixValue actually is a WikiVersion object
+						// Make sure $mixValue actually is a Person object
 						try {
-							$mixValue = QType::Cast($mixValue, 'WikiVersion');
+							$mixValue = QType::Cast($mixValue, 'Person');
 						} catch (QInvalidCastException $objExc) {
 							$objExc->IncrementOffset();
 							throw $objExc;
 						} 
 
-						// Make sure $mixValue is a SAVED WikiVersion object
+						// Make sure $mixValue is a SAVED Person object
 						if (is_null($mixValue->Id))
-							throw new QCallerException('Unable to set an unsaved WikiVersion for this WikiFile');
+							throw new QCallerException('Unable to set an unsaved Person for this ShowcaseItem');
 
 						// Update Local Member Variables
-						$this->objWikiVersion = $mixValue;
-						$this->intWikiVersionId = $mixValue->Id;
+						$this->objPerson = $mixValue;
+						$this->intPersonId = $mixValue->Id;
 
 						// Return $mixValue
 						return $mixValue;
@@ -924,22 +962,22 @@
 		////////////////////////////////////////
 
 		public static function GetSoapComplexTypeXml() {
-			$strToReturn = '<complexType name="WikiFile"><sequence>';
-			$strToReturn .= '<element name="WikiVersion" type="xsd1:WikiVersion"/>';
-			$strToReturn .= '<element name="FileName" type="xsd:string"/>';
-			$strToReturn .= '<element name="FileSize" type="xsd:int"/>';
-			$strToReturn .= '<element name="FileMime" type="xsd:string"/>';
+			$strToReturn = '<complexType name="ShowcaseItem"><sequence>';
+			$strToReturn .= '<element name="Id" type="xsd:int"/>';
+			$strToReturn .= '<element name="Person" type="xsd1:Person"/>';
+			$strToReturn .= '<element name="Name" type="xsd:string"/>';
 			$strToReturn .= '<element name="Description" type="xsd:string"/>';
-			$strToReturn .= '<element name="DownloadCount" type="xsd:int"/>';
+			$strToReturn .= '<element name="Url" type="xsd:string"/>';
+			$strToReturn .= '<element name="LiveFlag" type="xsd:boolean"/>';
 			$strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
 			$strToReturn .= '</sequence></complexType>';
 			return $strToReturn;
 		}
 
 		public static function AlterSoapComplexTypeArray(&$strComplexTypeArray) {
-			if (!array_key_exists('WikiFile', $strComplexTypeArray)) {
-				$strComplexTypeArray['WikiFile'] = WikiFile::GetSoapComplexTypeXml();
-				WikiVersion::AlterSoapComplexTypeArray($strComplexTypeArray);
+			if (!array_key_exists('ShowcaseItem', $strComplexTypeArray)) {
+				$strComplexTypeArray['ShowcaseItem'] = ShowcaseItem::GetSoapComplexTypeXml();
+				Person::AlterSoapComplexTypeArray($strComplexTypeArray);
 			}
 		}
 
@@ -947,26 +985,26 @@
 			$objArrayToReturn = array();
 
 			foreach ($objSoapArray as $objSoapObject)
-				array_push($objArrayToReturn, WikiFile::GetObjectFromSoapObject($objSoapObject));
+				array_push($objArrayToReturn, ShowcaseItem::GetObjectFromSoapObject($objSoapObject));
 
 			return $objArrayToReturn;
 		}
 
 		public static function GetObjectFromSoapObject($objSoapObject) {
-			$objToReturn = new WikiFile();
-			if ((property_exists($objSoapObject, 'WikiVersion')) &&
-				($objSoapObject->WikiVersion))
-				$objToReturn->WikiVersion = WikiVersion::GetObjectFromSoapObject($objSoapObject->WikiVersion);
-			if (property_exists($objSoapObject, 'FileName'))
-				$objToReturn->strFileName = $objSoapObject->FileName;
-			if (property_exists($objSoapObject, 'FileSize'))
-				$objToReturn->intFileSize = $objSoapObject->FileSize;
-			if (property_exists($objSoapObject, 'FileMime'))
-				$objToReturn->strFileMime = $objSoapObject->FileMime;
+			$objToReturn = new ShowcaseItem();
+			if (property_exists($objSoapObject, 'Id'))
+				$objToReturn->intId = $objSoapObject->Id;
+			if ((property_exists($objSoapObject, 'Person')) &&
+				($objSoapObject->Person))
+				$objToReturn->Person = Person::GetObjectFromSoapObject($objSoapObject->Person);
+			if (property_exists($objSoapObject, 'Name'))
+				$objToReturn->strName = $objSoapObject->Name;
 			if (property_exists($objSoapObject, 'Description'))
 				$objToReturn->strDescription = $objSoapObject->Description;
-			if (property_exists($objSoapObject, 'DownloadCount'))
-				$objToReturn->intDownloadCount = $objSoapObject->DownloadCount;
+			if (property_exists($objSoapObject, 'Url'))
+				$objToReturn->strUrl = $objSoapObject->Url;
+			if (property_exists($objSoapObject, 'LiveFlag'))
+				$objToReturn->blnLiveFlag = $objSoapObject->LiveFlag;
 			if (property_exists($objSoapObject, '__blnRestored'))
 				$objToReturn->__blnRestored = $objSoapObject->__blnRestored;
 			return $objToReturn;
@@ -979,16 +1017,16 @@
 			$objArrayToReturn = array();
 
 			foreach ($objArray as $objObject)
-				array_push($objArrayToReturn, WikiFile::GetSoapObjectFromObject($objObject, true));
+				array_push($objArrayToReturn, ShowcaseItem::GetSoapObjectFromObject($objObject, true));
 
 			return unserialize(serialize($objArrayToReturn));
 		}
 
 		public static function GetSoapObjectFromObject($objObject, $blnBindRelatedObjects) {
-			if ($objObject->objWikiVersion)
-				$objObject->objWikiVersion = WikiVersion::GetSoapObjectFromObject($objObject->objWikiVersion, false);
+			if ($objObject->objPerson)
+				$objObject->objPerson = Person::GetSoapObjectFromObject($objObject->objPerson, false);
 			else if (!$blnBindRelatedObjects)
-				$objObject->intWikiVersionId = null;
+				$objObject->intPersonId = null;
 			return $objObject;
 		}
 
@@ -1003,29 +1041,29 @@
 	// ADDITIONAL CLASSES for QCODO QUERY
 	/////////////////////////////////////
 
-	class QQNodeWikiFile extends QQNode {
-		protected $strTableName = 'wiki_file';
-		protected $strPrimaryKey = 'wiki_version_id';
-		protected $strClassName = 'WikiFile';
+	class QQNodeShowcaseItem extends QQNode {
+		protected $strTableName = 'showcase_item';
+		protected $strPrimaryKey = 'id';
+		protected $strClassName = 'ShowcaseItem';
 		public function __get($strName) {
 			switch ($strName) {
-				case 'WikiVersionId':
-					return new QQNode('wiki_version_id', 'WikiVersionId', 'integer', $this);
-				case 'WikiVersion':
-					return new QQNodeWikiVersion('wiki_version_id', 'WikiVersion', 'integer', $this);
-				case 'FileName':
-					return new QQNode('file_name', 'FileName', 'string', $this);
-				case 'FileSize':
-					return new QQNode('file_size', 'FileSize', 'integer', $this);
-				case 'FileMime':
-					return new QQNode('file_mime', 'FileMime', 'string', $this);
+				case 'Id':
+					return new QQNode('id', 'Id', 'integer', $this);
+				case 'PersonId':
+					return new QQNode('person_id', 'PersonId', 'integer', $this);
+				case 'Person':
+					return new QQNodePerson('person_id', 'Person', 'integer', $this);
+				case 'Name':
+					return new QQNode('name', 'Name', 'string', $this);
 				case 'Description':
 					return new QQNode('description', 'Description', 'string', $this);
-				case 'DownloadCount':
-					return new QQNode('download_count', 'DownloadCount', 'integer', $this);
+				case 'Url':
+					return new QQNode('url', 'Url', 'string', $this);
+				case 'LiveFlag':
+					return new QQNode('live_flag', 'LiveFlag', 'boolean', $this);
 
 				case '_PrimaryKeyNode':
-					return new QQNodeWikiVersion('wiki_version_id', 'WikiVersionId', 'integer', $this);
+					return new QQNode('id', 'Id', 'integer', $this);
 				default:
 					try {
 						return parent::__get($strName);
@@ -1037,29 +1075,29 @@
 		}
 	}
 
-	class QQReverseReferenceNodeWikiFile extends QQReverseReferenceNode {
-		protected $strTableName = 'wiki_file';
-		protected $strPrimaryKey = 'wiki_version_id';
-		protected $strClassName = 'WikiFile';
+	class QQReverseReferenceNodeShowcaseItem extends QQReverseReferenceNode {
+		protected $strTableName = 'showcase_item';
+		protected $strPrimaryKey = 'id';
+		protected $strClassName = 'ShowcaseItem';
 		public function __get($strName) {
 			switch ($strName) {
-				case 'WikiVersionId':
-					return new QQNode('wiki_version_id', 'WikiVersionId', 'integer', $this);
-				case 'WikiVersion':
-					return new QQNodeWikiVersion('wiki_version_id', 'WikiVersion', 'integer', $this);
-				case 'FileName':
-					return new QQNode('file_name', 'FileName', 'string', $this);
-				case 'FileSize':
-					return new QQNode('file_size', 'FileSize', 'integer', $this);
-				case 'FileMime':
-					return new QQNode('file_mime', 'FileMime', 'string', $this);
+				case 'Id':
+					return new QQNode('id', 'Id', 'integer', $this);
+				case 'PersonId':
+					return new QQNode('person_id', 'PersonId', 'integer', $this);
+				case 'Person':
+					return new QQNodePerson('person_id', 'Person', 'integer', $this);
+				case 'Name':
+					return new QQNode('name', 'Name', 'string', $this);
 				case 'Description':
 					return new QQNode('description', 'Description', 'string', $this);
-				case 'DownloadCount':
-					return new QQNode('download_count', 'DownloadCount', 'integer', $this);
+				case 'Url':
+					return new QQNode('url', 'Url', 'string', $this);
+				case 'LiveFlag':
+					return new QQNode('live_flag', 'LiveFlag', 'boolean', $this);
 
 				case '_PrimaryKeyNode':
-					return new QQNodeWikiVersion('wiki_version_id', 'WikiVersionId', 'integer', $this);
+					return new QQNode('id', 'Id', 'integer', $this);
 				default:
 					try {
 						return parent::__get($strName);

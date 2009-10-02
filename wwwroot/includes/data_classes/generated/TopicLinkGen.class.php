@@ -23,9 +23,11 @@
 	 * @property integer $ForumId the value for intForumId (Unique)
 	 * @property integer $IssueId the value for intIssueId (Unique)
 	 * @property integer $WikiItemId the value for intWikiItemId (Unique)
+	 * @property integer $PackageId the value for intPackageId (Unique)
 	 * @property Forum $Forum the value for the Forum object referenced by intForumId (Unique)
 	 * @property Issue $Issue the value for the Issue object referenced by intIssueId (Unique)
 	 * @property WikiItem $WikiItem the value for the WikiItem object referenced by intWikiItemId (Unique)
+	 * @property Package $Package the value for the Package object referenced by intPackageId (Unique)
 	 * @property-read Message $_Message the value for the private _objMessage (Read-Only) if set due to an expansion on the message.topic_link_id reverse relationship
 	 * @property-read Message[] $_MessageArray the value for the private _objMessageArray (Read-Only) if set due to an ExpandAsArray on the message.topic_link_id reverse relationship
 	 * @property-read Topic $_Topic the value for the private _objTopic (Read-Only) if set due to an expansion on the topic.topic_link_id reverse relationship
@@ -100,6 +102,14 @@
 		 */
 		protected $intWikiItemId;
 		const WikiItemIdDefault = null;
+
+
+		/**
+		 * Protected member variable that maps to the database column topic_link.package_id
+		 * @var integer intPackageId
+		 */
+		protected $intPackageId;
+		const PackageIdDefault = null;
 
 
 		/**
@@ -185,6 +195,16 @@
 		 * @var WikiItem objWikiItem
 		 */
 		protected $objWikiItem;
+
+		/**
+		 * Protected member variable that contains the object pointed by the reference
+		 * in the database column topic_link.package_id.
+		 *
+		 * NOTE: Always use the Package property getter to correctly retrieve this Package object.
+		 * (Because this class implements late binding, this variable reference MAY be null.)
+		 * @var Package objPackage
+		 */
+		protected $objPackage;
 
 
 
@@ -457,6 +477,7 @@
 			$objBuilder->AddSelectItem($strTableName, 'forum_id', $strAliasPrefix . 'forum_id');
 			$objBuilder->AddSelectItem($strTableName, 'issue_id', $strAliasPrefix . 'issue_id');
 			$objBuilder->AddSelectItem($strTableName, 'wiki_item_id', $strAliasPrefix . 'wiki_item_id');
+			$objBuilder->AddSelectItem($strTableName, 'package_id', $strAliasPrefix . 'package_id');
 		}
 
 
@@ -550,6 +571,8 @@
 			$objToReturn->intIssueId = $objDbRow->GetColumn($strAliasName, 'Integer');
 			$strAliasName = array_key_exists($strAliasPrefix . 'wiki_item_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'wiki_item_id'] : $strAliasPrefix . 'wiki_item_id';
 			$objToReturn->intWikiItemId = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'package_id', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'package_id'] : $strAliasPrefix . 'package_id';
+			$objToReturn->intPackageId = $objDbRow->GetColumn($strAliasName, 'Integer');
 
 			// Instantiate Virtual Attributes
 			foreach ($objDbRow->GetColumnNameArray() as $strColumnName => $mixValue) {
@@ -580,6 +603,12 @@
 			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
 			if (!is_null($objDbRow->GetColumn($strAliasName)))
 				$objToReturn->objWikiItem = WikiItem::InstantiateDbRow($objDbRow, $strAliasPrefix . 'wiki_item_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
+
+			// Check for Package Early Binding
+			$strAlias = $strAliasPrefix . 'package_id__id';
+			$strAliasName = array_key_exists($strAlias, $strColumnAliasArray) ? $strColumnAliasArray[$strAlias] : $strAlias;
+			if (!is_null($objDbRow->GetColumn($strAliasName)))
+				$objToReturn->objPackage = Package::InstantiateDbRow($objDbRow, $strAliasPrefix . 'package_id__', $strExpandAsArrayNodes, null, $strColumnAliasArray);
 
 
 
@@ -698,6 +727,18 @@
 		}
 			
 		/**
+		 * Load a single TopicLink object,
+		 * by PackageId Index(es)
+		 * @param integer $intPackageId
+		 * @return TopicLink
+		*/
+		public static function LoadByPackageId($intPackageId) {
+			return TopicLink::QuerySingle(
+				QQ::Equal(QQN::TopicLink()->PackageId, $intPackageId)
+			);
+		}
+			
+		/**
 		 * Load an array of TopicLink objects,
 		 * by TopicLinkTypeId Index(es)
 		 * @param integer $intTopicLinkTypeId
@@ -765,7 +806,8 @@
 							`last_post_date`,
 							`forum_id`,
 							`issue_id`,
-							`wiki_item_id`
+							`wiki_item_id`,
+							`package_id`
 						) VALUES (
 							' . $objDatabase->SqlVariable($this->intTopicLinkTypeId) . ',
 							' . $objDatabase->SqlVariable($this->intTopicCount) . ',
@@ -773,7 +815,8 @@
 							' . $objDatabase->SqlVariable($this->dttLastPostDate) . ',
 							' . $objDatabase->SqlVariable($this->intForumId) . ',
 							' . $objDatabase->SqlVariable($this->intIssueId) . ',
-							' . $objDatabase->SqlVariable($this->intWikiItemId) . '
+							' . $objDatabase->SqlVariable($this->intWikiItemId) . ',
+							' . $objDatabase->SqlVariable($this->intPackageId) . '
 						)
 					');
 
@@ -795,7 +838,8 @@
 							`last_post_date` = ' . $objDatabase->SqlVariable($this->dttLastPostDate) . ',
 							`forum_id` = ' . $objDatabase->SqlVariable($this->intForumId) . ',
 							`issue_id` = ' . $objDatabase->SqlVariable($this->intIssueId) . ',
-							`wiki_item_id` = ' . $objDatabase->SqlVariable($this->intWikiItemId) . '
+							`wiki_item_id` = ' . $objDatabase->SqlVariable($this->intWikiItemId) . ',
+							`package_id` = ' . $objDatabase->SqlVariable($this->intPackageId) . '
 						WHERE
 							`id` = ' . $objDatabase->SqlVariable($this->intId) . '
 					');
@@ -881,6 +925,7 @@
 			$this->ForumId = $objReloaded->ForumId;
 			$this->IssueId = $objReloaded->IssueId;
 			$this->WikiItemId = $objReloaded->WikiItemId;
+			$this->PackageId = $objReloaded->PackageId;
 		}
 
 
@@ -957,6 +1002,13 @@
 					 */
 					return $this->intWikiItemId;
 
+				case 'PackageId':
+					/**
+					 * Gets the value for intPackageId (Unique)
+					 * @return integer
+					 */
+					return $this->intPackageId;
+
 
 				///////////////////
 				// Member Objects
@@ -998,6 +1050,20 @@
 						if ((!$this->objWikiItem) && (!is_null($this->intWikiItemId)))
 							$this->objWikiItem = WikiItem::Load($this->intWikiItemId);
 						return $this->objWikiItem;
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
+				case 'Package':
+					/**
+					 * Gets the value for the Package object referenced by intPackageId (Unique)
+					 * @return Package
+					 */
+					try {
+						if ((!$this->objPackage) && (!is_null($this->intPackageId)))
+							$this->objPackage = Package::Load($this->intPackageId);
+						return $this->objPackage;
 					} catch (QCallerException $objExc) {
 						$objExc->IncrementOffset();
 						throw $objExc;
@@ -1162,6 +1228,20 @@
 						throw $objExc;
 					}
 
+				case 'PackageId':
+					/**
+					 * Sets the value for intPackageId (Unique)
+					 * @param integer $mixValue
+					 * @return integer
+					 */
+					try {
+						$this->objPackage = null;
+						return ($this->intPackageId = QType::Cast($mixValue, QType::Integer));
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
 
 				///////////////////
 				// Member Objects
@@ -1256,6 +1336,38 @@
 						// Update Local Member Variables
 						$this->objWikiItem = $mixValue;
 						$this->intWikiItemId = $mixValue->Id;
+
+						// Return $mixValue
+						return $mixValue;
+					}
+					break;
+
+				case 'Package':
+					/**
+					 * Sets the value for the Package object referenced by intPackageId (Unique)
+					 * @param Package $mixValue
+					 * @return Package
+					 */
+					if (is_null($mixValue)) {
+						$this->intPackageId = null;
+						$this->objPackage = null;
+						return null;
+					} else {
+						// Make sure $mixValue actually is a Package object
+						try {
+							$mixValue = QType::Cast($mixValue, 'Package');
+						} catch (QInvalidCastException $objExc) {
+							$objExc->IncrementOffset();
+							throw $objExc;
+						} 
+
+						// Make sure $mixValue is a SAVED Package object
+						if (is_null($mixValue->Id))
+							throw new QCallerException('Unable to set an unsaved Package for this TopicLink');
+
+						// Update Local Member Variables
+						$this->objPackage = $mixValue;
+						$this->intPackageId = $mixValue->Id;
 
 						// Return $mixValue
 						return $mixValue;
@@ -1607,6 +1719,7 @@
 			$strToReturn .= '<element name="Forum" type="xsd1:Forum"/>';
 			$strToReturn .= '<element name="Issue" type="xsd1:Issue"/>';
 			$strToReturn .= '<element name="WikiItem" type="xsd1:WikiItem"/>';
+			$strToReturn .= '<element name="Package" type="xsd1:Package"/>';
 			$strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
 			$strToReturn .= '</sequence></complexType>';
 			return $strToReturn;
@@ -1618,6 +1731,7 @@
 				Forum::AlterSoapComplexTypeArray($strComplexTypeArray);
 				Issue::AlterSoapComplexTypeArray($strComplexTypeArray);
 				WikiItem::AlterSoapComplexTypeArray($strComplexTypeArray);
+				Package::AlterSoapComplexTypeArray($strComplexTypeArray);
 			}
 		}
 
@@ -1651,6 +1765,9 @@
 			if ((property_exists($objSoapObject, 'WikiItem')) &&
 				($objSoapObject->WikiItem))
 				$objToReturn->WikiItem = WikiItem::GetObjectFromSoapObject($objSoapObject->WikiItem);
+			if ((property_exists($objSoapObject, 'Package')) &&
+				($objSoapObject->Package))
+				$objToReturn->Package = Package::GetObjectFromSoapObject($objSoapObject->Package);
 			if (property_exists($objSoapObject, '__blnRestored'))
 				$objToReturn->__blnRestored = $objSoapObject->__blnRestored;
 			return $objToReturn;
@@ -1683,6 +1800,10 @@
 				$objObject->objWikiItem = WikiItem::GetSoapObjectFromObject($objObject->objWikiItem, false);
 			else if (!$blnBindRelatedObjects)
 				$objObject->intWikiItemId = null;
+			if ($objObject->objPackage)
+				$objObject->objPackage = Package::GetSoapObjectFromObject($objObject->objPackage, false);
+			else if (!$blnBindRelatedObjects)
+				$objObject->intPackageId = null;
 			return $objObject;
 		}
 
@@ -1725,6 +1846,10 @@
 					return new QQNode('wiki_item_id', 'WikiItemId', 'integer', $this);
 				case 'WikiItem':
 					return new QQNodeWikiItem('wiki_item_id', 'WikiItem', 'integer', $this);
+				case 'PackageId':
+					return new QQNode('package_id', 'PackageId', 'integer', $this);
+				case 'Package':
+					return new QQNodePackage('package_id', 'Package', 'integer', $this);
 				case 'Message':
 					return new QQReverseReferenceNodeMessage($this, 'message', 'reverse_reference', 'topic_link_id');
 				case 'Topic':
@@ -1771,6 +1896,10 @@
 					return new QQNode('wiki_item_id', 'WikiItemId', 'integer', $this);
 				case 'WikiItem':
 					return new QQNodeWikiItem('wiki_item_id', 'WikiItem', 'integer', $this);
+				case 'PackageId':
+					return new QQNode('package_id', 'PackageId', 'integer', $this);
+				case 'Package':
+					return new QQNodePackage('package_id', 'Package', 'integer', $this);
 				case 'Message':
 					return new QQReverseReferenceNodeMessage($this, 'message', 'reverse_reference', 'topic_link_id');
 				case 'Topic':

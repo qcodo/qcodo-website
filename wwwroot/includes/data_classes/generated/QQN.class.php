@@ -1,24 +1,6 @@
 <?php
 	class QQN {
 		/**
-		 * @return QQNodeAnnouncement
-		 */
-		static public function Announcement() {
-			return new QQNodeAnnouncement('announcement', null, null);
-		}
-		/**
-		 * @return QQNodeArticle
-		 */
-		static public function Article() {
-			return new QQNodeArticle('article', null, null);
-		}
-		/**
-		 * @return QQNodeArticleSection
-		 */
-		static public function ArticleSection() {
-			return new QQNodeArticleSection('article_section', null, null);
-		}
-		/**
 		 * @return QQNodeCounter
 		 */
 		static public function Counter() {
@@ -29,18 +11,6 @@
 		 */
 		static public function Country() {
 			return new QQNodeCountry('country', null, null);
-		}
-		/**
-		 * @return QQNodeDownload
-		 */
-		static public function Download() {
-			return new QQNodeDownload('download', null, null);
-		}
-		/**
-		 * @return QQNodeDownloadCategory
-		 */
-		static public function DownloadCategory() {
-			return new QQNodeDownloadCategory('download_category', null, null);
 		}
 		/**
 		 * @return QQNodeEmailQueue
@@ -97,10 +67,40 @@
 			return new QQNodeMessage('message', null, null);
 		}
 		/**
+		 * @return QQNodePackage
+		 */
+		static public function Package() {
+			return new QQNodePackage('package', null, null);
+		}
+		/**
+		 * @return QQNodePackageCategory
+		 */
+		static public function PackageCategory() {
+			return new QQNodePackageCategory('package_category', null, null);
+		}
+		/**
+		 * @return QQNodePackageContribution
+		 */
+		static public function PackageContribution() {
+			return new QQNodePackageContribution('package_contribution', null, null);
+		}
+		/**
+		 * @return QQNodePackageVersion
+		 */
+		static public function PackageVersion() {
+			return new QQNodePackageVersion('package_version', null, null);
+		}
+		/**
 		 * @return QQNodePerson
 		 */
 		static public function Person() {
 			return new QQNodePerson('person', null, null);
+		}
+		/**
+		 * @return QQNodeShowcaseItem
+		 */
+		static public function ShowcaseItem() {
+			return new QQNodeShowcaseItem('showcase_item', null, null);
 		}
 		/**
 		 * @return QQNodeTimezone

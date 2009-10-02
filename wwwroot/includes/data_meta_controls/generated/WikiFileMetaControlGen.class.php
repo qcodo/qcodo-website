@@ -26,6 +26,8 @@
 	 * property-read QLabel $FileMimeLabel
 	 * property QTextBox $DescriptionControl
 	 * property-read QLabel $DescriptionLabel
+	 * property QIntegerTextBox $DownloadCountControl
+	 * property-read QLabel $DownloadCountLabel
 	 * property-read string $TitleVerb a verb indicating whether or not this is being edited or created
 	 * property-read boolean $EditMode a boolean indicating whether or not this is being edited or created
 	 */
@@ -43,6 +45,7 @@
 		protected $txtFileSize;
 		protected $txtFileMime;
 		protected $txtDescription;
+		protected $txtDownloadCount;
 
 		// Controls that allow the viewing of WikiFile's individual data fields
 		protected $lblWikiVersionId;
@@ -50,6 +53,7 @@
 		protected $lblFileSize;
 		protected $lblFileMime;
 		protected $lblDescription;
+		protected $lblDownloadCount;
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
 
@@ -283,6 +287,32 @@
 			return $this->lblDescription;
 		}
 
+		/**
+		 * Create and setup QIntegerTextBox txtDownloadCount
+		 * @param string $strControlId optional ControlId to use
+		 * @return QIntegerTextBox
+		 */
+		public function txtDownloadCount_Create($strControlId = null) {
+			$this->txtDownloadCount = new QIntegerTextBox($this->objParentObject, $strControlId);
+			$this->txtDownloadCount->Name = QApplication::Translate('Download Count');
+			$this->txtDownloadCount->Text = $this->objWikiFile->DownloadCount;
+			return $this->txtDownloadCount;
+		}
+
+		/**
+		 * Create and setup QLabel lblDownloadCount
+		 * @param string $strControlId optional ControlId to use
+		 * @param string $strFormat optional sprintf format to use
+		 * @return QLabel
+		 */
+		public function lblDownloadCount_Create($strControlId = null, $strFormat = null) {
+			$this->lblDownloadCount = new QLabel($this->objParentObject, $strControlId);
+			$this->lblDownloadCount->Name = QApplication::Translate('Download Count');
+			$this->lblDownloadCount->Text = $this->objWikiFile->DownloadCount;
+			$this->lblDownloadCount->Format = $strFormat;
+			return $this->lblDownloadCount;
+		}
+
 
 
 		/**
@@ -320,6 +350,9 @@
 			if ($this->txtDescription) $this->txtDescription->Text = $this->objWikiFile->Description;
 			if ($this->lblDescription) $this->lblDescription->Text = $this->objWikiFile->Description;
 
+			if ($this->txtDownloadCount) $this->txtDownloadCount->Text = $this->objWikiFile->DownloadCount;
+			if ($this->lblDownloadCount) $this->lblDownloadCount->Text = $this->objWikiFile->DownloadCount;
+
 		}
 
 
@@ -348,6 +381,7 @@
 				if ($this->txtFileSize) $this->objWikiFile->FileSize = $this->txtFileSize->Text;
 				if ($this->txtFileMime) $this->objWikiFile->FileMime = $this->txtFileMime->Text;
 				if ($this->txtDescription) $this->objWikiFile->Description = $this->txtDescription->Text;
+				if ($this->txtDownloadCount) $this->objWikiFile->DownloadCount = $this->txtDownloadCount->Text;
 
 				// Update any UniqueReverseReferences (if any) for controls that have been created for it
 
@@ -420,6 +454,12 @@
 				case 'DescriptionLabel':
 					if (!$this->lblDescription) return $this->lblDescription_Create();
 					return $this->lblDescription;
+				case 'DownloadCountControl':
+					if (!$this->txtDownloadCount) return $this->txtDownloadCount_Create();
+					return $this->txtDownloadCount;
+				case 'DownloadCountLabel':
+					if (!$this->lblDownloadCount) return $this->lblDownloadCount_Create();
+					return $this->lblDownloadCount;
 				default:
 					try {
 						return parent::__get($strName);
@@ -452,6 +492,8 @@
 						return ($this->txtFileMime = QType::Cast($mixValue, 'QControl'));
 					case 'DescriptionControl':
 						return ($this->txtDescription = QType::Cast($mixValue, 'QControl'));
+					case 'DownloadCountControl':
+						return ($this->txtDownloadCount = QType::Cast($mixValue, 'QControl'));
 					default:
 						return parent::__set($strName, $mixValue);
 				}
