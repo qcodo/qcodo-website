@@ -21,24 +21,28 @@
 		const Forum = 1;
 		const Issue = 2;
 		const WikiItem = 3;
+		const Package = 4;
 
-		const MaxId = 3;
+		const MaxId = 4;
 
 		public static $NameArray = array(
 			1 => 'Forum',
 			2 => 'Issue',
-			3 => 'Wiki Item');
+			3 => 'Wiki Item',
+			4 => 'Package');
 
 		public static $TokenArray = array(
 			1 => 'Forum',
 			2 => 'Issue',
-			3 => 'WikiItem');
+			3 => 'WikiItem',
+			4 => 'Package');
 
 		public static function ToString($intTopicLinkTypeId) {
 			switch ($intTopicLinkTypeId) {
 				case 1: return 'Forum';
 				case 2: return 'Issue';
 				case 3: return 'Wiki Item';
+				case 4: return 'Package';
 				default:
 					throw new QCallerException(sprintf('Invalid intTopicLinkTypeId: %s', $intTopicLinkTypeId));
 			}
@@ -49,6 +53,7 @@
 				case 1: return 'Forum';
 				case 2: return 'Issue';
 				case 3: return 'WikiItem';
+				case 4: return 'Package';
 				default:
 					throw new QCallerException(sprintf('Invalid intTopicLinkTypeId: %s', $intTopicLinkTypeId));
 			}

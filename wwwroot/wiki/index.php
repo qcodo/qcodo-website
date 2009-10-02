@@ -140,6 +140,8 @@
 		protected function SetTemplatePath() {
 			switch ($this->objWikiItem->WikiItemTypeId) {
 				case WikiItemType::Page:
+					$this->objWikiVersion->WikiPage->ViewCount++;
+					$this->objWikiVersion->WikiPage->Save();
 					$this->pnlContent->Template = dirname(__FILE__) . '/pnlWikiContent_page.tpl.php';
 					$this->btnEdit->Text = 'Edit Page';
 					break;
