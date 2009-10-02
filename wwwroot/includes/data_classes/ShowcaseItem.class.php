@@ -27,6 +27,10 @@
 			return sprintf('ShowcaseItem Object %s',  $this->intId);
 		}
 
+		public static function IsAdminableForPerson(Person $objPerson) {
+			return (QApplication::$Person->PersonTypeId == PersonType::Administrator);
+		}
+		
 		public function GetImageFolder() {
 			return __SHOWCASE_IMAGES__ . '/' . $this->intId;
 		}

@@ -9,20 +9,30 @@
 </style>
 
 <p style="font-size: 18px; margin: 12px 0 24px 0;">
-	The following sites, companies, projects and applications are user-contributed submissions that showcase Qcodo at work.
-	Click on any icon to find out more.
+	The following are sites, companies, projects and applications that showcase Qcodo at work.<br/>
+	Click on any icon to find out more, or feel free and submit your own.
 </p>
 
-<?php $this->btnNew->Render(); ?>
-<br clear="all"/><br/><br/>
+
+<div class="controlBar">
+	<div class="controls" style="font-size: 11px;">
+		<?php $this->btnNew->Render(); ?>
+		<?php if ($this->btnAdmin) { ?>
+			<div class="spacer">&nbsp;</div>
+			<?php $this->btnAdmin->Render(); ?>
+		<?php } ?>
+	</div>
+</div>
+
+<br clear="all"/><br/>
 
 <div class="showcase">
 <?php foreach ($this->objShowcaseArray as $objShowcase) { ?>
 	<div>
-		<a href="#" title="View Info on <?php _p($objShowcase->Name); ?>" <?php $this->pxyItem->RenderAsEvents($objShowcase->Id); ?>><img src="<?php _p($objShowcase->GetThumbPath()); ?>"/></a>
+		<a href="#" title="View Info on &quot;<?php _p($objShowcase->Name); ?>&quot;" <?php $this->pxyItem->RenderAsEvents($objShowcase->Id); ?>><img src="<?php _p($objShowcase->GetThumbPath()); ?>"/></a>
 	</div>
 <?php } ?>
 </div>
 
-<?php $this->dlgShowcaseView->Render(); ?>
+<?php $this->dlgBox->Render(); ?>
 <?php require(__INCLUDES__ . '/footer.inc.php'); ?>
