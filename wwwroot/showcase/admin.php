@@ -1,123 +1,122 @@
 <?php
 	require('../includes/prepend.inc.php');
+	if (!ShowcaseItem::IsAdminableForPerson(QApplication::$Person)) QApplication::Redirect('/showcase/');
 
 	class QcodoForm extends QcodoWebsiteForm {
-		protected $strPageTitle = 'Wiki Directory';
-		protected $intNavBarIndex = QApplication::NavCommunity;
-		protected $intSubNavIndex = QApplication::NavCommunityWiki;
+		protected $strPageTitle = 'Showcase - Admin';
+		protected $intNavBarIndex = QApplication::NavAbout;
+		protected $intSubNavIndex = QApplication::NavAboutShowcase;
 
-		protected $dtgWikiItems;
+		protected $dtgShowcaseItems;
+		protected $pxyView;
+		protected $pxyToggle;
 
-		protected $lstWikiItemType;
-		protected $txtTitle;
-		protected $txtPath;
-		protected $txtPostedBy;
+		protected $lstLiveFlag;
+
+		protected $objSelectedShowcase;
+		protected $dlgBox;
+		protected $btnClose;
 
 		protected function Form_Create() {
 			parent::Form_Create();
+
+			$this->dtgShowcaseItems = new ShowcaseItemDataGrid($this);
+			$this->dtgShowcaseItems->Paginator = new QPaginator($this->dtgShowcaseItems);
+			$this->dtgShowcaseItems->AlternateRowStyle->CssClass = 'alternate';
+			$this->dtgShowcaseItems->Noun = 'showcase item';
+			$this->dtgShowcaseItems->NounPlural = 'showcase items';
+			$this->dtgShowcaseItems->SetDataBinder('dtgShowcaseItems_Bind');
+			$this->dtgShowcaseItems->ItemsPerPage = 20;
+
+			$this->dtgShowcaseItems->AddColumn(new QDataGridColumn('Actions', '<?= $_FORM->RenderActions($_ITEM); ?>', 'HtmlEntities=false', 'Width=100px', 'FontSize=10px'));
+			$this->dtgShowcaseItems->MetaAddColumn('Name', 'Width=400px');
+			$this->dtgShowcaseItems->MetaAddColumn('Url', 'Width=285px');
+			$this->dtgShowcaseItems->MetaAddColumn('LiveFlag', 'Name=Live?', 'Width=50px');
+			$this->dtgShowcaseItems->MetaAddColumn(QQN::ShowcaseItem()->Person->DisplayName, 'Name=By', 'Html=<?= $_FORM->RenderPostedBy($_ITEM); ?>', 'HtmlEntities=false', 'Width=100px', 'CssClass=small reverseLink');
+
+			$this->lstLiveFlag = new QListBox($this);
+			$this->lstLiveFlag->Name = 'Filter by Live Flag';
+			$this->lstLiveFlag->AddItem('- View All -', null);
+			$this->lstLiveFlag->AddItem('Live', true);
+			$this->lstLiveFlag->AddItem('Not Live', false);
+			$this->lstLiveFlag->AddAction(new QChangeEvent(), new QAjaxAction('Refresh'));
+
+			$this->pxyToggle = new QControlProxy($this);
+			$this->pxyToggle->AddAction(new QClickEvent(), new QAjaxAction('pxyToggle_Click'));
+			$this->pxyToggle->AddAction(new QClickEvent(), new QTerminateAction());
+
+			$this->pxyView = new QControlProxy($this);
+			$this->pxyView->AddAction(new QClickEvent(), new QAjaxAction('pxyView_Click'));
+			$this->pxyView->AddAction(new QClickEvent(), new QTerminateAction());
 			
-			$this->dtgWikiItems = new WikiItemDataGrid($this);
-//			$this->dtgWikiItems->CssClass = 'datagrid issuesDataGrid';
-			$this->dtgWikiItems->Paginator = new QPaginator($this->dtgWikiItems);
-			$this->dtgWikiItems->AlternateRowStyle->CssClass = 'alternate';
-			$this->dtgWikiItems->Noun = 'wiki item';
-			$this->dtgWikiItems->NounPlural = 'wiki items';
-			$this->dtgWikiItems->SetDataBinder('dtgWikiItems_Bind');
-			$this->dtgWikiItems->ItemsPerPage = 20;
-
-			$this->dtgWikiItems->MetaAddTypeColumn('WikiItemTypeId', 'WikiItemType', 'Name=Wiki Type', 'Width=80px');
-			$this->dtgWikiItems->MetaAddColumn('CurrentName', 'Name=Title', 'Width=350px');
-			$this->dtgWikiItems->MetaAddColumn('Path', 'Html=<?= $_FORM->RenderPath($_ITEM); ?>', 'HtmlEntities=false', 'Width=300px');
-			$this->dtgWikiItems->MetaAddColumn('CurrentPostDate', 'Name=Last Updated', 'Width=110px', 'CssClass=small');
-			$this->dtgWikiItems->MetaAddColumn(QQN::WikiItem()->CurrentPostedByPerson->DisplayName, 'Name=By', 'Html=<?= $_FORM->RenderPostedBy($_ITEM); ?>', 'HtmlEntities=false', 'Width=100px', 'CssClass=small reverseLink');
-
-			$this->dtgWikiItems->GetColumnByName('Wiki Type')->OrderByClause = QQ::OrderBy(QQN::WikiItem()->WikiItemTypeId, QQN::WikiItem()->CurrentName);
-			$this->dtgWikiItems->GetColumnByName('Wiki Type')->ReverseOrderByClause = QQ::OrderBy(QQN::WikiItem()->WikiItemTypeId, false, QQN::WikiItem()->CurrentName, false);
-			$this->dtgWikiItems->SortColumnIndex = 0;
-
-			$this->lstWikiItemType = new QListBox($this);
-			$this->lstWikiItemType->Name = 'Wiki Type';
-			$this->lstWikiItemType->AddAction(new QChangeEvent(), new QAjaxAction('Refresh'));
-			$this->lstWikiItemType->AddAction(new QEnterKeyEvent(), new QAjaxAction('Refresh'));
-			$this->lstWikiItemType->AddAction(new QEnterKeyEvent(), new QTerminateAction());
-			$this->lstWikiItemType->AddItem('- View All -', null);
-			foreach (WikiItemType::$NameArray as $intId => $strName) {
-				$this->lstWikiItemType->AddItem($strName, $intId);
-			}
+			$this->dlgBox = new QDialogBox($this);
+			$this->dlgBox->MatteClickable = false;
+			$this->dlgBox->HideDialogBox();
 			
-			$this->txtTitle = new QTextBox($this);
-			$this->txtTitle->Name = 'Title';
-			$this->txtTitle->AddAction(new QChangeEvent(), new QAjaxAction('Refresh'));
-			$this->txtTitle->AddAction(new QEnterKeyEvent(), new QAjaxAction('Refresh'));
-			$this->txtTitle->AddAction(new QEnterKeyEvent(), new QTerminateAction());
-
-			$this->txtPath = new QTextBox($this);
-			$this->txtPath->Name = 'Path';
-			$this->txtPath->AddAction(new QChangeEvent(), new QAjaxAction('Refresh'));
-			$this->txtPath->AddAction(new QEnterKeyEvent(), new QAjaxAction('Refresh'));
-			$this->txtPath->AddAction(new QEnterKeyEvent(), new QTerminateAction());
-
-			$this->txtPostedBy = new QTextBox($this);
-			$this->txtPostedBy->Name = 'Posted By';
-			$this->txtPostedBy->AddAction(new QChangeEvent(), new QAjaxAction('Refresh'));
-			$this->txtPostedBy->AddAction(new QEnterKeyEvent(), new QAjaxAction('Refresh'));
-			$this->txtPostedBy->AddAction(new QEnterKeyEvent(), new QTerminateAction());
+			$this->btnClose = new QButton($this->dlgBox);
+			$this->btnClose->AddAction(new QClickEvent(), new QHideDialogBox($this->dlgBox));
 		}
 
-		public function dtgWikiItems_Bind() {
+		public function dtgShowcaseItems_Bind() {
 			$objCondition = QQ::All();
 
-			if (trim($this->txtTitle->Text)) {
+			if (!is_null($blnValue = $this->lstLiveFlag->SelectedValue)) {
 				$objCondition = QQ::AndCondition(
 					$objCondition,
-					QQ::Like(QQN::WikiItem()->CurrentName, '%' . trim($this->txttitle->Text) . '%')
-				);
-			}
-			
-			if ($strPath = trim($this->txtPath->Text)) {
-				$strPath = WikiItem::SanitizeForPath($strPath, $intWikiItemTypeId);
-				$objCondition = QQ::AndCondition(
-					$objCondition,
-					QQ::Like(QQN::WikiItem()->Path, $strPath . '%')
-				);
-			}
-			
-			if ($intValue = $this->lstWikiItemType->SelectedValue) {
-				$objCondition = QQ::AndCondition(
-					$objCondition,
-					QQ::Equal(QQN::WikiItem()->WikiItemTypeId, $intValue)
+					QQ::Equal(QQN::ShowcaseItem()->LiveFlag, $blnValue)
 				);
 			}
 
-			if (trim($this->txtPostedBy->Text)) {
-				$objCondition = QQ::AndCondition(
-					$objCondition,
-					QQ::Like(QQN::WikiItem()->CurrentPostedByPerson->DisplayName, trim($this->txtPostedBy->Text) . '%')
-				);
-			}
-
-			$this->dtgWikiItems->TotalItemCount = WikiItem::QueryCount($objCondition);
+			$this->dtgShowcaseItems->TotalItemCount = ShowcaseItem::QueryCount($objCondition);
 
 			$objClauses = array();
-			if ($objClause = $this->dtgWikiItems->LimitClause)
+			if ($objClause = $this->dtgShowcaseItems->LimitClause)
 				$objClauses[] = $objClause; 
-			if ($objClause = $this->dtgWikiItems->OrderByClause)
+			if ($objClause = $this->dtgShowcaseItems->OrderByClause)
 				$objClauses[] = $objClause; 
 
-			$this->dtgWikiItems->DataSource = WikiItem::QueryArray($objCondition, $objClauses);
+			$this->dtgShowcaseItems->DataSource = ShowcaseItem::QueryArray($objCondition, $objClauses);
 		}
 
 		public function Refresh() {
-			$this->dtgWikiItems->PageNumber = 1;
-			$this->dtgWikiItems->Refresh();
-		}
-		
-		public function RenderPath(WikiItem $objWikiItem) {
-			return sprintf('<a href="%s">%s</a>', $objWikiItem->UrlPath, $objWikiItem->Path);
+			$this->dtgShowcaseItems->PageNumber = 1;
+			$this->dtgShowcaseItems->Refresh();
 		}
 
-		public function RenderPostedBy(WikiItem $objWikiItem) {
-			return sprintf('<a href="%s">%s</a>', $objWikiItem->CurrentPostedByPerson->ViewProfileUrl, $objWikiItem->CurrentPostedByPerson->DisplayName);
+		public function RenderPostedBy(ShowcaseItem $objShowcaseItem) {
+			return sprintf('<a href="%s">%s</a>', $objShowcaseItem->Person->ViewProfileUrl, $objShowcaseItem->Person->DisplayName);
+		}
+
+		public function RenderActions(ShowcaseItem $objShowcaseItem) {
+			if ($objShowcaseItem->LiveFlag) {
+				$this->dtgShowcaseItems->OverrideRowStyle($this->dtgShowcaseItems->CurrentRowIndex, null);
+			} else {
+				$objRowStyle = new QDataGridRowStyle();
+				$objRowStyle->BackColor = '#a66';
+				$this->dtgShowcaseItems->OverrideRowStyle($this->dtgShowcaseItems->CurrentRowIndex, $objRowStyle);
+			}
+			
+			return sprintf('<a href="#" %s>View</a> &nbsp;|&nbsp; <a href="#" %s>Toggle Live</a>',
+				$this->pxyView->RenderAsEvents($objShowcaseItem->Id, false), $this->pxyToggle->RenderAsEvents($objShowcaseItem->Id, false));
+		}
+
+		protected function pxyToggle_Click($strFormId, $strControlId, $strParameter) {
+			$objShowcaseItem = ShowcaseItem::Load($strParameter);
+			if (!$objShowcaseItem) return;
+			
+			$objShowcaseItem->LiveFlag = !$objShowcaseItem->LiveFlag;
+			$objShowcaseItem->Save();
+			
+			$this->dtgShowcaseItems->Refresh();
+		}
+
+		protected function pxyView_Click($strFormId, $strControlId, $strParameter) {
+			$objShowcaseItem = ShowcaseItem::Load($strParameter);
+			if (!$objShowcaseItem) return;
+			
+			$this->objSelectedShowcase = $objShowcaseItem;
+			$this->dlgBox->Template = dirname(__FILE__) . '/dlgBox_ShowcaseView.tpl.php';
+			$this->dlgBox->ShowDialogBox();
 		}
 	}
 
