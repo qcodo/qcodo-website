@@ -147,6 +147,8 @@
 /* FORUMS */
 		div.searchBar { background-color: #393939; -moz-border-radius: 8px 8px 0 0; height: 22px; padding: 4px 14px 0 14px; border: 1px solid #222; }
 		div.searchBar div.title { float: left; font-family: arial; font-size: 16px; font-weight: bold; color: #efe; }
+		div.searchBar div.title span.subtitle { font-weight: normal; font-size: 12px }
+
 		div.searchBar div.right { float: right; padding-top: 1px; margin-left: 10px;}
 
 		div.searchBar div.issue { font-size: 11px; color: #ddd; font-weight: bold; }
