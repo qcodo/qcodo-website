@@ -27,6 +27,18 @@
 			return sprintf('PackageCategory Object %s',  $this->intId);
 		}
 
+		public function RefreshStats() {
+			$this->intPackageCount = $this->CountPackages();
+			$objPackage = Package::QuerySingle(QQ::Equal(QQN::Package()->PackageCategoryId, $this->intId), QQ::Clause(
+				QQ::LimitInfo(1),
+				QQ::OrderBy(QQN::Package()->LastPostDate, false)
+			));
+			if ($objPackage)
+				$this->dttLastPostDate = new QDateTime($objPackage->LastPostDate);
+			else
+				$this->dttLastPostDate = null;
+			$this->Save();
+		}
 
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...
