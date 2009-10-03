@@ -26,7 +26,83 @@
 		public function __toString() {
 			return sprintf('Package Object %s',  $this->intId);
 		}
+		
+		/**
+		 * Given a string, this will create a sanitized token for it
+		 * @param string $strTokenCandidate
+		 * @return string
+		 */
+		public static function SanitizeForToken($strTokenCandidate) {
+			$strTokenCandidate = trim(strtolower($strTokenCandidate));
+			$intLength = strlen($strTokenCandidate);
 
+			$strToReturn = '';
+
+			for ($intChar = 0 ; $intChar < $intLength; $intChar++) {
+				$strChar = $strTokenCandidate[$intChar];
+				$intOrd = ord($strChar);
+
+				if (($intOrd >= ord('a')) && ($intOrd <= ord('z')))
+					$strToReturn .= $strChar;
+				else if (($intOrd >= ord('0')) && ($intOrd <= ord('9')))
+					$strToReturn .= $strChar;
+				else if (($strChar == ' ') ||
+						 ($strChar == '.') ||
+						 ($strChar == ':') ||
+						 ($strChar == '-') ||
+						 ($strChar == '/') ||
+						 ($strChar == '(') ||
+						 ($strChar == ')') ||
+						 ($strChar == '_'))
+					$strToReturn .= '_';
+			}
+
+			// Cleanup leading and trailing underscores
+			while (QString::FirstCharacter($strToReturn) == '_') $strToReturn = substr($strToReturn, 1);
+			while (QString::LastCharacter($strToReturn) == '_') $strToReturn = substr($strToReturn, 0, strlen($strToReturn) - 1);
+
+			// Cleanup Dupe Underscores
+			while (strpos($strToReturn, '__') !== false) $strToReturn = str_replace('__', '_', $strToReturn);
+			
+			return $strToReturn;
+		}
+
+		/**
+		 * Posts a new version of this package for a given person.
+		 * @param Person $objPerson
+		 * @param $strNotes
+		 * @param QDateTime $dttPostDate optional, uses Now() if not specified
+		 * @return PackageContribution
+		 */
+		public function PostContributionVersion(Person $objPerson, $strNotes, QDateTime $dttPostDate = null) {
+			// Get or create PackageContribution
+			$objContribution = PackageContribution::LoadByPackageIdPersonId($this->intId, $objPerson->Id);
+
+			if (!$objContribution) {
+				$objContribution = new PackageContribution();
+				$objContribution->Package = $this;
+				$objContribution->Person = $objPerson;
+				$objContribution->Save();
+			}
+
+			$objVersion = new PackageVersion();
+			$objVersion->PackageContribution = $objContribution;
+			$objVersion->Notes = $strNotes;
+			$objVersion->PostDate = ($dttPostDate) ? $dttPostDate : QDateTime::Now();
+			$objVersion->DownloadCount = 0;
+			$objVersion->VersionNumber = $objContribution->CountPackageVersions() + 1;
+			$objVersion->Save();
+
+			$objContribution->CurrentPackageVersion = $objVersion;
+			$objContribution->CurrentPostDate = $objVersion->PostDate;
+			$objContribution->RefreshStats();
+
+			$this->LastPostDate = $objVersion->PostDate;
+			$this->LastPostedByPerson = $objPerson;
+			$this->Save();
+			
+			return $objContribution;
+		}
 
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...

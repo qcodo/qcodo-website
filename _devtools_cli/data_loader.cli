@@ -138,6 +138,37 @@
 	$objPackageCategories = PackageCategory::LoadAll();
 	while (QDataGen::DisplayWhileTask('Generating QPM Packages...', GENERATE_QPM)) {
 		$objPackage = new Package();
+		$objPackage->PackageCategory = QDataGen::GenerateFromArray($objPackageCategories);
+		$objPackage->Name = QDataGen::GenerateTitle(1, 3);
+		$objPackage->Token = Package::SanitizeForToken($objPackage->Name);
+		while (Package::LoadByToken($objPackage->Token)) {
+			$objPackage->Name = QDataGen::GenerateTitle(1, 3);
+			$objPackage->Token = Package::SanitizeForToken($objPackage->Name);
+		}
+		$objPackage->Description = QDataGen::GenerateContent(rand(1, 3), 20, 80);
+		$objPackage->Save();
+
+		$intContributionCount = rand(1, 10);
+		for ($intContribution = 0; $intContribution < $intContributionCount; $intContribution++) {
+			while (PackageContribution::LoadByPackageIdPersonId($objPackage->Id, $objPerson->Id))
+				$objPerson = Person::Load(rand(1, $intMaxPersonId));
+			$intVersionCount = rand(1, 4);
+
+			$dttEndRange = QDataGen::GenerateDateTime($dttStartDate, QDateTime::Now());
+			$dttEndRange = QDataGen::GenerateDateTime($dttStartDate, $dttEndRange);
+			$dttEndRange = QDataGen::GenerateDateTime($dttStartDate, $dttEndRange);
+			$dttPostDate = QDataGen::GenerateDateTime($dttStartDate, $dttEndRange);
+
+			for ($intVersion = 0; $intVersion < $intVersionCount; $intVersion++) {
+				$strNotes = QDataGen::GenerateContent(rand(1, 3), 20, 80);
+				$objPackage->PostContributionVersion($objPerson, $strNotes, $dttPostDate);
+
+				$dttEndRange = QDataGen::GenerateDateTime($dttPostDate, QDateTime::Now());
+				$dttEndRange = QDataGen::GenerateDateTime($dttPostDate, $dttEndRange);
+				$dttEndRange = QDataGen::GenerateDateTime($dttPostDate, $dttEndRange);
+				$dttPostDate = QDataGen::GenerateDateTime($dttPostDate, $dttEndRange);
+			}
+		}
 	}
 
 

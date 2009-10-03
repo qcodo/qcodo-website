@@ -27,6 +27,13 @@
 			return sprintf('PackageContribution Object %s',  $this->intId);
 		}
 
+		public function RefreshStats() {
+			$intCount = 0;
+			foreach ($this->GetPackageVersionArray() as $objVersion)
+				$intCount += $objVersion->DownloadCount;
+			$this->intDownloadCount = $intCount;
+			$this->Save();
+		}
 
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...
