@@ -1,5 +1,13 @@
 INSERT INTO _version VALUES('3.0');
 
+INSERT INTO package_category VALUES(null, null, 'qcontrols', 1, 'Custom QForm and QControls', 'Custom QControls, QForm modifications and other plug-ins', null, null);
+INSERT INTO package_category VALUES(null, null, 'codegen', 2, 'Code Generator', 'Modifications to the Qcodo Code Generator', null, null);
+INSERT INTO package_category VALUES(null, null, 'ajax', 3, 'AJAX and JavaScript', 'Modifications to the Qcodo AJAX or JavaScript classes', null, null);
+INSERT INTO package_category VALUES(null, null, 'external', 4, 'External Frameworks and Third Party Libraries', 'Integration with external frameworks and/or other third-party libraries', null, null);
+INSERT INTO package_category VALUES(null, null, 'webservices', 5, 'Web Services', 'Modifications or integration with web service protocols and other services', null, null);
+INSERT INTO package_category VALUES(null, null, 'i18n', 6, 'Internationalization', 'Language files, classes for internationalization, etc.', null, null);
+INSERT INTO package_category VALUES(null, null, 'issues', 7, 'Fixes for Issues', 'User-submitted fixes for reported bugs and issues in the Qcodo Bug Tracker', null, null);
+
 INSERT INTO topic_link_type VALUES (1, 'Forum');
 INSERT INTO topic_link_type VALUES (2, 'Issue');
 INSERT INTO topic_link_type VALUES (3, 'Wiki Item');

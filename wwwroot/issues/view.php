@@ -79,7 +79,8 @@
 			$this->pnlNotice->CssClass = 'issueNotice';
 			if (QApplication::$Person &&
 				($this->objIssue->AssignedToPersonId == QApplication::$Person->Id) &&
-				($this->objIssue->IssueStatusTypeId != IssueStatusType::Closed)) {
+				($this->objIssue->IssueStatusTypeId != IssueStatusType::Closed) &&
+				($this->objIssue->IssueStatusTypeId != IssueStatusType::Fixed)) {
 				$this->pnlNotice->Text = 'Your are currently assigned to resolve this issue. <a href="#" ' . $this->pxySubmitFix->RenderAsEvents(null, false) . ' title="Submit a proposed fix">submit a fix</a>';
 			} else {
 				$this->pnlNotice->Visible = false;
@@ -136,6 +137,8 @@
 			if ($this->objIssue->AssignedToPersonId != QApplication::$Person->Id) {
 				$this->objIssue->AssignedToPerson = null;
 				$this->objIssue->DueDate = null;
+			} else {
+				$this->pnlNotice->Visible = false;
 			}
 
 			// Save It!

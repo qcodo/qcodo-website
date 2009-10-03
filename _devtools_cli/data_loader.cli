@@ -4,6 +4,7 @@
 	
 	// Define Amounts to Generate
 	define('GENERATE_PEOPLE', 200);
+	define('GENERATE_QPM', 250);
 	define('GENERATE_SHOWCASE', 50);
 	define('GENERATE_WIKI', 250);
 	define('GENERATE_ISSUES', 100);
@@ -127,6 +128,16 @@
 
 		// Update the MaxId count
 		$intMaxPersonId = $objPerson->Id;
+	}
+
+
+
+	//////////////////////
+	// Qcodo Package Manager
+	//////////////////////
+	$objPackageCategories = PackageCategory::LoadAll();
+	while (QDataGen::DisplayWhileTask('Generating QPM Packages...', GENERATE_QPM)) {
+		$objPackage = new Package();
 	}
 
 
