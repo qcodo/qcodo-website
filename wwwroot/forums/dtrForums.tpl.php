@@ -15,7 +15,7 @@
 			$strRelative .= ' ago';
 ?>
 		&nbsp;|&nbsp;
-		last: <strong><?php _p($strRelative); ?></strong>
+		last: <strong><?php _p($_ITEM->TopicLink->LastPostDate->__toString('DDDD, MMMM D, YYYY')); ?></strong> (<?php _p($strRelative); ?>)
 <?php } ?>
 	</h3>
 	<div style="font-size: 16px; color: #444;"><?php _p($_ITEM->Description, false); ?></div>

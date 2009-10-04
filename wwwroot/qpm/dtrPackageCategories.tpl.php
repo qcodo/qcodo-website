@@ -13,7 +13,7 @@
 			$strRelative .= ' ago';
 ?>
 		&nbsp;|&nbsp;
-		last upload: <strong><?php _p($_ITEM->LastPostDate->__toString('DDDD, MMMM D YYYY')); ?></strong> (<?php _p($strRelative); ?>)
+		last upload: <strong><?php _p($_ITEM->LastPostDate->__toString('DDDD, MMMM D, YYYY')); ?></strong> (<?php _p($strRelative); ?>)
 <?php } ?>
 	</h3>
 	<div style="font-size: 16px; color: #444;"><?php _p($_ITEM->Description, false); ?></div>

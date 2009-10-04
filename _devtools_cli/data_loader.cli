@@ -404,6 +404,7 @@
 			}
 		}
 	}
+
 	foreach (PackageCategory::LoadAll() as $objCategory) $objCategory->RefreshStats();
 
 	// Generate Messages for Packages
