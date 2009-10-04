@@ -12,6 +12,7 @@
 	define('GENERATE_MESSAGES_PER_TOPIC_UBOUND', 50);
 	define('GENERATE_MESSAGES_PER_ISSUE_UBOUND', 25);
 	define('GENERATE_MESSAGES_PER_WIKI_UBOUND', 25);
+	define('GENERATE_MESSAGES_PER_PACKAGE_UBOUND', 25);
 	
 	// Example optional IssueFieldOption values for optional IssueFields loaded from data.sql
 	$strOperatingSystemArray = array('CentOS 4', 'CentOS 5', 'CentOS 5.1', 'CentOS 5.2', 'CentOS 5.3',
@@ -149,6 +150,8 @@
 		$objPackage->Description = QDataGen::GenerateContent(rand(1, 3), 20, 80);
 		$objPackage->Save();
 
+		$objPackage->CreateTopicAndTopicLink(Person::Load(rand(1, $intMaxPersonId)));
+
 		$intContributionCount = rand(1, 10);
 		for ($intContribution = 0; $intContribution < $intContributionCount; $intContribution++) {
 			while (PackageContribution::LoadByPackageIdPersonId($objPackage->Id, $objPerson->Id))
@@ -173,6 +176,31 @@
 	}
 	foreach ($objPackageCategories as $objCategory) $objCategory->RefreshStats();
 
+	// Generate Messages for Packages
+	QDataGen::DisplayForEachTaskStart($strTitle = 'Generating Messages for QPM Packages', Package::CountAll());
+	foreach (Package::LoadAll() as $objPackage) {
+		QDataGen::DisplayForEachTaskNext($strTitle);
+		$intCount = rand(1, GENERATE_MESSAGES_PER_PACKAGE_UBOUND);
+		if (rand(0, 1)) $intCount = round($intCount / 2);
+		if (rand(0, 1)) $intCount = round($intCount / 2);
+		if (rand(0, 1)) $intCount = round($intCount / 2);
+		if (rand(0, 1)) $intCount = round($intCount / 2);
+		if (rand(0, 1)) $intCount = round($intCount / 2);
+		$dttPostDate = $dttStartDate;
+		for ($intIndex = 0; $intIndex < $intCount; $intIndex++) {
+			// If first message, the person who posted is the one who posts the first message
+			$objPerson = Person::Load(rand(1, $intMaxPersonId));
+
+			// Get a random Message PostDate relatively close to the current dttpostdate we're iterating through
+			$dttEndRange = QDataGen::GenerateDateTime($dttPostDate, QDateTime::Now());
+			$dttEndRange = QDataGen::GenerateDateTime($dttPostDate, $dttEndRange);
+			$dttEndRange = QDataGen::GenerateDateTime($dttPostDate, $dttEndRange);
+			$dttPostDate = QDataGen::GenerateDateTime($dttPostDate, $dttEndRange);
+
+			$objPackage->PostMessage(QDataGen::GenerateContent(rand(1, 3), 10, 30), $objPerson, $dttPostDate);
+		}
+	}
+	QDataGen::DisplayForEachTaskEnd($strTitle);
 
 
 	//////////////////////

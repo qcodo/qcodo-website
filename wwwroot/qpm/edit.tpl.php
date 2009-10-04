@@ -4,29 +4,25 @@
 		<h1><?php _p($this->strHeadline); ?></h1>
 
 		<div class="mainForm">
-			<p class="instructions">Please help out the <strong>Qcodo.com</strong> team in improving Qcodo!
-			The more detail you can provide, the easier it will be to debug and fix.  It's <strong>very
-			important</strong> to post example code and/or instructions on how to reproduce.<br/><br/>
+			<p class="instructions">QPM packages are the easiest way for Qcodo community members to contribute
+			patches, imrovements, fixes and enhancements for the <strong>Qcodo Development Framework</strong>.
+			<br/><br/>
 			
-			Remember, in your example code and description, be as <strong>CONCISE</strong> as possible!<br/>
-			<br/>
+			Thank you for your willingness to post new QPM packages!  Please fill out as much information below
+			on the new package.  And after creating this package entry, please remember to use the
+			<strong>qpm-upload</strong> tool in your Qcodo installation to upload the code for your QPM.
+			<br/><br/>
+
 			Fields in <strong>BOLD</strong> are required.</p>
 			<br/>
 
-			<?php $this->txtTitle->RenderSideBySideErrorBelow('Width=346px', 'Name=Short Description'); ?>
-			<?php $this->txtLongDescription->RenderSideBySideErrorBelow('Width=350px', 'Height=120px', 'Name=Long Description'); ?>
-			
+			<?php $this->lstCategory->RenderSideBySideErrorBelow('Width=350px', 'Name=QPM Repository'); ?>
 			<br/>
-			
-			<?php $this->txtExampleCode->RenderForForm('Width=350px', 'Height=120px'); ?>
-			<?php $this->txtExampleTemplate->RenderForForm('Width=350px', 'Height=120px'); ?>
-			<?php $this->txtExampleData->RenderForForm('Width=350px', 'Height=120px'); ?>
-			<?php $this->txtExpectedOutput->RenderForForm('Width=350px', 'Height=80px'); ?>
-			<?php $this->txtActualOutput->RenderForForm('Width=350px', 'Height=80px'); ?>
-			
+			<?php $this->txtToken->RenderSideBySideErrorBelow('Width=346px', 'Name=QPM Path'); ?>
 			<br/>
-			
-			
+			<?php $this->txtName->RenderSideBySideErrorBelow('Width=346px', 'Name=Title'); ?>
+			<?php $this->txtDescription->RenderSideBySideErrorBelow('Width=350px', 'Height=120px', 'Name=Description'); ?>			
+
 			<div class="renderForForm"><div class="left">&nbsp;</div><div class="right">
 				<?php $this->btnOkay->Render(); ?>
 				&nbsp;or&nbsp;
@@ -35,33 +31,12 @@
 		</div>
 
 		<div class="sidebar">
-			<p style="height: 115px;">&nbsp;</p>
-			<?php $this->lstPriority->RenderForDialog('Name=Priority','Width=180px'); ?>
-			<?php $this->lstStatus->RenderForDialog('Name=Status','Width=180px'); ?>
-			<?php $this->lstResolution->RenderForDialog('Name=Resolution','Width=180px'); ?>
-			<?php $this->txtAssignedTo->RenderForDialog('Name=Assigned To','Width=180px'); ?>
-			<?php $this->txtDueDate->HtmlAfter = ' &nbsp; ' . $this->calDueDate->Render(false); ?>
-			<?php $this->txtDueDate->RenderForDialog('Name=Due Date','Width=150px'); ?>
-			<?php $this->dlgAssignedTo->Render(); ?>
-			<br/><br/>
-			
-<?php 
-			foreach ($this->lstRequiredFields as $lstField) {
-				if (array_key_exists($lstField->ActionParameter, $this->txtMutableFields)) {
-					$lstField->HtmlAfter = '<br/>' . $this->txtMutableFields[$lstField->ActionParameter]->RenderWithError(false, 'Width=175px'); 
-				}
-				$lstField->RenderForDialog('Width=180px');
-			}
-?>
-			<br/><br/>
-<?php 
-			foreach ($this->lstOptionalFields as $lstField) {
-				if (array_key_exists($lstField->ActionParameter, $this->txtMutableFields))
-					$lstField->HtmlAfter = '<br/>' . $this->txtMutableFields[$lstField->ActionParameter]->RenderWithError(false, 'Width=175px'); 
-				$lstField->RenderForDialog('Width=180px');
-			}
-?>
-
+			<p style="width: 250px; color: #666; font-size: 10px;">
+				Another way for community members to contribute code
+				is by utilizing Git.  The Qcodo code is hosted at <strong><a href="http://github.com/qcodo/qcodo">GitHub</a></strong>,
+				which provides opportunities for community members to contribute branches
+				to the Qcodo codebase.
+			</p>
 		</div>
 		
 		<br clear="all"/><br/>

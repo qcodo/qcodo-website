@@ -26,7 +26,32 @@
 		public function __toString() {
 			return sprintf('Package Object %s',  $this->intId);
 		}
-		
+
+		public function IsEditableForPerson(Person $objPerson = null) {
+			if (!$objPerson) return false;
+			return ($objPerson->PersonTypeId == PersonType::Administrator);
+		}
+
+		/**
+		 * Creates the Topic and TopicLink for this Package object.
+		 * @param Person $objPerson person who created this package who will be credited with creating the linked topic
+		 * @return Topic
+		 */
+		public function CreateTopicAndTopicLink(Person $objPerson) {
+			$objTopicLink = new TopicLink();
+			$objTopicLink->TopicLinkTypeId = TopicLinkType::Package;
+			$objTopicLink->Package = $this;
+			$objTopicLink->Save();
+
+			$objTopic = new Topic();
+			$objTopic->TopicLink = $objTopicLink;
+			$objTopic->Name = $this->strName;
+			$objTopic->Person = $objPerson;
+			$objTopic->Save();
+			
+			return $objTopic;
+		}
+
 		/**
 		 * Given a string, this will create a sanitized token for it
 		 * @param string $strTokenCandidate
@@ -113,6 +138,20 @@
 				QQ::OrderBy(QQN::PackageContribution()->CurrentPostDate, false),
 				QQ::LimitInfo(1)
 			));
+		}
+
+		/**
+		 * Posts a new message/comment for this Package.  If no Person is specified, then it is assumed
+		 * that this is a "System Message" for this Package.
+		 * @param string $strMessageText the text of the message, itself
+		 * @param Person $objPerson optional person who posted this message or performed the action
+		 * @param QDateTime $dttPostDate
+		 * @return Message
+		 */
+		public function PostMessage($strMessageText, Person $objPerson = null, QDateTime $dttPostDate = null) {
+			$objTopicArray = $this->TopicLink->GetTopicArray();
+			$objTopic = $objTopicArray[0];
+			return $objTopic->PostMessage($strMessageText, $objPerson, $dttPostDate);
 		}
 
 		// Override or Create New Load/Count methods

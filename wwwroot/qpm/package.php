@@ -6,6 +6,7 @@
 		protected $intNavBarIndex = QApplication::NavGet;
 		protected $intSubNavIndex = QApplication::NavGetCommunity;
 
+		protected $btnEdit;
 		protected $objPackage;
 		protected $dtgContributions;
 
@@ -29,6 +30,13 @@
 			$this->dtgContributions->SortColumnIndex = 2;
 			$this->dtgContributions->SortDirection = 1;
 			$this->dtgContributions->Paginator = new QPaginator($this->dtgContributions);
+			
+			if ($this->objPackage->IsEditableForPerson(QApplication::$Person)) {
+				$this->btnEdit = new RoundedLinkButton($this);
+				$this->btnEdit->CssClass = 'searchOption';
+				$this->btnEdit->ToolTip = 'Edit This package';
+				$this->btnEdit->LinkUrl = '/qpm/edit.php/' . $this->objPackage->Token;
+			}
 		}
 
 		public function RenderPath(PackageContribution $objContribution) {

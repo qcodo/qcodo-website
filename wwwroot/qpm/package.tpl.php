@@ -9,6 +9,9 @@
 		<div class="right wiki">
 			<a href="/qpm/category.php/<?php _p($this->objPackage->PackageCategory->Token); ?>">Back to <strong><?php _p($this->objPackage->PackageCategory->Name); ?></strong></a>
 		</div>
+		<div class="right">
+			<?php if ($this->btnEdit) $this->btnEdit->Render('Text=Edit This Package'); ?>
+		</div>
 	</div>
 
 	<div style="background-color: #ddd; padding: 5px 10px; border-bottom: 1px solid #999;">
