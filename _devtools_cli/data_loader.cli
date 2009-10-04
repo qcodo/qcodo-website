@@ -137,7 +137,7 @@
 	//////////////////////
 	// Qcodo Package Manager
 	//////////////////////
-	$objPackageCategories = PackageCategory::LoadAll();
+	$objPackageCategories = PackageCategory::QueryArray(QQ::NotEqual(QQN::PackageCategory()->Token, 'issues'));
 	while (QDataGen::DisplayWhileTask('Generating QPM Packages...', GENERATE_QPM)) {
 		$objPackage = new Package();
 		$objPackage->PackageCategory = QDataGen::GenerateFromArray($objPackageCategories);
@@ -359,6 +359,7 @@
 		$objIssue->Save();
 
 		$objTopic = $objIssue->CreateTopicAndTopicLink();
+		$objPackage = $objIssue->CreatePackage();
 
 		// Add Field Values
 		foreach ($objIssueFieldArray as $objIssueField) {

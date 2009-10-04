@@ -113,6 +113,22 @@
 		}
 
 		/**
+		 * Creates the QPM Package for this Issue object.
+		 * @return Package
+		 */
+		public function CreatePackage() {
+			$objPackage = new Package();
+			$objPackage->PackageCategory = PackageCategory::LoadByToken('issues');
+			$objPackage->Token = 'issue_' . $this->intId;
+			$objPackage->Name = 'Fix for Issue #' . $this->intId;
+			$objPackage->Description = 'This package is for user-submitted fixes for Issue #' . $this->intId;
+			$objPackage->Save();
+
+			$objPackage->CreateTopicAndTopicLink($this->PostedByPerson);
+			return $objPackage;
+		}
+
+		/**
 		 * Sets a vote for a person and updates the vote_count value for this issue.
 		 * If already voted OR if person is the poster, the vote will NOT count.
 		 * @param Person $objPerson the person who is voting "yes" to this issue

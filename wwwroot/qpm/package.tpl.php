@@ -34,5 +34,7 @@
 	</div>
 
 	<?php $this->dtgContributions->Render(); ?>
+	<?php $this->pnlMessages->Render(); ?>
+	<br clear="all"/>
 
 <?php require(__INCLUDES__ . '/footer.inc.php'); ?>

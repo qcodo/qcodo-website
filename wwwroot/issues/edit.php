@@ -266,6 +266,7 @@
 				$this->mctIssue->Issue->PostDate = QDateTime::Now();
 				$this->mctIssue->SaveIssue();
 				$this->mctIssue->Issue->CreateTopicAndTopicLink();
+				$this->mctIssue->Issue->CreatePackage();
 				$this->mctIssue->Issue->PostMessage(trim($this->txtLongDescription->Text), QApplication::$Person, $this->mctIssue->Issue->PostDate);
 			} else {
 				$objOldVersionOfIssue = Issue::Load($this->mctIssue->Issue->Id);

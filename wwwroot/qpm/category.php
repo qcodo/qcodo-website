@@ -53,7 +53,8 @@
 		}
 
 		public function RenderPostedBy(Package $objPackage) {
-			return sprintf('<a href="%s">%s</a>', $objPackage->LastPostedByPerson->ViewProfileUrl, $objPackage->LastPostedByPerson->DisplayName);
+			if ($objPackage->LastPostedByPerson)
+				return sprintf('<a href="%s">%s</a>', $objPackage->LastPostedByPerson->ViewProfileUrl, $objPackage->LastPostedByPerson->DisplayName);
 		}
 	}
 

@@ -92,6 +92,9 @@
 			if ($objPackage && ($objPackage->Id != $this->mctPackage->Package->Id)) {
 				$this->txtToken->Warning = 'Path already exists';
 				$blnToReturn = false;
+			} else if (substr($this->txtToken->Text, 0, 6) == 'issue_') {
+				$this->txtToken->Warning = 'Invalid path name';
+				$blnToReturn = false;
 			}
 
 			return parent::Form_Validate($blnToReturn);

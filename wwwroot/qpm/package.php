@@ -1,6 +1,7 @@
 <?php
 	require('../includes/prepend.inc.php');
-
+	require(__INCLUDES__ . '/messages/MessagesPanel.class.php');
+	
 	class QcodoForm extends QcodoWebsiteForm {
 		protected $strPageTitle = 'QPM Package - ';
 		protected $intNavBarIndex = QApplication::NavGet;
@@ -10,6 +11,8 @@
 		protected $objPackage;
 		protected $dtgContributions;
 
+		protected $pnlMessages;
+		
 		protected function Form_Create() {
 			parent::Form_Create();
 
@@ -36,6 +39,33 @@
 				$this->btnEdit->CssClass = 'searchOption';
 				$this->btnEdit->ToolTip = 'Edit This package';
 				$this->btnEdit->LinkUrl = '/qpm/edit.php/' . $this->objPackage->Token;
+			}
+
+
+			// Setup messages panel
+			if ($this->objPackage->PackageCategory->Token != 'issues') {
+				$this->pnlMessages = new MessagesPanel($this);
+				$this->pnlMessages->SelectTopic($this->objPackage->TopicLink->GetTopic());
+				$this->pnlMessages->lblTopicInfo_SetTemplate(__INCLUDES__ . '/messages/lblTopicInfoForPackage.tpl.php');
+				$this->pnlMessages->btnRespond1->Text = 'Post Comment';
+				$this->pnlMessages->btnRespond2->Text = 'Post Comment';
+				$this->pnlMessages->strAdditionalCssClass = 'topicForPackage';
+				if (array_key_exists('lastpage', $_GET)) {
+					$this->pnlMessages->SetPageNumber(QPaginatedControl::LastPage);
+					$this->pnlMessages_Show();
+				}
+			} else {
+				$strTokenParts = explode('_', $this->objPackage->Token);
+				if (count($strTokenParts) == 2)
+					$strIssueNumber = $strTokenParts[1];
+				else
+					$strIssueNumber = null;
+
+				$this->pnlMessages = new QPanel($this);
+				$this->pnlMessages->CssClass = 'topic topicForPackage';
+				$this->pnlMessages->Text = '<h1>Comments</h1>';
+				$this->pnlMessages->Text .= '<br/>Comments for this issue-related QPM package have been disabled on this screen.  To view, post and edit comments, ';
+				$this->pnlMessages->Text .= 'please do so on the <a href="/issues/view.php/' . $strIssueNumber . '">issue page</a>, itself.';
 			}
 		}
 
