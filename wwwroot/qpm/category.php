@@ -8,6 +8,8 @@
 
 		protected $objCategory;
 		protected $dtgPackages;
+		
+		protected $btnNew;
 
 		protected function Form_Create() {
 			parent::Form_Create();
@@ -27,8 +29,13 @@
 			$this->dtgPackages->MetaAddColumn('Description', 'CssClass=small', 'Width=300px');
 			$this->dtgPackages->MetaAddColumn('LastPostDate', 'Name=Last Upload', 'Width=100px', 'VerticalAlign=top', 'CssClass=small');
 			$this->dtgPackages->MetaAddColumn(QQN::Package()->LastPostedByPerson->DisplayName, 'Name=By', 'Html=<?= $_FORM->RenderPostedBy($_ITEM); ?>', 'HtmlEntities=false', 'Width=100px', 'CssClass=small reverseLink', 'VerticalAlign=top');
-			
+
 			$this->dtgPackages->Paginator = new QPaginator($this->dtgPackages);
+
+			$this->btnNew = new RoundedLinkButton($this);
+			$this->btnNew->CssClass = 'searchOption';
+			$this->btnNew->ToolTip = 'Create a new QPM package';
+			$this->btnNew->LinkUrl = '/qpm/edit.php/new';
 		}
 
 		protected function dtgPackages_Bind() {

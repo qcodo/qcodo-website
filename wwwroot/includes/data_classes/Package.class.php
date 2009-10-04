@@ -104,6 +104,17 @@
 			return $objContribution;
 		}
 
+		/**
+		 * Gets the most recently updated or uploaded contribution
+		 * @return PackageContribution
+		 */
+		public function GetMostRecentContribution() {
+			return PackageContribution::QuerySingle(QQ::Equal(QQN::PackageContribution()->PackageId, $this->intId), QQ::Clause(
+				QQ::OrderBy(QQN::PackageContribution()->CurrentPostDate, false),
+				QQ::LimitInfo(1)
+			));
+		}
+
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...
 		// but feel free to use these as a starting point)

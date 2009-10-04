@@ -8,6 +8,9 @@
 		<div class="right wiki">
 			<a href="/qpm/">Back to <strong>All Repositories</strong></a>
 		</div>
+		<div class="right">
+			<?php $this->btnNew->Render('Text=Create a New QPM Package'); ?>
+		</div>
 	</div>
 
 	<div style="background-color: #ddd; padding: 5px 10px; border-bottom: 1px solid #999;">
