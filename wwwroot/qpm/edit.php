@@ -107,7 +107,9 @@
 		protected function btnOkay_Click() {
 			$this->mctPackage->SavePackage();
 
-			if (!$this->blnEditMode) $this->mctPackage->Package->CreateTopicAndTopicLink(QApplicatioN::$Person);
+			if (!$this->blnEditMode) $this->mctPackage->Package->CreateTopicAndTopicLink(QApplication::$Person);
+
+			$this->mctPackage->Package->PackageCategory->RefreshStats();
 
 			QApplication::Redirect('/qpm/package.php/' . $this->mctPackage->Package->Token . '/lastpage');
 		}

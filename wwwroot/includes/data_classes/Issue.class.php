@@ -125,6 +125,7 @@
 			$objPackage->Save();
 
 			$objPackage->CreateTopicAndTopicLink($this->PostedByPerson);
+			$objPackage->PackageCategory->RefreshStats();
 			return $objPackage;
 		}
 
