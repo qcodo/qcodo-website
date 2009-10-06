@@ -1,0 +1,128 @@
+#!/usr/local/bin/php
+<?php
+	require(dirname(__FILE__) . '/cli_prepend.inc.php');
+
+	$objDb = new mysqli('localhost', 'root', null, 'qcodo_website_old');
+
+	$objResult = $objDb->query('SELECT * FROM person ORDER BY id');
+	while (QDataGen::DisplayWhileTask('Migrating People', $objResult->num_rows)) {
+		$objRow = $objResult->fetch_array();
+		$objPerson = new Person();
+		$objPerson->PersonTypeId = $objRow['person_type_id'];
+		$objPerson->Username = $objRow['username'];
+		$objPerson->SetPassword($objRow['password']);
+		$objPerson->FirstName = $objRow['first_name'];
+		$objPerson->LastName = $objRow['last_name'];
+		$objPerson->Email = $objRow['email'];
+		$objPerson->PasswordResetFlag = false;
+		$objPerson->DisplayRealNameFlag = $objRow['display_real_name_flag'];
+		$objPerson->DisplayEmailFlag = $objRow['display_email_flag'];
+		$objPerson->OptInFlag = $objRow['opt_in_flag'];
+		$objPerson->DonatedFlag = $objRow['donated_flag'];
+		$objPerson->Location = $objRow['location'];
+		$objPerson->Url = $objRow['url'];
+		$objPerson->RegistrationDate = new QDateTime($objRow['registration_date']);
+
+		if ($objRow['country_id']) {
+			$objCountryResult = $objDb->query('SELECT * FROM country WHERE id=' . $objRow['country_id']);
+			$objCountryRow = $objCountryResult->fetch_array();
+			$objPerson->Country = Country::LoadByCode($objCountryRow['code']);
+		}
+
+		$objPerson->RefreshDisplayName();
+		$objPerson->Save();
+		
+		if ($objPerson->Id != $objRow['id']) {
+			Person::GetDatabase()->NonQuery('UPDATE person SET id=' . $objRow['id'] . ' WHERE id=' . $objPerson->Id);
+		}
+	}
+
+	$objResult = $objDb->query('SELECT * FROM counter ORDER BY id');
+	while (QDataGen::DisplayWhileTask('Migrating Counters', $objResult->num_rows)) {
+		$objRow = $objResult->fetch_array();
+		$objCounter = new Counter();
+		$objCounter->Filename = $objRow['filename'];
+		$objCounter->Token = $objRow['token'];
+		$objCounter->Counter = $objRow['counter'];
+		$objCounter->Save();
+
+		if ($objCounter->Id != $objRow['id']) {
+			Counter::GetDatabase()->NonQuery('UPDATE Counter SET id=' . $objRow['id'] . ' WHERE id=' . $objCounter->Id);
+		}
+	}
+
+
+	$objResult = $objDb->query('SELECT * FROM article ORDER BY id');
+	while (QDataGen::DisplayWhileTask('Migrating Articles', $objResult->num_rows)) {
+		$objRow = $objResult->fetch_array();
+		switch ($objRow['article_section_id']) {
+			case 1:
+				$strPath = '/article/getting_started/';
+				break;
+			case 2:
+				$strPath = '/article/harnessing/';
+				break;
+			case 3:
+				$strPath = '/article/background/';
+				break;
+			default:
+				throw new Exception('HERE');
+		}
+		switch ($objRow['id']) {
+			case 1:
+				$strPath .= 'installing';
+				break;
+			case 2:
+				$strPath .= 'quickstart_codegen';
+				break;
+			case 3:
+				$strPath .= 'quickstart_qforms';
+				break;
+			case 4:
+				$strPath .= 'adding_to_qforms';
+				break;
+			case 5:
+				$strPath = null;
+				break;
+			case 6:
+				$strPath .= 'metaprogramming';
+				break;
+			default:
+				throw new Exception('HERE');
+		}
+		
+		if ($strPath) {
+			$objWikiItem = WikiItem::CreateNewItem($strPath, WikiItemType::Page);
+
+			$strContent = $objRow['description'] . "\r\n\r\n";
+			$strContent .= $objRow['article'];
+
+			$strContent = str_replace("\r\n", "\n", $strContent);
+			$strContent = str_replace("\n", "\r\n", $strContent);
+			
+			$strContent = str_replace('<b>', '*', $strContent);
+			$strContent = str_replace('</b>', '*', $strContent);
+			$strContent = str_replace('<i>', '+', $strContent);
+			$strContent = str_replace('</i>', '+', $strContent);
+
+			$strContent = str_replace('<hr/>', "\r\n\r\n", $strContent);
+			$strContent = str_replace('<li>', "* ", $strContent);
+			$strContent = str_replace("</li>\r\n", "</li>", $strContent);
+			$strContent = str_replace("</li>", "\r\n", $strContent);
+			$strContent = str_replace('<ul>', "\r\n", $strContent);
+			$strContent = str_replace('</ul>', "\r\n", $strContent);
+
+			$strContent = str_replace('<code_title>', '*', $strContent);
+			$strContent = str_replace('</code_title>', "*\r\n", $strContent);
+
+			$strContent = str_replace('<code_snippet>', "bc.", $strContent);
+			$strContent = str_replace('</code_snippet>', ".bc", $strContent);
+
+			$objWikiPage = new WikiPage();
+			$objWikiPage->Content = trim($strContent);
+			$objWikiPage->CompileHtml();
+
+			$objWikiItem->CreateNewVersion($objRow['title'], $objWikiPage, 'Save', array(), Person::Load(1), new QDateTime($objRow['post_date']));
+		}
+	}
+?>

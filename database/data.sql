@@ -27,8 +27,8 @@ INSERT INTO image_file_type VALUES(2, 'Png');
 INSERT INTO image_file_type VALUES(3, 'Gif');
 
 
-INSERT INTO person(person_type_id, username, first_name, last_name, email, password, display_real_name_flag, display_email_flag, opt_in_flag, donated_flag, location, country_id, url, registration_date, display_name) VALUES
-(1, 'mikeho', 'Mike', 'Ho', 'mike@quasidea.com', '67a1e09bb1f83f5007dc119c14d663aa', 1, 1, 1, 0, 'Sunnyvale, CA', 230, 'http://www.quasidea.com/', '2000-01-01 00:00:00', 'Mike Ho');
+#INSERT INTO person(person_type_id, username, first_name, last_name, email, password, display_real_name_flag, display_email_flag, opt_in_flag, donated_flag, location, country_id, url, registration_date, display_name) VALUES
+#(1, 'mikeho', 'Mike', 'Ho', 'mike@quasidea.com', '67a1e09bb1f83f5007dc119c14d663aa', 1, 1, 1, 0, 'Sunnyvale, CA', 230, 'http://www.quasidea.com/', '2000-01-01 00:00:00', 'Mike Ho');
 
 INSERT INTO `forum` VALUES 
 	(2,2,'General Discussion',0,'Forum for any topic of interest to the Qcodo community, including questions about the framework itself.'),
