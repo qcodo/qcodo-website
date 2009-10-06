@@ -1,5 +1,6 @@
 #!/usr/local/bin/php
 <?php
+	$_SERVER['REQUEST_URI'] = null;
 	require(dirname(__FILE__) . '/cli_prepend.inc.php');
 
 	$objDb = new mysqli('localhost', 'root', null, 'qcodo_website_old');
@@ -123,6 +124,57 @@
 			$objWikiPage->CompileHtml();
 
 			$objWikiItem->CreateNewVersion($objRow['title'], $objWikiPage, 'Save', array(), Person::Load(1), new QDateTime($objRow['post_date']));
+		}
+	}
+
+	$objResult = $objDb->query('SELECT * FROM download ORDER BY id');
+	while (QDataGen::DisplayWhileTask('Migrating Downloads', $objResult->num_rows)) {
+		$objRow = $objResult->fetch_array();
+		$strFilePath = __DOCROOT__ . '/../old_website/' . $objRow['id'] . '/' . $objRow['filename'];
+		
+		switch ($objRow['download_category_id']) {
+			case 1:
+				$strPath = null;
+				break;
+			case 2:
+				$strPath = '/old_downloads/qform_controls/';
+				break;
+			case 3:
+				$strPath = '/old_downloads/other/';
+				break;
+			case 4:
+				$strPath = '/old_downloads/language_files/';
+				break;
+			default:
+				throw new Exception('HERE');
+		}
+		
+		if ($strPath && file_exists($strFilePath)) {
+			$strPath .= $objRow['name'];
+			$strPath = WikiItem::SanitizeForPath($strPath, $intWikiItemTypeId);
+
+			// See if the download exists
+			$objWikiItem = WikiItem::LoadByPathWikiItemTypeId($strPath, WikiItemType::File);
+			if (!$objWikiItem) {
+				$objWikiItem = WikiItem::CreateNewItem($strPath, WikiItemType::File);
+			}
+
+			// Create the Parameters for Save
+			$objWikiFile = new WikiFile();
+			if ($objRow['parent_download_id']) {
+				$objParentResult = $objDb->query('SELECT * FROM download WHERE id=' . $objRow['parent_download_id']);
+				$objParentRow = $objParentResult->fetch_array();
+
+				$objWikiFile->Description = trim($objParentRow['description']);
+			} else {
+				$objWikiFile->Description = trim($objRow['description']);
+			}
+			$objWikiFile->DownloadCount = $objRow['download_count'];
+
+			$arrMethodParameters = array($strFilePath, $objRow['filename']);
+
+			$objWikiVersion = $objWikiItem->CreateNewVersion(trim($objRow['name']), $objWikiFile, 'SaveFile', $arrMethodParameters,
+				Person::Load($objRow['person_id']), new QDateTime($objRow['post_date']));
 		}
 	}
 ?>
