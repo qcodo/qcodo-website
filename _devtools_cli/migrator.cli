@@ -65,9 +65,25 @@
 		$objMessage->ReplyNumber = Message::QueryCount(QQ::Equal(QQN::Message()->TopicId, $objRow['topic_id'])) + 1;
 		$objMessage->PostDate = new QDateTime($objRow['post_date']);
 
-		$strMessage = $objRow['message'];
-		$objMessage->Message = $strMessage;
+		$strContent = $objRow['message'];
+		$strContent = str_replace("\r\n", "\n", $strContent);
+		$strContent = str_replace("\n", "\r\n", $strContent);
 
+		$strContent = str_replace('<b>', '*', $strContent);
+		$strContent = str_replace('</b>', '*', $strContent);
+		$strContent = str_replace('<i>', '+', $strContent);
+		$strContent = str_replace('</i>', '+', $strContent);
+		$strContent = str_replace('<u>', '_', $strContent);
+		$strContent = str_replace('</u>', '_', $strContent);
+
+		while (strpos($strContent, "\r\n<code>") !== false) $strContent = str_replace("\r\n<code>", '<code>', $strContent);
+		while (strpos($strContent, "<code>\r\n") !== false) $strContent = str_replace("<code>\r\n", '<code>', $strContent);
+		while (strpos($strContent, "\r\n</code>") !== false) $strContent = str_replace("\r\n</code>", '</code>', $strContent);
+		while (strpos($strContent, "</code>\r\n") !== false) $strContent = str_replace("</code>\r\n", '</code>', $strContent);
+		$strContent = str_replace('<code>', "\r\n\r\nbc.\r\n", $strContent);
+		$strContent = str_replace('</code>', "\r\n.bc\r\n\r\n", $strContent);
+
+		$objMessage->Message = trim($strContent);
 		$objMessage->RefreshCompiledHtml();
 		$objMessage->Save();
 
@@ -223,6 +239,7 @@
 		}
 	}
 	
+	print 'Generating Old Downloads landing pages... ';
 	for ($intIndex = 2; $intIndex <= 4; $intIndex++) {
 		switch ($intIndex) {
 			case 2:
@@ -276,4 +293,19 @@
 	$objWikiPage->Content = trim($strContent);
 	$objWikiPage->CompileHtml();
 	$objWikiItem->CreateNewVersion('Downloads from Old Qcodo.com Website', $objWikiPage, 'Save', array(), Person::Load(1), null);
+	print "Done.\r\n";
+
+	QDataGen::DisplayForEachTaskStart($strTitle = 'Refreshing Topic Stats', Topic::CountAll());
+	foreach (Topic::LoadAll() as $objTopic) {
+		QDataGen::DisplayForEachTaskNext($strTitle);
+		$objTopic->RefreshStats();
+	}
+	QDataGen::DisplayForEachTaskEnd($strTitle);
+
+	QDataGen::DisplayForEachTaskStart($strTitle = 'Refreshing TopicLink Stats', TopicLink::CountAll());
+	foreach (TopicLink::LoadAll() as $objTopicLink) {
+		QDataGen::DisplayForEachTaskNext($strTitle);
+		$objTopicLink->RefreshStats();
+	}
+	QDataGen::DisplayForEachTaskEnd($strTitle);
 ?>

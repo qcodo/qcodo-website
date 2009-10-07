@@ -179,7 +179,7 @@
 			$strListItemArray = explode("\n" . $strBlockIdentifier . ' ', $strBlockContent);
 			
 			foreach ($strListItemArray as $strListItem) {
-				$strToReturn .= sprintf('<li>' . QTextStyleBlock::ListBlockItem($strListItem, $strBlockIdentifier) . "</li>\n");
+				$strToReturn .= '<li>' . QTextStyleBlock::ListBlockItem($strListItem, $strBlockIdentifier) . "</li>\n";
 			}
 
 			$strToReturn .= sprintf("</%s>\n\n", $strTag);
