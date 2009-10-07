@@ -38,12 +38,19 @@
 		}
 	}
 
+	$intNewTopicLinkIdArray[3591] = 7;
+	$intNewTopicLinkIdArray[3578] = 7;
+	$intNewTopicLinkIdArray[3547] = 7;
+	$intNewTopicLinkIdArray[3455] = 7;
 
 	$objResult = $objDb->query('SELECT * FROM topic ORDER BY id');
 	while (QDataGen::DisplayWhileTask('Migrating Topics', $objResult->num_rows)) {
 		$objRow = $objResult->fetch_array();
 		$objTopic = new Topic();
-		$objTopic->TopicLinkId = $objRow['forum_id'] - 1;
+		if (array_key_exists(intval($objRow['id']), $intNewTopicLinkIdArray))
+			$objTopic->TopicLinkId = $intNewTopicLinkIdArray[intval($objRow['id'])];
+		else
+			$objTopic->TopicLinkId = $objRow['forum_id'] - 1;
 		$objTopic->Name = $objRow['name'];
 		$objTopic->PersonId = $objRow['person_id'];
 		$objTopic->Save();
