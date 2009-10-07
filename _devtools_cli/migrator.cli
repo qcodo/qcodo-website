@@ -38,6 +38,46 @@
 		}
 	}
 
+
+	$objResult = $objDb->query('SELECT * FROM topic ORDER BY id');
+	while (QDataGen::DisplayWhileTask('Migrating Topics', $objResult->num_rows)) {
+		$objRow = $objResult->fetch_array();
+		$objTopic = new Topic();
+		$objTopic->TopicLinkId = $objRow['forum_id'] - 1;
+		$objTopic->Name = $objRow['name'];
+		$objTopic->PersonId = $objRow['person_id'];
+		$objTopic->Save();
+
+		if ($objTopic->Id != $objRow['id']) {
+			Topic::GetDatabase()->NonQuery('UPDATE topic SET id=' . $objRow['id'] . ' WHERE id=' . $objTopic->Id);
+			Topic::GetDatabase()->NonQuery('ALTER TABLE topic AUTO_INCREMENT=' . ($objTopic->Id + 1));
+		}
+	}
+
+
+	$objResult = $objDb->query('SELECT * FROM message ORDER BY id');
+	while (QDataGen::DisplayWhileTask('Migrating Messages', $objResult->num_rows)) {
+		$objRow = $objResult->fetch_array();
+		$objMessage = new Message();
+		$objMessage->TopicLinkId = $objRow['forum_id'] - 1;
+		$objMessage->TopicId = $objRow['topic_id'];
+		$objMessage->PersonId = $objRow['person_id'];
+		$objMessage->ReplyNumber = Message::QueryCount(QQ::Equal(QQN::Message()->TopicId, $objRow['topic_id'])) + 1;
+		$objMessage->PostDate = new QDateTime($objRow['post_date']);
+
+		$strMessage = $objRow['message'];
+		$objMessage->Message = $strMessage;
+
+		$objMessage->RefreshCompiledHtml();
+		$objMessage->Save();
+
+		if ($objMessage->Id != $objRow['id']) {
+			Message::GetDatabase()->NonQuery('UPDATE message SET id=' . $objRow['id'] . ' WHERE id=' . $objMessage->Id);
+			Message::GetDatabase()->NonQuery('ALTER TABLE message AUTO_INCREMENT=' . ($objMessage->Id + 1));
+		}
+	}
+
+
 	$objResult = $objDb->query('SELECT * FROM counter ORDER BY id');
 	while (QDataGen::DisplayWhileTask('Migrating Counters', $objResult->num_rows)) {
 		$objRow = $objResult->fetch_array();
