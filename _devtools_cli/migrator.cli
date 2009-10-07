@@ -200,8 +200,8 @@
 		}
 		
 		$strName = sprintf('Downloads from Old Qcodo.com Website in "%s"', $strType);
-		$strContent = sprintf('These are user-contributed downloads from the old *Qcodo.com* website in "%s", placed here for historical/archive reasons.  ', $strType);
-		$strContent .= 'For new user-submitted contributions, be sure to check out the "User Contributions":/qpm/ section of the website.';
+		$strContent = sprintf('These are user-contributed downloads from the old *Qcodo.com* website in "%s", placed here for historical/archive purposes.  ', $strType);
+		$strContent .= 'For new user-submitted contributions, be sure to check out the "User Contributions":http://www.qcodo.com/qpm/ section of the website.  "View All Old Downloads":wiki:/old_downloads';
 		$strContent .= "\r\n\r\n";
 		
 		$objWikiItemArray = WikiItem::QueryArray(QQ::In(QQN::WikiItem()->Id, array_keys($arrDownloads[$intIndex])), QQ::OrderBy(QQN::WikiItem()->CurrentName));
@@ -216,4 +216,24 @@
 		$objWikiPage->CompileHtml();
 		$objWikiItem->CreateNewVersion($strName, $objWikiPage, 'Save', array(), Person::Load(1), null);
 	}
+	
+	$objWikiItem = WikiItem::CreateNewItem('/old_downloads', WikiItemType::Page);
+	$strContent = 'These are user-contributed downloads from the old *Qcodo.com* website, placed here for historical/archive purposes.  ';
+	$strContent .= 'For new user-submitted contributions, be sure to check out the "User Contributions":http://www.qcodo.com/qpm/ section of the website.';
+	$strContent .= "\r\n\r\n";
+	$strContent .= 'h2. "QForm Controls":wiki:/old_downloads/qform_controls';
+	$strContent .= "\r\n\r\n";
+	$strContent .= 'Custom Qform class files are typically installed in wwwroot/includes/qform, inside qform_objects';
+	$strContent .= "\r\n\r\n";
+	$strContent .= 'h2. "Laguage Files":wiki:/old_downloads/language_files';
+	$strContent .= "\r\n\r\n";
+	$strContent .= 'A place to share language files and language file updates for Internationalized Qcodo. | These are files that should be placed within the core at /includes/qcodo/i18n.  As files are uploaded and perfected, and as authors grant permission, we will put them into the core in future releases.';
+	$strContent .= "\r\n\r\n";
+	$strContent .= 'h2. "Other":wiki:/old_downloads/other';
+	$strContent .= "\r\n\r\n";
+	$strContent .= 'For other Community-Contributed classes, utilities, and code-snippets';
+	$objWikiPage = new WikiPage();
+	$objWikiPage->Content = trim($strContent);
+	$objWikiPage->CompileHtml();
+	$objWikiItem->CreateNewVersion('Downloads from Old Qcodo.com Website', $objWikiPage, 'Save', array(), Person::Load(1), null);
 ?>
