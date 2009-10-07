@@ -68,7 +68,10 @@
 		 */
 		public function RefreshStats() {
 			$objMessage = Message::QuerySingle(QQ::Equal(QQN::Message()->TopicId, $this->intId), QQ::Clause(QQ::OrderBy(QQN::Message()->PostDate, false), QQ::LimitInfo(1)));
-			$this->dttLastPostDate = $objMessage->PostDate;
+			if ($objMessage)
+				$this->dttLastPostDate = $objMessage->PostDate;
+			else
+				$this->dttLastPostDate = null;
 
 			$this->intMessageCount = Message::CountByTopicId($this->intId);
 

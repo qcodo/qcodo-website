@@ -42,7 +42,9 @@
 	$intNewTopicLinkIdArray[3578] = 7;
 	$intNewTopicLinkIdArray[3547] = 7;
 	$intNewTopicLinkIdArray[3455] = 7;
-
+	$intNewTopicLinkIdArray[3242] = 7;
+	$intNewTopicLinkIdArray[3244] = 7;
+	
 	$objResult = $objDb->query('SELECT * FROM topic ORDER BY id');
 	while (QDataGen::DisplayWhileTask('Migrating Topics', $objResult->num_rows)) {
 		$objRow = $objResult->fetch_array();

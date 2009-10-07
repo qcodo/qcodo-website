@@ -36,8 +36,8 @@ INSERT INTO `forum` VALUES
 	(4,7,'Feature Requests',0,'Forum discussing feature requests for the framework.'),
 	(5,1,'Official Blog',1,'This is a blog of current Qcodo and Qcodo website development activities.  Official Qcodo announcements will also be posted here.'),
 	(6,6,'Getting Started, Installation and Setup',0,'For questions, issues and topics that specifically deal with getting started with Qcodo (e.g. installation, configuration, subfoldering, etc.)'),
-	(7,5,'Examples Site and \"Qcodo Manual\" Project',0,'For anything regarding the <a href=\"http://examples.qcodo.com/\" class=\"link_body\">Examples Site</a> or the <a href=\"http://qcodo.kri-soft.be/\" class=\"link_body\">\"Qcodo Manual\" Project</a>.'),
-	(8,5,'QForge and Qcodo Hosting',0,'For anything regarding <a class=\"link_body\" href=\"http://qforge.qcodo.com/\">QForge</a> or <a class=\"link_body\" href=\"http://www.qcodohosting.org/\">Qcodo Hosting</a>'),
+	(7,5,'Qcodo.com, Examples Site and API Documentation',0,'For anything regarding Qcodo.com, itself, including the examples site, Forums and Wiki, API Documentation, etc.'),
+	(8,5,'Other Community Projects',0,'For anything regarding other Qcodo community projects, including QForge, the Qcodo Manual Project, Zcodo/Qcubed, etc.'),
 	(9,4,'Qcodo Jobs Board',0,'For Qcodo-related job openings, contracting opportunities and developers for hire.');
 
 INSERT INTO topic_link(topic_link_type_id, topic_count, message_count, forum_id) VALUES (1, 0, 0, 2);
