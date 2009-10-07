@@ -128,6 +128,10 @@
 	}
 
 	$objResult = $objDb->query('SELECT * FROM download ORDER BY id');
+	$arrDownloads = array();
+	$arrDownloads[2] = array();
+	$arrDownloads[3] = array();
+	$arrDownloads[4] = array();
 	while (QDataGen::DisplayWhileTask('Migrating Downloads', $objResult->num_rows)) {
 		$objRow = $objResult->fetch_array();
 		$strFilePath = __DOCROOT__ . '/../old_website/' . $objRow['id'] . '/' . $objRow['filename'];
@@ -148,7 +152,7 @@
 			default:
 				throw new Exception('HERE');
 		}
-		
+
 		if ($strPath && file_exists($strFilePath)) {
 			$strPath .= $objRow['name'];
 			$strPath = WikiItem::SanitizeForPath($strPath, $intWikiItemTypeId);
@@ -175,6 +179,41 @@
 
 			$objWikiVersion = $objWikiItem->CreateNewVersion(trim($objRow['name']), $objWikiFile, 'SaveFile', $arrMethodParameters,
 				Person::Load($objRow['person_id']), new QDateTime($objRow['post_date']));
+			$arrDownloads[$objRow['download_category_id']][$objWikiItem->Id] = true;
 		}
+	}
+	
+	for ($intIndex = 2; $intIndex <= 4; $intIndex++) {
+		switch ($intIndex) {
+			case 2:
+				$strType = 'QForm Controls';
+				$strPath = '/old_downloads/qform_controls';
+				break;
+			case 3:
+				$strType = 'Other';
+				$strPath = '/old_downloads/other';
+				break;
+			case 4:
+				$strType = 'Langauge Files';
+				$strPath = '/old_downloads/language_files';
+				break;
+		}
+		
+		$strName = sprintf('Downloads from Old Qcodo.com Website in "%s"', $strType);
+		$strContent = sprintf('These are user-contributed downloads from the old *Qcodo.com* website in "%s", placed here for historical/archive reasons.  ', $strType);
+		$strContent .= 'For new user-submitted contributions, be sure to check out the "User Contributions":/qpm/ section of the website.';
+		$strContent .= "\r\n\r\n";
+		
+		$objWikiItemArray = WikiItem::QueryArray(QQ::In(QQN::WikiItem()->Id, array_keys($arrDownloads[$intIndex])), QQ::OrderBy(QQN::WikiItem()->CurrentName));
+		foreach ($objWikiItemArray as $objWikiItem) {
+			$strContent .= sprintf('file. %s', $objWikiItem->Path);
+			$strContent .= "\r\n\r\n";
+		}
+
+		$objWikiItem = WikiItem::CreateNewItem($strPath, WikiItemType::Page);
+		$objWikiPage = new WikiPage();
+		$objWikiPage->Content = trim($strContent);
+		$objWikiPage->CompileHtml();
+		$objWikiItem->CreateNewVersion($strName, $objWikiPage, 'Save', array(), Person::Load(1), null);
 	}
 ?>
