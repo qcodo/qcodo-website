@@ -151,7 +151,9 @@
 		public function PostMessage($strMessageText, Person $objPerson = null, QDateTime $dttPostDate = null) {
 			$objTopicArray = $this->TopicLink->GetTopicArray();
 			$objTopic = $objTopicArray[0];
-			return $objTopic->PostMessage($strMessageText, $objPerson, $dttPostDate);
+			$objMessage = $objTopic->PostMessage($strMessageText, $objPerson, $dttPostDate);
+			$objMessage->SendAlerts();
+			return $objMessage;
 		}
 
 		// Override or Create New Load/Count methods

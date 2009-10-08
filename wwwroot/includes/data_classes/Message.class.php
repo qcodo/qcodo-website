@@ -36,11 +36,27 @@
 		 * @return void
 		 */
 		public function SendAlerts() {
-			$strLink = sprintf('http://www.qcodo.com/forums/forum.php/%s/%s/lastpage', $this->TopicLink->ForumId, $this->TopicId);
+			switch ($this->TopicLink->TopicLinkTypeId) {
+				case TopicLinkType::Forum:
+					$strLink = sprintf('http://www.qcodo.com/forums/forum.php/%s/%s/lastpage', $this->TopicLink->ForumId, $this->TopicId);
+					break;
+				case TopicLinkType::Issue:
+					$strLink = sprintf('http://www.qcodo.com/issues/view.php/%s/lastpage', $this->TopicLink->IssueId);
+					break;
+				case TopicLinkType::WikiItem:
+					$strLink = sprintf('http://www.qcodo.com%s?lastpage', $this->TopicLink->WikiItem->UrlPath);
+					break;
+				case TopicLinkType::Package:
+					$strLink = sprintf('http://www.qcodo.com/qpm/package.php/%s/lastpage', $this->TopicLink->Package->Token);
+					break;
+				default:
+					throw new Exception('Unhandled TopicLinkType: ' . $this->TopicLink->TopicLinkTypeId);
+			}
+			$strDisplayName = ($this->Person) ? $this->Person->DisplayName : 'Qcodo System Message';
 
 			$strBody = "QCODO MESSAGE POSTED\r\n";
 			$strBody .= sprintf("Topic: %s\r\n", $this->Topic->Name);
-			$strBody .= sprintf("Posted By: %s\r\n", $this->Person->DisplayName);
+			$strBody .= sprintf("Posted By: %s\r\n", $strDisplayName);
 			$strBody .= sprintf("Posted On: %s\r\n", $this->PostDate->__toString('DDD MMM D YYYY, h:mm zz'));
 			$strBody .= sprintf("(to view this topic in its entirety, please go to %s)\r\n\r\n\r\n", $strLink);
 			$strBody .= trim($this->Message);
@@ -50,19 +66,19 @@
 			$strBody .= ' and click on "Email Notification".  If the link does not show up, you will need first "Log In".';
 
 			$strHtml = '<style type="text/css">';
-			$strHtml .= '.forum_code { background-color: #ddddff; padding: 10px; margin-left: 20px; font-family: "Lucida Console", "Courier New", "Courier", "monospaced"; font-size: 11px; line-height: 13px; overflow: auto; }';
+			$strHtml .= 'pre { background-color: #ddddff; padding: 10px; margin-left: 20px; font-family: "Lucida Console", "Courier New", "Courier", "monospaced"; font-size: 11px; line-height: 13px; overflow: auto; }';
 			$strHtml .= '</style>';
 			$strHtml .= sprintf('<span style="font: 12px %s;">', QFontFamily::Verdana);
-			$strHtml .= '<span style="font-size: 14px;"><b><a href="http://www.qcodo.com/">Qcodo</a> Message Posted</b></span><br/>';
-			$strHtml .= sprintf('<b>Topic: </b>%s<br/>', $this->Topic->Name);
-			$strHtml .= sprintf('<b>Posted By: </b>%s<br/>', $this->Person->DisplayName);
-			$strHtml .= sprintf('<b>Posted On: </b>%s<br/>', $this->PostDate->__toString('DDD MMM D YYYY, h:mm zz'));
+			$strHtml .= '<span style="font-size: 14px;"><strong><a href="http://www.qcodo.com/">Qcodo</a> Message Posted</strong></span><br/>';
+			$strHtml .= sprintf('<strong>Topic: </strong>%s<br/>', $this->Topic->Name);
+			$strHtml .= sprintf('<strong>Posted By: </strong>%s<br/>', $strDisplayName);
+			$strHtml .= sprintf('<strong>Posted On: </strong>%s<br/>', $this->PostDate->__toString('DDD MMM D YYYY, h:mm zz'));
 			$strHtml .= sprintf('(to view this post in its entirety, please go to <a href="%s">%s</a>)<br/><br/><br/>', $strLink, $strLink);
 			$strHtml .= $this->CompiledHtml;
-			$strHtml .= '<br/><br/><hr/><br/><span style="font: 10px;">You are receiving this message because you have opted-in for email notifications on this forum topic.  ';
+			$strHtml .= '<br/><br/><hr/><br/><span style="font-size: 10px;">You are receiving this message because you have opted-in for email notifications on this forum topic.  ';
 			$strHtml .= 'If you wish to no longer be notified for this topic, please go to ';
-			$strHtml .= $strLink;
-			$strHtml .= ' and click on "Email Notification".  If the link does not show up, you will need first "Log In".';
+			$strHtml .= sprintf('<a href="%s">%s</a>', $strLink, $strLink);
+			$strHtml .= ' and click on "<strong>Email Notification</strong>".  If the link does not show up, you will need first "<strong>Log In</strong>".';
 			$strHtml .= '</span></span>';
 
 			$strSubject = '[Qcodo] Re: ' . $this->Topic->Name;
