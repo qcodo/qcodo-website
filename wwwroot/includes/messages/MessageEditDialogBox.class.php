@@ -82,11 +82,11 @@
 			$this->mctMessage->Message->Topic->RefreshStats();
 			$this->mctMessage->Message->Topic->RefreshSearchIndex();
 			$this->mctMessage->Message->TopicLink->RefreshStats();
-			$this->mctMessage->Message->Topic->UnassociateAllPeopleAsRead();
 
-			// Send Alerts
+			// Send Alerts and Reset Read Flag on any NEW post
 			if (!$this->blnEditMode) {
 				$this->mctMessage->Message->SendAlerts();
+				$this->mctMessage->Message->Topic->UnassociateAllPeopleAsRead();
 			}
 
 			$this->ParentControl->CloseMessageDialog(true, !$this->blnEditMode);
