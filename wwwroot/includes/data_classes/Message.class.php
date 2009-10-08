@@ -19,7 +19,7 @@
 		 * Allows pages to _p()/echo()/print() this object, and to define the default
 		 * way this object would be outputted.
 		 *
-		 * Can also be called directly via $objMessage->__toString().
+		 * Can also be called directly via $this->__toString().
 		 *
 		 * @return string a nicely formatted string representation of this object
 		 */
@@ -29,6 +29,55 @@
 
 		public function RefreshCompiledHtml() {
 			$this->strCompiledHtml = QTextStyle::DisplayAsHtml($this->strMessage);
+		}
+
+		/**
+		 * For subscribers of this message topic, send out an alert to them given this new message
+		 * @return void
+		 */
+		public function SendAlerts() {
+			$strLink = sprintf('http://www.qcodo.com/forums/forum.php/%s/%s/lastpage', $this->TopicLink->ForumId, $this->TopicId);
+
+			$strBody = "QCODO MESSAGE POSTED\r\n";
+			$strBody .= sprintf("Topic: %s\r\n", $this->Topic->Name);
+			$strBody .= sprintf("Posted By: %s\r\n", $this->Person->DisplayName);
+			$strBody .= sprintf("Posted On: %s\r\n", $this->PostDate->__toString('DDD MMM D YYYY, h:mm zz'));
+			$strBody .= sprintf("(to view this topic in its entirety, please go to %s)\r\n\r\n\r\n", $strLink);
+			$strBody .= trim($this->Message);
+			$strBody .= "\r\n\r\n------------------------------------------------------\r\nYou are receiving this message because you have opted-in for email notifications on this topic.  ";
+			$strBody .= "If you wish to no longer be notified for this topic, please go to ";
+			$strBody .= $strLink;
+			$strBody .= ' and click on "Email Notification".  If the link does not show up, you will need first "Log In".';
+
+			$strHtml = '<style type="text/css">';
+			$strHtml .= '.forum_code { background-color: #ddddff; padding: 10px; margin-left: 20px; font-family: "Lucida Console", "Courier New", "Courier", "monospaced"; font-size: 11px; line-height: 13px; overflow: auto; }';
+			$strHtml .= '</style>';
+			$strHtml .= sprintf('<span style="font: 12px %s;">', QFontFamily::Verdana);
+			$strHtml .= '<span style="font-size: 14px;"><b><a href="http://www.qcodo.com/">Qcodo</a> Message Posted</b></span><br/>';
+			$strHtml .= sprintf('<b>Topic: </b>%s<br/>', $this->Topic->Name);
+			$strHtml .= sprintf('<b>Posted By: </b>%s<br/>', $this->Person->DisplayName);
+			$strHtml .= sprintf('<b>Posted On: </b>%s<br/>', $this->PostDate->__toString('DDD MMM D YYYY, h:mm zz'));
+			$strHtml .= sprintf('(to view this post in its entirety, please go to <a href="%s">%s</a>)<br/><br/><br/>', $strLink, $strLink);
+			$strHtml .= $this->CompiledHtml;
+			$strHtml .= '<br/><br/><hr/><br/><span style="font: 10px;">You are receiving this message because you have opted-in for email notifications on this forum topic.  ';
+			$strHtml .= 'If you wish to no longer be notified for this topic, please go to ';
+			$strHtml .= $strLink;
+			$strHtml .= ' and click on "Email Notification".  If the link does not show up, you will need first "Log In".';
+			$strHtml .= '</span></span>';
+
+			$strSubject = '[Qcodo] Re: ' . $this->Topic->Name;
+
+			foreach ($this->Topic->GetPersonAsEmailArray() as $objEmailPerson) {
+				if ($objEmailPerson->Id != $this->PersonId) {
+					$objEmailQueue = new EmailQueue();
+					$objEmailQueue->ToAddress = sprintf('%s %s <%s>', $objEmailPerson->FirstName, $objEmailPerson->LastName, $objEmailPerson->Email);
+					$objEmailQueue->FromAddress = QCODO_EMAILER;
+					$objEmailQueue->Subject = $strSubject;
+					$objEmailQueue->Body = $strBody;
+					$objEmailQueue->Html = $strHtml;
+					$objEmailQueue->Save();
+				}
+			}
 		}
 
 		// Override or Create New Load/Count methods

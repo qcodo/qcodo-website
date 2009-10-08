@@ -1,4 +1,5 @@
 <?php require(__INCLUDES__ . '/header.inc.php'); ?>
+<link rel="alternate" type="application/rss+xml" title="Qcodo Forums" href="/rss/forums.php" />
 
 	<div class="searchBar">
 		<div class="title"><?php $this->lblHeader->Render(); ?></div>

@@ -82,6 +82,12 @@
 			$this->mctMessage->Message->Topic->RefreshStats();
 			$this->mctMessage->Message->Topic->RefreshSearchIndex();
 			$this->mctMessage->Message->TopicLink->RefreshStats();
+			$this->mctMessage->Message->Topic->UnassociateAllPeopleAsRead();
+
+			// Send Alerts
+			if (!$this->blnEditMode) {
+				$this->mctMessage->Message->SendAlerts();
+			}
 
 			$this->ParentControl->CloseMessageDialog(true, !$this->blnEditMode);
 		}
