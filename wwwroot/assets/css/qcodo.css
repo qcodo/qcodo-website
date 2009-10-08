@@ -92,6 +92,20 @@
 	div.searchOptionActive a { font-weight: bold; color: #fff; background-color: #559; border-color: #226; }
 
 
+	/* QTextStyle */
+	div.textStyle { }
+	div.textStyle h1 { font-family: arial, helvetica, sans-serif; font-size: 36px; color: #446; font-weight: bold; margin: 0; padding: 0; }
+	div.textStyle h2 { font-family: arial, helvetica, sans-serif; font-size: 30px; color: #446; font-weight: bold; margin: 0; padding: 0; }
+	div.textStyle h3 { font-family: arial, helvetica, sans-serif; font-size: 24px; color: #446; font-weight: bold; margin: 0; padding: 0; }
+	div.textStyle h4 { font-family: arial, helvetica, sans-serif; font-size: 18px; color: #446; font-weight: bold; margin: 0; padding: 0; }
+	div.textStyle h5 { font-family: arial, helvetica, sans-serif; font-size: 16px; color: #446; font-weight: bold; margin: 0; padding: 0; }
+	div.textStyle h6 { font-family: arial, helvetica, sans-serif; font-size: 12px; color: #446; font-weight: bold; margin: 0; padding: 0; }
+	div.textStyle p  { font-family: arial, helvetica, sans-serif; font-size: 12px; color: #000; font-weight: normal; margin: 16px 0; padding: 0; }
+	div.textStyle ul, div.textStyle ol { margin: 0; padding: 0 0 0 50px; }
+	div.textStyle li { font-family: arial, helvetica, sans-serif; font-size: 12px; color: #000; font-weight: normal; margin: 0; padding: 0; }
+	div.textStyle blockquote { font-family: arial, helvetica, sans-serif; font-size: 14px; color: #446; font-weight: normal; margin: 0 0 0 30px; padding: 10px; border: 1px solid #446; background-color: #f0f0ff; overflow: auto; }
+	div.textStyle pre { font-family: monaco, "lucida console", "courier new", courier, monospaced; font-size: 11px; font-weight: normal; margin: 0 0 0 30px; padding: 6px; border: 1px solid #446; background-color: #f0f0ff; overflow: auto; }
+	div.textStyle pre code { margin: 0; padding: 0; }
 
 	/* QDialogBox */
 	div.dialogbox { border: 4px solid #333; background-color: #fff; padding: 20px; width: 400px; overflow: auto; }
@@ -259,7 +273,7 @@
 		div#dtrMessages div.messageBar div.name span.replyNumber { font-weight: normal; font-size: 10px; }
 		div#dtrMessages div.messageBar div.date { float: right; font-size: 10px; font-weight: bold; font-family: arial, helvetica; color: #343; position: relative; top: -1px; }
 
-		div#dtrMessages div.messageBody { background-color: #efe; width: 713px; padding: 10px; font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; overflow: auto; border: 1px solid #aba; }
+		div#dtrMessages div.messageBody { background-color: #efe; width: 713px; padding: 0 10px 0 10px; font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; overflow: auto; border: 1px solid #aba; }
 		
 		div#dtrMessages div.messageBarRoundAlternate div { background-color: #ba8; border-color: #fec;}
 		div#dtrMessages div.messageBarAlternate { background-color: #ba8; }

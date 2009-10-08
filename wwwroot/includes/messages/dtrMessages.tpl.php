@@ -20,5 +20,5 @@
 	</div>
 </div>
 <div class="messageBody <?php if ($_CONTROL->CurrentItemIndex % 2) print 'messageBodyAlternate'; ?>">
-	<?php _p($_ITEM->CompiledHtml, false); ?>
+	<div class="textStyle"><?php _p($_ITEM->CompiledHtml, false); ?></div>
 </div>

@@ -208,6 +208,15 @@
 	}
 
 	class QTextStyleBlock extends QTextStyleBlockBase {
+		protected static function ProcessBlockCode($strBlockContent, $strBlockIdentifier, $strStyle = null, $strOptions = null) {
+			if ($strStyle) $strStyle = ' style="' . $strStyle . '"';
+			$strCode = highlight_string($strBlockContent, true);
+			$strCode = str_replace("\r", '', $strCode);
+			$strCode = str_replace("\n", '', $strCode);
+
+			return sprintf("<pre %s>%s</pre>\n\n", $strStyle, $strCode);
+		}
+
 		protected static function ProcessImage($strBlockContent, $strBlockIdentifier, $strStyle = null, $strOptions = null) {
 			$strPath = WikiItem::SanitizeForPath($strBlockContent, $intWikiItemTypeId);
 
