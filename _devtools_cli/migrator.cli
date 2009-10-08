@@ -321,12 +321,16 @@
 	$objResult = $objDb->query('SELECT * FROM email_topic_person_assn');
 	while (QDataGen::DisplayWhileTask('Migrating email_topic_person_assn', $objResult->num_rows)) {
 		$objRow = $objResult->fetch_array();
-		Topic::GetDatabase()->NonQuery('INSERT INTO email_topic_person_assn(topic_id, person_id) VALUES (' . $objRow['topic_id'] . ',' . $objRow['person_id'] . ');');
+		try {
+			Topic::GetDatabase()->NonQuery('INSERT INTO email_topic_person_assn(topic_id, person_id) VALUES (' . $objRow['topic_id'] . ',' . $objRow['person_id'] . ');');
+		} catch (QMySqliDatabaseException $objExc) {}
 	}
 	
 	$objResult = $objDb->query('SELECT * FROM read_topic_person_assn');
 	while (QDataGen::DisplayWhileTask('Migrating read_topic_person_assn', $objResult->num_rows)) {
 		$objRow = $objResult->fetch_array();
-		Topic::GetDatabase()->NonQuery('INSERT INTO read_topic_person_assn(topic_id, person_id) VALUES (' . $objRow['topic_id'] . ',' . $objRow['person_id'] . ');');
+		try {
+			Topic::GetDatabase()->NonQuery('INSERT INTO read_topic_person_assn(topic_id, person_id) VALUES (' . $objRow['topic_id'] . ',' . $objRow['person_id'] . ');');
+		} catch (QMySqliDatabaseException $objExc) {}
 	}
 ?>
