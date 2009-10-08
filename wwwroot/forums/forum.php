@@ -169,8 +169,8 @@
 			
 			$this->pnlMessages->AddControlToRefreshOnUpdate($this->dtrTopics);
 			$this->pnlMessages->SetCallbackOnNewPost($this, 'dtrTopics_Reset');
+			if (QApplication::PathInfo(2) == 'lastpage') $this->pnlMessages->SetPageNumber(QPaginatedControl::LastPage);
 
-			
 			
 			// Search Stuff
 			$this->btnSearchAll = new RoundedLinkButton($this);
