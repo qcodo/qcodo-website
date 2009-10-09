@@ -20,7 +20,8 @@
 		</div>
 
 		<div class="sidebar">
-			<p>Instructions go here about formatting.</p>
+			<p>To apply formatting, you can use <br/><strong>QTextStyle</strong> formatting properties.</p>
+			<p>For more information, please<br/>see <a href="/wiki/qcodo/qtextstyle">QTextStyle Formatting</a>.</p>
 		</div>
 		
 		<br clear="all"/><br/>
