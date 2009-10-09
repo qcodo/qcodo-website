@@ -26,8 +26,8 @@
 			$this->dtgWikiItems->ItemsPerPage = 20;
 
 			$this->dtgWikiItems->MetaAddTypeColumn('WikiItemTypeId', 'WikiItemType', 'Name=Wiki Type', 'Width=80px');
-			$this->dtgWikiItems->MetaAddColumn('CurrentName', 'Name=Title', 'Width=350px');
-			$this->dtgWikiItems->MetaAddColumn('Path', 'Html=<?= $_FORM->RenderPath($_ITEM); ?>', 'HtmlEntities=false', 'Width=300px');
+			$this->dtgWikiItems->MetaAddColumn('CurrentName', 'Name=Title', 'Width=340px');
+			$this->dtgWikiItems->MetaAddColumn('Path', 'Html=<?= $_FORM->RenderPath($_ITEM); ?>', 'HtmlEntities=false', 'Width=310px');
 			$this->dtgWikiItems->MetaAddColumn('CurrentPostDate', 'Name=Last Updated', 'Width=110px', 'CssClass=small');
 			$this->dtgWikiItems->MetaAddColumn(QQN::WikiItem()->CurrentPostedByPerson->DisplayName, 'Name=By', 'Html=<?= $_FORM->RenderPostedBy($_ITEM); ?>', 'HtmlEntities=false', 'Width=100px', 'CssClass=small reverseLink');
 
@@ -113,7 +113,7 @@
 		}
 		
 		public function RenderPath(WikiItem $objWikiItem) {
-			return sprintf('<a href="%s">%s</a>', $objWikiItem->UrlPath, $objWikiItem->Path);
+			return sprintf('<div style="width: 300px; overflow: hidden;"><a href="%s">%s</a></div>', $objWikiItem->UrlPath, $objWikiItem->Path);
 		}
 
 		public function RenderPostedBy(WikiItem $objWikiItem) {

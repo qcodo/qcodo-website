@@ -82,11 +82,11 @@
 
 
 	/* RoundedLinkButton */
-	div.roundedLink a { -moz-border-radius: 7px; padding: 1px 12px 1px 12px; border: 0; color: #fff; font-weight: bold; background-color: #335; text-decoration: none; float: left; }
+	div.roundedLink a { -moz-border-radius: 7px; -webkit-border-radius: 7px; padding: 1px 12px 1px 12px; border: 0; color: #fff; font-weight: bold; background-color: #335; text-decoration: none; float: left; }
 	div.roundedLink a:hover { background-color: #aba; color: #363; }
 	div.roundedLinkGray a { background-color: #d3d3d3; color: #666; }
 
-	div.searchOption a { -moz-border-radius: 8px; padding: 0px 14px 0px 14px; border: 1px solid #000; color: #000; font-size: 10px; background-color: #555; text-decoration: none; }
+	div.searchOption a { -moz-border-radius: 8px; -webkit-border-radius: 8px; padding: 0px 14px 0px 14px; border: 1px solid #000; color: #000; font-size: 10px; background-color: #555; text-decoration: none; }
 	div.searchOption a:hover { color: #333; background-color: #ddd; border-color: #aaa; }
 	div.searchOptionActive a { font-weight: bold; color: #060; background-color: #aba; border-color: #000; }
 	div.searchOptionActive a { font-weight: bold; color: #fff; background-color: #559; border-color: #226; }
@@ -145,16 +145,18 @@
 		div.wikiThumbRight { float: right; margin-left: 10px; clear: right; }
 
 /* FORUMS */
-		div.searchBar { background-color: #393939; -moz-border-radius: 8px 8px 0 0; height: 22px; padding: 4px 14px 0 14px; border: 1px solid #222; }
+		div.searchBar { background-color: #393939; -moz-border-radius: 8px 8px 0 0; -webkit-border-top-left-radius: 8px; -webkit-border-top-right-radius: 8px; height: 22px; padding: 4px 14px 0 14px; border: 1px solid #222; }
 		div.searchBar div.title { float: left; font-family: arial; font-size: 16px; font-weight: bold; color: #efe; }
 		div.searchBar div.title span.subtitle { font-weight: normal; font-size: 12px }
 
 		div.searchBar div.right { float: right; padding-top: 1px; margin-left: 10px;}
 
 		div.searchBar div.issue { font-size: 11px; color: #ddd; font-weight: bold; }
+			div.searchBar div.issue a { color: #ddd; }
 		div.searchBar div.wiki { font-size: 10px; color: #aaa; font-weight: normal; }
+			div.searchBar div.wiki a { color: #aaa; }
 		input.searchIssueTextBox { border: 0; background-color: #ddd; width: 50px; font-size: 10px; padding: 1px 2px; }
-		div.searchTextBox { width: 196px; height: 16px; padding: 0 0 0 4px; margin: 0; font-size: 1px; -moz-border-radius: 7px; background-color: #eee; }
+		div.searchTextBox { width: 196px; height: 16px; padding: 0 0 0 4px; margin: 0; font-size: 1px; -moz-border-radius: 7px; -webkit-border-radius: 7px; background-color: #eee; }
 			div.searchTextBox img { position: relative; top: 2px; border: 0; }
 			div.searchTextBox input { background-color: #eee; border: 0; height: 14px; width: 165px; padding: 1px 0 0 0; font: 12px arial; font-weight: bold; color: #333; margin: 0 3px 0 3px;}
 			div.searchTextBox input.none { background: url(/images/search_blank.png) no-repeat; }
@@ -239,7 +241,7 @@
 
 		div#dtrMessages { }
 
-		div#dtrMessages div.messageBar { background-color: #aba; height: 14px; padding: 6px 10px 0 10px; margin-top: 15px; -moz-border-radius: 4px 4px 0 0; }
+		div#dtrMessages div.messageBar { background-color: #aba; height: 14px; padding: 6px 10px 0 10px; margin-top: 15px; -moz-border-radius: 4px 4px 0 0; -webkit-border-top-left-radius: 4px; -webkit-border-top-right-radius: 4px; }
 		div#dtrMessages div.messageBar div.name { float: left; font-size: 11px; font-weight: bold; color: #343; height: 11px; position: relative; top: -3px; }
 		div#dtrMessages div.messageBar div.name span.replyNumber { font-weight: normal; font-size: 10px; }
 		div#dtrMessages div.messageBar div.date { float: right; font-size: 10px; font-weight: bold; font-family: arial, helvetica; color: #343; position: relative; top: -1px; }
@@ -300,6 +302,23 @@
 			div.calendar div.options a:hover { text-decoration: underline; }
 
 			
+			
+	/* Main Home Page */
+	div.mainSidebar { float: right; width: 250px; margin-left: 25px; font-size: 11px; margin-bottom: 100px;}
+
+	div.mainSidebar a { font-weight: normal; }
+	div.mainSidebar h1 { font-size: 14px; -moz-border-radius: 5px 5px 0 0; -webkit-border-top-left-radius: 5px; -webkit-border-top-right-radius: 5px; background-color: #ba8; color: #484030; font-weight: bold; padding: 4px 10px; margin: 0; }
+	div.mainSidebar div.sbContent {padding: 0 10px; background-color: #ffe;
+		font-size: 11px;
+		font-family: verdana;
+		border: 1px;
+		border-style: solid;
+		border-color: #ba8;
+	}
+
+	div.mainContent p { font-size: 16px; }
+	div.mainContent ul { font-size: 16px; padding-left: 60px; }
+	
 			
 	/* QTextStyle */
 	div.textStyle { }

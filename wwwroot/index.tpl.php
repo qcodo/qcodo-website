@@ -1,22 +1,5 @@
 <?php require(__INCLUDES__ . '/header.inc.php'); ?>
 
-   	
-<style>
-	div.mainSidebar { float: right; width: 250px; margin-left: 25px; font-size: 11px; }
-
-	div.mainSidebar a {font-weight: normal; }
-	div.mainSidebar h1 { font-size: 14px; -moz-border-radius: 5px 5px 0 0; background-color: #ba8; color: #484030; font-weight: bold; padding: 4px 10px; margin: 0; }
-	div.mainSidebar div.sbContent {padding: 0 10px; background-color: #ffe;
-		font-size: 11px;
-		font-family: verdana;
-		border: 1px;
-		border-style: solid;
-		border-color: #ba8;
-	}
-
-	div.mainContent p { font-size: 16px; }
-	div.mainContent ul { font-size: 16px; padding-left: 60px; }
-</style>
 <div class="mainSidebar">
 	<h1>News &amp; Announcements</h1>
 	<div class="sbContent">
