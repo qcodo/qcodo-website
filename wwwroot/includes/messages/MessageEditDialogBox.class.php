@@ -15,7 +15,7 @@
 
 			$this->strTemplate = dirname(__FILE__) . '/MessageEditDialogBox.tpl.php';
 			$this->strCssClass = 'dialogbox';
-			$this->strWidth = '420px';
+			$this->strWidth = '620px';
 
 			$this->mctMessage = new MessageMetaControl($this, new Message());
 
@@ -34,7 +34,7 @@
 			$this->txtMessage->Required = true;
 			
 			$this->btnOkay = new QButton($this);
-			$this->btnOkay->CausesValidation = QCausesValidation::SiblingsOnly;
+			$this->btnOkay->CausesValidation = $this;
 
 			$this->btnCancel = new QLinkButton($this);
 			$this->btnCancel->Text = 'Cancel';
@@ -51,6 +51,11 @@
 			
 			$this->Display = false;
 			$this->blnMatteClickable = false;
+		}
+		
+		public function Validate() {
+			$this->btnOkay->Enabled = true;
+			return true;
 		}
 
 		public function btnOkay_Click($strFormId, $strControlId, $strParameter) {

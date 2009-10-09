@@ -1,7 +1,6 @@
 <?php
 	$dttLocalize = QApplication::LocalizeDateTime($_ITEM->PostDate);
 ?>
-<div class="messageBarRound <?php if ($_CONTROL->CurrentItemIndex % 2) print 'messageBarRoundAlternate'; ?>"><div class="a">&nbsp;</div><div class="b">&nbsp;</div><div class="c">&nbsp;</div><div class="d">&nbsp;</div><div class="e">&nbsp;</div></div>
 <div class="messageBar <?php if ($_CONTROL->CurrentItemIndex % 2) print 'messageBarAlternate'; ?>">
 	<div class="name">
 <?php
