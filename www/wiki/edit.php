@@ -1,5 +1,5 @@
 <?php
-	require('../includes/prepend.inc.php');
+	require('../../includes/prepend.inc.php');
 	QApplication::Authenticate();
 
 	// Sanitize the Path in the PathInfo

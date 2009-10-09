@@ -1,5 +1,5 @@
 <?php
-	require('../includes/prepend.inc.php');
+	require('../../includes/prepend.inc.php');
 	$objWikiImage = WikiImage::LoadByWikiVersionId(QApplication::PathInfo(0));
 
 	header('Content-Type: ' . ImageFileType::$ContentTypeArray[$objWikiImage->ImageFileTypeId]);

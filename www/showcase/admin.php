@@ -1,5 +1,5 @@
 <?php
-	require('../includes/prepend.inc.php');
+	require('../../includes/prepend.inc.php');
 	if (!ShowcaseItem::IsAdminableForPerson(QApplication::$Person)) QApplication::Redirect('/showcase/');
 
 	class QcodoForm extends QcodoWebsiteForm {

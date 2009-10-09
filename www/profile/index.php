@@ -1,5 +1,5 @@
 <?php
-	require('../includes/prepend.inc.php');
+	require('../../includes/prepend.inc.php');
 
 	if (QApplication::$Person)
 		QApplication::Redirect(QApplication::$Person->ViewProfileUrl);

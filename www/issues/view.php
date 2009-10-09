@@ -1,5 +1,5 @@
 <?php
-	require('../includes/prepend.inc.php');
+	require('../../includes/prepend.inc.php');
 	require(__INCLUDES__ . '/messages/MessagesPanel.class.php');
 
 	class QcodoForm extends QcodoWebsiteForm {

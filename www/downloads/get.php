@@ -1,5 +1,5 @@
 <?php
-	require('../includes/prepend.inc.php');
+	require('../../includes/prepend.inc.php');
 
 	$objCounter = Counter::LoadByToken(QApplication::PathInfo(0));
 	if (!$objCounter)

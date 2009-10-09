@@ -1,5 +1,5 @@
 <?php
-	require('../../../includes/prepend.inc.php');
+	require('../../../../includes/prepend.inc.php');
 	$intDatabaseIndex = $_POST['intDatabaseIndex'];
 	$strProfileData = $_POST['strProfileData'];
 	$strReferrer = $_POST['strReferrer'];

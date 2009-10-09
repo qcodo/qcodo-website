@@ -1,5 +1,5 @@
 <?php
-	require('../includes/prepend.inc.php');
+	require('../../includes/prepend.inc.php');
 
 	class QcodoForm extends QcodoWebsiteForm {
 		protected $strPageTitle = 'Showcase';

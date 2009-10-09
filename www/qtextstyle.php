@@ -1,5 +1,5 @@
 <?php
-	require(dirname(__FILE__) . '/includes/prepend.inc.php');
+	require(dirname(__FILE__) . '/../includes/prepend.inc.php');
 
 	//////////////////////////////////
 	// For purposes of the Dev Harness

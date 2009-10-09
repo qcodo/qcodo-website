@@ -3,9 +3,7 @@
 
 	switch (SERVER_INSTANCE) {
 		case 'dev':
-			define ('__DOCROOT__', '/var/www/qcodo-website/wwwroot');
-			define ('__VIRTUAL_DIRECTORY__', '');
-			define ('__SUBDIRECTORY__', '');
+			define ('__DOCROOT__', '/var/www/qcodo-website/www');
 
 			define('DB_CONNECTION_1', serialize(array(
 				'adapter' => 'MySqli5',
@@ -19,8 +17,22 @@
 			break;
 
 		case 'prod':
+			define ('__DOCROOT__', '/var/www/www.qcodo.com/www');
+
+			define('DB_CONNECTION_1', serialize(array(
+				'adapter' => 'MySqli5',
+				'server' => 'localhost',
+				'port' => null,
+				'database' => 'qcodo_website',
+				'username' => 'root',
+				'password' => '',
+				'encoding' => 'utf8',
+				'profiling' => false)));
 			break;
 	}
+
+	define ('__VIRTUAL_DIRECTORY__', '');
+	define ('__SUBDIRECTORY__', '');
 
 	define('ALLOW_REMOTE_ADMIN', false);
 	define ('__URL_REWRITE__', 'apache');
@@ -35,7 +47,7 @@
 	define('__QCODO_BUILDS__', '/var/www/qcodo_builds');
 
 	define ('__DEVTOOLS_CLI__', __DOCROOT__ . __SUBDIRECTORY__ . '/../_devtools_cli');
-	define ('__INCLUDES__', __DOCROOT__ .  __SUBDIRECTORY__ . '/includes');
+	define ('__INCLUDES__', __DOCROOT__ .  __SUBDIRECTORY__ . '/../includes');
 	define ('__QCODO__', __INCLUDES__ . '/qcodo');
 	define ('__QCODO_CORE__', __INCLUDES__ . '/qcodo/_core');
 	define ('__DATA_CLASSES__', __INCLUDES__ . '/data_classes');

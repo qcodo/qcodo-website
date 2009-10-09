@@ -1,5 +1,5 @@
 <?php
-	require('../includes/prepend.inc.php');
+	require('../../includes/prepend.inc.php');
 	$objWikiFile = WikiFile::LoadByWikiVersionId(QApplication::PathInfo(0));
 
 	if ($objWikiFile->FileName != QApplication::PathInfo(1))
