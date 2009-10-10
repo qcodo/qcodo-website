@@ -44,7 +44,7 @@
 	define('__WIKI_FILE_REPOSITORY__', __DATA_ASSETS__ . '/wiki_assets');
 	define('__SHOWCASE_IMAGES__', __DATA_ASSETS__ . '/showcase_images');
 
-	define('__QCODO_BUILDS__', '/var/www/qcodo_builds');
+	define('__QCODO_BUILDS__', '/var/qcodo_builds');
 
 	define ('__DEVTOOLS_CLI__', __DOCROOT__ . __SUBDIRECTORY__ . '/../_devtools_cli');
 	define ('__INCLUDES__', __DOCROOT__ .  __SUBDIRECTORY__ . '/../includes');
