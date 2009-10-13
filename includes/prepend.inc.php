@@ -473,6 +473,8 @@
 		session_start();
 		QApplication::InitializePerson();
 
+		// Other Setup
+		QMimeType::$MagicDatabaseFilePath = MIME_MAGIC_PATH;
 
 		//////////////////////////////////////////////
 		// Setup Internationalization and Localization (if applicable)

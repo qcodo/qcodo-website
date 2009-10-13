@@ -18,6 +18,7 @@
 			define('SMTP_SERVER', '127.0.0.1');
 			define('SMTP_EHLO', '127.0.0.1');
 			define('SMTP_TEST_MODE', true);
+			define('MIME_MAGIC_PATH', null);
 			break;
 
 		case 'prod':
@@ -36,6 +37,7 @@
 			define('SMTP_SERVER', '127.0.0.1');
 			define('SMTP_EHLO', '64.13.250.34');
 			define('SMTP_TEST_MODE', false);
+			define('MIME_MAGIC_PATH', '/usr/share/file/magic');
 			break;
 	}
 
