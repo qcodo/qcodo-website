@@ -212,7 +212,7 @@
 		 */
 		public function RefreshSearchIndex($objIndex = null) {
 			// Currently only implemented for Forum-based topic/message searches
-			if (!$this->TopicLink->TopicLinkTypeId != TopicLinkType::Forum) return;
+			if ($this->TopicLink->TopicLinkTypeId != TopicLinkType::Forum) return;
 
 			if (!$objIndex) {
 				$objIndex = new Zend_Search_Lucene(__SEARCH_INDEXES__ . '/topics');
