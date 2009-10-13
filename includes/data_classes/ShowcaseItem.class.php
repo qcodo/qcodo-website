@@ -27,7 +27,7 @@
 			return sprintf('ShowcaseItem Object %s',  $this->intId);
 		}
 
-		public static function IsAdminableForPerson(Person $objPerson) {
+		public static function IsAdminableForPerson(Person $objPerson = null) {
 			if (!QApplication::$Person) return false;
 			return (QApplication::$Person->PersonTypeId == PersonType::Administrator);
 		}
