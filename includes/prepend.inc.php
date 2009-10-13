@@ -367,6 +367,9 @@
 					if ($objWikiItem && $objWikiItem->CurrentWikiVersion && $objWikiItem->CurrentWikiVersion->WikiImage) {
 						$strReplacement = sprintf('<div class="wikiThumb wikiThumb%s"><a href="/wiki/image:%s" title="View This Image"><img src="%s"/></a></div>',
 							$strPosition, substr($strPath, 1), $objWikiItem->CurrentWikiVersion->WikiImage->GetThumbPath());
+					} else if ($objWikiItem) {
+						$strReplacement = sprintf('<div class="wikiThumb wikiThumb%s"><a href="/wiki/image:%s" title="Create This Image"><img src="/images/no_image.png"/></a></div>',
+							$strPosition, substr($strPath, 1));
 					} else {
 						$strReplacement = sprintf('<div class="wikiThumb wikiThumb%s"><a href="/wiki/edit.php/image:%s" title="Create This Image"><img src="/images/no_image.png"/></a></div>',
 							$strPosition, substr($strPath, 1));
