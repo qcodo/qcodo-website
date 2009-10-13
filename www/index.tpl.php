@@ -21,6 +21,21 @@
 		<p><strong>Current Dev Release</strong><br/><a href="/downloads/">Qcodo v<?php _p(QApplication::GetQcodoVersion(false)); ?></a><br/><?php _p(QApplication::GetQcodoVersionDate(false)->__toString('DDDD, MMMM D, YYYY')); ?></p>
 		<p><strong>Current Stable Release</strong><br/><a href="/downloads/">Qcodo v<?php _p(QApplication::GetQcodoVersion(true)); ?></a><br/><?php _p(QApplication::GetQcodoVersionDate(true)->__toString('DDDD, MMMM D, YYYY')); ?></p>
 	</div>
+	<br/>
+	<h1>Qcodo Development Information</h1>
+	<div class="sbContent">
+		<p>The most updated development and check-in information at <a href="http://www.github.com/qcodo">GitHub.com</a>:
+		<p>
+			<strong>Qcodo Framework</strong><br/>
+			<a href="<?php _p(Registry::GetValue('gitinfo_qcodo_url')); ?>" style="font-style: italic;"><?php _p(Registry::GetValue('gitinfo_qcodo_message')); ?></a><br/>
+			<?php _p(Registry::GetValue('gitinfo_qcodo_date')); ?>
+		</p>
+		<p>
+			<strong>Qcodo.com Website</strong><br/>
+			<a href="<?php _p(Registry::GetValue('gitinfo_qcodo-website_url')); ?>" style="font-style: italic;"><?php _p(Registry::GetValue('gitinfo_qcodo-website_message')); ?></a><br/>
+			<?php _p(Registry::GetValue('gitinfo_qcodo-website_date')); ?>
+		</p>
+	</div>
 </div>
 
 <h1>Code Less. Do More.</h1>

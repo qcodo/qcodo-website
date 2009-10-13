@@ -27,6 +27,23 @@
 			return sprintf('Registry Object %s',  $this->intId);
 		}
 
+		public static function SetValue($strName, $strValue) {
+			$strName = trim(strtolower($strName));
+			$objRegistry = Registry::LoadByName($strName);
+			if (!$objRegistry) {
+				$objRegistry = new Registry();
+				$objRegistry->Name = $strName;
+			}
+			$objRegistry->Value = $strValue;
+			$objRegistry->Save();
+		}
+
+		public static function GetValue($strName) {
+			$strName = trim(strtolower($strName));
+			$objRegistry = Registry::LoadByName($strName);
+			if ($objRegistry) return $objRegistry->Value;
+			else return null;
+		}
 
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...
