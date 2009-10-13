@@ -283,6 +283,28 @@
 			// Return
 			return $objWikiVersion;
 		}
+		
+		/**
+		 * If there is no "CurrentVersion" defined for this wikiItem, it will attempt to set it.
+		 * If no versions exist, it will DELETE this wiki item.
+		 * @return boolean whether this wiki item has been deleted
+		 */
+		public function CleanupOrphans() {
+			// Get the most recent version (if applicable)
+			$objWikiVersionArray = $this->GetWikiVersionArray(QQ::OrderBy(QQN::WikiVersion()->Id, false));
+			if (count($objWikiVersionArray) > 0) {
+				$this->SetCurrentVersion($objWikiVersionArray[0]);
+				return false;
+			} else {
+				if ($this->TopicLink) {
+					$objTopic = $this->TopicLink->GetTopic();
+					if ($objTopic) $objTopic->Delete(); 
+					$this->TopicLink->Delete();
+				}
+				$this->Delete();
+				return true;
+			}
+		}
 
 		/**
 		 * Sets the current version for this wiki with the passed in WikiVersion object

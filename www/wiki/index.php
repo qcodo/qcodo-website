@@ -48,6 +48,16 @@
 				return;
 			}
 
+			// cleanup any dangling versions (if applicable)
+			if (!$this->objWikiItem->CurrentWikiVersion) {
+				if ($this->objWikiItem->CleanupOrphans()) {
+					parent::Form_Create();
+					$this->strHtmlIncludeFilePath = dirname(__FILE__) . '/index_404.tpl.php';
+					$this->strPageTitle .= QApplication::$PathInfo;
+					return;
+				}
+			}
+
 			// Get the Wiki Version object based on the $_GET variables, or use CurrentWikiVersion if none passed in
 			$arrGetKeys = array_keys($_GET);
 			if (count($arrGetKeys) == 1)
