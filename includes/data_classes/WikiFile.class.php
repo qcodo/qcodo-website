@@ -63,9 +63,9 @@
 
 		public function DisplayDownloadLink($blnDisplayLinkToWiki = false) {
 			$strToReturn = sprintf('
-				<div style="float: left;">
+				<div class="wikiFileLeft">
 				<a href="%s" title="Download %s"><img src="/images/download.png"/></a>
-				</div><div style="float: left; font-size: 11px; padding-top: 25px; padding-left: 4px; ">
+				</div><div class="wikiFileRight">
 				<a href="%s" title="Download %s" style="font-size: 18px;">Download <strong>%s</strong></a>',
 				$this->GetDownloadUrl(), QApplication::HtmlEntities($this->FileName), $this->GetDownloadUrl(), QApplication::HtmlEntities($this->FileName), QApplication::HtmlEntities($this->FileName));
 
@@ -92,9 +92,9 @@
 			$strFullPath = WikiItem::GenerateFullPath($strPath, WikiItemType::File);
 
 			$strToReturn = sprintf('
-				<div style="float: left;">
+				<div class="wikiFileLeft">
 				<a href="/wiki/edit.php%s" title="Create Wiki File"><img src="/images/download_404.png"/></a>
-				</div><div style="float: left; font-size: 11px; padding-top: 25px; padding-left: 4px; ">
+				</div><div class="wikiFileRight">
 				<a href="/wiki/edit.php%s" title="Create Wiki File" style="font-size: 18px;">Create Wiki File for <strong>%s</strong></a>
 				</div><br clear="all"/>', $strFullPath, $strFullPath, $strPath
 			);
