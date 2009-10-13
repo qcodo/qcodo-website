@@ -27,6 +27,23 @@
 			return sprintf('EmailQueue Object %s',  $this->intId);
 		}
 
+		public function Send() {
+			$objMessage = new QEmailMessage();
+			$objMessage->From = $this->FromAddress;
+			$objMessage->To = $this->ToAddress;
+			$objMessage->Subject = $this->Subject;
+			$objMessage->Body = $this->Body;
+			$objMessage->HtmlBody = $this->Html;
+
+			try {
+				QEmailServer::Send($objMessage);
+				$this->Delete();
+			} catch (QCallerException $objExc) {
+				$this->ErrorMessage = $objExc->getMessage();
+				$this->ErrorFlag = true;
+				$this->Save();
+			}
+		}
 
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...

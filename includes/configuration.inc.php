@@ -14,6 +14,10 @@
 				'password' => '',
 				'encoding' => 'utf8',
 				'profiling' => false)));
+
+			define('SMTP_SERVER', '127.0.0.1');
+			define('SMTP_EHLO', '127.0.0.1');
+			define('SMTP_TEST_MODE', true);
 			break;
 
 		case 'prod':
@@ -28,6 +32,10 @@
 				'password' => '',
 				'encoding' => 'utf8',
 				'profiling' => false)));
+
+			define('SMTP_SERVER', '127.0.0.1');
+			define('SMTP_EHLO', '64.13.250.34');
+			define('SMTP_TEST_MODE', false);
 			break;
 	}
 
@@ -46,7 +54,7 @@
 
 	define('__QCODO_BUILDS__', '/var/qcodo_builds');
 
-	define ('__DEVTOOLS_CLI__', __DOCROOT__ . __SUBDIRECTORY__ . '/../_devtools_cli');
+	define ('__DEVTOOLS_CLI__', __DOCROOT__ . __SUBDIRECTORY__ . '/../cli');
 	define ('__INCLUDES__', __DOCROOT__ .  __SUBDIRECTORY__ . '/../includes');
 	define ('__QCODO__', __INCLUDES__ . '/qcodo');
 	define ('__QCODO_CORE__', __INCLUDES__ . '/qcodo/_core');
