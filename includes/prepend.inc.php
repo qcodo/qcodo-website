@@ -364,7 +364,7 @@
 					
 					$objWikiItem = WikiItem::LoadByPathWikiItemTypeId($strPath, WikiItemType::Image);
 
-					if ($objWikiItem) {
+					if ($objWikiItem && $objWikiItem->CurrentWikiVersion && $objWikiItem->CurrentWikiVersion->WikiImage) {
 						$strReplacement = sprintf('<div class="wikiThumb wikiThumb%s"><a href="/wiki/image:%s" title="View This Image"><img src="%s"/></a></div>',
 							$strPosition, substr($strPath, 1), $objWikiItem->CurrentWikiVersion->WikiImage->GetThumbPath());
 					} else {
@@ -385,7 +385,7 @@
 
 					$objWikiItem = WikiItem::LoadByPathWikiItemTypeId($strPath, WikiItemType::File);
 					
-					if ($objWikiItem) {
+					if ($objWikiItem && $objWikiItem->CurrentWikiVersion && $objWikiItem->CurrentWikiVersion->WikiFile) {
 						$strContent = str_replace($strTagToReplace, $objWikiItem->CurrentWikiVersion->WikiFile->DisplayDownloadLink(true), $strContent);
 					} else {
 						$strContent = str_replace($strTagToReplace, WikiFile::DisplayUploadNewLinkForPath($strPath), $strContent);
