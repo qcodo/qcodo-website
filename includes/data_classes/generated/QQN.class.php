@@ -97,6 +97,12 @@
 			return new QQNodePerson('person', null, null);
 		}
 		/**
+		 * @return QQNodeRegistry
+		 */
+		static public function Registry() {
+			return new QQNodeRegistry('registry', null, null);
+		}
+		/**
 		 * @return QQNodeShowcaseItem
 		 */
 		static public function ShowcaseItem() {

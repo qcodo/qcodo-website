@@ -111,6 +111,13 @@
 		QApplicationBase::$ClassFile['personmetacontrol'] = __DATA_META_CONTROLS__ . '/PersonMetaControl.class.php';
 		QApplicationBase::$ClassFile['persondatagrid'] = __DATA_META_CONTROLS__ . '/PersonDataGrid.class.php';
 
+	// ClassPaths for the Registry class
+		QApplicationBase::$ClassFile['registry'] = __DATA_CLASSES__ . '/Registry.class.php';
+		QApplicationBase::$ClassFile['qqnoderegistry'] = __DATA_CLASSES__ . '/Registry.class.php';
+		QApplicationBase::$ClassFile['qqreversereferencenoderegistry'] = __DATA_CLASSES__ . '/Registry.class.php';
+		QApplicationBase::$ClassFile['registrymetacontrol'] = __DATA_META_CONTROLS__ . '/RegistryMetaControl.class.php';
+		QApplicationBase::$ClassFile['registrydatagrid'] = __DATA_META_CONTROLS__ . '/RegistryDataGrid.class.php';
+
 	// ClassPaths for the ShowcaseItem class
 		QApplicationBase::$ClassFile['showcaseitem'] = __DATA_CLASSES__ . '/ShowcaseItem.class.php';
 		QApplicationBase::$ClassFile['qqnodeshowcaseitem'] = __DATA_CLASSES__ . '/ShowcaseItem.class.php';
