@@ -11,6 +11,6 @@
 
 <br/>
 
-<?php $_FORM->btnOkay->Render('Text=Update'); ?>
+<?php $_FORM->btnOkay->Render('Text=Submit'); ?>
 &nbsp;or&nbsp;
 <?php $_FORM->btnCancel->Render('Text=Cancel'); ?>

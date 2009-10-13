@@ -28,9 +28,10 @@
 		}
 
 		public static function IsAdminableForPerson(Person $objPerson) {
+			if (!QApplication::$Person) return false;
 			return (QApplication::$Person->PersonTypeId == PersonType::Administrator);
 		}
-		
+
 		public function GetImageFolder() {
 			return __SHOWCASE_IMAGES__ . '/' . $this->intId;
 		}
