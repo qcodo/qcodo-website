@@ -24,6 +24,8 @@
 	 * property-read QLabel $VersionNumberLabel
 	 * property QTextBox $NotesControl
 	 * property-read QLabel $NotesLabel
+	 * property QTextBox $QcodoVersionControl
+	 * property-read QLabel $QcodoVersionLabel
 	 * property QDateTimePicker $PostDateControl
 	 * property-read QLabel $PostDateLabel
 	 * property QIntegerTextBox $DownloadCountControl
@@ -44,6 +46,7 @@
 		protected $lstPackageContribution;
 		protected $txtVersionNumber;
 		protected $txtNotes;
+		protected $txtQcodoVersion;
 		protected $calPostDate;
 		protected $txtDownloadCount;
 
@@ -51,6 +54,7 @@
 		protected $lblPackageContributionId;
 		protected $lblVersionNumber;
 		protected $lblNotes;
+		protected $lblQcodoVersion;
 		protected $lblPostDate;
 		protected $lblDownloadCount;
 
@@ -254,6 +258,31 @@
 		}
 
 		/**
+		 * Create and setup QTextBox txtQcodoVersion
+		 * @param string $strControlId optional ControlId to use
+		 * @return QTextBox
+		 */
+		public function txtQcodoVersion_Create($strControlId = null) {
+			$this->txtQcodoVersion = new QTextBox($this->objParentObject, $strControlId);
+			$this->txtQcodoVersion->Name = QApplication::Translate('Qcodo Version');
+			$this->txtQcodoVersion->Text = $this->objPackageVersion->QcodoVersion;
+			$this->txtQcodoVersion->MaxLength = PackageVersion::QcodoVersionMaxLength;
+			return $this->txtQcodoVersion;
+		}
+
+		/**
+		 * Create and setup QLabel lblQcodoVersion
+		 * @param string $strControlId optional ControlId to use
+		 * @return QLabel
+		 */
+		public function lblQcodoVersion_Create($strControlId = null) {
+			$this->lblQcodoVersion = new QLabel($this->objParentObject, $strControlId);
+			$this->lblQcodoVersion->Name = QApplication::Translate('Qcodo Version');
+			$this->lblQcodoVersion->Text = $this->objPackageVersion->QcodoVersion;
+			return $this->lblQcodoVersion;
+		}
+
+		/**
 		 * Create and setup QDateTimePicker calPostDate
 		 * @param string $strControlId optional ControlId to use
 		 * @return QDateTimePicker
@@ -341,6 +370,9 @@
 			if ($this->txtNotes) $this->txtNotes->Text = $this->objPackageVersion->Notes;
 			if ($this->lblNotes) $this->lblNotes->Text = $this->objPackageVersion->Notes;
 
+			if ($this->txtQcodoVersion) $this->txtQcodoVersion->Text = $this->objPackageVersion->QcodoVersion;
+			if ($this->lblQcodoVersion) $this->lblQcodoVersion->Text = $this->objPackageVersion->QcodoVersion;
+
 			if ($this->calPostDate) $this->calPostDate->DateTime = $this->objPackageVersion->PostDate;
 			if ($this->lblPostDate) $this->lblPostDate->Text = sprintf($this->objPackageVersion->PostDate) ? $this->objPackageVersion->__toString($this->strPostDateDateTimeFormat) : null;
 
@@ -373,6 +405,7 @@
 				if ($this->lstPackageContribution) $this->objPackageVersion->PackageContributionId = $this->lstPackageContribution->SelectedValue;
 				if ($this->txtVersionNumber) $this->objPackageVersion->VersionNumber = $this->txtVersionNumber->Text;
 				if ($this->txtNotes) $this->objPackageVersion->Notes = $this->txtNotes->Text;
+				if ($this->txtQcodoVersion) $this->objPackageVersion->QcodoVersion = $this->txtQcodoVersion->Text;
 				if ($this->calPostDate) $this->objPackageVersion->PostDate = $this->calPostDate->DateTime;
 				if ($this->txtDownloadCount) $this->objPackageVersion->DownloadCount = $this->txtDownloadCount->Text;
 
@@ -441,6 +474,12 @@
 				case 'NotesLabel':
 					if (!$this->lblNotes) return $this->lblNotes_Create();
 					return $this->lblNotes;
+				case 'QcodoVersionControl':
+					if (!$this->txtQcodoVersion) return $this->txtQcodoVersion_Create();
+					return $this->txtQcodoVersion;
+				case 'QcodoVersionLabel':
+					if (!$this->lblQcodoVersion) return $this->lblQcodoVersion_Create();
+					return $this->lblQcodoVersion;
 				case 'PostDateControl':
 					if (!$this->calPostDate) return $this->calPostDate_Create();
 					return $this->calPostDate;
@@ -483,6 +522,8 @@
 						return ($this->txtVersionNumber = QType::Cast($mixValue, 'QControl'));
 					case 'NotesControl':
 						return ($this->txtNotes = QType::Cast($mixValue, 'QControl'));
+					case 'QcodoVersionControl':
+						return ($this->txtQcodoVersion = QType::Cast($mixValue, 'QControl'));
 					case 'PostDateControl':
 						return ($this->calPostDate = QType::Cast($mixValue, 'QControl'));
 					case 'DownloadCountControl':

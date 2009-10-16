@@ -278,6 +278,7 @@
 				case 'PackageContribution': return QQN::PackageVersion()->PackageContribution;
 				case 'VersionNumber': return QQN::PackageVersion()->VersionNumber;
 				case 'Notes': return QQN::PackageVersion()->Notes;
+				case 'QcodoVersion': return QQN::PackageVersion()->QcodoVersion;
 				case 'PostDate': return QQN::PackageVersion()->PostDate;
 				case 'DownloadCount': return QQN::PackageVersion()->DownloadCount;
 				default: throw new QCallerException('Simple Property not found in PackageVersionDataGrid content: ' . $mixContent);

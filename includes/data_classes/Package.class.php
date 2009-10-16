@@ -100,6 +100,11 @@
 		 * @return PackageContribution
 		 */
 		public function PostContributionVersion(Person $objPerson, $strNotes, $strPayload, $strPayloadCompressed, QDateTime $dttPostDate = null) {
+			// Parse out the Qcodo Version Number from the Payload
+			$strQcodoVersionNumber = substr($strPayload, 0, strpos($strPayload, '|'));
+			preg_match('/[0-9]+\\.[0-9]+\\.[0-9]+/', $strQcodoVersionNumber, $arrMatches);
+			if ($arrMatches[0] != $strQcodoVersionNumber) throw new Exception('Invalid Qcodo Version Number in Payload: ' . $strQcodoVersionNumber);
+
 			// Get or create PackageContribution
 			$objContribution = PackageContribution::LoadByPackageIdPersonId($this->intId, $objPerson->Id);
 
@@ -113,6 +118,7 @@
 			$objVersion = new PackageVersion();
 			$objVersion->PackageContribution = $objContribution;
 			$objVersion->Notes = $strNotes;
+			$objVersion->QcodoVersion = $strQcodoVersionNumber;
 			$objVersion->PostDate = ($dttPostDate) ? $dttPostDate : QDateTime::Now();
 			$objVersion->DownloadCount = 0;
 			$objVersion->VersionNumber = $objContribution->CountPackageVersions() + 1;

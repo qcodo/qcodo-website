@@ -19,6 +19,7 @@
 	 * @property integer $PackageContributionId the value for intPackageContributionId (Not Null)
 	 * @property integer $VersionNumber the value for intVersionNumber (Not Null)
 	 * @property string $Notes the value for strNotes 
+	 * @property string $QcodoVersion the value for strQcodoVersion 
 	 * @property QDateTime $PostDate the value for dttPostDate 
 	 * @property integer $DownloadCount the value for intDownloadCount 
 	 * @property PackageContribution $PackageContribution the value for the PackageContribution object referenced by intPackageContributionId (Not Null)
@@ -62,6 +63,15 @@
 		 */
 		protected $strNotes;
 		const NotesDefault = null;
+
+
+		/**
+		 * Protected member variable that maps to the database column package_version.qcodo_version
+		 * @var string strQcodoVersion
+		 */
+		protected $strQcodoVersion;
+		const QcodoVersionMaxLength = 40;
+		const QcodoVersionDefault = null;
 
 
 		/**
@@ -395,6 +405,7 @@
 			$objBuilder->AddSelectItem($strTableName, 'package_contribution_id', $strAliasPrefix . 'package_contribution_id');
 			$objBuilder->AddSelectItem($strTableName, 'version_number', $strAliasPrefix . 'version_number');
 			$objBuilder->AddSelectItem($strTableName, 'notes', $strAliasPrefix . 'notes');
+			$objBuilder->AddSelectItem($strTableName, 'qcodo_version', $strAliasPrefix . 'qcodo_version');
 			$objBuilder->AddSelectItem($strTableName, 'post_date', $strAliasPrefix . 'post_date');
 			$objBuilder->AddSelectItem($strTableName, 'download_count', $strAliasPrefix . 'download_count');
 		}
@@ -468,6 +479,8 @@
 			$objToReturn->intVersionNumber = $objDbRow->GetColumn($strAliasName, 'Integer');
 			$strAliasName = array_key_exists($strAliasPrefix . 'notes', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'notes'] : $strAliasPrefix . 'notes';
 			$objToReturn->strNotes = $objDbRow->GetColumn($strAliasName, 'Blob');
+			$strAliasName = array_key_exists($strAliasPrefix . 'qcodo_version', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'qcodo_version'] : $strAliasPrefix . 'qcodo_version';
+			$objToReturn->strQcodoVersion = $objDbRow->GetColumn($strAliasName, 'VarChar');
 			$strAliasName = array_key_exists($strAliasPrefix . 'post_date', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'post_date'] : $strAliasPrefix . 'post_date';
 			$objToReturn->dttPostDate = $objDbRow->GetColumn($strAliasName, 'DateTime');
 			$strAliasName = array_key_exists($strAliasPrefix . 'download_count', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'download_count'] : $strAliasPrefix . 'download_count';
@@ -642,12 +655,14 @@
 							`package_contribution_id`,
 							`version_number`,
 							`notes`,
+							`qcodo_version`,
 							`post_date`,
 							`download_count`
 						) VALUES (
 							' . $objDatabase->SqlVariable($this->intPackageContributionId) . ',
 							' . $objDatabase->SqlVariable($this->intVersionNumber) . ',
 							' . $objDatabase->SqlVariable($this->strNotes) . ',
+							' . $objDatabase->SqlVariable($this->strQcodoVersion) . ',
 							' . $objDatabase->SqlVariable($this->dttPostDate) . ',
 							' . $objDatabase->SqlVariable($this->intDownloadCount) . '
 						)
@@ -668,6 +683,7 @@
 							`package_contribution_id` = ' . $objDatabase->SqlVariable($this->intPackageContributionId) . ',
 							`version_number` = ' . $objDatabase->SqlVariable($this->intVersionNumber) . ',
 							`notes` = ' . $objDatabase->SqlVariable($this->strNotes) . ',
+							`qcodo_version` = ' . $objDatabase->SqlVariable($this->strQcodoVersion) . ',
 							`post_date` = ' . $objDatabase->SqlVariable($this->dttPostDate) . ',
 							`download_count` = ' . $objDatabase->SqlVariable($this->intDownloadCount) . '
 						WHERE
@@ -751,6 +767,7 @@
 			$this->PackageContributionId = $objReloaded->PackageContributionId;
 			$this->intVersionNumber = $objReloaded->intVersionNumber;
 			$this->strNotes = $objReloaded->strNotes;
+			$this->strQcodoVersion = $objReloaded->strQcodoVersion;
 			$this->dttPostDate = $objReloaded->dttPostDate;
 			$this->intDownloadCount = $objReloaded->intDownloadCount;
 		}
@@ -800,6 +817,13 @@
 					 * @return string
 					 */
 					return $this->strNotes;
+
+				case 'QcodoVersion':
+					/**
+					 * Gets the value for strQcodoVersion 
+					 * @return string
+					 */
+					return $this->strQcodoVersion;
 
 				case 'PostDate':
 					/**
@@ -917,6 +941,19 @@
 					 */
 					try {
 						return ($this->strNotes = QType::Cast($mixValue, QType::String));
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
+				case 'QcodoVersion':
+					/**
+					 * Sets the value for strQcodoVersion 
+					 * @param string $mixValue
+					 * @return string
+					 */
+					try {
+						return ($this->strQcodoVersion = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
 						$objExc->IncrementOffset();
 						throw $objExc;
@@ -1175,6 +1212,7 @@
 			$strToReturn .= '<element name="PackageContribution" type="xsd1:PackageContribution"/>';
 			$strToReturn .= '<element name="VersionNumber" type="xsd:int"/>';
 			$strToReturn .= '<element name="Notes" type="xsd:string"/>';
+			$strToReturn .= '<element name="QcodoVersion" type="xsd:string"/>';
 			$strToReturn .= '<element name="PostDate" type="xsd:dateTime"/>';
 			$strToReturn .= '<element name="DownloadCount" type="xsd:int"/>';
 			$strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
@@ -1209,6 +1247,8 @@
 				$objToReturn->intVersionNumber = $objSoapObject->VersionNumber;
 			if (property_exists($objSoapObject, 'Notes'))
 				$objToReturn->strNotes = $objSoapObject->Notes;
+			if (property_exists($objSoapObject, 'QcodoVersion'))
+				$objToReturn->strQcodoVersion = $objSoapObject->QcodoVersion;
 			if (property_exists($objSoapObject, 'PostDate'))
 				$objToReturn->dttPostDate = new QDateTime($objSoapObject->PostDate);
 			if (property_exists($objSoapObject, 'DownloadCount'))
@@ -1267,6 +1307,8 @@
 					return new QQNode('version_number', 'VersionNumber', 'integer', $this);
 				case 'Notes':
 					return new QQNode('notes', 'Notes', 'string', $this);
+				case 'QcodoVersion':
+					return new QQNode('qcodo_version', 'QcodoVersion', 'string', $this);
 				case 'PostDate':
 					return new QQNode('post_date', 'PostDate', 'QDateTime', $this);
 				case 'DownloadCount':
@@ -1303,6 +1345,8 @@
 					return new QQNode('version_number', 'VersionNumber', 'integer', $this);
 				case 'Notes':
 					return new QQNode('notes', 'Notes', 'string', $this);
+				case 'QcodoVersion':
+					return new QQNode('qcodo_version', 'QcodoVersion', 'string', $this);
 				case 'PostDate':
 					return new QQNode('post_date', 'PostDate', 'QDateTime', $this);
 				case 'DownloadCount':

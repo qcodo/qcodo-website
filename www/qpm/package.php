@@ -25,7 +25,7 @@
 			$this->dtgContributions->SetDataBinder('dtgContributions_Bind');
 			$this->dtgContributions->AlternateRowStyle->CssClass = 'alternate';
 
-			$this->dtgContributions->MetaAddColumn(QQN::PackageContribution()->Person->Username, 'Name=QPM Path for Version', 'Html=<?= $_FORM->RenderPath($_ITEM); ?>','Width=350px', 'VerticalAlign=top', 'FontNames=Monaco, Courier, Courier New,Monospaced');
+			$this->dtgContributions->MetaAddColumn(QQN::PackageContribution()->Person->Username, 'Name=QPM Path for Version', 'Html=<?= $_FORM->RenderPath($_ITEM); ?>','Width=350px', 'VerticalAlign=top', 'FontNames=Monaco, Courier, Courier New,Monospaced', 'HtmlEntities=false');
 			$this->dtgContributions->MetaAddColumn(QQN::PackageContribution()->CurrentPackageVersion->Notes, 'Name=Version Notes', 'Width=400px', 'VerticalAlign=top','CssClass=small');
 			$this->dtgContributions->MetaAddColumn('CurrentPostDate', 'Name=Posted', 'Width=100px', 'VerticalAlign=top');
 			$this->dtgContributions->MetaAddColumn(QQN::PackageContribution()->Person->DisplayName, 'Name=By', 'Html=<?= $_FORM->RenderPostedBy($_ITEM); ?>', 'HtmlEntities=false', 'Width=100px', 'CssClass=reverseLink', 'VerticalAlign=top');
@@ -70,7 +70,9 @@
 		}
 
 		public function RenderPath(PackageContribution $objContribution) {
-			return $objContribution->Person->Username . '/' . $objContribution->Package->Token;
+			return QApplication::HtmlEntities($objContribution->Person->Username) . '/' . QApplication::HtmlEntities($objContribution->Package->Token) .
+				'<br/><span style="font-size: 10px; font-family: arial, helvetica, sans-serif;">built on <strong>Qcodo v' .
+				QApplication::HtmlEntities($objContribution->CurrentPackageVersion->QcodoVersion) . '</strong></span>';
 		}
 		protected function dtgContributions_Bind() {
 			$objCondition = QQ::Equal(QQN::PackageContribution()->PackageId, $this->objPackage->Id);

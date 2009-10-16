@@ -59,12 +59,16 @@
 			// Create a gz-compatable payload
 			$strPayloadCompressed = gzencode($strPayload, 9);
 
-			$objContribution = $objPackage->PostContributionVersion($objPerson, null, $strPayload, $strPayloadCompressed, null);
-			
+			try {
+				$objContribution = $objPackage->PostContributionVersion($objPerson, null, $strPayload, $strPayloadCompressed, null);
+			} catch (Exception $objExc) {
+				return 'a server exception was thrown by the qpm webservice: ' . $objExc->getMessage();
+			}
+
 			if ($objContribution) {
-				printf('package %s/%s uploaded successfully', $objPerson->Username, $objPackage->Token);
+				return sprintf('package %s/%s uploaded successfully', $objPerson->Username, $objPackage->Token);
 			} else {
-				printf('an error has occurred, package not uploaded');
+				return 'an unknown error has occurred, package not uploaded';
 			}
 		}
 	}
