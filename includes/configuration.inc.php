@@ -7,7 +7,7 @@
 
 			define('DB_CONNECTION_1', serialize(array(
 				'adapter' => 'MySqli5',
-				'server' => 'localhost',
+				'server' => '127.0.0.1',
 				'port' => null,
 				'database' => 'qcodo_website',
 				'username' => 'root',
