@@ -37,6 +37,36 @@
 			if ($objPerson->IsPasswordValid($strPassword)) return $objPerson->Id;
 			return 0;
 		}
+
+
+		/**
+		 * This performs the actual upload of the package's payload
+		 * @param string $strPackageName
+		 * @param string $strUsername
+		 * @param string $strPassword
+		 * @param boolean $blnGzCompress
+		 * @param string $strPayload
+		 * @return string
+		 */
+		public function UploadPackage($strPackageName, $strUsername, $strPassword, $blnGzCompress, $strPayload) {
+			$objPerson = Person::Load($this->Login($strUsername, $strPassword));
+			$objPackage = Package::Load($this->GetPackageId($strPackageName));
+
+			if ($blnGzCompress) {
+				$strPayload = gzuncompress($strPayload);
+			}
+
+			// Create a gz-compatable payload
+			$strPayloadCompressed = gzencode($strPayload, 9);
+
+			$objContribution = $objPackage->PostContributionVersion($objPerson, null, $strPayload, $strPayloadCompressed, null);
+			
+			if ($objContribution) {
+				printf('package %s/%s uploaded successfully', $objPerson->Username, $objPackage->Token);
+			} else {
+				printf('an error has occurred, package not uploaded');
+			}
+		}
 	}
 
 	if (QApplication::PathInfo(0)) {
@@ -51,6 +81,14 @@
 				break;
 			case 'GetPackageId':
 				print $objService->GetPackageId(QApplication::QueryString('name'));
+				break;
+			case 'UploadPackage':
+				$strPackageName = QApplication::QueryString('name');
+				$strUsername = QApplication::QueryString('u');
+				$strPassword = QApplication::QueryString('p');
+				$blnGzCompress = QApplication::QueryString('gz');
+				$strPayload = file_get_contents('php://input');
+				print $objService->UploadPackage($strPackageName, $strUsername, $strPassword, $blnGzCompress, $strPayload);
 				break;
 		}
 	} else

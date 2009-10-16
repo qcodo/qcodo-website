@@ -27,7 +27,26 @@
 			return sprintf('PackageVersion Object %s',  $this->intId);
 		}
 
+		public function SaveFile($strPayload, $strPayloadCompressed) {
+			QApplication::MakeDirectory($this->GetFolder(), 0777);
+			file_put_contents($this->GetFilePath(), $strPayload);
+			file_put_contents($this->GetFilePathCompressed(), $strPayloadCompressed, FILE_BINARY);
+			chmod($this->GetFilePath(), 0666);
+			chmod($this->GetFilePathCompressed(), 0666);
+		}
 
+		public function GetFolder() {
+			return __QPM_PACKAGES__ . '/' . $this->PackageContribution->Package->Id . '/' . $this->PackageContribution->Id;
+		}
+
+		public function GetFilePathCompressed() {
+			return $this->GetFolder() . '/' . $this->VersionNumber . '.qpm.gz';
+		}
+
+		public function GetFilePath() {
+			return $this->GetFolder() . '/' . $this->VersionNumber . '.qpm';
+		}
+		
 		// Override or Create New Load/Count methods
 		// (For obvious reasons, these methods are commented out...
 		// but feel free to use these as a starting point)

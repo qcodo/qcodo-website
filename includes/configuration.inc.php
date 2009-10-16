@@ -53,6 +53,7 @@
 	define('__SEARCH_INDEXES__', __DATA_ASSETS__ . '/search_indexes');
 	define('__WIKI_FILE_REPOSITORY__', __DATA_ASSETS__ . '/wiki_assets');
 	define('__SHOWCASE_IMAGES__', __DATA_ASSETS__ . '/showcase_images');
+	define('__QPM_PACKAGES__', __DATA_ASSETS__ . '/qpm_packages');
 
 	define('__QCODO_BUILDS__', '/var/qcodo_builds');
 

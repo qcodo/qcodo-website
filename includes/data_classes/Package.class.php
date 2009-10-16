@@ -99,7 +99,7 @@
 		 * @param QDateTime $dttPostDate optional, uses Now() if not specified
 		 * @return PackageContribution
 		 */
-		public function PostContributionVersion(Person $objPerson, $strNotes, QDateTime $dttPostDate = null) {
+		public function PostContributionVersion(Person $objPerson, $strNotes, $strPayload, $strPayloadCompressed, QDateTime $dttPostDate = null) {
 			// Get or create PackageContribution
 			$objContribution = PackageContribution::LoadByPackageIdPersonId($this->intId, $objPerson->Id);
 
@@ -125,7 +125,8 @@
 			$this->LastPostDate = $objVersion->PostDate;
 			$this->LastPostedByPerson = $objPerson;
 			$this->Save();
-			
+
+			$objVersion->SaveFile($strPayload, $strPayloadCompressed);
 			return $objContribution;
 		}
 
