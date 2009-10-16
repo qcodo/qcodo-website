@@ -70,14 +70,14 @@
 		}
 		
 		public function RenderNotes(PackageContribution $objContribution) {
-			$strNotes = trim(QApplication::HtmlEntities($objContribution->CurrentPackageVersion->Notes));
-			$strNotes .= "\r\n\r\n";
-			$strNotes .= sprintf('QPM Package File Count | <strong>%s</strong> new file%s | <strong>%s</strong> changed file%s',
+			$strNotes = sprintf('QPM Package File Count | <strong>%s</strong> new file%s | <strong>%s</strong> changed file%s',
 				$objContribution->CurrentPackageVersion->NewFileCount,
 				($objContribution->CurrentPackageVersion->NewFileCount == 1) ? '' : 's',
 				$objContribution->CurrentPackageVersion->ChangedFileCount,
 				($objContribution->CurrentPackageVersion->ChangedFileCount == 1) ? '' : 's'
 			);
+			$strNotes .= "\r\n\r\n";
+			$strNotes .= QApplication::HtmlEntities($objContribution->CurrentPackageVersion->Notes);
 			$strNotes = trim($strNotes);
 			return nl2br($strNotes);
 		}

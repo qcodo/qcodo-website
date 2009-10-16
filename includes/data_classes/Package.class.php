@@ -95,26 +95,46 @@
 		/**
 		 * Posts a new version of this package for a given person.
 		 * @param Person $objPerson
-		 * @param $strNotes
+		 * @param string $strQpmXml
 		 * @param QDateTime $dttPostDate optional, uses Now() if not specified
 		 * @return PackageContribution
 		 */
-		public function PostContributionVersion(Person $objPerson, $strNotes, $strPayload, $strPayloadCompressed, QDateTime $dttPostDate = null) {
-			// Parse out the Qcodo Version Number, NewFileCount and ChangedFileCount from the FirstLine of the Payload
-			$strFirstLine = trim(substr($strPayload, 0, strpos($strPayload, "\n")));
-			$strParts = explode('|', $strFirstLine);
-			$strQcodoVersionNumber = $strParts[0];
-			$intNewFileCount = $strParts[1];
-			$intChangedFileCount = $strParts[2];
-			$strQcodoVersionNumber = substr($strPayload, 0, strpos($strPayload, '|'));
-			preg_match('/[0-9]+\\.[0-9]+\\.[0-9]+/', $strQcodoVersionNumber, $arrMatches);
-			if ($arrMatches[0] != $strQcodoVersionNumber) throw new Exception('Invalid Qcodo Version Number in Payload: ' . $strFirstLine);
-			if (!is_numeric($intNewFileCount)) throw new Exception('Invalid New File Count in Payload: ' . $strFirstLine);
-			if (!is_numeric($intChangedFileCount)) throw new Exception('Invalid Changed File Count in Payload: ' . $strFirstLine);
-
-			// Get or create PackageContribution
+		public function PostContributionVersion(Person $objPerson, $strQpmXml, QDateTime $dttPostDate = null) {
+			// Get PackageContribution
 			$objContribution = PackageContribution::LoadByPackageIdPersonId($this->intId, $objPerson->Id);
 
+			// Parse the QPM XML
+			try {
+				$objQpmXml = new SimpleXMLElement($strQpmXml);
+			} catch (Exception $objExc) { throw new Exception('Invalid QPM Schema'); }
+
+			// Compress the XML
+			$strQpmXmlCompressed = gzencode($strQpmXml, 9);
+
+			// Validate the XML
+			$strQpmVersion = (string) $objQpmXml['version'];
+			if ($strQpmVersion != '1.0') throw new Exception('Invalid QPM Schema Version: ' . $strQpmVersion);
+
+			// Pull out the rest of the data and validate it all
+			$strPackageName = (string) $objQpmXml->package['name'];
+			$strPackageUsername = (string) $objQpmXml->package['user'];
+			$intVersionNumber = (string) $objQpmXml->package['version'];
+			$strQcodoVersionNumber = (string) $objQpmXml->package['qcodoVersion'];
+			$strNotes = (string) $objQpmXml->package->notes;
+			$intNewFileCount = count($objQpmXml->package->newFiles->children());
+			$intChangedFileCount = count($objQpmXml->package->changedFiles->children());
+
+			if ($strPackageName != $this->Token) throw new Exception('Invalid QPM Package Name: ' . $strPackageName);
+			if ($strPackageUsername != $objPerson->Username) throw new Exception('Invalid QPM Package User: ' . $strPackageUsername);
+			if ($objContribution) {
+				if ($intVersionNumber != ($objContribution->CountPackageVersions() + 1)) throw new Exception('Invalid QPM Package Version: ' . $intVersionNumber);
+			} else {
+				if ($intVersionNumber != 1) throw new Exception('Invalid QPM Package Version: ' . $intVersionNumber);
+			}
+			preg_match('/[0-9]+\\.[0-9]+\\.[0-9]+/', $strQcodoVersionNumber, $arrMatches);
+			if ($arrMatches[0] != $strQcodoVersionNumber) throw new Exception('Invalid Qcodo Version Number in QpmXml: ' . $strQcodoVersionNumber);
+
+			// Create PackageContribution (if none exists)
 			if (!$objContribution) {
 				$objContribution = new PackageContribution();
 				$objContribution->Package = $this;
@@ -130,7 +150,7 @@
 			$objVersion->ChangedFileCount = $intChangedFileCount;
 			$objVersion->PostDate = ($dttPostDate) ? $dttPostDate : QDateTime::Now();
 			$objVersion->DownloadCount = 0;
-			$objVersion->VersionNumber = $objContribution->CountPackageVersions() + 1;
+			$objVersion->VersionNumber = $intVersionNumber;
 			$objVersion->Save();
 
 			$objContribution->CurrentPackageVersion = $objVersion;
@@ -141,7 +161,7 @@
 			$this->LastPostedByPerson = $objPerson;
 			$this->Save();
 
-			$objVersion->SaveFile($strPayload, $strPayloadCompressed);
+			$objVersion->SaveFile($strQpmXml, $strQpmXmlCompressed);
 			return $objContribution;
 		}
 

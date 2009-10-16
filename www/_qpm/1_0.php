@@ -45,22 +45,19 @@
 		 * @param string $strUsername
 		 * @param string $strPassword
 		 * @param boolean $blnGzCompress
-		 * @param string $strPayload
+		 * @param string $strQpmXml
 		 * @return string
 		 */
-		public function UploadPackage($strPackageName, $strUsername, $strPassword, $blnGzCompress, $strPayload) {
+		public function UploadPackage($strPackageName, $strUsername, $strPassword, $blnGzCompress, $strQpmXml) {
 			$objPerson = Person::Load($this->Login($strUsername, $strPassword));
 			$objPackage = Package::Load($this->GetPackageId($strPackageName));
 
 			if ($blnGzCompress) {
-				$strPayload = gzuncompress($strPayload);
+				$strQpmXml = gzuncompress($strQpmXml);
 			}
 
-			// Create a gz-compatable payload
-			$strPayloadCompressed = gzencode($strPayload, 9);
-
 			try {
-				$objContribution = $objPackage->PostContributionVersion($objPerson, null, $strPayload, $strPayloadCompressed, null);
+				$objContribution = $objPackage->PostContributionVersion($objPerson, $strQpmXml, null);
 			} catch (Exception $objExc) {
 				return 'a server exception was thrown by the qpm webservice: ' . $objExc->getMessage();
 			}
@@ -91,8 +88,8 @@
 				$strUsername = QApplication::QueryString('u');
 				$strPassword = QApplication::QueryString('p');
 				$blnGzCompress = QApplication::QueryString('gz');
-				$strPayload = file_get_contents('php://input');
-				print $objService->UploadPackage($strPackageName, $strUsername, $strPassword, $blnGzCompress, $strPayload);
+				$strQpmXml = file_get_contents('php://input');
+				print $objService->UploadPackage($strPackageName, $strUsername, $strPassword, $blnGzCompress, $strQpmXml);
 				break;
 		}
 	} else

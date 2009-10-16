@@ -5,13 +5,13 @@
 	// Define Amounts to Generate
 	define('GENERATE_PEOPLE', 200);
 	define('GENERATE_QPM', 150);
-	define('GENERATE_SHOWCASE', 50);
-	define('GENERATE_WIKI', 250);
-	define('GENERATE_ISSUES', 100);
-	define('GENERATE_FORUM_TOPICS', 100);
-	define('GENERATE_MESSAGES_PER_TOPIC_UBOUND', 50);
-	define('GENERATE_MESSAGES_PER_ISSUE_UBOUND', 25);
-	define('GENERATE_MESSAGES_PER_WIKI_UBOUND', 25);
+	define('GENERATE_SHOWCASE', 0);//50);
+	define('GENERATE_WIKI', 0);//250);
+	define('GENERATE_ISSUES', 0);//100);
+	define('GENERATE_FORUM_TOPICS', 0);//100);
+	define('GENERATE_MESSAGES_PER_TOPIC_UBOUND', 0);//50);
+	define('GENERATE_MESSAGES_PER_ISSUE_UBOUND', 0);//25);
+	define('GENERATE_MESSAGES_PER_WIKI_UBOUND', 0);//25);
 	define('GENERATE_MESSAGES_PER_PACKAGE_UBOUND', 25);
 	
 	// Example optional IssueFieldOption values for optional IssueFields loaded from data.sql
@@ -394,18 +394,37 @@
 			$dttPostDate = QDataGen::GenerateDateTime($dttStartDate, $dttEndRange);
 
 			for ($intVersion = 0; $intVersion < $intVersionCount; $intVersion++) {
-				$strNotes = QDataGen::GenerateContent(rand(1, 3), 20, 80);
 				// Randomize a Qcodo Version
-				$strPayload = rand(0,99) . '.' . rand(0,99) . '.' . rand(0,99) . '|';
-				// Randomize a New and Changed file count, respectively
-				$strPayload .= rand(0,99) . '|' . rand(0,99) . "\r\n";
-				// Random non-real files
-				$strPayload .= str_repeat("sometoken|some/path/to/file|somebase64data_somebase64data_somebase64data_somebase64data\r\n", rand(1, 15));
-				// Cleanup Payload and CompressedPayload
-				$strPayload = trim($strPayload);
-				if (function_exists('gzencode')) $strPayloadCompressed = gzencode($strPayload, 9);
-				else $strPayloadCompressed = 'somecompressedpayload';
-				$objPackage->PostContributionVersion($objPerson, $strNotes, $strPayload, $strPayloadCompressed, $dttPostDate);
+				$strQcodoVersion = rand(0,99) . '.' . rand(0,99) . '.' . rand(0,99);
+				// Randomize a New and Changed file count
+				$intNewFileCount = rand(0, 10);
+				$intChangedFileCount = rand(0, 10);
+				// Randomize Notes
+				$strNotes = QDataGen::GenerateContent(rand(1, 3), 20, 80);
+				
+				// Build XML
+				$strQpmXml = '<?xml version="1.0" encoding="UTF-8" ?>';
+				$strQpmXml .= '<qpm version="1.0">';
+				$strQpmXml .= sprintf('<package name="%s" user="%s" version="%s" qcodoVersion="%s" submitted="%s">',
+					$objPackage->Token, $objPerson->Username, $intVersion+1, $strQcodoVersion, $dttPostDate->__toString(QDateTime::FormatRfc822));
+				$strQpmXml .= sprintf('<notes>%s</notes>', QString::XmlEscape($strNotes));
+				$strQpmXml .= '<newFiles>';
+				for ($intFileCount = 0; $intFileCount < $intNewFileCount; $intFileCount++) {
+					$strContent = QDataGen::GenerateContent(rand(1, 3), 20, 80);
+					$strQpmXml .= sprintf('<file directoryToken="__FOOBAR__" path="some/random/path.txt" md5="%s">%s</file>',
+						md5($strContent), base64_encode($strContent));
+				}
+				$strQpmXml .= '</newFiles>';
+				$strQpmXml .= '<changedFiles>';
+				for ($intFileCount = 0; $intFileCount < $intChangedFileCount; $intFileCount++) {
+					$strContent = QDataGen::GenerateContent(rand(1, 3), 20, 80);
+					$strQpmXml .= sprintf('<file directoryToken="__FOOBAR__" path="some/random/path.txt" md5="%s">%s</file>',
+						md5($strContent), base64_encode($strContent));
+				}
+				$strQpmXml .= '</changedFiles>';
+				$strQpmXml .= '</package></qpm>';
+
+				$objPackage->PostContributionVersion($objPerson, $strQpmXml, $dttPostDate);
 
 				$dttEndRange = QDataGen::GenerateDateTime($dttPostDate, QDateTime::Now());
 				$dttEndRange = QDataGen::GenerateDateTime($dttPostDate, $dttEndRange);
