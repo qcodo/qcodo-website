@@ -1,19 +1,19 @@
 #!/usr/local/bin/php
 <?php
 	require(dirname(__FILE__) . '/cli_prepend.inc.php');
-	
+
 	// Define Amounts to Generate
 	define('GENERATE_PEOPLE', 200);
 	define('GENERATE_QPM', 150);
-	define('GENERATE_SHOWCASE', 0);//50);
-	define('GENERATE_WIKI', 0);//250);
-	define('GENERATE_ISSUES', 0);//100);
-	define('GENERATE_FORUM_TOPICS', 0);//100);
-	define('GENERATE_MESSAGES_PER_TOPIC_UBOUND', 0);//50);
-	define('GENERATE_MESSAGES_PER_ISSUE_UBOUND', 0);//25);
-	define('GENERATE_MESSAGES_PER_WIKI_UBOUND', 0);//25);
+	define('GENERATE_SHOWCASE', 50);
+	define('GENERATE_WIKI', 250);
+	define('GENERATE_ISSUES', 100);
+	define('GENERATE_FORUM_TOPICS', 100);
+	define('GENERATE_MESSAGES_PER_TOPIC_UBOUND', 50);
+	define('GENERATE_MESSAGES_PER_ISSUE_UBOUND', 25);
+	define('GENERATE_MESSAGES_PER_WIKI_UBOUND', 25);
 	define('GENERATE_MESSAGES_PER_PACKAGE_UBOUND', 25);
-	
+
 	// Example optional IssueFieldOption values for optional IssueFields loaded from data.sql
 	$strOperatingSystemArray = array('CentOS 4', 'CentOS 5', 'CentOS 5.1', 'CentOS 5.2', 'CentOS 5.3',
 		'Mac OS X 10.4', 'Mac OS X 10.5', 'Mac OS X 10.6',
@@ -396,17 +396,18 @@
 			for ($intVersion = 0; $intVersion < $intVersionCount; $intVersion++) {
 				// Randomize a Qcodo Version
 				$strQcodoVersion = rand(0,99) . '.' . rand(0,99) . '.' . rand(0,99);
+				$strQcodoVersionType = rand(0, 1) ? 'Development' : 'Stable';
 				// Randomize a New and Changed file count
 				$intNewFileCount = rand(0, 10);
 				$intChangedFileCount = rand(0, 10);
 				// Randomize Notes
 				$strNotes = QDataGen::GenerateContent(rand(1, 3), 20, 80);
-				
+
 				// Build XML
 				$strQpmXml = '<?xml version="1.0" encoding="UTF-8" ?>';
 				$strQpmXml .= '<qpm version="1.0">';
-				$strQpmXml .= sprintf('<package name="%s" user="%s" version="%s" qcodoVersion="%s" submitted="%s">',
-					$objPackage->Token, $objPerson->Username, $intVersion+1, $strQcodoVersion, $dttPostDate->__toString(QDateTime::FormatRfc822));
+				$strQpmXml .= sprintf('<package name="%s" user="%s" version="%s" qcodoVersion="%s" qcodoVersionType="%s" submitted="%s">',
+					$objPackage->Token, $objPerson->Username, $intVersion+1, $strQcodoVersion, $strQcodoVersionType, $dttPostDate->__toString(QDateTime::FormatRfc822));
 				$strQpmXml .= sprintf('<notes>%s</notes>', QString::XmlEscape($strNotes));
 				$strQpmXml .= '<newFiles>';
 				for ($intFileCount = 0; $intFileCount < $intNewFileCount; $intFileCount++) {

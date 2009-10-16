@@ -86,6 +86,30 @@
 				return 'an unknown error has occurred, package not uploaded';
 			}
 		}
+
+
+		/**
+		 * @param string $strPackageName
+		 * @param string $strUsername
+		 * @param boolean $blnGzCompress
+		 * @return string
+		 */
+		public function DownloadPackage($strPackageName, $strUsername, $blnGzCompress) {
+			$objPerson = Person::LoadByUsername($strUsername);
+			$objPackage = Package::Load($this->GetPackageId($strPackageName));
+			if (!$objPerson) return null;
+			if (!$objPackage) return null;
+			
+			$objPackageContribution = PackageContribution::LoadByPackageIdPersonId($objPackage->Id, $objPerson->Id);
+			if (!$objPackageContribution) return null;
+			if (!$objPackageContribution->CurrentPackageVersion) return null;
+
+			if ($blnGzCompress) {
+				return file_get_contents($objPackageContribution->CurrentPackageVersion->GetFilePathCompressed());
+			} else {
+				return file_get_contents($objPackageContribution->CurrentPackageVersion->GetFilePath());
+			}
+		}
 	}
 
 	if (QApplication::PathInfo(0)) {
@@ -111,6 +135,20 @@
 				$blnGzCompress = QApplication::QueryString('gz');
 				$strQpmXml = file_get_contents('php://input');
 				print $objService->UploadPackage($strPackageName, $strUsername, $strPassword, $blnGzCompress, $strQpmXml);
+				break;
+			case 'DownloadPackage':
+				$strPackageName = QApplication::QueryString('name');
+				$strUsername = QApplication::QueryString('u');
+				$blnGzCompress = QApplication::QueryString('gz');
+				$strToReturn = $objService->DownloadPackage($strPackageName, $strUsername, $blnGzCompress);
+				if ($strToReturn) {
+					if ($blnGzCompress) {
+						header('Content-Type: application/x-gzip');
+					} else {
+						header('Content-Type: text/xml');
+					}
+					print $strToReturn;
+				}
 				break;
 		}
 	} else
