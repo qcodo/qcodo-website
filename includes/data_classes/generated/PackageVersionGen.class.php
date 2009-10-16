@@ -20,6 +20,8 @@
 	 * @property integer $VersionNumber the value for intVersionNumber (Not Null)
 	 * @property string $Notes the value for strNotes 
 	 * @property string $QcodoVersion the value for strQcodoVersion 
+	 * @property integer $NewFileCount the value for intNewFileCount 
+	 * @property integer $ChangedFileCount the value for intChangedFileCount 
 	 * @property QDateTime $PostDate the value for dttPostDate 
 	 * @property integer $DownloadCount the value for intDownloadCount 
 	 * @property PackageContribution $PackageContribution the value for the PackageContribution object referenced by intPackageContributionId (Not Null)
@@ -72,6 +74,22 @@
 		protected $strQcodoVersion;
 		const QcodoVersionMaxLength = 40;
 		const QcodoVersionDefault = null;
+
+
+		/**
+		 * Protected member variable that maps to the database column package_version.new_file_count
+		 * @var integer intNewFileCount
+		 */
+		protected $intNewFileCount;
+		const NewFileCountDefault = null;
+
+
+		/**
+		 * Protected member variable that maps to the database column package_version.changed_file_count
+		 * @var integer intChangedFileCount
+		 */
+		protected $intChangedFileCount;
+		const ChangedFileCountDefault = null;
 
 
 		/**
@@ -406,6 +424,8 @@
 			$objBuilder->AddSelectItem($strTableName, 'version_number', $strAliasPrefix . 'version_number');
 			$objBuilder->AddSelectItem($strTableName, 'notes', $strAliasPrefix . 'notes');
 			$objBuilder->AddSelectItem($strTableName, 'qcodo_version', $strAliasPrefix . 'qcodo_version');
+			$objBuilder->AddSelectItem($strTableName, 'new_file_count', $strAliasPrefix . 'new_file_count');
+			$objBuilder->AddSelectItem($strTableName, 'changed_file_count', $strAliasPrefix . 'changed_file_count');
 			$objBuilder->AddSelectItem($strTableName, 'post_date', $strAliasPrefix . 'post_date');
 			$objBuilder->AddSelectItem($strTableName, 'download_count', $strAliasPrefix . 'download_count');
 		}
@@ -481,6 +501,10 @@
 			$objToReturn->strNotes = $objDbRow->GetColumn($strAliasName, 'Blob');
 			$strAliasName = array_key_exists($strAliasPrefix . 'qcodo_version', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'qcodo_version'] : $strAliasPrefix . 'qcodo_version';
 			$objToReturn->strQcodoVersion = $objDbRow->GetColumn($strAliasName, 'VarChar');
+			$strAliasName = array_key_exists($strAliasPrefix . 'new_file_count', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'new_file_count'] : $strAliasPrefix . 'new_file_count';
+			$objToReturn->intNewFileCount = $objDbRow->GetColumn($strAliasName, 'Integer');
+			$strAliasName = array_key_exists($strAliasPrefix . 'changed_file_count', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'changed_file_count'] : $strAliasPrefix . 'changed_file_count';
+			$objToReturn->intChangedFileCount = $objDbRow->GetColumn($strAliasName, 'Integer');
 			$strAliasName = array_key_exists($strAliasPrefix . 'post_date', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'post_date'] : $strAliasPrefix . 'post_date';
 			$objToReturn->dttPostDate = $objDbRow->GetColumn($strAliasName, 'DateTime');
 			$strAliasName = array_key_exists($strAliasPrefix . 'download_count', $strColumnAliasArray) ? $strColumnAliasArray[$strAliasPrefix . 'download_count'] : $strAliasPrefix . 'download_count';
@@ -656,6 +680,8 @@
 							`version_number`,
 							`notes`,
 							`qcodo_version`,
+							`new_file_count`,
+							`changed_file_count`,
 							`post_date`,
 							`download_count`
 						) VALUES (
@@ -663,6 +689,8 @@
 							' . $objDatabase->SqlVariable($this->intVersionNumber) . ',
 							' . $objDatabase->SqlVariable($this->strNotes) . ',
 							' . $objDatabase->SqlVariable($this->strQcodoVersion) . ',
+							' . $objDatabase->SqlVariable($this->intNewFileCount) . ',
+							' . $objDatabase->SqlVariable($this->intChangedFileCount) . ',
 							' . $objDatabase->SqlVariable($this->dttPostDate) . ',
 							' . $objDatabase->SqlVariable($this->intDownloadCount) . '
 						)
@@ -684,6 +712,8 @@
 							`version_number` = ' . $objDatabase->SqlVariable($this->intVersionNumber) . ',
 							`notes` = ' . $objDatabase->SqlVariable($this->strNotes) . ',
 							`qcodo_version` = ' . $objDatabase->SqlVariable($this->strQcodoVersion) . ',
+							`new_file_count` = ' . $objDatabase->SqlVariable($this->intNewFileCount) . ',
+							`changed_file_count` = ' . $objDatabase->SqlVariable($this->intChangedFileCount) . ',
 							`post_date` = ' . $objDatabase->SqlVariable($this->dttPostDate) . ',
 							`download_count` = ' . $objDatabase->SqlVariable($this->intDownloadCount) . '
 						WHERE
@@ -768,6 +798,8 @@
 			$this->intVersionNumber = $objReloaded->intVersionNumber;
 			$this->strNotes = $objReloaded->strNotes;
 			$this->strQcodoVersion = $objReloaded->strQcodoVersion;
+			$this->intNewFileCount = $objReloaded->intNewFileCount;
+			$this->intChangedFileCount = $objReloaded->intChangedFileCount;
 			$this->dttPostDate = $objReloaded->dttPostDate;
 			$this->intDownloadCount = $objReloaded->intDownloadCount;
 		}
@@ -824,6 +856,20 @@
 					 * @return string
 					 */
 					return $this->strQcodoVersion;
+
+				case 'NewFileCount':
+					/**
+					 * Gets the value for intNewFileCount 
+					 * @return integer
+					 */
+					return $this->intNewFileCount;
+
+				case 'ChangedFileCount':
+					/**
+					 * Gets the value for intChangedFileCount 
+					 * @return integer
+					 */
+					return $this->intChangedFileCount;
 
 				case 'PostDate':
 					/**
@@ -954,6 +1000,32 @@
 					 */
 					try {
 						return ($this->strQcodoVersion = QType::Cast($mixValue, QType::String));
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
+				case 'NewFileCount':
+					/**
+					 * Sets the value for intNewFileCount 
+					 * @param integer $mixValue
+					 * @return integer
+					 */
+					try {
+						return ($this->intNewFileCount = QType::Cast($mixValue, QType::Integer));
+					} catch (QCallerException $objExc) {
+						$objExc->IncrementOffset();
+						throw $objExc;
+					}
+
+				case 'ChangedFileCount':
+					/**
+					 * Sets the value for intChangedFileCount 
+					 * @param integer $mixValue
+					 * @return integer
+					 */
+					try {
+						return ($this->intChangedFileCount = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {
 						$objExc->IncrementOffset();
 						throw $objExc;
@@ -1213,6 +1285,8 @@
 			$strToReturn .= '<element name="VersionNumber" type="xsd:int"/>';
 			$strToReturn .= '<element name="Notes" type="xsd:string"/>';
 			$strToReturn .= '<element name="QcodoVersion" type="xsd:string"/>';
+			$strToReturn .= '<element name="NewFileCount" type="xsd:int"/>';
+			$strToReturn .= '<element name="ChangedFileCount" type="xsd:int"/>';
 			$strToReturn .= '<element name="PostDate" type="xsd:dateTime"/>';
 			$strToReturn .= '<element name="DownloadCount" type="xsd:int"/>';
 			$strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
@@ -1249,6 +1323,10 @@
 				$objToReturn->strNotes = $objSoapObject->Notes;
 			if (property_exists($objSoapObject, 'QcodoVersion'))
 				$objToReturn->strQcodoVersion = $objSoapObject->QcodoVersion;
+			if (property_exists($objSoapObject, 'NewFileCount'))
+				$objToReturn->intNewFileCount = $objSoapObject->NewFileCount;
+			if (property_exists($objSoapObject, 'ChangedFileCount'))
+				$objToReturn->intChangedFileCount = $objSoapObject->ChangedFileCount;
 			if (property_exists($objSoapObject, 'PostDate'))
 				$objToReturn->dttPostDate = new QDateTime($objSoapObject->PostDate);
 			if (property_exists($objSoapObject, 'DownloadCount'))
@@ -1309,6 +1387,10 @@
 					return new QQNode('notes', 'Notes', 'string', $this);
 				case 'QcodoVersion':
 					return new QQNode('qcodo_version', 'QcodoVersion', 'string', $this);
+				case 'NewFileCount':
+					return new QQNode('new_file_count', 'NewFileCount', 'integer', $this);
+				case 'ChangedFileCount':
+					return new QQNode('changed_file_count', 'ChangedFileCount', 'integer', $this);
 				case 'PostDate':
 					return new QQNode('post_date', 'PostDate', 'QDateTime', $this);
 				case 'DownloadCount':
@@ -1347,6 +1429,10 @@
 					return new QQNode('notes', 'Notes', 'string', $this);
 				case 'QcodoVersion':
 					return new QQNode('qcodo_version', 'QcodoVersion', 'string', $this);
+				case 'NewFileCount':
+					return new QQNode('new_file_count', 'NewFileCount', 'integer', $this);
+				case 'ChangedFileCount':
+					return new QQNode('changed_file_count', 'ChangedFileCount', 'integer', $this);
 				case 'PostDate':
 					return new QQNode('post_date', 'PostDate', 'QDateTime', $this);
 				case 'DownloadCount':

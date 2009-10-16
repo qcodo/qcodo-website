@@ -100,10 +100,17 @@
 		 * @return PackageContribution
 		 */
 		public function PostContributionVersion(Person $objPerson, $strNotes, $strPayload, $strPayloadCompressed, QDateTime $dttPostDate = null) {
-			// Parse out the Qcodo Version Number from the Payload
+			// Parse out the Qcodo Version Number, NewFileCount and ChangedFileCount from the FirstLine of the Payload
+			$strFirstLine = trim(substr($strPayload, 0, strpos($strPayload, "\n")));
+			$strParts = explode('|', $strFirstLine);
+			$strQcodoVersionNumber = $strParts[0];
+			$intNewFileCount = $strParts[1];
+			$intChangedFileCount = $strParts[2];
 			$strQcodoVersionNumber = substr($strPayload, 0, strpos($strPayload, '|'));
 			preg_match('/[0-9]+\\.[0-9]+\\.[0-9]+/', $strQcodoVersionNumber, $arrMatches);
-			if ($arrMatches[0] != $strQcodoVersionNumber) throw new Exception('Invalid Qcodo Version Number in Payload: ' . $strQcodoVersionNumber);
+			if ($arrMatches[0] != $strQcodoVersionNumber) throw new Exception('Invalid Qcodo Version Number in Payload: ' . $strFirstLine);
+			if (!is_numeric($intNewFileCount)) throw new Exception('Invalid New File Count in Payload: ' . $strFirstLine);
+			if (!is_numeric($intChangedFileCount)) throw new Exception('Invalid Changed File Count in Payload: ' . $strFirstLine);
 
 			// Get or create PackageContribution
 			$objContribution = PackageContribution::LoadByPackageIdPersonId($this->intId, $objPerson->Id);
@@ -119,6 +126,8 @@
 			$objVersion->PackageContribution = $objContribution;
 			$objVersion->Notes = $strNotes;
 			$objVersion->QcodoVersion = $strQcodoVersionNumber;
+			$objVersion->NewFileCount = $intNewFileCount;
+			$objVersion->ChangedFileCount = $intChangedFileCount;
 			$objVersion->PostDate = ($dttPostDate) ? $dttPostDate : QDateTime::Now();
 			$objVersion->DownloadCount = 0;
 			$objVersion->VersionNumber = $objContribution->CountPackageVersions() + 1;

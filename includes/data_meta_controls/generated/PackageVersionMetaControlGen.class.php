@@ -26,6 +26,10 @@
 	 * property-read QLabel $NotesLabel
 	 * property QTextBox $QcodoVersionControl
 	 * property-read QLabel $QcodoVersionLabel
+	 * property QIntegerTextBox $NewFileCountControl
+	 * property-read QLabel $NewFileCountLabel
+	 * property QIntegerTextBox $ChangedFileCountControl
+	 * property-read QLabel $ChangedFileCountLabel
 	 * property QDateTimePicker $PostDateControl
 	 * property-read QLabel $PostDateLabel
 	 * property QIntegerTextBox $DownloadCountControl
@@ -47,6 +51,8 @@
 		protected $txtVersionNumber;
 		protected $txtNotes;
 		protected $txtQcodoVersion;
+		protected $txtNewFileCount;
+		protected $txtChangedFileCount;
 		protected $calPostDate;
 		protected $txtDownloadCount;
 
@@ -55,6 +61,8 @@
 		protected $lblVersionNumber;
 		protected $lblNotes;
 		protected $lblQcodoVersion;
+		protected $lblNewFileCount;
+		protected $lblChangedFileCount;
 		protected $lblPostDate;
 		protected $lblDownloadCount;
 
@@ -283,6 +291,58 @@
 		}
 
 		/**
+		 * Create and setup QIntegerTextBox txtNewFileCount
+		 * @param string $strControlId optional ControlId to use
+		 * @return QIntegerTextBox
+		 */
+		public function txtNewFileCount_Create($strControlId = null) {
+			$this->txtNewFileCount = new QIntegerTextBox($this->objParentObject, $strControlId);
+			$this->txtNewFileCount->Name = QApplication::Translate('New File Count');
+			$this->txtNewFileCount->Text = $this->objPackageVersion->NewFileCount;
+			return $this->txtNewFileCount;
+		}
+
+		/**
+		 * Create and setup QLabel lblNewFileCount
+		 * @param string $strControlId optional ControlId to use
+		 * @param string $strFormat optional sprintf format to use
+		 * @return QLabel
+		 */
+		public function lblNewFileCount_Create($strControlId = null, $strFormat = null) {
+			$this->lblNewFileCount = new QLabel($this->objParentObject, $strControlId);
+			$this->lblNewFileCount->Name = QApplication::Translate('New File Count');
+			$this->lblNewFileCount->Text = $this->objPackageVersion->NewFileCount;
+			$this->lblNewFileCount->Format = $strFormat;
+			return $this->lblNewFileCount;
+		}
+
+		/**
+		 * Create and setup QIntegerTextBox txtChangedFileCount
+		 * @param string $strControlId optional ControlId to use
+		 * @return QIntegerTextBox
+		 */
+		public function txtChangedFileCount_Create($strControlId = null) {
+			$this->txtChangedFileCount = new QIntegerTextBox($this->objParentObject, $strControlId);
+			$this->txtChangedFileCount->Name = QApplication::Translate('Changed File Count');
+			$this->txtChangedFileCount->Text = $this->objPackageVersion->ChangedFileCount;
+			return $this->txtChangedFileCount;
+		}
+
+		/**
+		 * Create and setup QLabel lblChangedFileCount
+		 * @param string $strControlId optional ControlId to use
+		 * @param string $strFormat optional sprintf format to use
+		 * @return QLabel
+		 */
+		public function lblChangedFileCount_Create($strControlId = null, $strFormat = null) {
+			$this->lblChangedFileCount = new QLabel($this->objParentObject, $strControlId);
+			$this->lblChangedFileCount->Name = QApplication::Translate('Changed File Count');
+			$this->lblChangedFileCount->Text = $this->objPackageVersion->ChangedFileCount;
+			$this->lblChangedFileCount->Format = $strFormat;
+			return $this->lblChangedFileCount;
+		}
+
+		/**
 		 * Create and setup QDateTimePicker calPostDate
 		 * @param string $strControlId optional ControlId to use
 		 * @return QDateTimePicker
@@ -373,6 +433,12 @@
 			if ($this->txtQcodoVersion) $this->txtQcodoVersion->Text = $this->objPackageVersion->QcodoVersion;
 			if ($this->lblQcodoVersion) $this->lblQcodoVersion->Text = $this->objPackageVersion->QcodoVersion;
 
+			if ($this->txtNewFileCount) $this->txtNewFileCount->Text = $this->objPackageVersion->NewFileCount;
+			if ($this->lblNewFileCount) $this->lblNewFileCount->Text = $this->objPackageVersion->NewFileCount;
+
+			if ($this->txtChangedFileCount) $this->txtChangedFileCount->Text = $this->objPackageVersion->ChangedFileCount;
+			if ($this->lblChangedFileCount) $this->lblChangedFileCount->Text = $this->objPackageVersion->ChangedFileCount;
+
 			if ($this->calPostDate) $this->calPostDate->DateTime = $this->objPackageVersion->PostDate;
 			if ($this->lblPostDate) $this->lblPostDate->Text = sprintf($this->objPackageVersion->PostDate) ? $this->objPackageVersion->__toString($this->strPostDateDateTimeFormat) : null;
 
@@ -406,6 +472,8 @@
 				if ($this->txtVersionNumber) $this->objPackageVersion->VersionNumber = $this->txtVersionNumber->Text;
 				if ($this->txtNotes) $this->objPackageVersion->Notes = $this->txtNotes->Text;
 				if ($this->txtQcodoVersion) $this->objPackageVersion->QcodoVersion = $this->txtQcodoVersion->Text;
+				if ($this->txtNewFileCount) $this->objPackageVersion->NewFileCount = $this->txtNewFileCount->Text;
+				if ($this->txtChangedFileCount) $this->objPackageVersion->ChangedFileCount = $this->txtChangedFileCount->Text;
 				if ($this->calPostDate) $this->objPackageVersion->PostDate = $this->calPostDate->DateTime;
 				if ($this->txtDownloadCount) $this->objPackageVersion->DownloadCount = $this->txtDownloadCount->Text;
 
@@ -480,6 +548,18 @@
 				case 'QcodoVersionLabel':
 					if (!$this->lblQcodoVersion) return $this->lblQcodoVersion_Create();
 					return $this->lblQcodoVersion;
+				case 'NewFileCountControl':
+					if (!$this->txtNewFileCount) return $this->txtNewFileCount_Create();
+					return $this->txtNewFileCount;
+				case 'NewFileCountLabel':
+					if (!$this->lblNewFileCount) return $this->lblNewFileCount_Create();
+					return $this->lblNewFileCount;
+				case 'ChangedFileCountControl':
+					if (!$this->txtChangedFileCount) return $this->txtChangedFileCount_Create();
+					return $this->txtChangedFileCount;
+				case 'ChangedFileCountLabel':
+					if (!$this->lblChangedFileCount) return $this->lblChangedFileCount_Create();
+					return $this->lblChangedFileCount;
 				case 'PostDateControl':
 					if (!$this->calPostDate) return $this->calPostDate_Create();
 					return $this->calPostDate;
@@ -524,6 +604,10 @@
 						return ($this->txtNotes = QType::Cast($mixValue, 'QControl'));
 					case 'QcodoVersionControl':
 						return ($this->txtQcodoVersion = QType::Cast($mixValue, 'QControl'));
+					case 'NewFileCountControl':
+						return ($this->txtNewFileCount = QType::Cast($mixValue, 'QControl'));
+					case 'ChangedFileCountControl':
+						return ($this->txtChangedFileCount = QType::Cast($mixValue, 'QControl'));
 					case 'PostDateControl':
 						return ($this->calPostDate = QType::Cast($mixValue, 'QControl'));
 					case 'DownloadCountControl':

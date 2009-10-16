@@ -395,8 +395,16 @@
 
 			for ($intVersion = 0; $intVersion < $intVersionCount; $intVersion++) {
 				$strNotes = QDataGen::GenerateContent(rand(1, 3), 20, 80);
-				$strPayload = rand(0,99) . '.' . rand(0,99) . '.' . rand(0,99) . '|payload';
-				$strPayloadCompressed = 'payloadcompressed';
+				// Randomize a Qcodo Version
+				$strPayload = rand(0,99) . '.' . rand(0,99) . '.' . rand(0,99) . '|';
+				// Randomize a New and Changed file count, respectively
+				$strPayload .= rand(0,99) . '|' . rand(0,99) . "\r\n";
+				// Random non-real files
+				$strPayload .= str_repeat("sometoken|some/path/to/file|somebase64data_somebase64data_somebase64data_somebase64data\r\n", rand(1, 15));
+				// Cleanup Payload and CompressedPayload
+				$strPayload = trim($strPayload);
+				if (function_exists('gzencode')) $strPayloadCompressed = gzencode($strPayload, 9);
+				else $strPayloadCompressed = 'somecompressedpayload';
 				$objPackage->PostContributionVersion($objPerson, $strNotes, $strPayload, $strPayloadCompressed, $dttPostDate);
 
 				$dttEndRange = QDataGen::GenerateDateTime($dttPostDate, QDateTime::Now());
