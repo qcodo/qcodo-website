@@ -25,8 +25,8 @@
 			$this->dtgContributions->SetDataBinder('dtgContributions_Bind');
 			$this->dtgContributions->AlternateRowStyle->CssClass = 'alternate';
 
-			$this->dtgContributions->MetaAddColumn(QQN::PackageContribution()->Person->Username, 'Name=QPM Path for Version', 'Html=<?= $_FORM->RenderPath($_ITEM); ?>','Width=350px', 'VerticalAlign=top', 'FontNames=Monaco, Courier, Courier New,Monospaced', 'HtmlEntities=false');
-			$this->dtgContributions->MetaAddColumn(QQN::PackageContribution()->CurrentPackageVersion->Notes, 'Name=Version Notes', 'Width=400px', 'VerticalAlign=top','CssClass=small');
+			$this->dtgContributions->MetaAddColumn(QQN::PackageContribution()->Person->Username, 'Name=QPM Path for Version', 'Html=<?= $_FORM->RenderPath($_ITEM); ?>', 'Width=350px', 'VerticalAlign=top', 'FontNames=Monaco, Courier, Courier New,Monospaced', 'HtmlEntities=false');
+			$this->dtgContributions->MetaAddColumn(QQN::PackageContribution()->CurrentPackageVersion->Notes, 'Name=Version Notes', 'Html=<?= $_FORM->RenderNotes($_ITEM); ?>', 'Width=400px', 'VerticalAlign=top','CssClass=small', 'HtmlEntities=false');
 			$this->dtgContributions->MetaAddColumn('CurrentPostDate', 'Name=Posted', 'Width=100px', 'VerticalAlign=top');
 			$this->dtgContributions->MetaAddColumn(QQN::PackageContribution()->Person->DisplayName, 'Name=By', 'Html=<?= $_FORM->RenderPostedBy($_ITEM); ?>', 'HtmlEntities=false', 'Width=100px', 'CssClass=reverseLink', 'VerticalAlign=top');
 			
@@ -67,6 +67,19 @@
 				$this->pnlMessages->Text .= '<br/>Comments for this issue-related QPM package have been disabled on this screen.  To view, post and edit comments, ';
 				$this->pnlMessages->Text .= 'please do so on the <a href="/issues/view.php/' . $strIssueNumber . '">issue page</a>, itself.';
 			}
+		}
+		
+		public function RenderNotes(PackageContribution $objContribution) {
+			$strNotes = trim(QApplication::HtmlEntities($objContribution->CurrentPackageVersion->Notes));
+			$strNotes .= "\r\n\r\n";
+			$strNotes .= sprintf('QPM Package File Count | <strong>%s</strong> new file%s | <strong>%s</strong> changed file%s',
+				$objContribution->CurrentPackageVersion->NewFileCount,
+				($objContribution->CurrentPackageVersion->NewFileCount == 1) ? '' : 's',
+				$objContribution->CurrentPackageVersion->ChangedFileCount,
+				($objContribution->CurrentPackageVersion->ChangedFileCount == 1) ? '' : 's'
+			);
+			$strNotes = trim($strNotes);
+			return nl2br($strNotes);
 		}
 
 		public function RenderPath(PackageContribution $objContribution) {
