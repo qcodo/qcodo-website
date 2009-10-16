@@ -26,6 +26,24 @@
 		}
 
 		/**
+		 * Looks up a package version count given the PackageName and User.
+		 * This will throw an exception if the Package or Username does not exist
+		 * @param string $strPackageName
+		 * @param string $strUsername
+		 * @return integer
+		 */
+		public function GetPackageVersionCount($strPackageName, $strUsername) {
+			$objPackage = Package::LoadByToken(trim(strtolower($strPackageName)));
+			if (!$objPackage) throw new Exception('Package does not exist');
+			$objPerson = Person::LoadByUsername(trim(strtolower($strUsername)));
+			if (!$objPerson) throw new Exception('Person does not exist');
+			
+			$objPackageContribution = PackageContribution::LoadByPackageIdPersonId($objPackage->Id, $objPerson->Id);
+			if (!$objPackageContribution) return 0;
+			return $objPackageContribution->CountPackageVersions();
+		}
+
+		/**
 		 * Given a Qcodo.com username and password, this will either return the user ID or 0 if the credentials are invalid
 		 * @param string $strUsername
 		 * @param string $strPassword
@@ -82,6 +100,9 @@
 				break;
 			case 'GetPackageId':
 				print $objService->GetPackageId(QApplication::QueryString('name'));
+				break;
+			case 'GetPackageVersionCount':
+				print $objService->GetPackageVersionCount(QApplication::QueryString('name'), QApplication::QueryString('u'));
 				break;
 			case 'UploadPackage':
 				$strPackageName = QApplication::QueryString('name');
