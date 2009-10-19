@@ -88,13 +88,18 @@
 		public function Form_Validate($blnToReturn = true) {
 			$this->txtToken->Text = Package::SanitizeForToken($this->txtToken->Text);
 
-			$objPackage = Package::LoadByToken($this->txtToken->Text);
-			if ($objPackage && ($objPackage->Id != $this->mctPackage->Package->Id)) {
-				$this->txtToken->Warning = 'Path already exists';
+			if ($this->txtToken->Text == 'manifest') {
+				$this->txtToken->Warning = 'Invalid QPM package name: "manifest" cannot be used';
 				$blnToReturn = false;
 			} else if (substr($this->txtToken->Text, 0, 6) == 'issue_') {
-				$this->txtToken->Warning = 'Invalid path name';
+				$this->txtToken->Warning = 'Invalid QPM package name: cannot begin with "issue_"';
 				$blnToReturn = false;
+			} else {
+				$objPackage = Package::LoadByToken($this->txtToken->Text);
+				if ($objPackage && ($objPackage->Id != $this->mctPackage->Package->Id)) {
+					$this->txtToken->Warning = 'QPM package name already exists';
+					$blnToReturn = false;
+				} 
 			}
 
 			return parent::Form_Validate($blnToReturn);
