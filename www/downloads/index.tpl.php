@@ -64,7 +64,7 @@
 		<h3>
 			type: <strong>Mac OS X, Linux, and Unix Tarball</strong>
 			&nbsp;|&nbsp;
-			size: <strong><?php _p($strStableSizeTarGz) ?></strong>
+			size: <strong><?php _p($strDevSizeTarGz) ?></strong>
 		</h3>
 	</div>
 
@@ -73,7 +73,7 @@
 		<h3>
 			type: <strong>Windows ZIP</strong>
 			&nbsp;|&nbsp;
-			size: <strong><?php _p($strStableSizeZip) ?></strong>
+			size: <strong><?php _p($strDevSizeZip) ?></strong>
 		</h3>
 	</div>
 
