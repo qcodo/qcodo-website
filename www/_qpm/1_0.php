@@ -81,6 +81,7 @@
 			}
 
 			if ($objContribution) {
+				$objPackage->PostMessage('A new version of this package was uploaded by ' . $objPerson->DisplayName, null, null);
 				return sprintf('package %s/%s uploaded successfully', $objPerson->Username, $objPackage->Token);
 			} else {
 				return 'an unknown error has occurred, package not uploaded';
@@ -103,6 +104,10 @@
 			$objPackageContribution = PackageContribution::LoadByPackageIdPersonId($objPackage->Id, $objPerson->Id);
 			if (!$objPackageContribution) return null;
 			if (!$objPackageContribution->CurrentPackageVersion) return null;
+
+			$objPackageContribution->CurrentPackageVersion->DownloadCount++;
+			$objPackageContribution->CurrentPackageVersion->Save();
+			$objPackageContribution->RefreshStats();
 
 			if ($blnGzCompress) {
 				return file_get_contents($objPackageContribution->CurrentPackageVersion->GetFilePathCompressed());
