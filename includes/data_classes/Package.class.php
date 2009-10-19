@@ -162,6 +162,8 @@
 			$this->Save();
 
 			$objVersion->SaveFile($strQpmXml, $strQpmXmlCompressed);
+
+			$this->PackageCategory->RefreshStats();
 			return $objContribution;
 		}
 

@@ -33,7 +33,7 @@
 				QQ::LimitInfo(1),
 				QQ::OrderBy(QQN::Package()->LastPostDate, false)
 			));
-			if ($objPackage)
+			if ($objPackage && $objPackage->LastPostDate)
 				$this->dttLastPostDate = new QDateTime($objPackage->LastPostDate);
 			else
 				$this->dttLastPostDate = null;
