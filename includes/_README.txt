@@ -10,7 +10,7 @@ information, docroot paths (including subfoldering and virtual directories),
 etc.  You must make modifications to this file to have it reflect the
 configuration of your system.
 
-See the inline documentation in configuration.inc.php for more information.
+See the inline documentation in qcodo/_core/configuration.inc.php-full for more information.
 
 
 
@@ -45,7 +45,7 @@ The qcodo/ subdirectory contains the codebase for the qcodo framework, itself.
 
 	** Qcodo Core
 
-	The qcodo/_core/ subdirectory contains the "core" code that is not meant to be
+	The qcodo/_core/ directory contains the "core" code that is not meant to be
 	modified by most end users, excpet in cases where you are adding non-standard
 	functionality or making bug fixes, etc.
 
@@ -68,3 +68,21 @@ classes in the data_classes directory.
 
 You can see the "Customized Business Logic" example in Section 2 on the
 Examples Site for more information.
+
+
+
+
+
+**** MISC
+
+If you wish to run Qcodo without any QForm interactions, simply comment out the following lines in qcodo.inc.php:
+
+	QApplicationBase::$PreloadedClassFile['_enumerations'] = __QCODO_CORE__ . '/qform/_enumerations.inc.php';
+	QApplicationBase::$PreloadedClassFile['QControlBase'] = __QCODO_CORE__ . '/qform/QControlBase.class.php';
+	QApplicationBase::$PreloadedClassFile['QControl'] = __QCODO__ . '/qform/QControl.class.php';
+	QApplicationBase::$PreloadedClassFile['QFormBase'] = __QCODO_CORE__ . '/qform/QFormBase.class.php';
+	QApplicationBase::$PreloadedClassFile['QForm'] = __QCODO__ . '/qform/QForm.class.php';
+	QApplicationBase::$PreloadedClassFile['_actions'] = __QCODO_CORE__ . '/qform/_actions.inc.php';
+	QApplicationBase::$PreloadedClassFile['_events'] = __QCODO_CORE__ . '/qform/_events.inc.php';
+
+With those lines commented out, nothing QForm-related will ever get loaded into your application.

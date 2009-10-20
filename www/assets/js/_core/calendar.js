@@ -22,6 +22,12 @@
 		objControl.calendarPane.style.display = "none";
 
 		objControl.showCalendar = function() {
+			if (qcodo.openCalendar) {
+				qcodo.getControl(qcodo.openCalendar).hideCalendar();
+			}
+
+			qcodo.openCalendar = objControl.id;
+
 			var strPositionArray = this.wrapper.getAbsolutePosition();
 			this.calendarPane.style.left = strPositionArray.x + "px";
 			this.calendarPane.style.top = strPositionArray.y + "px";
@@ -129,6 +135,7 @@
 		};
 
 		objControl.hideCalendar = function() {
+			qcodo.openCalendar = null;
 			this.calendarPane.style.display = 'none';
 		};
 

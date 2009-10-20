@@ -1,4 +1,6 @@
 <?php
+	require(dirname(__FILE__) . "/_manifest_helpers.inc.php");
+
 	/**
 	 * The QUpdateUtility is used by the qcodo_updater.cli and qcodo_downloader.cli command line utilities.
 	 * It will use the Qcodo Updater WebService at http://api.qcodo.com/ to perform updates to the installed
@@ -130,7 +132,7 @@
 			}
 
 			// Aggregate Local Manifest
-			$strManifestXml = file_get_contents(__QCODO_CORE__ . '/manifest.xml');
+			$strManifestXml = file_get_contents(__QCODO_CORE__ . '/manifest/manifest.xml');
 			$objXml = new SimpleXMLElement($strManifestXml);
 			foreach ($objXml->files[0]->file as $objFile) {
 				$strPath = (string) $objFile['path'];
@@ -138,7 +140,7 @@
 				$strKey = $strToken . '|' . $strPath;
 				$this->strLocalManifest[$strKey] = (string) $objFile['md5'];
 			}
-			$this->strTouchedFile[strtolower(__QCODO_CORE__ . '/manifest.xml')] = true;
+			$this->strTouchedFile[strtolower(__QCODO_CORE__ . '/manifest/manifest.xml')] = true;
 		}
 
 		/**
@@ -237,7 +239,7 @@
 					}
 
 			// Let's first add the new manifest.xml file
-			$this->strShouldUpdateArray['__QCODO_CORE__|manifest.xml'] = __QCODO_CORE__ . '/manifest.xml';
+			$this->strShouldUpdateArray['__QCODO_CORE__|manifest/manifest.xml'] = __QCODO_CORE__ . '/manifest/manifest.xml';
 
 			// Iterate through the Server manifest, 
 			foreach ($this->strServerManifest as $strFile => $strServerMd5) {
@@ -484,9 +486,7 @@
 
 					break;
 				default:
-					global $blnWindows;
-
-					if ($blnWindows)
+					if (QApplication::$Windows)
 						$strCommentChar = '::';
 					else
 						$strCommentChar = '#';
@@ -630,18 +630,16 @@
 		}
 
 		protected function PrintDownloadCommand($strManifestFile, $strActualFilePath) {
-			global $blnWindows;
-
 			$strManifestFileArray = explode('|', $strManifestFile);
 			$strToken = $strManifestFileArray[0];
 			$strFile = $strManifestFileArray[1];
 
-			if ($blnWindows)
-				printf("c:\\php\\php.exe %s\\qcodo_downloader.phpexe %s \"%s\" \"%s\" \"%s\"\r\n",
+			if (QApplication::$Windows)
+				printf("%s\\qcodo.bat qcodo-downloader %s \"%s\" \"%s\" \"%s\"\r\n",
 					str_replace('/', '\\', __DEVTOOLS_CLI__),
 					$this->strVersion, $strToken, $strFile, $strActualFilePath);
 			else
-				printf("%s/qcodo_downloader.cli %s \"%s\" \"%s\" \"%s\"\r\n",
+				printf("%s/qcodo qcodo-downloader %s \"%s\" \"%s\" \"%s\"\r\n",
 					__DEVTOOLS_CLI__, $this->strVersion,
 					$strToken, $strFile, $strActualFilePath);
 		}
@@ -921,15 +919,13 @@
 		}
 		
 		static function PrintDownloaderInstructions() {
-			global $blnWindows;
-			
-			if ($blnWindows)
-				$strCommandName = 'c:\\php\\php.exe qcodo_downloader.phpexe';
+			if (QApplication::$Windows)
+				$strCommandName = str_replace('/', '\\', __DEVTOOLS_CLI__) . '\\qcodo.bat qcodo-downloader';
 			else
-				$strCommandName = './qcodo_downloader.cli';
+				$strCommandName = __DEVTOOLS_CLI__ . ' qcodo-downloader';
 
 			print('Qcodo Downloader Service - ' . QCODO_VERSION . '
-Copyright (c) 2001 - 2007, QuasIdea Development, LLC
+Copyright (c) 2005 - 2009, Quasidea Development, LLC
 This program is free software with ABSOLUTELY NO WARRANTY; you may
 redistribute it under the terms of The MIT License.
 
@@ -972,12 +968,10 @@ For more information, please go to www.qcodo.com
 		}
 		
 		static function PrintUpdaterInstructions($blnHelp = false) {
-			global $blnWindows;
-			
-			if ($blnWindows)
-				$strCommandName = 'c:\\php\\php.exe qcodo_updater.phpexe';
+			if (QApplication::$Windows)
+				$strCommandName = str_replace('/', '\\', __DEVTOOLS_CLI__) . '\\qcodo.bat qcodo-updater';
 			else
-				$strCommandName = './qcodo_updater.cli';
+				$strCommandName = __DEVTOOLS_CLI__ . ' qcodo-updater';
 
 			if (!$blnHelp)
 				$strDetails = "  'interactive' [DEFAULT] - prompt before overwriting/deleting
@@ -1038,7 +1032,7 @@ For more information, please go to www.qcodo.com
            updating to.";
 
 			printf('Qcodo Updater Service - ' . QCODO_VERSION . '
-Copyright (c) 2001 - 2007, QuasIdea Development, LLC
+Copyright (c) 2005 - 2009, Quasidea Development, LLC
 This program is free software with ABSOLUTELY NO WARRANTY; you may
 redistribute it under the terms of The MIT License.
 
@@ -1065,34 +1059,5 @@ For more information, please go to www.qcodo.com
 ', $strDetails);
 			exit();
 		}
-	}
-	
-	class QDirectoryToken {
-		public $Token;
-		public $RelativeFlag;
-		public $CoreFlag;
-	}
-
-	/* The following functions are used as QUpdateUtility error handlers for OS-level errors while trying
-	 * to perform updates/deletes/overwrites/saves/socket connections, etc.
-	 * (e.g. cannot connect, or permission denied, file locked, etc.)
-	 */
-	function QUpdateUtilityErrorHandler($intErrorNumber, $strErrorString, $strErrorFile, $intErrorLine) {
-		QUpdateUtility::Error('Could not connect to Qcodo Update webservice at ' . QUpdateUtility::ServiceUrl . ' (' . $strErrorString . ')');
-	}
-
-	function QUpdateUtilityFileSystemErrorHandler($intErrorNumber, $strErrorString, $strErrorFile, $intErrorLine) {
-		QUpdateUtility::$PrimaryInstance->strAlertArray[count(QUpdateUtility::$PrimaryInstance->strAlertArray)] =
-			sprintf('%s while trying to download and save %s', $strErrorString, QUpdateUtility::$CurrentFilePath);
-	}
-
-	function QUpdateUtilityFileSystemErrorHandlerForDelete($intErrorNumber, $strErrorString, $strErrorFile, $intErrorLine) {
-		QUpdateUtility::$PrimaryInstance->strAlertArray[count(QUpdateUtility::$PrimaryInstance->strAlertArray)] =
-			sprintf('%s while trying to delete %s', $strErrorString, QUpdateUtility::$CurrentFilePath);
-	}
-
-	function QUpdateUtilityFileSystemErrorHandlerForRename($intErrorNumber, $strErrorString, $strErrorFile, $intErrorLine) {
-		QUpdateUtility::$PrimaryInstance->strAlertArray[count(QUpdateUtility::$PrimaryInstance->strAlertArray)] =
-			sprintf('%s while trying to rename %s', $strErrorString, QUpdateUtility::$CurrentFilePath);
 	}
 ?>
