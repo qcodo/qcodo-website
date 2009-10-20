@@ -1,8 +1,4 @@
-#!/usr/local/bin/php
 <?php
-	$_SERVER['REQUEST_URI'] = null;
-	require(dirname(__FILE__) . '/cli_prepend.inc.php');
-
 	function RefreshGitData($strRepository, $strRegistryName) {
 		$strXml = file_get_contents('http://github.com/api/v2/xml/commits/list/qcodo/' . $strRepository . '/master');
 		$objXml = new SimpleXMLElement($strXml);

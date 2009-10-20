@@ -1,8 +1,4 @@
-#!/usr/local/bin/php
 <?php
-	$_SERVER['REQUEST_URI'] = null;
-	require(dirname(__FILE__) . '/cli_prepend.inc.php');
-
 	QEmailServer::$SmtpServer = SMTP_SERVER;
 	QEmailServer::$OriginatingServerIp = SMTP_EHLO;
 	QEmailServer::$TestMode = SMTP_TEST_MODE;

@@ -1,7 +1,4 @@
-#!/usr/local/bin/php
 <?php
-	require(dirname(__FILE__) . '/cli_prepend.inc.php');
-
 	// Define Amounts to Generate
 	define('GENERATE_PEOPLE', 200);
 	define('GENERATE_QPM', 150);

@@ -1,8 +1,6 @@
-#!/usr/local/bin/php
 <?php
-	$_SERVER['REQUEST_URI'] = null;
-	require(dirname(__FILE__) . '/cli_prepend.inc.php');
-
+	// This should not be in use anymore
+	exit("error: database already migrated\r\n");
 	$objDb = new mysqli('localhost', 'root', null, 'qcodo_website_old');
 
 	$objResult = $objDb->query('SELECT * FROM person ORDER BY id');

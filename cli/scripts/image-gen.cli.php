@@ -1,7 +1,4 @@
-#!/usr/local/bin/php
 <?php
-	require(dirname(__FILE__) . '/cli_prepend.inc.php');
-
 	require(__INCLUDES__ . '/image_generation/BottomImage.class.php');
 	require(__INCLUDES__ . '/image_generation/LogoImage.class.php');
 	require(__INCLUDES__ . '/image_generation/NavBarImage.class.php');
