@@ -117,7 +117,7 @@
 
 		protected function btnRegister_Click($strFormId, $strControlId, $strParameter) {
 			$this->mctPerson->Person->RegistrationDate = QDateTime::Now();
-			$this->mctPerson->Person->PersonTypeId = PersonType::ForumsUser;
+			$this->mctPerson->Person->PersonTypeId = PersonType::RegisteredUser;
 
 			$this->mctPerson->Person->SetPassword($this->txtPassword->Text);
 			$this->mctPerson->SavePerson();

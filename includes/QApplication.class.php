@@ -226,16 +226,21 @@
 		 */
 		public static function GetLoginTicketFromCookie() {
 			if (array_key_exists('strTicket', $_COOKIE) && $_COOKIE['strTicket']) {
-				$objCrypto = new QCryptography();
-				$strTicket = $objCrypto->Decrypt($_COOKIE['strTicket']);
+				try {
+					$objCrypto = new QCryptography();
+					$strTicket = $objCrypto->Decrypt($_COOKIE['strTicket']);
 
-				$strTicketArray = explode('_', $strTicket);
-				$intTicketId = $strTicketArray[0];
-				$intPersonId = $strTicketArray[1];
+					$strTicketArray = explode('_', $strTicket);
+					$intTicketId = $strTicketArray[0];
+					$intPersonId = $strTicketArray[1];
 
-				$objTicket = LoginTicket::Load($intTicketId);
-				if (($objTicket) && ($objTicket->PersonId == $intPersonId))
-					return $objTicket;
+					$objTicket = LoginTicket::Load($intTicketId);
+					if (($objTicket) && ($objTicket->PersonId == $intPersonId))
+						return $objTicket;
+				} catch (Exception $objExc) {
+					// If we are here, there is something wrong with the cookie, so let's return null
+					return null;
+				}
 			}
 
 			// If we're here, no valid login ticket existed in the cookie
