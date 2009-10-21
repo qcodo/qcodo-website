@@ -83,6 +83,7 @@
 	define ('__IMAGES_CACHED__', '/images/cached');
 	define('ERROR_LOG_PATH', __DATA_ASSETS__ . '/error_log');
 
+	// Enable Error Loggin and "Friendly" Errors, Specifically in Production Only
 	if (SERVER_INSTANCE == 'prod') {
 		define('ERROR_LOG_FLAG', true);
 		define('ERROR_FRIENDLY_PAGE_PATH', __DOCROOT__ . __PHP_ASSETS__ . '/qcodo_website_error_page.html');
