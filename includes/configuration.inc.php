@@ -83,7 +83,7 @@
 	define ('__IMAGES_CACHED__', '/images/cached');
 	define('ERROR_LOG_PATH', __DATA_ASSETS__ . '/error_log');
 
-	if (SERVER_INSTANCE == 'dev') {
+	if (SERVER_INSTANCE == 'prod') {
 		define('ERROR_LOG_FLAG', true);
 		define('ERROR_FRIENDLY_PAGE_PATH', __DOCROOT__ . __PHP_ASSETS__ . '/qcodo_website_error_page.html');
 		define('ERROR_FRIENDLY_AJAX_MESSAGE', 'Oops!  An error has occurred.\r\n\r\nThe error was logged, and we will take a look into this right away.');
