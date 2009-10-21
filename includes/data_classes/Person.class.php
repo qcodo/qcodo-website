@@ -116,7 +116,7 @@
 		 */
 		protected function EncryptPassword($strPassword) {
 			$strPassword = trim(strtolower($strPassword));
-			$strMd5 = md5('salt' . $strPassword);
+			$strMd5 = md5(SALT . $strPassword);
 			return strtolower($strMd5);
 		}
 

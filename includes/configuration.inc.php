@@ -19,25 +19,29 @@
 			define('SMTP_EHLO', '127.0.0.1');
 			define('SMTP_TEST_MODE', true);
 			define('MIME_MAGIC_PATH', null);
+
+			define('SALT', 'salt');
 			break;
 
 		case 'prod':
-			define ('__DOCROOT__', '/var/www/www.qcodo.com/www');
+			define ('__DOCROOT__', '%DOCROOT%');
 
 			define('DB_CONNECTION_1', serialize(array(
 				'adapter' => 'MySqli5',
-				'server' => 'localhost',
+				'server' => '%DB_SERVER%',
 				'port' => null,
-				'database' => 'qcodo_website',
-				'username' => 'root',
-				'password' => '',
+				'database' => '%DB_NAME%',
+				'username' => '%DB_USER%',
+				'password' => '%DB_PASSWORD%',
 				'encoding' => 'utf8',
 				'profiling' => false)));
 
-			define('SMTP_SERVER', '127.0.0.1');
-			define('SMTP_EHLO', '64.13.250.34');
+			define('SMTP_SERVER', '%SMTP_SERVER%');
+			define('SMTP_EHLO', '%SMTP_EHLO%');
 			define('SMTP_TEST_MODE', false);
 			define('MIME_MAGIC_PATH', '/usr/share/file/magic');
+
+			define('SALT', '%SALT%');
 			break;
 	}
 
@@ -77,13 +81,11 @@
 	define ('__PHP_ASSETS__', __SUBDIRECTORY__ . '/assets/php');
 
 	define ('__IMAGES_CACHED__', '/images/cached');
+	define('ERROR_LOG_PATH', __DATA_ASSETS__ . '/error_log');
 
-	if ((function_exists('date_default_timezone_set')) && (!ini_get('date.timezone')))
-		date_default_timezone_set('America/Los_Angeles');
-
-	define('ERROR_PAGE_PATH', __PHP_ASSETS__ . '/_core/error_page.php');
-//	define('ERROR_LOG_PATH', __INCLUDES__ . '/error_log');
-
-//	define('ERROR_FRIENDLY_PAGE_PATH', __PHP_ASSETS__ . '/friendly_error_page.php');
-//	define('ERROR_FRIENDLY_AJAX_MESSAGE', 'Oops!  An error has occurred.\r\n\r\nThe error was logged, and we will take a look into this right away.');
+	if (SERVER_INSTANCE == 'dev') {
+		define('ERROR_LOG_FLAG', true);
+		define('ERROR_FRIENDLY_PAGE_PATH', __DOCROOT__ . __PHP_ASSETS__ . '/qcodo_website_error_page.html');
+		define('ERROR_FRIENDLY_AJAX_MESSAGE', 'Oops!  An error has occurred.\r\n\r\nThe error was logged, and we will take a look into this right away.');
+	}
 ?>
