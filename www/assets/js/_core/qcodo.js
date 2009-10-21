@@ -175,8 +175,8 @@
 
 					// Make the callback
 					qc.pA(strFormId, strControlId, 'QClickEvent', strHashData, null);
-				}
-			}
+				};
+			};
 
 
 
