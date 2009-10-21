@@ -12,3 +12,11 @@ function SetIssuePanelMaximumHeight(strControlId, intMaxHeight) {
 		}
 	}
 }
+
+function topicOver(objTopic) {
+	objTopic.className += ' itemHover';
+}
+
+function topicOut(objTopic) {
+	objTopic.className = objTopic.className.replace(/ itemHover/, '');
+}

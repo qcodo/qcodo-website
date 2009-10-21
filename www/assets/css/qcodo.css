@@ -177,13 +177,14 @@
 			span.paginatorThin { margin: 0; padding: 0; }
 
 			div.topics div.item { border-top: 1px dotted #bbb; font-size: 10px; height: 20px; font-family: verdana; }
-				div.topics div.item a { display: block; color: #000; text-decoration: none; padding: 3px 10px 3px 10px; height: 14px;}
-				div.topics div.item a:hover { background-color: #aba; color: #335;}
-				div.topics div.selected a { background-color: #335; color: #fff; }
-					div.topics div.item a div.title { float: left; width: 180px; height: 14px; overflow: hidden; }
-					div.topics div.item a div.count { float: right; width: 20px; text-align: right; height: 14px; overflow: hidden; font-family: arial, helvetica; font-size: 10px; font-style: italic; font-weight: bold; color: #999; }
-				div.topics div.unviewed a { font-weight: bold; }
-				div.topics div.notify a { font-style: italic; }
+				div.topics div.item div.title { float: left; width: 174px; overflow: hidden; padding: 3px 10px 3px 10px; }
+				div.topics div.item div.count { float: right; width: 20px; text-align: right; padding: 3px; overflow: hidden; font-family: arial, helvetica; font-size: 10px; font-style: italic; font-weight: bold; color: #999; }
+				div.topics div.item a { text-decoration: none; }
+				div.topics div.selected { background-color: #335; color: #fff; }
+				div.topics div.unviewed { font-weight: bold; }
+				div.topics div.notify { font-style: italic; }
+				div.topics div.itemHover { background-color: #aba; cursor: pointer; }
+				div.topics div.itemHover a { background-color: #aba; color: #335; }
 
 		div.topic { float: left; margin-top: 12px; margin-left: 25px; width: 735px;}
 			div.topicForWiki { margin-left: 0px; padding: 12px 127px 12px 128px; float: none; background-color: #eee; border-top: 1px solid #666;}
