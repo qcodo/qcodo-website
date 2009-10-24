@@ -1,6 +1,4 @@
-#!/usr/local/bin/php
 <?php
-	require(dirname(__FILE__) . '/cli_prepend.inc.php');
 	$objIndex = Topic::CreateSearchIndex(); 
 
 	QDataGen::DisplayForEachTaskStart($strDescription = 'Generating Index for Topics', Topic::CountAll());
