@@ -110,10 +110,13 @@
 			$objPackageContribution->RefreshStats();
 
 			if ($blnGzCompress) {
-				return file_get_contents($objPackageContribution->CurrentPackageVersion->GetFilePathCompressed());
+				$strPath = $objPackageContribution->CurrentPackageVersion->GetFilePathCompressed();
 			} else {
-				return file_get_contents($objPackageContribution->CurrentPackageVersion->GetFilePath());
+				$strPath = $objPackageContribution->CurrentPackageVersion->GetFilePath();
 			}
+
+			header('Content-Length: ' . filesize($strPath));
+			return file_get_contents($strPath);
 		}
 	}
 
