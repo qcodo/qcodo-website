@@ -1,6 +1,6 @@
 <?php
 	class LogoImage extends QImageBase {
-		protected $strWidth = 1400;
+		protected $strWidth = 2000;
 		protected $strHeight = 55;
 		protected $intQuality = 5;
 		protected $objDraw;
@@ -47,7 +47,7 @@
 			// Draw Text
 			$this->objDraw->setStrokeColor($objTextColorShadow);
 			$this->objDraw->setFillColor($objTextColorShadow);
-			$this->objDraw->SetFont('Formata-Bold.pfb');
+			$this->objDraw->SetFont(__QCODO__ . '/fonts/Formata-Bold.pfb');
 			$this->SetFontSize(12);
 			$this->DrawText('PHP DEVELOPMENT FRAMEWORK', 159.5, 49.5);
 

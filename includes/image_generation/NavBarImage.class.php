@@ -77,7 +77,7 @@
 					$this->objDraw->setTextAntiAlias(false);
 					$this->objDraw->setStrokeColor($objTextColor);
 					$this->objDraw->setFillColor($objTextColor);
-					$this->objDraw->SetFont('Formata-Medium.pfb');
+					$this->objDraw->SetFont(__QCODO__ . '/fonts/Formata-Medium.pfb');
 					$this->SetFontSize(14);
 					$this->DrawTextCenterBottom($this->Text, 4);
 
@@ -109,7 +109,7 @@
 					$this->objDraw->setTextAntiAlias(false);
 					$this->objDraw->setStrokeColor($objTextColor);
 					$this->objDraw->setFillColor($objTextColor);
-					$this->objDraw->SetFont('Formata-Medium.pfb');
+					$this->objDraw->SetFont(__QCODO__ . '/fonts/Formata-Medium.pfb');
 					$this->SetFontSize(14);
 					$this->DrawTextCenterBottom($this->Text, 4);
 

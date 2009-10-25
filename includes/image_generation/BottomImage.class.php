@@ -6,13 +6,19 @@
 		public $Text = 'COPYRIGHT INFORMATION';
 		public $XPosition = 8;
 		public $YPosition = 16;
-		public $Font = 'Formata-Medium.pfb';
+		public $Font;
 		public $FontSize = 9;
 
 		protected $objDraw;
 		protected $objImage;
 
 		protected $strImageType = QImageType::Jpeg;
+
+		public function __construct($objParentObject, $strControlId = null) {
+			if ($objParentObject)
+				parent::__construct($objParentObject, $strControlId);
+			$this->Font = __QCODO__ . '/fonts/Formata-Medium.pfb';
+		}
 
 		protected function SetFontSize($intFontSize) {
 			$this->objDraw->SetFontSize($intFontSize * $this->intQuality);

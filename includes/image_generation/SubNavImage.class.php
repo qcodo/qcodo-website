@@ -59,7 +59,7 @@
 					$this->objImage->NewImage($this->strWidth * $this->intQuality, $this->strHeight * $this->intQuality, $objBackgroundColor);
 
 					$this->objDraw = new IMagickDraw();
-					$this->objDraw->SetFont('Formata-Regular.pfb');
+					$this->objDraw->SetFont(__QCODO__ . '/fonts/Formata-Regular.pfb');
 					$this->SetFontSize(10);
 					break;
 
@@ -76,7 +76,7 @@
 					$this->objImage->NewImage($this->strWidth * $this->intQuality, $this->strHeight * $this->intQuality, $objBackgroundColor);
 
 					$this->objDraw = new IMagickDraw();
-					$this->objDraw->SetFont('Formata-Medium.pfb');
+					$this->objDraw->SetFont(__QCODO__ . '/fonts/Formata-Medium.pfb');
 					$this->SetFontSize(10);
 					break;
 			}
