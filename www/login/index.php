@@ -55,9 +55,9 @@
 			// Add Actions
 			$this->txtUsername->AddAction(new QEnterKeyEvent(), new QFocusControlAction($this->txtPassword));
 			$this->txtUsername->AddAction(new QEnterKeyEvent(), new QTerminateAction());
-			$this->txtPassword->AddAction(new QEnterKeyEvent(), new QAjaxAction('btnLogin_Click'));
+			$this->txtPassword->AddAction(new QEnterKeyEvent(), new QServerAction('btnLogin_Click'));
 			$this->txtPassword->AddAction(new QEnterKeyEvent(), new QTerminateAction());
-			$this->btnLogin->AddAction(new QClickEvent(), new QAjaxAction('btnLogin_Click'));
+			$this->btnLogin->AddAction(new QClickEvent(), new QServerAction('btnLogin_Click'));
 
 			// Initial Focus
 			$this->txtUsername->Focus();
