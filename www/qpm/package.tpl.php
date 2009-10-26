@@ -18,11 +18,11 @@
 		<?php _b($this->objPackage->Description); ?>
 	</div>
 	
-	<div style="background-color: #ffd; padding: 5px 10px; border: 1px solid #cc9; margin-top: 12px; margin-bottom: 12px;">
+	<div style="background-color: #ffd; padding: 5px 10px; border: 1px solid #cc9; margin-top: 12px; margin-bottom: 12px; width: 740px; margin-left: 100px;">
 <?php if ($objContribution = $this->objPackage->GetMostRecentContribution()) { ?>
-		To install any of the QPM packages below, use the <strong>qpm-install</strong> command in your Qcodo installation, for example:<br/>
+		To download and install any of the QPM packages below, use the <strong>qpm-download</strong> command in your Qcodo installation, for example:<br/>
 		<strong style="font-family: monaco, courier, courier new, monospaced; position: relative; left: 50px;">
-			qcodo qpm-install <?php _p($objContribution->Person->Username); ?>/<?php _p($this->objPackage->Token); ?>
+			qcodo qpm-download <?php _p($objContribution->Person->Username); ?>/<?php _p($this->objPackage->Token); ?>
 		</strong>
 		<br/><br/>
 <?php } ?>
@@ -31,6 +31,11 @@
 		<strong style="font-family: monaco, courier, courier new, monospaced; position: relative; left: 50px;">
 			qcodo qpm-upload -p your-password <?php _p(QApplication::$Person ? QApplication::$Person->Username : 'your-username'); ?>/<?php _p($this->objPackage->Token); ?>
 		</strong>
+		<br/><br/>
+		
+		<em style="font-size: 11px; color: #888;">
+			(Note that the "<strong>qcodo</strong>" command refers to the <strong>qcodo</strong> or <strong>qcodo.bat</strong> script in your <strong>cli</strong> directory.)
+		</em>
 	</div>
 
 	<?php $this->dtgContributions->Render(); ?>

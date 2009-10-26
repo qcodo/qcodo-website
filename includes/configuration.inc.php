@@ -3,7 +3,7 @@
 
 	switch (SERVER_INSTANCE) {
 		case 'dev':
-			define ('__DOCROOT__', '/var/www/qcodo-website/www');
+			define ('__DOCROOT__', '/var/www/qcodo/website/www');
 
 			define('DB_CONNECTION_1', serialize(array(
 				'adapter' => 'MySqli5',
