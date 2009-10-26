@@ -70,7 +70,7 @@
 			if (trim($this->txtTitle->Text)) {
 				$objCondition = QQ::AndCondition(
 					$objCondition,
-					QQ::Like(QQN::WikiItem()->CurrentName, '%' . trim($this->txttitle->Text) . '%')
+					QQ::Like(QQN::WikiItem()->CurrentName, '%' . trim($this->txtTitle->Text) . '%')
 				);
 			}
 			
