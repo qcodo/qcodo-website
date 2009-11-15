@@ -18,32 +18,37 @@
 
 		<div style="float: left; font-size: 11px; font-weight: bold; margin-right: 15px;">
 			Summary<br/>
-			<?php $this->txtSummary->Render('Width=140px'); ?>
+			<?php $this->txtSummary->Render('Width=125px'); ?>
 		</div>
 
 		<div style="float: left; font-size: 11px; font-weight: bold; margin-right: 15px;">
 			Priority<br/>
-			<?php $this->lstPriority->Render('Width=140px'); ?>
+			<?php $this->lstPriority->Render('Width=125px'); ?>
 		</div>
 
 		<div style="float: left; font-size: 11px; font-weight: bold; margin-right: 15px;">
 			Status<br/>
-			<?php $this->lstStatus->Render('Width=140px'); ?>
+			<?php $this->lstStatus->Render('Width=125px'); ?>
 		</div>
 
 		<div style="float: left; font-size: 11px; font-weight: bold; margin-right: 15px;">
 			Category<br/>
-			<?php $this->lstCategory->Render('Width=140px'); ?>
+			<?php $this->lstCategory->Render('Width=125px'); ?>
 		</div>
 
 		<div style="float: left; font-size: 11px; font-weight: bold; margin-right: 15px;">
 			Posted By<br/>
-			<?php $this->txtPostedBy->Render('Width=140px'); ?>
+			<?php $this->txtPostedBy->Render('Width=125px'); ?>
 		</div>
 
 		<div style="float: left; font-size: 11px; font-weight: bold; margin-right: 15px;">
 			Assigned To<br/>
-			<?php $this->txtAssignedTo->Render('Width=140px'); ?>
+			<?php $this->txtAssignedTo->Render('Width=125px'); ?>
+		</div>
+
+		<div style="float: left; font-size: 11px; font-weight: bold; margin-right: 15px;">
+			Closed Issues<br/>
+			<span style="font-weight: normal;"><?php $this->chkIncludeClosed->Render('Text=Show'); ?></span>
 		</div>
 
 		<br clear="all"/>

@@ -21,6 +21,7 @@
 		protected $lstStatus;
 		protected $txtPostedBy;
 		protected $txtAssignedTo;
+		protected $chkIncludeClosed;
 
 		protected function Form_Create() {
 			parent::Form_Create();
@@ -109,6 +110,9 @@
 			$this->txtAssignedTo->AddAction(new QChangeEvent(), new QAjaxAction('Refresh'));
 			$this->txtAssignedTo->AddAction(new QEnterKeyEvent(), new QAjaxAction('Refresh'));
 			$this->txtAssignedTo->AddAction(new QEnterKeyEvent(), new QTerminateAction());
+			
+			$this->chkIncludeClosed = new QCheckBox($this);
+			$this->chkIncludeClosed->AddAction(new QClickEvent(), new QAjaxAction('Refresh'));
 		}
 		
 		public function dtgIssues_Bind() {
@@ -154,6 +158,13 @@
 				$objCondition = QQ::AndCondition(
 					$objCondition,
 					QQ::Like(QQN::Issue()->AssignedToPerson->DisplayName, trim($this->txtAssignedTo->Text) . '%')
+				);
+			}
+			
+			if (!$this->chkIncludeClosed->Checked) {
+				$objCondition = QQ::AndCondition(
+					$objCondition,
+					QQ::NotEqual(QQN::Issue()->IssueStatusTypeId, IssueStatusType::Closed)
 				);
 			}
 
