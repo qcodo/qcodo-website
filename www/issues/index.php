@@ -26,7 +26,7 @@
 		protected function Form_Create() {
 			parent::Form_Create();
 			
-			$this->dtgIssues = new IssueDataGrid($this);
+			$this->dtgIssues = new IssueDataGrid($this, 'issues');
 			$this->dtgIssues->CssClass = 'datagrid issuesDataGrid';
 			$this->dtgIssues->Paginator = new QPaginator($this->dtgIssues);
 			$this->dtgIssues->AlternateRowStyle->CssClass = 'alternate';
@@ -34,15 +34,15 @@
 			$this->dtgIssues->NounPlural = 'issues';
 			$this->dtgIssues->SetDataBinder('dtgIssues_Bind');
 
-			$this->dtgIssues->MetaAddColumn('Id', 'Html=<?= $_FORM->RenderId($_ITEM); ?>', 'Name=Issue ID', 'HtmlEntities=false', 'Width=60px');
-			$this->dtgIssues->MetaAddColumn('Title', 'Html=<?= $_FORM->RenderTitle($_ITEM); ?>', 'Name=Summary', 'HtmlEntities=false', 'Width=240px');
-			$this->dtgIssues->MetaAddTypeColumn('IssuePriorityTypeId', 'IssuePriorityType', 'Name=Priority', 'Width=68px');
-			$this->dtgIssues->MetaAddTypeColumn('IssueStatusTypeId', 'IssueStatusType', 'Html=<?= $_FORM->RenderStatus($_ITEM); ?>', 'HtmlEntities=false', 'Name=Status', 'Width=85px');
-			$this->dtgIssues->AddColumn(new QDataGridColumn('Category', '<?= $_FORM->RenderCategory($_ITEM); ?>', 'Width=115px', 'CssClass=small'));
-			$this->dtgIssues->MetaAddColumn('PostDate', 'Name=Posted', 'CssClass=small', 'Width=65px');
-			$this->dtgIssues->MetaAddColumn(QQN::Issue()->PostedByPerson->DisplayName, 'Name=By', 'Html=<?= $_FORM->RenderPostedBy($_ITEM); ?>', 'HtmlEntities=false', 'Width=100px', 'CssClass=small reverseLink');
-			$this->dtgIssues->MetaAddColumn(QQN::Issue()->TopicLink->LastPostDate, 'Name=Last Updated', 'CssClass=small', 'Width=65px');
-			$this->dtgIssues->MetaAddColumn(QQN::Issue()->AssignedToPerson->DisplayName, 'Name=Assigned To', 'Html=<?= $_FORM->RenderAssignedTo($_ITEM); ?>', 'HtmlEntities=false', 'Width=100px', 'CssClass=small reverseLink');
+			$this->dtgIssues->MetaAddColumn('Id', 'Html=<?= $_FORM->RenderId($_ITEM); ?>', 'Name=Issue ID', 'HtmlEntities=false');
+			$this->dtgIssues->MetaAddColumn('Title', 'Html=<?= $_FORM->RenderTitle($_ITEM); ?>', 'Name=Summary', 'HtmlEntities=false');
+			$this->dtgIssues->MetaAddTypeColumn('IssuePriorityTypeId', 'IssuePriorityType', 'Name=Priority');
+			$this->dtgIssues->MetaAddTypeColumn('IssueStatusTypeId', 'IssueStatusType', 'Html=<?= $_FORM->RenderStatus($_ITEM); ?>', 'HtmlEntities=false', 'Name=Status');
+			$this->dtgIssues->AddColumn(new QDataGridColumn('Category', '<?= $_FORM->RenderCategory($_ITEM); ?>', 'CssClass=small'));
+			$this->dtgIssues->MetaAddColumn('PostDate', 'Name=Posted', 'CssClass=small');
+			$this->dtgIssues->MetaAddColumn(QQN::Issue()->PostedByPerson->DisplayName, 'Name=By', 'Html=<?= $_FORM->RenderPostedBy($_ITEM); ?>', 'HtmlEntities=false', 'CssClass=small reverseLink');
+			$this->dtgIssues->MetaAddColumn(QQN::Issue()->TopicLink->LastPostDate, 'Name=Last Updated', 'CssClass=small');
+			$this->dtgIssues->MetaAddColumn(QQN::Issue()->AssignedToPerson->DisplayName, 'Name=Assigned To', 'Html=<?= $_FORM->RenderAssignedTo($_ITEM); ?>', 'HtmlEntities=false', 'CssClass=small reverseLink');
 
 			$this->dtgIssues->GetColumnByName('Status')->OrderByClause = QQ::OrderBy(QQN::Issue()->IssueStatusTypeId, QQN::Issue()->IssueResolutionTypeId);
 			$this->dtgIssues->GetColumnByName('Status')->ReverseOrderByClause = QQ::OrderBy(QQN::Issue()->IssueStatusTypeId, false, QQN::Issue()->IssueResolutionTypeId, false);

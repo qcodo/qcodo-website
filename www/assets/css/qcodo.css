@@ -264,6 +264,15 @@
 		table.datagrid td.small { font-size: 10px; }
 		table.datagrid td.reverseLink a { text-decoration: none; }
 		table.datagrid td.reverseLink a:hover { text-decoration: underline; }
+		th#issues_rowh_0 { width: 60px; }
+		th#issues_rowh_1 { width: 240px; }
+		th#issues_rowh_2 { width: 68px; }
+		th#issues_rowh_3 { width: 85px; }
+		th#issues_rowh_4 { width: 115px; }
+		th#issues_rowh_5 { width: 65px; }
+		th#issues_rowh_6 { width: 100px; }
+		th#issues_rowh_7 { width: 65px; }
+		th#issues_rowh_8 { width: 100px; }
 
 	/* QCalendar */
 	div.calendar { width: 200px; border: 1px solid #337; background-color: #ccf; }
