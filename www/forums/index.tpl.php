@@ -1,5 +1,5 @@
 <?php require(__INCLUDES__ . '/header.inc.php'); ?>
-<link rel="alternate" type="application/rss+xml" title="Qcodo Forums" href="/rss/forums.php" />
+<link rel="alternate" type="application/rss+xml" title="Qcodo.com Forums RSS Feed" href="/rss/forums.php" />
 
 	<div class="searchBar">
 		<div class="title">Qcodo Forums</div>

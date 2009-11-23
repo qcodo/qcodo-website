@@ -6,6 +6,7 @@
 <style type="text/css">@import url("/assets/css/qcodo.css");</style>
 <script type="text/javascript" src="/assets/js/_core/_qc_packed.js"></script>
 <script type="text/javascript" src="/assets/js/qcodo.js"></script>
+<link rel="alternate" type="application/rss+xml" title="Qcodo.com RSS Feed" href="/rss/rss.php" />
 </head><body>
 
 	<?php $this->RenderBegin(); ?>
