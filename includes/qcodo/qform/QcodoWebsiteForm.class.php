@@ -5,22 +5,7 @@
 		protected $intNavBarIndex;
 		protected $intSubNavIndex;
 
-		protected $strIgnoreJavaScriptFileArray = array(
-			'_core/calendar.js',
-			'_core/calendar_popup.js',
-			'_core/control.js',
-			'_core/control_dialog.js',
-			'_core/control_handle.js',
-			'_core/control_move.js',
-			'_core/control_resize.js',
-			'_core/control_rollover.js',
-			'_core/date_time_picker.js',
-			'_core/event.js',
-			'_core/listbox.js',
-			'_core/logger.js',
-			'_core/post.js',
-			'_core/qcodo.js',
-			'_core/treenav.js');
+		protected $strIgnoreJavaScriptFileArray = array('_core');
 
 		protected function Form_Create() {
 			$this->pnlNavBar = new NavBarPanel($this, null, $this->intNavBarIndex, $this->intSubNavIndex);
