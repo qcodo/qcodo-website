@@ -50,6 +50,20 @@
 					break;
 				case 'SidenavTitle':
 					return sprintf('[%s] %s', $this->dttLastPostDate->__toString('YYYY-MM-DD'), $this->strName);
+				case 'LinkLastPage':
+					switch ($this->TopicLink->TopicLinkTypeId) {
+						case TopicLinkType::Forum:
+							return '/forums/forum.php/' . $this->TopicLink->ForumId . '/' . $this->Id . '/lastpage';
+						case TopicLinkType::Issue:
+							return '/issues/view.php/' . $this->TopicLink->IssueId . '/lastpage';
+						case TopicLinkType::Package:
+							return '/qpm/package.php/' . $this->TopicLink->Package->Token . '?lastpage'; 
+						case TopicLinkType::WikiItem:
+							return $this->TopicLink->WikiItem->UrlPath . '?lastpage';
+						default:
+							throw new Exception('Invalid TopicLinkTypeId: ' . $this->TopicLink->TopicLinkTypeId);
+					}
+					break;
 
 				default:
 					try {

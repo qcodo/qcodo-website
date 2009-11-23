@@ -52,7 +52,6 @@
 				$this->pnlMessages->strAdditionalCssClass = 'topicForPackage';
 				if (array_key_exists('lastpage', $_GET)) {
 					$this->pnlMessages->SetPageNumber(QPaginatedControl::LastPage);
-					$this->pnlMessages_Show();
 				}
 			} else {
 				$strTokenParts = explode('_', $this->objPackage->Token);

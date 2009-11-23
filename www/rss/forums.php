@@ -1,7 +1,7 @@
 <?php
 	require('../../includes/prepend.inc.php');
 
-	$objRss = new QRssFeed('Qcodo Forums', 'http://www.qcodo.com/forums/',  'The Qcodo forums attempts to provide a community to post, discuss, ask, and converse about the current state of the framework, as well as provide an opportunity for members to discuss the future direction of Qcodo.');
+	$objRss = new QRssFeed('Qcodo.com Forums RSS Feed', 'http://www.qcodo.com/forums/',  'The Qcodo forums attempts to provide a community to post, discuss, ask, and converse about the current state of the framework, as well as provide an opportunity for members to discuss the future direction of Qcodo.');
 	$objRss->Image = new QRssImage('http://www.qcodo.com/images/qcodo_smaller.png');
 	$objRss->PubDate = new QDateTime(QDateTime::Now);
 
