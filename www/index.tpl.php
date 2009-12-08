@@ -18,8 +18,12 @@
 	<br/>
 	<h1>Qcodo Release Information</h1>
 	<div class="sbContent">
+<?php if (QApplication::GetQcodoVersion(false)) { ?>
 		<p><strong>Current Dev Release</strong><br/><a href="/downloads/">Qcodo v<?php _p(QApplication::GetQcodoVersion(false)); ?></a><br/><?php _p(QApplication::GetQcodoVersionDate(false)->__toString('DDDD, MMMM D, YYYY')); ?></p>
 		<p><strong>Current Stable Release</strong><br/><a href="/downloads/">Qcodo v<?php _p(QApplication::GetQcodoVersion(true)); ?></a><br/><?php _p(QApplication::GetQcodoVersionDate(true)->__toString('DDDD, MMMM D, YYYY')); ?></p>
+<?php } else { ?>
+		<p>Currently performing a Qcodo build...</p>
+<?php } ?>
 	</div>
 	<br/>
 	<h1>Qcodo Development Information</h1>

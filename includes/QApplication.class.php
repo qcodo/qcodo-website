@@ -404,10 +404,13 @@
 		}
 
 		public static function GetQcodoVersion($blnStableVersion = true) {
-			if ($blnStableVersion)
+			if ($blnStableVersion) {
+				if (!file_exists(__QCODO_BUILDS__ . '/STABLE')) return null;
 				return trim(file_get_contents(__QCODO_BUILDS__ . '/STABLE'));
-			else
+			} else {
+				if (!file_exists(__QCODO_BUILDS__ . '/DEVELOPMENT')) return null;
 				return trim(file_get_contents(__QCODO_BUILDS__ . '/DEVELOPMENT'));
+			}
 		}
 
 		public static function GetQcodoChangelog() {
@@ -419,7 +422,7 @@
 		 */
 		public static function GetQcodoVersionDate($blnStableVersion = true) {
 			$strVersion = QApplication::GetQcodoVersion($blnStableVersion);
-			return QDateTime::FromTimestamp(filemtime(__QCODO_BUILDS__ . '/qcodo-' . $strVersion . '.tar.gz'));
+			if ($strVersion) return QDateTime::FromTimestamp(filemtime(__QCODO_BUILDS__ . '/qcodo-' . $strVersion . '.tar.gz'));
 		}
 
 		/**
@@ -427,8 +430,10 @@
 		 */
 		public static function GetQcodoVersionSize($blnStableVersion = true, $blnTarGz = true) {
 			$strVersion = QApplication::GetQcodoVersion($blnStableVersion);
-			$strExtension = ($blnTarGz) ? '.tar.gz' : '.zip';
-			return QApplication::DisplayByteSize(filesize(__QCODO_BUILDS__ . '/qcodo-' . $strVersion . $strExtension));
+			if ($strVersion) {
+				$strExtension = ($blnTarGz) ? '.tar.gz' : '.zip';
+				return QApplication::DisplayByteSize(filesize(__QCODO_BUILDS__ . '/qcodo-' . $strVersion . $strExtension));
+			}
 		}
 	}
 ?>

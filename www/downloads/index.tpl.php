@@ -27,55 +27,64 @@
 	</div>
 
 	<h1 style="margin-top: 24px;">Current Stable Version</h1>
-	<h3>
-		version: <strong><?php _p($strStableVersion); ?></strong>
-		&nbsp;|&nbsp;
-		released: <strong><?php _p($dttStableDate->__toString(QDateTime::FormatDisplayDateTimeFull)); ?></strong>
-	</h3>
-
-	<div style="margin-left: 25px; margin-top: 12px; font-size: 18px;">
-		<strong><a href="/downloads/get.php/release_stable_targz/qcodo-<?php _p($strStableVersion); ?>.tar.gz" class="link">qcodo-<?php _p($strStableVersion); ?>.tar.gz</a></strong>
+<?php if (QApplication::GetQcodoVersion(true)) { ?>
 		<h3>
-			type: <strong>Mac OS X, Linux, and Unix Tarball</strong>
+			version: <strong><?php _p($strStableVersion); ?></strong>
 			&nbsp;|&nbsp;
-			size: <strong><?php _p($strStableSizeTarGz) ?></strong>
+			released: <strong><?php _p($dttStableDate->__toString(QDateTime::FormatDisplayDateTimeFull)); ?></strong>
 		</h3>
-	</div>
+	
+		<div style="margin-left: 25px; margin-top: 12px; font-size: 18px;">
+			<strong><a href="/downloads/get.php/release_stable_targz/qcodo-<?php _p($strStableVersion); ?>.tar.gz" class="link">qcodo-<?php _p($strStableVersion); ?>.tar.gz</a></strong>
+			<h3>
+				type: <strong>Mac OS X, Linux, and Unix Tarball</strong>
+				&nbsp;|&nbsp;
+				size: <strong><?php _p($strStableSizeTarGz) ?></strong>
+			</h3>
+		</div>
+	
+		<div style="margin-left: 25px; margin-top: 12px; font-size: 18px;">
+			<strong><a href="/downloads/get.php/release_stable_zip/qcodo-<?php _p($strStableVersion); ?>.zip" class="link">qcodo-<?php _p($strStableVersion); ?>.zip</a></strong>
+			<h3>
+				type: <strong>Windows ZIP</strong>
+				&nbsp;|&nbsp;
+				size: <strong><?php _p($strStableSizeZip) ?></strong>
+			</h3>
+		</div>
+<?php } else { ?>
+		<p>Currently performing a Qcodo build...</p>
+<?php } ?>
 
-	<div style="margin-left: 25px; margin-top: 12px; font-size: 18px;">
-		<strong><a href="/downloads/get.php/release_stable_zip/qcodo-<?php _p($strStableVersion); ?>.zip" class="link">qcodo-<?php _p($strStableVersion); ?>.zip</a></strong>
-		<h3>
-			type: <strong>Windows ZIP</strong>
-			&nbsp;|&nbsp;
-			size: <strong><?php _p($strStableSizeZip) ?></strong>
-		</h3>
-	</div>
 
 
 	<h1 style="margin-top: 24px;">Current Development Version</h1>
-	<h3>
-		version: <strong><?php _p($strDevVersion); ?></strong>
-		&nbsp;|&nbsp;
-		released: <strong><?php _p($dttDevDate->__toString(QDateTime::FormatDisplayDateTimeFull)); ?></strong>
-	</h3>
-
-	<div style="margin-left: 25px; margin-top: 12px; font-size: 18px;">
-		<strong><a href="/downloads/get.php/release_dev_targz/qcodo-<?php _p($strDevVersion); ?>.tar.gz" class="link">qcodo-<?php _p($strDevVersion); ?>.tar.gz</a></strong>
+<?php if (QApplication::GetQcodoVersion(false)) { ?>
 		<h3>
-			type: <strong>Mac OS X, Linux, and Unix Tarball</strong>
+			version: <strong><?php _p($strDevVersion); ?></strong>
 			&nbsp;|&nbsp;
-			size: <strong><?php _p($strDevSizeTarGz) ?></strong>
+			released: <strong><?php _p($dttDevDate->__toString(QDateTime::FormatDisplayDateTimeFull)); ?></strong>
 		</h3>
-	</div>
-
-	<div style="margin-left: 25px; margin-top: 12px; font-size: 18px;">
-		<strong><a href="/downloads/get.php/release_dev_zip/qcodo-<?php _p($strDevVersion); ?>.zip" class="link">qcodo-<?php _p($strDevVersion); ?>.zip</a></strong>
-		<h3>
-			type: <strong>Windows ZIP</strong>
-			&nbsp;|&nbsp;
-			size: <strong><?php _p($strDevSizeZip) ?></strong>
-		</h3>
-	</div>
+	
+		<div style="margin-left: 25px; margin-top: 12px; font-size: 18px;">
+			<strong><a href="/downloads/get.php/release_dev_targz/qcodo-<?php _p($strDevVersion); ?>.tar.gz" class="link">qcodo-<?php _p($strDevVersion); ?>.tar.gz</a></strong>
+			<h3>
+				type: <strong>Mac OS X, Linux, and Unix Tarball</strong>
+				&nbsp;|&nbsp;
+				size: <strong><?php _p($strDevSizeTarGz) ?></strong>
+			</h3>
+		</div>
+	
+		<div style="margin-left: 25px; margin-top: 12px; font-size: 18px;">
+			<strong><a href="/downloads/get.php/release_dev_zip/qcodo-<?php _p($strDevVersion); ?>.zip" class="link">qcodo-<?php _p($strDevVersion); ?>.zip</a></strong>
+			<h3>
+				type: <strong>Windows ZIP</strong>
+				&nbsp;|&nbsp;
+				size: <strong><?php _p($strDevSizeZip) ?></strong>
+			</h3>
+		</div>
+<?php } else { ?>
+		<p>Currently performing a Qcodo build...</p>
+<?php } ?>
 
 
 	<h1 style="margin-top: 24px;">Older Qcodo Releases</h1>
