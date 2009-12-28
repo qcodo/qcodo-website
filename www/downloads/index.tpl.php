@@ -24,6 +24,9 @@
 		Users of any version >= 0.3.1 can upgrade/downgrade to any other version of Qcodo >= 0.3.1, or to the latest
 		"development" or "stable", by using the "<strong>Qcodo Updater</strong>" command line
 		tool.  The tool is located in the <strong>_devtools_cli</strong> or <strong>cli</strong> directory of your Qcodo installation.
+		<br/><br/>
+		<strong>Upgrading from Qcodo 0.3.x to 0.4.x?</strong>  Be sure and read the <a href="/wiki/upgrading_from_03x_to_04x">Wiki Page</a>
+		on it for more information.
 	</div>
 
 	<h1 style="margin-top: 24px;">Current Stable Version</h1>
