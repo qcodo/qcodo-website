@@ -31,8 +31,9 @@
 
 			$this->txtMessage = $this->mctMessage->txtMessage_Create('message');
 			$this->txtMessage->TextMode = QTextMode::MultiLine;
+			$this->txtMessage->CrossScripting = QCrossScripting::Allow;
 			$this->txtMessage->Required = true;
-			
+
 			$this->btnOkay = new QButton($this);
 			$this->btnOkay->CausesValidation = $this;
 
