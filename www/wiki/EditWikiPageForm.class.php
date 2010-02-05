@@ -14,6 +14,7 @@
 			$this->txtContent->Text = $objWikiObject->Content;
 			$this->txtContent->Required = true;
 			$this->txtContent->TextMode = QTextMode::MultiLine;
+			$this->txtContent->CrossScripting = QCrossScripting::Allow;
 		}
 
 		protected function SaveWikiVersion() {
