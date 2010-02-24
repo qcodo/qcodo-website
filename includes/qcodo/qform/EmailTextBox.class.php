@@ -8,9 +8,12 @@
 		//////////
 		public function Validate() {
 			if (parent::Validate()) {
-				if ($this->strText != "") {
+				if (strlen(trim($this->strText))) {
 					// RegExp taken from php.net
-					if ( !eregi("^[a-z0-9]+([_\\.-][a-z0-9]+)*"."@([a-z0-9]+([\.-][a-z0-9]{1,})+)*$", $this->strText) ) {
+					$this->strText = trim($this->strText);
+					$strEmailAddressArray = QEmailServer::GetEmailAddresses($this->strText);
+					if ((count($strEmailAddressArray) != 1) ||
+						(strtolower($strEmailAddressArray[0]) != strtolower($this->strText))) {
 						$this->strValidationError = "Invalid e-mail address";
 						return false;
 					}
