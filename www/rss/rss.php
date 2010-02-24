@@ -48,7 +48,7 @@
 		$objItem->Author = ($objMessage->Person) ? $objMessage->Person->DisplayName : 'Qcodo System Message';
 		$objItem->Comments = $objItem->Link;
 		$objItem->PubDate = $objMessage->PostDate;
-		$objItem->Guid = $objItem->Link;
+		$objItem->Guid = $objItem->Link . '#' . $objMessage->ReplyNumber;
 		$objItem->GuidPermaLink = true;
 		
 		switch ($objTopic->TopicLink->TopicLinkTypeId) {

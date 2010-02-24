@@ -2,6 +2,7 @@
 	$dttLocalize = QApplication::LocalizeDateTime($_ITEM->PostDate);
 ?>
 <div class="messageBar <?php if ($_CONTROL->CurrentItemIndex % 2) print 'messageBarAlternate'; ?>">
+	<a name="<?php _p($_ITEM->ReplyNumber); ?>"></a>
 	<div class="name">
 <?php
 	if ($_CONTROL->ParentControl->IsMessageEditable($_ITEM)) {
