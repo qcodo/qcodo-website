@@ -96,6 +96,7 @@
 
 		protected function btnUpdate_Click($strFormId, $strControlId, $strParameter) {
 			$this->mctPerson->SavePerson();
+			$this->mctPerson->Person->RefreshDisplayName();
 			QApplication::Redirect($this->mctPerson->Person->ViewProfileUrl);
 		}
 	}
