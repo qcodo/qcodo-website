@@ -93,6 +93,8 @@
 			if (!$this->blnEditMode) {
 				$this->mctMessage->Message->SendAlerts();
 				$this->mctMessage->Message->Topic->UnassociateAllPeopleAsRead();
+				//Mark as read for poster
+				$this->mctMessage->Message->Topic->AssociatePersonAsRead(QApplication::$Person);
 			}
 
 			$this->ParentControl->CloseMessageDialog(true, !$this->blnEditMode);
