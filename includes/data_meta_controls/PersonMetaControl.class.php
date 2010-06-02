@@ -25,7 +25,7 @@
 		 * @return QTextBox
 		 */
 		public function txtEmail_Create($strControlId = null) {
-			$this->txtEmail = new EmailTextBox($this->objParentObject, $strControlId);
+			$this->txtEmail = new QEmailTextBox($this->objParentObject, $strControlId);
 			$this->txtEmail->Name = QApplication::Translate('Email');
 			$this->txtEmail->Text = $this->objPerson->Email;
 			$this->txtEmail->Required = true;
@@ -53,7 +53,7 @@
 		 * @param string $strControlId optional ControlId to use
 		 * @return QListBox
 		 */
-		public function lstCountry_Create($strControlId = null) {
+		public function lstCountry_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstCountry = new QListBox($this->objParentObject, $strControlId);
 			$this->lstCountry->Name = QApplication::Translate('Country');
 			$this->lstCountry->AddItem(QApplication::Translate('- Select One -'), null);

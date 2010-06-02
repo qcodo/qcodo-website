@@ -20,7 +20,7 @@
 			parent::Form_Create();
 
 			// Define Controls
-			$this->txtEmail = new EmailTextBox($this,'email');
+			$this->txtEmail = new QEmailTextBox($this, 'email');
 			$this->txtEmail->Name = 'Email';
 			$this->txtEmail->MaxLength = Person::EmailMaxLength;
 			$this->txtEmail->Required = true;
