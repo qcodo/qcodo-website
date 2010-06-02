@@ -15,11 +15,11 @@
 	 * 
 	 * @package Qcodo Website
 	 * @subpackage GeneratedDataObjects
-	 * @property-read integer $Id the value for intId (Read-Only PK)
+	 * @property integer $Id the value for intId (Read-Only PK)
 	 * @property string $Filename the value for strFilename 
 	 * @property string $Token the value for strToken (Unique)
 	 * @property integer $Counter the value for intCounter 
-	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
+	 * @property boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
 	class CounterGen extends QBaseClass {
 
@@ -147,7 +147,7 @@
 		 * on load methods.
 		 * @param QQueryBuilder &$objQueryBuilder the QueryBuilder object that will be created
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause object or array of QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with (sending in null will skip the PrepareStatement step)
 		 * @param boolean $blnCountOnly only select a rowcount
 		 * @return string the query statement
@@ -209,7 +209,7 @@
 		 * Static Qcodo Query method to query for a single Counter object.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return Counter the queried object
 		 */
@@ -231,7 +231,7 @@
 		 * Static Qcodo Query method to query for an array of Counter objects.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return Counter[] the queried objects as an array
 		 */
@@ -250,10 +250,35 @@
 		}
 
 		/**
+		 * Static Qcodo query method to issue a query and get a cursor to progressively fetch its results.
+		 * Uses BuildQueryStatment to perform most of the work.
+		 * @param QQCondition $objConditions any conditions on the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
+		 * @return QDatabaseResultBase the cursor resource instance
+		 */
+		public static function QueryCursor(QQCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
+			// Get the query statement
+			try {
+				$strQuery = Counter::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+
+			// Perform the query
+			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
+		
+			// Return the results cursor
+			$objDbResult->QueryBuilder = $objQueryBuilder;
+			return $objDbResult;
+		}
+
+		/**
 		 * Static Qcodo Query method to query for a count of Counter objects.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return integer the count of queried objects as an integer
 		 */
@@ -364,7 +389,7 @@
 		 * Takes in an optional strAliasPrefix, used in case another Object::InstantiateDbRow
 		 * is calling this Counter::InstantiateDbRow in order to perform
 		 * early binding on referenced objects.
-		 * @param DatabaseRowBase $objDbRow
+		 * @param QDatabaseRowBase $objDbRow
 		 * @param string $strAliasPrefix
 		 * @param string $strExpandAsArrayNodes
 		 * @param QBaseClass $objPreviousItem
@@ -410,7 +435,7 @@
 
 		/**
 		 * Instantiate an array of Counters from a Database Result
-		 * @param DatabaseResultBase $objDbResult
+		 * @param QDatabaseResultBase $objDbResult
 		 * @param string $strExpandAsArrayNodes
 		 * @param string[] $strColumnAliasArray
 		 * @return Counter[]
@@ -441,6 +466,32 @@
 			}
 
 			return $objToReturn;
+		}
+
+		/**
+		 * Instantiate a single Counter object from a query cursor (e.g. a DB ResultSet).
+		 * Cursor is automatically moved to the "next row" of the result set.
+		 * Will return NULL if no cursor or if the cursor has no more rows in the resultset.
+		 * @param QDatabaseResultBase $objDbResult cursor resource
+		 * @return Counter next row resulting from the query
+		 */
+		public static function InstantiateCursor(QDatabaseResultBase $objDbResult) {
+			// If blank resultset, then return empty result
+			if (!$objDbResult) return null;
+
+			// If empty resultset, then return empty result
+			$objDbRow = $objDbResult->GetNextRow();
+			if (!$objDbRow) return null;
+
+			// We need the Column Aliases
+			$strColumnAliasArray = $objDbResult->QueryBuilder->ColumnAliasArray;
+			if (!$strColumnAliasArray) $strColumnAliasArray = array();
+
+			// Pull Expansions (if applicable)
+			$strExpandAsArrayNodes = $objDbResult->QueryBuilder->ExpandAsArrayNodes;
+
+			// Load up the return result with a row and return it
+			return Counter::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, null, $strColumnAliasArray);
 		}
 
 
@@ -631,31 +682,23 @@
 				// Member Variables
 				///////////////////
 				case 'Id':
-					/**
-					 * Gets the value for intId (Read-Only PK)
-					 * @return integer
-					 */
+					// Gets the value for intId (Read-Only PK)
+					// @return integer
 					return $this->intId;
 
 				case 'Filename':
-					/**
-					 * Gets the value for strFilename 
-					 * @return string
-					 */
+					// Gets the value for strFilename 
+					// @return string
 					return $this->strFilename;
 
 				case 'Token':
-					/**
-					 * Gets the value for strToken (Unique)
-					 * @return string
-					 */
+					// Gets the value for strToken (Unique)
+					// @return string
 					return $this->strToken;
 
 				case 'Counter':
-					/**
-					 * Gets the value for intCounter 
-					 * @return integer
-					 */
+					// Gets the value for intCounter 
+					// @return integer
 					return $this->intCounter;
 
 
@@ -696,11 +739,9 @@
 				// Member Variables
 				///////////////////
 				case 'Filename':
-					/**
-					 * Sets the value for strFilename 
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strFilename 
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strFilename = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -709,11 +750,9 @@
 					}
 
 				case 'Token':
-					/**
-					 * Sets the value for strToken (Unique)
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strToken (Unique)
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strToken = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -722,11 +761,9 @@
 					}
 
 				case 'Counter':
-					/**
-					 * Sets the value for intCounter 
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intCounter 
+					// @param integer $mixValue
+					// @return integer
 					try {
 						return ($this->intCounter = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {

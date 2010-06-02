@@ -289,19 +289,28 @@
 		/**
 		 * Create and setup QListBox lstForum
 		 * @param string $strControlId optional ControlId to use
+		 * @param QQCondition $objConditions override the default condition of QQ::All() to the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for the query
 		 * @return QListBox
 		 */
-		public function lstForum_Create($strControlId = null) {
+		public function lstForum_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstForum = new QListBox($this->objParentObject, $strControlId);
 			$this->lstForum->Name = QApplication::Translate('Forum');
 			$this->lstForum->AddItem(QApplication::Translate('- Select One -'), null);
-			$objForumArray = Forum::LoadAll();
-			if ($objForumArray) foreach ($objForumArray as $objForum) {
+
+			// Setup and perform the Query
+			if (is_null($objCondition)) $objCondition = QQ::All();
+			$objForumCursor = Forum::QueryCursor($objCondition, $objOptionalClauses);
+
+			// Iterate through the Cursor
+			while ($objForum = Forum::InstantiateCursor($objForumCursor)) {
 				$objListItem = new QListItem($objForum->__toString(), $objForum->Id);
 				if (($this->objTopicLink->Forum) && ($this->objTopicLink->Forum->Id == $objForum->Id))
 					$objListItem->Selected = true;
 				$this->lstForum->AddItem($objListItem);
 			}
+
+			// Return the QListBox
 			return $this->lstForum;
 		}
 
@@ -320,19 +329,28 @@
 		/**
 		 * Create and setup QListBox lstIssue
 		 * @param string $strControlId optional ControlId to use
+		 * @param QQCondition $objConditions override the default condition of QQ::All() to the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for the query
 		 * @return QListBox
 		 */
-		public function lstIssue_Create($strControlId = null) {
+		public function lstIssue_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstIssue = new QListBox($this->objParentObject, $strControlId);
 			$this->lstIssue->Name = QApplication::Translate('Issue');
 			$this->lstIssue->AddItem(QApplication::Translate('- Select One -'), null);
-			$objIssueArray = Issue::LoadAll();
-			if ($objIssueArray) foreach ($objIssueArray as $objIssue) {
+
+			// Setup and perform the Query
+			if (is_null($objCondition)) $objCondition = QQ::All();
+			$objIssueCursor = Issue::QueryCursor($objCondition, $objOptionalClauses);
+
+			// Iterate through the Cursor
+			while ($objIssue = Issue::InstantiateCursor($objIssueCursor)) {
 				$objListItem = new QListItem($objIssue->__toString(), $objIssue->Id);
 				if (($this->objTopicLink->Issue) && ($this->objTopicLink->Issue->Id == $objIssue->Id))
 					$objListItem->Selected = true;
 				$this->lstIssue->AddItem($objListItem);
 			}
+
+			// Return the QListBox
 			return $this->lstIssue;
 		}
 
@@ -351,19 +369,28 @@
 		/**
 		 * Create and setup QListBox lstWikiItem
 		 * @param string $strControlId optional ControlId to use
+		 * @param QQCondition $objConditions override the default condition of QQ::All() to the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for the query
 		 * @return QListBox
 		 */
-		public function lstWikiItem_Create($strControlId = null) {
+		public function lstWikiItem_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstWikiItem = new QListBox($this->objParentObject, $strControlId);
 			$this->lstWikiItem->Name = QApplication::Translate('Wiki Item');
 			$this->lstWikiItem->AddItem(QApplication::Translate('- Select One -'), null);
-			$objWikiItemArray = WikiItem::LoadAll();
-			if ($objWikiItemArray) foreach ($objWikiItemArray as $objWikiItem) {
+
+			// Setup and perform the Query
+			if (is_null($objCondition)) $objCondition = QQ::All();
+			$objWikiItemCursor = WikiItem::QueryCursor($objCondition, $objOptionalClauses);
+
+			// Iterate through the Cursor
+			while ($objWikiItem = WikiItem::InstantiateCursor($objWikiItemCursor)) {
 				$objListItem = new QListItem($objWikiItem->__toString(), $objWikiItem->Id);
 				if (($this->objTopicLink->WikiItem) && ($this->objTopicLink->WikiItem->Id == $objWikiItem->Id))
 					$objListItem->Selected = true;
 				$this->lstWikiItem->AddItem($objListItem);
 			}
+
+			// Return the QListBox
 			return $this->lstWikiItem;
 		}
 
@@ -382,19 +409,28 @@
 		/**
 		 * Create and setup QListBox lstPackage
 		 * @param string $strControlId optional ControlId to use
+		 * @param QQCondition $objConditions override the default condition of QQ::All() to the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for the query
 		 * @return QListBox
 		 */
-		public function lstPackage_Create($strControlId = null) {
+		public function lstPackage_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstPackage = new QListBox($this->objParentObject, $strControlId);
 			$this->lstPackage->Name = QApplication::Translate('Package');
 			$this->lstPackage->AddItem(QApplication::Translate('- Select One -'), null);
-			$objPackageArray = Package::LoadAll();
-			if ($objPackageArray) foreach ($objPackageArray as $objPackage) {
+
+			// Setup and perform the Query
+			if (is_null($objCondition)) $objCondition = QQ::All();
+			$objPackageCursor = Package::QueryCursor($objCondition, $objOptionalClauses);
+
+			// Iterate through the Cursor
+			while ($objPackage = Package::InstantiateCursor($objPackageCursor)) {
 				$objListItem = new QListItem($objPackage->__toString(), $objPackage->Id);
 				if (($this->objTopicLink->Package) && ($this->objTopicLink->Package->Id == $objPackage->Id))
 					$objListItem->Selected = true;
 				$this->lstPackage->AddItem($objListItem);
 			}
+
+			// Return the QListBox
 			return $this->lstPackage;
 		}
 

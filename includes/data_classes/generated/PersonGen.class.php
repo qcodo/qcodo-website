@@ -15,7 +15,7 @@
 	 * 
 	 * @package Qcodo Website
 	 * @subpackage GeneratedDataObjects
-	 * @property-read integer $Id the value for intId (Read-Only PK)
+	 * @property integer $Id the value for intId (Read-Only PK)
 	 * @property integer $PersonTypeId the value for intPersonTypeId (Not Null)
 	 * @property string $Username the value for strUsername (Unique)
 	 * @property string $Password the value for strPassword 
@@ -35,35 +35,35 @@
 	 * @property QDateTime $RegistrationDate the value for dttRegistrationDate (Not Null)
 	 * @property Country $Country the value for the Country object referenced by intCountryId 
 	 * @property Timezone $Timezone the value for the Timezone object referenced by intTimezoneId 
-	 * @property-read Topic $_TopicAsEmail the value for the private _objTopicAsEmail (Read-Only) if set due to an expansion on the email_topic_person_assn association table
-	 * @property-read Topic[] $_TopicAsEmailArray the value for the private _objTopicAsEmailArray (Read-Only) if set due to an ExpandAsArray on the email_topic_person_assn association table
-	 * @property-read Topic $_TopicAsReadOnce the value for the private _objTopicAsReadOnce (Read-Only) if set due to an expansion on the read_once_topic_person_assn association table
-	 * @property-read Topic[] $_TopicAsReadOnceArray the value for the private _objTopicAsReadOnceArray (Read-Only) if set due to an ExpandAsArray on the read_once_topic_person_assn association table
-	 * @property-read Topic $_TopicAsRead the value for the private _objTopicAsRead (Read-Only) if set due to an expansion on the read_topic_person_assn association table
-	 * @property-read Topic[] $_TopicAsReadArray the value for the private _objTopicAsReadArray (Read-Only) if set due to an ExpandAsArray on the read_topic_person_assn association table
-	 * @property-read Issue $_IssueAsPostedBy the value for the private _objIssueAsPostedBy (Read-Only) if set due to an expansion on the issue.posted_by_person_id reverse relationship
-	 * @property-read Issue[] $_IssueAsPostedByArray the value for the private _objIssueAsPostedByArray (Read-Only) if set due to an ExpandAsArray on the issue.posted_by_person_id reverse relationship
-	 * @property-read Issue $_IssueAsAssignedTo the value for the private _objIssueAsAssignedTo (Read-Only) if set due to an expansion on the issue.assigned_to_person_id reverse relationship
-	 * @property-read Issue[] $_IssueAsAssignedToArray the value for the private _objIssueAsAssignedToArray (Read-Only) if set due to an ExpandAsArray on the issue.assigned_to_person_id reverse relationship
-	 * @property-read IssueVote $_IssueVote the value for the private _objIssueVote (Read-Only) if set due to an expansion on the issue_vote.person_id reverse relationship
-	 * @property-read IssueVote[] $_IssueVoteArray the value for the private _objIssueVoteArray (Read-Only) if set due to an ExpandAsArray on the issue_vote.person_id reverse relationship
-	 * @property-read LoginTicket $_LoginTicket the value for the private _objLoginTicket (Read-Only) if set due to an expansion on the login_ticket.person_id reverse relationship
-	 * @property-read LoginTicket[] $_LoginTicketArray the value for the private _objLoginTicketArray (Read-Only) if set due to an ExpandAsArray on the login_ticket.person_id reverse relationship
-	 * @property-read Message $_Message the value for the private _objMessage (Read-Only) if set due to an expansion on the message.person_id reverse relationship
-	 * @property-read Message[] $_MessageArray the value for the private _objMessageArray (Read-Only) if set due to an ExpandAsArray on the message.person_id reverse relationship
-	 * @property-read Package $_PackageAsLastPostedBy the value for the private _objPackageAsLastPostedBy (Read-Only) if set due to an expansion on the package.last_posted_by_person_id reverse relationship
-	 * @property-read Package[] $_PackageAsLastPostedByArray the value for the private _objPackageAsLastPostedByArray (Read-Only) if set due to an ExpandAsArray on the package.last_posted_by_person_id reverse relationship
-	 * @property-read PackageContribution $_PackageContribution the value for the private _objPackageContribution (Read-Only) if set due to an expansion on the package_contribution.person_id reverse relationship
-	 * @property-read PackageContribution[] $_PackageContributionArray the value for the private _objPackageContributionArray (Read-Only) if set due to an ExpandAsArray on the package_contribution.person_id reverse relationship
-	 * @property-read ShowcaseItem $_ShowcaseItem the value for the private _objShowcaseItem (Read-Only) if set due to an expansion on the showcase_item.person_id reverse relationship
-	 * @property-read ShowcaseItem[] $_ShowcaseItemArray the value for the private _objShowcaseItemArray (Read-Only) if set due to an ExpandAsArray on the showcase_item.person_id reverse relationship
-	 * @property-read Topic $_Topic the value for the private _objTopic (Read-Only) if set due to an expansion on the topic.person_id reverse relationship
-	 * @property-read Topic[] $_TopicArray the value for the private _objTopicArray (Read-Only) if set due to an ExpandAsArray on the topic.person_id reverse relationship
-	 * @property-read WikiItem $_WikiItemAsCurrentPostedBy the value for the private _objWikiItemAsCurrentPostedBy (Read-Only) if set due to an expansion on the wiki_item.current_posted_by_person_id reverse relationship
-	 * @property-read WikiItem[] $_WikiItemAsCurrentPostedByArray the value for the private _objWikiItemAsCurrentPostedByArray (Read-Only) if set due to an ExpandAsArray on the wiki_item.current_posted_by_person_id reverse relationship
-	 * @property-read WikiVersion $_WikiVersionAsPostedBy the value for the private _objWikiVersionAsPostedBy (Read-Only) if set due to an expansion on the wiki_version.posted_by_person_id reverse relationship
-	 * @property-read WikiVersion[] $_WikiVersionAsPostedByArray the value for the private _objWikiVersionAsPostedByArray (Read-Only) if set due to an ExpandAsArray on the wiki_version.posted_by_person_id reverse relationship
-	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
+	 * @property Topic $_TopicAsEmail the value for the private _objTopicAsEmail (Read-Only) if set due to an expansion on the email_topic_person_assn association table
+	 * @property Topic[] $_TopicAsEmailArray the value for the private _objTopicAsEmailArray (Read-Only) if set due to an ExpandAsArray on the email_topic_person_assn association table
+	 * @property Topic $_TopicAsReadOnce the value for the private _objTopicAsReadOnce (Read-Only) if set due to an expansion on the read_once_topic_person_assn association table
+	 * @property Topic[] $_TopicAsReadOnceArray the value for the private _objTopicAsReadOnceArray (Read-Only) if set due to an ExpandAsArray on the read_once_topic_person_assn association table
+	 * @property Topic $_TopicAsRead the value for the private _objTopicAsRead (Read-Only) if set due to an expansion on the read_topic_person_assn association table
+	 * @property Topic[] $_TopicAsReadArray the value for the private _objTopicAsReadArray (Read-Only) if set due to an ExpandAsArray on the read_topic_person_assn association table
+	 * @property Issue $_IssueAsPostedBy the value for the private _objIssueAsPostedBy (Read-Only) if set due to an expansion on the issue.posted_by_person_id reverse relationship
+	 * @property Issue[] $_IssueAsPostedByArray the value for the private _objIssueAsPostedByArray (Read-Only) if set due to an ExpandAsArray on the issue.posted_by_person_id reverse relationship
+	 * @property Issue $_IssueAsAssignedTo the value for the private _objIssueAsAssignedTo (Read-Only) if set due to an expansion on the issue.assigned_to_person_id reverse relationship
+	 * @property Issue[] $_IssueAsAssignedToArray the value for the private _objIssueAsAssignedToArray (Read-Only) if set due to an ExpandAsArray on the issue.assigned_to_person_id reverse relationship
+	 * @property IssueVote $_IssueVote the value for the private _objIssueVote (Read-Only) if set due to an expansion on the issue_vote.person_id reverse relationship
+	 * @property IssueVote[] $_IssueVoteArray the value for the private _objIssueVoteArray (Read-Only) if set due to an ExpandAsArray on the issue_vote.person_id reverse relationship
+	 * @property LoginTicket $_LoginTicket the value for the private _objLoginTicket (Read-Only) if set due to an expansion on the login_ticket.person_id reverse relationship
+	 * @property LoginTicket[] $_LoginTicketArray the value for the private _objLoginTicketArray (Read-Only) if set due to an ExpandAsArray on the login_ticket.person_id reverse relationship
+	 * @property Message $_Message the value for the private _objMessage (Read-Only) if set due to an expansion on the message.person_id reverse relationship
+	 * @property Message[] $_MessageArray the value for the private _objMessageArray (Read-Only) if set due to an ExpandAsArray on the message.person_id reverse relationship
+	 * @property Package $_PackageAsLastPostedBy the value for the private _objPackageAsLastPostedBy (Read-Only) if set due to an expansion on the package.last_posted_by_person_id reverse relationship
+	 * @property Package[] $_PackageAsLastPostedByArray the value for the private _objPackageAsLastPostedByArray (Read-Only) if set due to an ExpandAsArray on the package.last_posted_by_person_id reverse relationship
+	 * @property PackageContribution $_PackageContribution the value for the private _objPackageContribution (Read-Only) if set due to an expansion on the package_contribution.person_id reverse relationship
+	 * @property PackageContribution[] $_PackageContributionArray the value for the private _objPackageContributionArray (Read-Only) if set due to an ExpandAsArray on the package_contribution.person_id reverse relationship
+	 * @property ShowcaseItem $_ShowcaseItem the value for the private _objShowcaseItem (Read-Only) if set due to an expansion on the showcase_item.person_id reverse relationship
+	 * @property ShowcaseItem[] $_ShowcaseItemArray the value for the private _objShowcaseItemArray (Read-Only) if set due to an ExpandAsArray on the showcase_item.person_id reverse relationship
+	 * @property Topic $_Topic the value for the private _objTopic (Read-Only) if set due to an expansion on the topic.person_id reverse relationship
+	 * @property Topic[] $_TopicArray the value for the private _objTopicArray (Read-Only) if set due to an ExpandAsArray on the topic.person_id reverse relationship
+	 * @property WikiItem $_WikiItemAsCurrentPostedBy the value for the private _objWikiItemAsCurrentPostedBy (Read-Only) if set due to an expansion on the wiki_item.current_posted_by_person_id reverse relationship
+	 * @property WikiItem[] $_WikiItemAsCurrentPostedByArray the value for the private _objWikiItemAsCurrentPostedByArray (Read-Only) if set due to an ExpandAsArray on the wiki_item.current_posted_by_person_id reverse relationship
+	 * @property WikiVersion $_WikiVersionAsPostedBy the value for the private _objWikiVersionAsPostedBy (Read-Only) if set due to an expansion on the wiki_version.posted_by_person_id reverse relationship
+	 * @property WikiVersion[] $_WikiVersionAsPostedByArray the value for the private _objWikiVersionAsPostedByArray (Read-Only) if set due to an ExpandAsArray on the wiki_version.posted_by_person_id reverse relationship
+	 * @property boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
 	class PersonGen extends QBaseClass {
 
@@ -553,7 +553,7 @@
 		 * on load methods.
 		 * @param QQueryBuilder &$objQueryBuilder the QueryBuilder object that will be created
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause object or array of QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with (sending in null will skip the PrepareStatement step)
 		 * @param boolean $blnCountOnly only select a rowcount
 		 * @return string the query statement
@@ -615,7 +615,7 @@
 		 * Static Qcodo Query method to query for a single Person object.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return Person the queried object
 		 */
@@ -637,7 +637,7 @@
 		 * Static Qcodo Query method to query for an array of Person objects.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return Person[] the queried objects as an array
 		 */
@@ -656,10 +656,35 @@
 		}
 
 		/**
+		 * Static Qcodo query method to issue a query and get a cursor to progressively fetch its results.
+		 * Uses BuildQueryStatment to perform most of the work.
+		 * @param QQCondition $objConditions any conditions on the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
+		 * @return QDatabaseResultBase the cursor resource instance
+		 */
+		public static function QueryCursor(QQCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
+			// Get the query statement
+			try {
+				$strQuery = Person::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+
+			// Perform the query
+			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
+		
+			// Return the results cursor
+			$objDbResult->QueryBuilder = $objQueryBuilder;
+			return $objDbResult;
+		}
+
+		/**
 		 * Static Qcodo Query method to query for a count of Person objects.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return integer the count of queried objects as an integer
 		 */
@@ -784,7 +809,7 @@
 		 * Takes in an optional strAliasPrefix, used in case another Object::InstantiateDbRow
 		 * is calling this Person::InstantiateDbRow in order to perform
 		 * early binding on referenced objects.
-		 * @param DatabaseRowBase $objDbRow
+		 * @param QDatabaseRowBase $objDbRow
 		 * @param string $strAliasPrefix
 		 * @param string $strExpandAsArrayNodes
 		 * @param QBaseClass $objPreviousItem
@@ -1224,7 +1249,7 @@
 
 		/**
 		 * Instantiate an array of People from a Database Result
-		 * @param DatabaseResultBase $objDbResult
+		 * @param QDatabaseResultBase $objDbResult
 		 * @param string $strExpandAsArrayNodes
 		 * @param string[] $strColumnAliasArray
 		 * @return Person[]
@@ -1255,6 +1280,32 @@
 			}
 
 			return $objToReturn;
+		}
+
+		/**
+		 * Instantiate a single Person object from a query cursor (e.g. a DB ResultSet).
+		 * Cursor is automatically moved to the "next row" of the result set.
+		 * Will return NULL if no cursor or if the cursor has no more rows in the resultset.
+		 * @param QDatabaseResultBase $objDbResult cursor resource
+		 * @return Person next row resulting from the query
+		 */
+		public static function InstantiateCursor(QDatabaseResultBase $objDbResult) {
+			// If blank resultset, then return empty result
+			if (!$objDbResult) return null;
+
+			// If empty resultset, then return empty result
+			$objDbRow = $objDbResult->GetNextRow();
+			if (!$objDbRow) return null;
+
+			// We need the Column Aliases
+			$strColumnAliasArray = $objDbResult->QueryBuilder->ColumnAliasArray;
+			if (!$strColumnAliasArray) $strColumnAliasArray = array();
+
+			// Pull Expansions (if applicable)
+			$strExpandAsArrayNodes = $objDbResult->QueryBuilder->ExpandAsArrayNodes;
+
+			// Load up the return result with a row and return it
+			return Person::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, null, $strColumnAliasArray);
 		}
 
 
@@ -1702,129 +1753,93 @@
 				// Member Variables
 				///////////////////
 				case 'Id':
-					/**
-					 * Gets the value for intId (Read-Only PK)
-					 * @return integer
-					 */
+					// Gets the value for intId (Read-Only PK)
+					// @return integer
 					return $this->intId;
 
 				case 'PersonTypeId':
-					/**
-					 * Gets the value for intPersonTypeId (Not Null)
-					 * @return integer
-					 */
+					// Gets the value for intPersonTypeId (Not Null)
+					// @return integer
 					return $this->intPersonTypeId;
 
 				case 'Username':
-					/**
-					 * Gets the value for strUsername (Unique)
-					 * @return string
-					 */
+					// Gets the value for strUsername (Unique)
+					// @return string
 					return $this->strUsername;
 
 				case 'Password':
-					/**
-					 * Gets the value for strPassword 
-					 * @return string
-					 */
+					// Gets the value for strPassword 
+					// @return string
 					return $this->strPassword;
 
 				case 'FirstName':
-					/**
-					 * Gets the value for strFirstName (Not Null)
-					 * @return string
-					 */
+					// Gets the value for strFirstName (Not Null)
+					// @return string
 					return $this->strFirstName;
 
 				case 'LastName':
-					/**
-					 * Gets the value for strLastName (Not Null)
-					 * @return string
-					 */
+					// Gets the value for strLastName (Not Null)
+					// @return string
 					return $this->strLastName;
 
 				case 'Email':
-					/**
-					 * Gets the value for strEmail (Unique)
-					 * @return string
-					 */
+					// Gets the value for strEmail (Unique)
+					// @return string
 					return $this->strEmail;
 
 				case 'DisplayName':
-					/**
-					 * Gets the value for strDisplayName 
-					 * @return string
-					 */
+					// Gets the value for strDisplayName 
+					// @return string
 					return $this->strDisplayName;
 
 				case 'PasswordResetFlag':
-					/**
-					 * Gets the value for blnPasswordResetFlag 
-					 * @return boolean
-					 */
+					// Gets the value for blnPasswordResetFlag 
+					// @return boolean
 					return $this->blnPasswordResetFlag;
 
 				case 'DisplayRealNameFlag':
-					/**
-					 * Gets the value for blnDisplayRealNameFlag 
-					 * @return boolean
-					 */
+					// Gets the value for blnDisplayRealNameFlag 
+					// @return boolean
 					return $this->blnDisplayRealNameFlag;
 
 				case 'DisplayEmailFlag':
-					/**
-					 * Gets the value for blnDisplayEmailFlag 
-					 * @return boolean
-					 */
+					// Gets the value for blnDisplayEmailFlag 
+					// @return boolean
 					return $this->blnDisplayEmailFlag;
 
 				case 'OptInFlag':
-					/**
-					 * Gets the value for blnOptInFlag 
-					 * @return boolean
-					 */
+					// Gets the value for blnOptInFlag 
+					// @return boolean
 					return $this->blnOptInFlag;
 
 				case 'DonatedFlag':
-					/**
-					 * Gets the value for blnDonatedFlag 
-					 * @return boolean
-					 */
+					// Gets the value for blnDonatedFlag 
+					// @return boolean
 					return $this->blnDonatedFlag;
 
 				case 'Location':
-					/**
-					 * Gets the value for strLocation 
-					 * @return string
-					 */
+					// Gets the value for strLocation 
+					// @return string
 					return $this->strLocation;
 
 				case 'CountryId':
-					/**
-					 * Gets the value for intCountryId 
-					 * @return integer
-					 */
+					// Gets the value for intCountryId 
+					// @return integer
 					return $this->intCountryId;
 
 				case 'Url':
-					/**
-					 * Gets the value for strUrl 
-					 * @return string
-					 */
+					// Gets the value for strUrl 
+					// @return string
 					return $this->strUrl;
 
 				case 'TimezoneId':
-					/**
-					 * Gets the value for intTimezoneId 
-					 * @return integer
-					 */
+					// Gets the value for intTimezoneId 
+					// @return integer
 					return $this->intTimezoneId;
 
 				case 'RegistrationDate':
-					/**
-					 * Gets the value for dttRegistrationDate (Not Null)
-					 * @return QDateTime
-					 */
+					// Gets the value for dttRegistrationDate (Not Null)
+					// @return QDateTime
 					return $this->dttRegistrationDate;
 
 
@@ -1832,10 +1847,8 @@
 				// Member Objects
 				///////////////////
 				case 'Country':
-					/**
-					 * Gets the value for the Country object referenced by intCountryId 
-					 * @return Country
-					 */
+					// Gets the value for the Country object referenced by intCountryId 
+					// @return Country
 					try {
 						if ((!$this->objCountry) && (!is_null($this->intCountryId)))
 							$this->objCountry = Country::Load($this->intCountryId);
@@ -1846,10 +1859,8 @@
 					}
 
 				case 'Timezone':
-					/**
-					 * Gets the value for the Timezone object referenced by intTimezoneId 
-					 * @return Timezone
-					 */
+					// Gets the value for the Timezone object referenced by intTimezoneId 
+					// @return Timezone
 					try {
 						if ((!$this->objTimezone) && (!is_null($this->intTimezoneId)))
 							$this->objTimezone = Timezone::Load($this->intTimezoneId);
@@ -1866,227 +1877,171 @@
 				////////////////////////////
 
 				case '_TopicAsEmail':
-					/**
-					 * Gets the value for the private _objTopicAsEmail (Read-Only)
-					 * if set due to an expansion on the email_topic_person_assn association table
-					 * @return Topic
-					 */
+					// Gets the value for the private _objTopicAsEmail (Read-Only)
+					// if set due to an expansion on the email_topic_person_assn association table
+					// @return Topic
 					return $this->_objTopicAsEmail;
 
 				case '_TopicAsEmailArray':
-					/**
-					 * Gets the value for the private _objTopicAsEmailArray (Read-Only)
-					 * if set due to an ExpandAsArray on the email_topic_person_assn association table
-					 * @return Topic[]
-					 */
+					// Gets the value for the private _objTopicAsEmailArray (Read-Only)
+					// if set due to an ExpandAsArray on the email_topic_person_assn association table
+					// @return Topic[]
 					return (array) $this->_objTopicAsEmailArray;
 
 				case '_TopicAsReadOnce':
-					/**
-					 * Gets the value for the private _objTopicAsReadOnce (Read-Only)
-					 * if set due to an expansion on the read_once_topic_person_assn association table
-					 * @return Topic
-					 */
+					// Gets the value for the private _objTopicAsReadOnce (Read-Only)
+					// if set due to an expansion on the read_once_topic_person_assn association table
+					// @return Topic
 					return $this->_objTopicAsReadOnce;
 
 				case '_TopicAsReadOnceArray':
-					/**
-					 * Gets the value for the private _objTopicAsReadOnceArray (Read-Only)
-					 * if set due to an ExpandAsArray on the read_once_topic_person_assn association table
-					 * @return Topic[]
-					 */
+					// Gets the value for the private _objTopicAsReadOnceArray (Read-Only)
+					// if set due to an ExpandAsArray on the read_once_topic_person_assn association table
+					// @return Topic[]
 					return (array) $this->_objTopicAsReadOnceArray;
 
 				case '_TopicAsRead':
-					/**
-					 * Gets the value for the private _objTopicAsRead (Read-Only)
-					 * if set due to an expansion on the read_topic_person_assn association table
-					 * @return Topic
-					 */
+					// Gets the value for the private _objTopicAsRead (Read-Only)
+					// if set due to an expansion on the read_topic_person_assn association table
+					// @return Topic
 					return $this->_objTopicAsRead;
 
 				case '_TopicAsReadArray':
-					/**
-					 * Gets the value for the private _objTopicAsReadArray (Read-Only)
-					 * if set due to an ExpandAsArray on the read_topic_person_assn association table
-					 * @return Topic[]
-					 */
+					// Gets the value for the private _objTopicAsReadArray (Read-Only)
+					// if set due to an ExpandAsArray on the read_topic_person_assn association table
+					// @return Topic[]
 					return (array) $this->_objTopicAsReadArray;
 
 				case '_IssueAsPostedBy':
-					/**
-					 * Gets the value for the private _objIssueAsPostedBy (Read-Only)
-					 * if set due to an expansion on the issue.posted_by_person_id reverse relationship
-					 * @return Issue
-					 */
+					// Gets the value for the private _objIssueAsPostedBy (Read-Only)
+					// if set due to an expansion on the issue.posted_by_person_id reverse relationship
+					// @return Issue
 					return $this->_objIssueAsPostedBy;
 
 				case '_IssueAsPostedByArray':
-					/**
-					 * Gets the value for the private _objIssueAsPostedByArray (Read-Only)
-					 * if set due to an ExpandAsArray on the issue.posted_by_person_id reverse relationship
-					 * @return Issue[]
-					 */
+					// Gets the value for the private _objIssueAsPostedByArray (Read-Only)
+					// if set due to an ExpandAsArray on the issue.posted_by_person_id reverse relationship
+					// @return Issue[]
 					return (array) $this->_objIssueAsPostedByArray;
 
 				case '_IssueAsAssignedTo':
-					/**
-					 * Gets the value for the private _objIssueAsAssignedTo (Read-Only)
-					 * if set due to an expansion on the issue.assigned_to_person_id reverse relationship
-					 * @return Issue
-					 */
+					// Gets the value for the private _objIssueAsAssignedTo (Read-Only)
+					// if set due to an expansion on the issue.assigned_to_person_id reverse relationship
+					// @return Issue
 					return $this->_objIssueAsAssignedTo;
 
 				case '_IssueAsAssignedToArray':
-					/**
-					 * Gets the value for the private _objIssueAsAssignedToArray (Read-Only)
-					 * if set due to an ExpandAsArray on the issue.assigned_to_person_id reverse relationship
-					 * @return Issue[]
-					 */
+					// Gets the value for the private _objIssueAsAssignedToArray (Read-Only)
+					// if set due to an ExpandAsArray on the issue.assigned_to_person_id reverse relationship
+					// @return Issue[]
 					return (array) $this->_objIssueAsAssignedToArray;
 
 				case '_IssueVote':
-					/**
-					 * Gets the value for the private _objIssueVote (Read-Only)
-					 * if set due to an expansion on the issue_vote.person_id reverse relationship
-					 * @return IssueVote
-					 */
+					// Gets the value for the private _objIssueVote (Read-Only)
+					// if set due to an expansion on the issue_vote.person_id reverse relationship
+					// @return IssueVote
 					return $this->_objIssueVote;
 
 				case '_IssueVoteArray':
-					/**
-					 * Gets the value for the private _objIssueVoteArray (Read-Only)
-					 * if set due to an ExpandAsArray on the issue_vote.person_id reverse relationship
-					 * @return IssueVote[]
-					 */
+					// Gets the value for the private _objIssueVoteArray (Read-Only)
+					// if set due to an ExpandAsArray on the issue_vote.person_id reverse relationship
+					// @return IssueVote[]
 					return (array) $this->_objIssueVoteArray;
 
 				case '_LoginTicket':
-					/**
-					 * Gets the value for the private _objLoginTicket (Read-Only)
-					 * if set due to an expansion on the login_ticket.person_id reverse relationship
-					 * @return LoginTicket
-					 */
+					// Gets the value for the private _objLoginTicket (Read-Only)
+					// if set due to an expansion on the login_ticket.person_id reverse relationship
+					// @return LoginTicket
 					return $this->_objLoginTicket;
 
 				case '_LoginTicketArray':
-					/**
-					 * Gets the value for the private _objLoginTicketArray (Read-Only)
-					 * if set due to an ExpandAsArray on the login_ticket.person_id reverse relationship
-					 * @return LoginTicket[]
-					 */
+					// Gets the value for the private _objLoginTicketArray (Read-Only)
+					// if set due to an ExpandAsArray on the login_ticket.person_id reverse relationship
+					// @return LoginTicket[]
 					return (array) $this->_objLoginTicketArray;
 
 				case '_Message':
-					/**
-					 * Gets the value for the private _objMessage (Read-Only)
-					 * if set due to an expansion on the message.person_id reverse relationship
-					 * @return Message
-					 */
+					// Gets the value for the private _objMessage (Read-Only)
+					// if set due to an expansion on the message.person_id reverse relationship
+					// @return Message
 					return $this->_objMessage;
 
 				case '_MessageArray':
-					/**
-					 * Gets the value for the private _objMessageArray (Read-Only)
-					 * if set due to an ExpandAsArray on the message.person_id reverse relationship
-					 * @return Message[]
-					 */
+					// Gets the value for the private _objMessageArray (Read-Only)
+					// if set due to an ExpandAsArray on the message.person_id reverse relationship
+					// @return Message[]
 					return (array) $this->_objMessageArray;
 
 				case '_PackageAsLastPostedBy':
-					/**
-					 * Gets the value for the private _objPackageAsLastPostedBy (Read-Only)
-					 * if set due to an expansion on the package.last_posted_by_person_id reverse relationship
-					 * @return Package
-					 */
+					// Gets the value for the private _objPackageAsLastPostedBy (Read-Only)
+					// if set due to an expansion on the package.last_posted_by_person_id reverse relationship
+					// @return Package
 					return $this->_objPackageAsLastPostedBy;
 
 				case '_PackageAsLastPostedByArray':
-					/**
-					 * Gets the value for the private _objPackageAsLastPostedByArray (Read-Only)
-					 * if set due to an ExpandAsArray on the package.last_posted_by_person_id reverse relationship
-					 * @return Package[]
-					 */
+					// Gets the value for the private _objPackageAsLastPostedByArray (Read-Only)
+					// if set due to an ExpandAsArray on the package.last_posted_by_person_id reverse relationship
+					// @return Package[]
 					return (array) $this->_objPackageAsLastPostedByArray;
 
 				case '_PackageContribution':
-					/**
-					 * Gets the value for the private _objPackageContribution (Read-Only)
-					 * if set due to an expansion on the package_contribution.person_id reverse relationship
-					 * @return PackageContribution
-					 */
+					// Gets the value for the private _objPackageContribution (Read-Only)
+					// if set due to an expansion on the package_contribution.person_id reverse relationship
+					// @return PackageContribution
 					return $this->_objPackageContribution;
 
 				case '_PackageContributionArray':
-					/**
-					 * Gets the value for the private _objPackageContributionArray (Read-Only)
-					 * if set due to an ExpandAsArray on the package_contribution.person_id reverse relationship
-					 * @return PackageContribution[]
-					 */
+					// Gets the value for the private _objPackageContributionArray (Read-Only)
+					// if set due to an ExpandAsArray on the package_contribution.person_id reverse relationship
+					// @return PackageContribution[]
 					return (array) $this->_objPackageContributionArray;
 
 				case '_ShowcaseItem':
-					/**
-					 * Gets the value for the private _objShowcaseItem (Read-Only)
-					 * if set due to an expansion on the showcase_item.person_id reverse relationship
-					 * @return ShowcaseItem
-					 */
+					// Gets the value for the private _objShowcaseItem (Read-Only)
+					// if set due to an expansion on the showcase_item.person_id reverse relationship
+					// @return ShowcaseItem
 					return $this->_objShowcaseItem;
 
 				case '_ShowcaseItemArray':
-					/**
-					 * Gets the value for the private _objShowcaseItemArray (Read-Only)
-					 * if set due to an ExpandAsArray on the showcase_item.person_id reverse relationship
-					 * @return ShowcaseItem[]
-					 */
+					// Gets the value for the private _objShowcaseItemArray (Read-Only)
+					// if set due to an ExpandAsArray on the showcase_item.person_id reverse relationship
+					// @return ShowcaseItem[]
 					return (array) $this->_objShowcaseItemArray;
 
 				case '_Topic':
-					/**
-					 * Gets the value for the private _objTopic (Read-Only)
-					 * if set due to an expansion on the topic.person_id reverse relationship
-					 * @return Topic
-					 */
+					// Gets the value for the private _objTopic (Read-Only)
+					// if set due to an expansion on the topic.person_id reverse relationship
+					// @return Topic
 					return $this->_objTopic;
 
 				case '_TopicArray':
-					/**
-					 * Gets the value for the private _objTopicArray (Read-Only)
-					 * if set due to an ExpandAsArray on the topic.person_id reverse relationship
-					 * @return Topic[]
-					 */
+					// Gets the value for the private _objTopicArray (Read-Only)
+					// if set due to an ExpandAsArray on the topic.person_id reverse relationship
+					// @return Topic[]
 					return (array) $this->_objTopicArray;
 
 				case '_WikiItemAsCurrentPostedBy':
-					/**
-					 * Gets the value for the private _objWikiItemAsCurrentPostedBy (Read-Only)
-					 * if set due to an expansion on the wiki_item.current_posted_by_person_id reverse relationship
-					 * @return WikiItem
-					 */
+					// Gets the value for the private _objWikiItemAsCurrentPostedBy (Read-Only)
+					// if set due to an expansion on the wiki_item.current_posted_by_person_id reverse relationship
+					// @return WikiItem
 					return $this->_objWikiItemAsCurrentPostedBy;
 
 				case '_WikiItemAsCurrentPostedByArray':
-					/**
-					 * Gets the value for the private _objWikiItemAsCurrentPostedByArray (Read-Only)
-					 * if set due to an ExpandAsArray on the wiki_item.current_posted_by_person_id reverse relationship
-					 * @return WikiItem[]
-					 */
+					// Gets the value for the private _objWikiItemAsCurrentPostedByArray (Read-Only)
+					// if set due to an ExpandAsArray on the wiki_item.current_posted_by_person_id reverse relationship
+					// @return WikiItem[]
 					return (array) $this->_objWikiItemAsCurrentPostedByArray;
 
 				case '_WikiVersionAsPostedBy':
-					/**
-					 * Gets the value for the private _objWikiVersionAsPostedBy (Read-Only)
-					 * if set due to an expansion on the wiki_version.posted_by_person_id reverse relationship
-					 * @return WikiVersion
-					 */
+					// Gets the value for the private _objWikiVersionAsPostedBy (Read-Only)
+					// if set due to an expansion on the wiki_version.posted_by_person_id reverse relationship
+					// @return WikiVersion
 					return $this->_objWikiVersionAsPostedBy;
 
 				case '_WikiVersionAsPostedByArray':
-					/**
-					 * Gets the value for the private _objWikiVersionAsPostedByArray (Read-Only)
-					 * if set due to an ExpandAsArray on the wiki_version.posted_by_person_id reverse relationship
-					 * @return WikiVersion[]
-					 */
+					// Gets the value for the private _objWikiVersionAsPostedByArray (Read-Only)
+					// if set due to an ExpandAsArray on the wiki_version.posted_by_person_id reverse relationship
+					// @return WikiVersion[]
 					return (array) $this->_objWikiVersionAsPostedByArray;
 
 
@@ -2117,11 +2072,9 @@
 				// Member Variables
 				///////////////////
 				case 'PersonTypeId':
-					/**
-					 * Sets the value for intPersonTypeId (Not Null)
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intPersonTypeId (Not Null)
+					// @param integer $mixValue
+					// @return integer
 					try {
 						return ($this->intPersonTypeId = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {
@@ -2130,11 +2083,9 @@
 					}
 
 				case 'Username':
-					/**
-					 * Sets the value for strUsername (Unique)
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strUsername (Unique)
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strUsername = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -2143,11 +2094,9 @@
 					}
 
 				case 'Password':
-					/**
-					 * Sets the value for strPassword 
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strPassword 
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strPassword = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -2156,11 +2105,9 @@
 					}
 
 				case 'FirstName':
-					/**
-					 * Sets the value for strFirstName (Not Null)
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strFirstName (Not Null)
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strFirstName = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -2169,11 +2116,9 @@
 					}
 
 				case 'LastName':
-					/**
-					 * Sets the value for strLastName (Not Null)
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strLastName (Not Null)
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strLastName = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -2182,11 +2127,9 @@
 					}
 
 				case 'Email':
-					/**
-					 * Sets the value for strEmail (Unique)
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strEmail (Unique)
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strEmail = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -2195,11 +2138,9 @@
 					}
 
 				case 'DisplayName':
-					/**
-					 * Sets the value for strDisplayName 
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strDisplayName 
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strDisplayName = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -2208,11 +2149,9 @@
 					}
 
 				case 'PasswordResetFlag':
-					/**
-					 * Sets the value for blnPasswordResetFlag 
-					 * @param boolean $mixValue
-					 * @return boolean
-					 */
+					// Sets the value for blnPasswordResetFlag 
+					// @param boolean $mixValue
+					// @return boolean
 					try {
 						return ($this->blnPasswordResetFlag = QType::Cast($mixValue, QType::Boolean));
 					} catch (QCallerException $objExc) {
@@ -2221,11 +2160,9 @@
 					}
 
 				case 'DisplayRealNameFlag':
-					/**
-					 * Sets the value for blnDisplayRealNameFlag 
-					 * @param boolean $mixValue
-					 * @return boolean
-					 */
+					// Sets the value for blnDisplayRealNameFlag 
+					// @param boolean $mixValue
+					// @return boolean
 					try {
 						return ($this->blnDisplayRealNameFlag = QType::Cast($mixValue, QType::Boolean));
 					} catch (QCallerException $objExc) {
@@ -2234,11 +2171,9 @@
 					}
 
 				case 'DisplayEmailFlag':
-					/**
-					 * Sets the value for blnDisplayEmailFlag 
-					 * @param boolean $mixValue
-					 * @return boolean
-					 */
+					// Sets the value for blnDisplayEmailFlag 
+					// @param boolean $mixValue
+					// @return boolean
 					try {
 						return ($this->blnDisplayEmailFlag = QType::Cast($mixValue, QType::Boolean));
 					} catch (QCallerException $objExc) {
@@ -2247,11 +2182,9 @@
 					}
 
 				case 'OptInFlag':
-					/**
-					 * Sets the value for blnOptInFlag 
-					 * @param boolean $mixValue
-					 * @return boolean
-					 */
+					// Sets the value for blnOptInFlag 
+					// @param boolean $mixValue
+					// @return boolean
 					try {
 						return ($this->blnOptInFlag = QType::Cast($mixValue, QType::Boolean));
 					} catch (QCallerException $objExc) {
@@ -2260,11 +2193,9 @@
 					}
 
 				case 'DonatedFlag':
-					/**
-					 * Sets the value for blnDonatedFlag 
-					 * @param boolean $mixValue
-					 * @return boolean
-					 */
+					// Sets the value for blnDonatedFlag 
+					// @param boolean $mixValue
+					// @return boolean
 					try {
 						return ($this->blnDonatedFlag = QType::Cast($mixValue, QType::Boolean));
 					} catch (QCallerException $objExc) {
@@ -2273,11 +2204,9 @@
 					}
 
 				case 'Location':
-					/**
-					 * Sets the value for strLocation 
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strLocation 
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strLocation = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -2286,11 +2215,9 @@
 					}
 
 				case 'CountryId':
-					/**
-					 * Sets the value for intCountryId 
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intCountryId 
+					// @param integer $mixValue
+					// @return integer
 					try {
 						$this->objCountry = null;
 						return ($this->intCountryId = QType::Cast($mixValue, QType::Integer));
@@ -2300,11 +2227,9 @@
 					}
 
 				case 'Url':
-					/**
-					 * Sets the value for strUrl 
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strUrl 
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strUrl = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -2313,11 +2238,9 @@
 					}
 
 				case 'TimezoneId':
-					/**
-					 * Sets the value for intTimezoneId 
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intTimezoneId 
+					// @param integer $mixValue
+					// @return integer
 					try {
 						$this->objTimezone = null;
 						return ($this->intTimezoneId = QType::Cast($mixValue, QType::Integer));
@@ -2327,11 +2250,9 @@
 					}
 
 				case 'RegistrationDate':
-					/**
-					 * Sets the value for dttRegistrationDate (Not Null)
-					 * @param QDateTime $mixValue
-					 * @return QDateTime
-					 */
+					// Sets the value for dttRegistrationDate (Not Null)
+					// @param QDateTime $mixValue
+					// @return QDateTime
 					try {
 						return ($this->dttRegistrationDate = QType::Cast($mixValue, QType::DateTime));
 					} catch (QCallerException $objExc) {
@@ -2344,11 +2265,9 @@
 				// Member Objects
 				///////////////////
 				case 'Country':
-					/**
-					 * Sets the value for the Country object referenced by intCountryId 
-					 * @param Country $mixValue
-					 * @return Country
-					 */
+					// Sets the value for the Country object referenced by intCountryId 
+					// @param Country $mixValue
+					// @return Country
 					if (is_null($mixValue)) {
 						$this->intCountryId = null;
 						$this->objCountry = null;
@@ -2376,11 +2295,9 @@
 					break;
 
 				case 'Timezone':
-					/**
-					 * Sets the value for the Timezone object referenced by intTimezoneId 
-					 * @param Timezone $mixValue
-					 * @return Timezone
-					 */
+					// Sets the value for the Timezone object referenced by intTimezoneId 
+					// @param Timezone $mixValue
+					// @return Timezone
 					if (is_null($mixValue)) {
 						$this->intTimezoneId = null;
 						$this->objTimezone = null;

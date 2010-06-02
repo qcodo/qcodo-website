@@ -15,13 +15,13 @@
 	 * 
 	 * @package Qcodo Website
 	 * @subpackage GeneratedDataObjects
-	 * @property-read integer $Id the value for intId (Read-Only PK)
+	 * @property integer $Id the value for intId (Read-Only PK)
 	 * @property integer $OrderNumber the value for intOrderNumber 
 	 * @property string $Name the value for strName (Not Null)
 	 * @property boolean $AnnounceOnlyFlag the value for blnAnnounceOnlyFlag 
 	 * @property string $Description the value for strDescription 
 	 * @property TopicLink $TopicLink the value for the TopicLink object that uniquely references this Forum
-	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
+	 * @property boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
 	class ForumGen extends QBaseClass {
 
@@ -175,7 +175,7 @@
 		 * on load methods.
 		 * @param QQueryBuilder &$objQueryBuilder the QueryBuilder object that will be created
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause object or array of QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with (sending in null will skip the PrepareStatement step)
 		 * @param boolean $blnCountOnly only select a rowcount
 		 * @return string the query statement
@@ -237,7 +237,7 @@
 		 * Static Qcodo Query method to query for a single Forum object.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return Forum the queried object
 		 */
@@ -259,7 +259,7 @@
 		 * Static Qcodo Query method to query for an array of Forum objects.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return Forum[] the queried objects as an array
 		 */
@@ -278,10 +278,35 @@
 		}
 
 		/**
+		 * Static Qcodo query method to issue a query and get a cursor to progressively fetch its results.
+		 * Uses BuildQueryStatment to perform most of the work.
+		 * @param QQCondition $objConditions any conditions on the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
+		 * @return QDatabaseResultBase the cursor resource instance
+		 */
+		public static function QueryCursor(QQCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
+			// Get the query statement
+			try {
+				$strQuery = Forum::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+
+			// Perform the query
+			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
+		
+			// Return the results cursor
+			$objDbResult->QueryBuilder = $objQueryBuilder;
+			return $objDbResult;
+		}
+
+		/**
 		 * Static Qcodo Query method to query for a count of Forum objects.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return integer the count of queried objects as an integer
 		 */
@@ -393,7 +418,7 @@
 		 * Takes in an optional strAliasPrefix, used in case another Object::InstantiateDbRow
 		 * is calling this Forum::InstantiateDbRow in order to perform
 		 * early binding on referenced objects.
-		 * @param DatabaseRowBase $objDbRow
+		 * @param QDatabaseRowBase $objDbRow
 		 * @param string $strAliasPrefix
 		 * @param string $strExpandAsArrayNodes
 		 * @param QBaseClass $objPreviousItem
@@ -453,7 +478,7 @@
 
 		/**
 		 * Instantiate an array of Forums from a Database Result
-		 * @param DatabaseResultBase $objDbResult
+		 * @param QDatabaseResultBase $objDbResult
 		 * @param string $strExpandAsArrayNodes
 		 * @param string[] $strColumnAliasArray
 		 * @return Forum[]
@@ -484,6 +509,32 @@
 			}
 
 			return $objToReturn;
+		}
+
+		/**
+		 * Instantiate a single Forum object from a query cursor (e.g. a DB ResultSet).
+		 * Cursor is automatically moved to the "next row" of the result set.
+		 * Will return NULL if no cursor or if the cursor has no more rows in the resultset.
+		 * @param QDatabaseResultBase $objDbResult cursor resource
+		 * @return Forum next row resulting from the query
+		 */
+		public static function InstantiateCursor(QDatabaseResultBase $objDbResult) {
+			// If blank resultset, then return empty result
+			if (!$objDbResult) return null;
+
+			// If empty resultset, then return empty result
+			$objDbRow = $objDbResult->GetNextRow();
+			if (!$objDbRow) return null;
+
+			// We need the Column Aliases
+			$strColumnAliasArray = $objDbResult->QueryBuilder->ColumnAliasArray;
+			if (!$strColumnAliasArray) $strColumnAliasArray = array();
+
+			// Pull Expansions (if applicable)
+			$strExpandAsArrayNodes = $objDbResult->QueryBuilder->ExpandAsArrayNodes;
+
+			// Load up the return result with a row and return it
+			return Forum::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, null, $strColumnAliasArray);
 		}
 
 
@@ -696,38 +747,28 @@
 				// Member Variables
 				///////////////////
 				case 'Id':
-					/**
-					 * Gets the value for intId (Read-Only PK)
-					 * @return integer
-					 */
+					// Gets the value for intId (Read-Only PK)
+					// @return integer
 					return $this->intId;
 
 				case 'OrderNumber':
-					/**
-					 * Gets the value for intOrderNumber 
-					 * @return integer
-					 */
+					// Gets the value for intOrderNumber 
+					// @return integer
 					return $this->intOrderNumber;
 
 				case 'Name':
-					/**
-					 * Gets the value for strName (Not Null)
-					 * @return string
-					 */
+					// Gets the value for strName (Not Null)
+					// @return string
 					return $this->strName;
 
 				case 'AnnounceOnlyFlag':
-					/**
-					 * Gets the value for blnAnnounceOnlyFlag 
-					 * @return boolean
-					 */
+					// Gets the value for blnAnnounceOnlyFlag 
+					// @return boolean
 					return $this->blnAnnounceOnlyFlag;
 
 				case 'Description':
-					/**
-					 * Gets the value for strDescription 
-					 * @return string
-					 */
+					// Gets the value for strDescription 
+					// @return string
 					return $this->strDescription;
 
 
@@ -737,11 +778,9 @@
 		
 		
 				case 'TopicLink':
-					/**
-					 * Gets the value for the TopicLink object that uniquely references this Forum
-					 * by objTopicLink (Unique)
-					 * @return TopicLink
-					 */
+					// Gets the value for the TopicLink object that uniquely references this Forum
+					// by objTopicLink (Unique)
+					// @return TopicLink
 					try {
 						if ($this->objTopicLink === false)
 							// We've attempted early binding -- and the reverse reference object does not exist
@@ -788,11 +827,9 @@
 				// Member Variables
 				///////////////////
 				case 'OrderNumber':
-					/**
-					 * Sets the value for intOrderNumber 
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intOrderNumber 
+					// @param integer $mixValue
+					// @return integer
 					try {
 						return ($this->intOrderNumber = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {
@@ -801,11 +838,9 @@
 					}
 
 				case 'Name':
-					/**
-					 * Sets the value for strName (Not Null)
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strName (Not Null)
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strName = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -814,11 +849,9 @@
 					}
 
 				case 'AnnounceOnlyFlag':
-					/**
-					 * Sets the value for blnAnnounceOnlyFlag 
-					 * @param boolean $mixValue
-					 * @return boolean
-					 */
+					// Sets the value for blnAnnounceOnlyFlag 
+					// @param boolean $mixValue
+					// @return boolean
 					try {
 						return ($this->blnAnnounceOnlyFlag = QType::Cast($mixValue, QType::Boolean));
 					} catch (QCallerException $objExc) {
@@ -827,11 +860,9 @@
 					}
 
 				case 'Description':
-					/**
-					 * Sets the value for strDescription 
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strDescription 
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strDescription = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -844,11 +875,9 @@
 				// Member Objects
 				///////////////////
 				case 'TopicLink':
-					/**
-					 * Sets the value for the TopicLink object referenced by objTopicLink (Unique)
-					 * @param TopicLink $mixValue
-					 * @return TopicLink
-					 */
+					// Sets the value for the TopicLink object referenced by objTopicLink (Unique)
+					// @param TopicLink $mixValue
+					// @return TopicLink
 					if (is_null($mixValue)) {
 						$this->objTopicLink = null;
 

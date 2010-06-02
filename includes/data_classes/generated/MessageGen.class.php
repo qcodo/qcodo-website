@@ -15,7 +15,7 @@
 	 * 
 	 * @package Qcodo Website
 	 * @subpackage GeneratedDataObjects
-	 * @property-read integer $Id the value for intId (Read-Only PK)
+	 * @property integer $Id the value for intId (Read-Only PK)
 	 * @property integer $TopicId the value for intTopicId (Not Null)
 	 * @property integer $TopicLinkId the value for intTopicLinkId (Not Null)
 	 * @property integer $PersonId the value for intPersonId 
@@ -26,7 +26,7 @@
 	 * @property Topic $Topic the value for the Topic object referenced by intTopicId (Not Null)
 	 * @property TopicLink $TopicLink the value for the TopicLink object referenced by intTopicLinkId (Not Null)
 	 * @property Person $Person the value for the Person object referenced by intPersonId 
-	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
+	 * @property boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
 	class MessageGen extends QBaseClass {
 
@@ -214,7 +214,7 @@
 		 * on load methods.
 		 * @param QQueryBuilder &$objQueryBuilder the QueryBuilder object that will be created
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause object or array of QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with (sending in null will skip the PrepareStatement step)
 		 * @param boolean $blnCountOnly only select a rowcount
 		 * @return string the query statement
@@ -276,7 +276,7 @@
 		 * Static Qcodo Query method to query for a single Message object.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return Message the queried object
 		 */
@@ -298,7 +298,7 @@
 		 * Static Qcodo Query method to query for an array of Message objects.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return Message[] the queried objects as an array
 		 */
@@ -317,10 +317,35 @@
 		}
 
 		/**
+		 * Static Qcodo query method to issue a query and get a cursor to progressively fetch its results.
+		 * Uses BuildQueryStatment to perform most of the work.
+		 * @param QQCondition $objConditions any conditions on the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
+		 * @return QDatabaseResultBase the cursor resource instance
+		 */
+		public static function QueryCursor(QQCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
+			// Get the query statement
+			try {
+				$strQuery = Message::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+
+			// Perform the query
+			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
+		
+			// Return the results cursor
+			$objDbResult->QueryBuilder = $objQueryBuilder;
+			return $objDbResult;
+		}
+
+		/**
 		 * Static Qcodo Query method to query for a count of Message objects.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return integer the count of queried objects as an integer
 		 */
@@ -435,7 +460,7 @@
 		 * Takes in an optional strAliasPrefix, used in case another Object::InstantiateDbRow
 		 * is calling this Message::InstantiateDbRow in order to perform
 		 * early binding on referenced objects.
-		 * @param DatabaseRowBase $objDbRow
+		 * @param QDatabaseRowBase $objDbRow
 		 * @param string $strAliasPrefix
 		 * @param string $strExpandAsArrayNodes
 		 * @param QBaseClass $objPreviousItem
@@ -507,7 +532,7 @@
 
 		/**
 		 * Instantiate an array of Messages from a Database Result
-		 * @param DatabaseResultBase $objDbResult
+		 * @param QDatabaseResultBase $objDbResult
 		 * @param string $strExpandAsArrayNodes
 		 * @param string[] $strColumnAliasArray
 		 * @return Message[]
@@ -538,6 +563,32 @@
 			}
 
 			return $objToReturn;
+		}
+
+		/**
+		 * Instantiate a single Message object from a query cursor (e.g. a DB ResultSet).
+		 * Cursor is automatically moved to the "next row" of the result set.
+		 * Will return NULL if no cursor or if the cursor has no more rows in the resultset.
+		 * @param QDatabaseResultBase $objDbResult cursor resource
+		 * @return Message next row resulting from the query
+		 */
+		public static function InstantiateCursor(QDatabaseResultBase $objDbResult) {
+			// If blank resultset, then return empty result
+			if (!$objDbResult) return null;
+
+			// If empty resultset, then return empty result
+			$objDbRow = $objDbResult->GetNextRow();
+			if (!$objDbRow) return null;
+
+			// We need the Column Aliases
+			$strColumnAliasArray = $objDbResult->QueryBuilder->ColumnAliasArray;
+			if (!$strColumnAliasArray) $strColumnAliasArray = array();
+
+			// Pull Expansions (if applicable)
+			$strExpandAsArrayNodes = $objDbResult->QueryBuilder->ExpandAsArrayNodes;
+
+			// Load up the return result with a row and return it
+			return Message::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, null, $strColumnAliasArray);
 		}
 
 
@@ -828,59 +879,43 @@
 				// Member Variables
 				///////////////////
 				case 'Id':
-					/**
-					 * Gets the value for intId (Read-Only PK)
-					 * @return integer
-					 */
+					// Gets the value for intId (Read-Only PK)
+					// @return integer
 					return $this->intId;
 
 				case 'TopicId':
-					/**
-					 * Gets the value for intTopicId (Not Null)
-					 * @return integer
-					 */
+					// Gets the value for intTopicId (Not Null)
+					// @return integer
 					return $this->intTopicId;
 
 				case 'TopicLinkId':
-					/**
-					 * Gets the value for intTopicLinkId (Not Null)
-					 * @return integer
-					 */
+					// Gets the value for intTopicLinkId (Not Null)
+					// @return integer
 					return $this->intTopicLinkId;
 
 				case 'PersonId':
-					/**
-					 * Gets the value for intPersonId 
-					 * @return integer
-					 */
+					// Gets the value for intPersonId 
+					// @return integer
 					return $this->intPersonId;
 
 				case 'Message':
-					/**
-					 * Gets the value for strMessage 
-					 * @return string
-					 */
+					// Gets the value for strMessage 
+					// @return string
 					return $this->strMessage;
 
 				case 'CompiledHtml':
-					/**
-					 * Gets the value for strCompiledHtml 
-					 * @return string
-					 */
+					// Gets the value for strCompiledHtml 
+					// @return string
 					return $this->strCompiledHtml;
 
 				case 'ReplyNumber':
-					/**
-					 * Gets the value for intReplyNumber (Not Null)
-					 * @return integer
-					 */
+					// Gets the value for intReplyNumber (Not Null)
+					// @return integer
 					return $this->intReplyNumber;
 
 				case 'PostDate':
-					/**
-					 * Gets the value for dttPostDate (Not Null)
-					 * @return QDateTime
-					 */
+					// Gets the value for dttPostDate (Not Null)
+					// @return QDateTime
 					return $this->dttPostDate;
 
 
@@ -888,10 +923,8 @@
 				// Member Objects
 				///////////////////
 				case 'Topic':
-					/**
-					 * Gets the value for the Topic object referenced by intTopicId (Not Null)
-					 * @return Topic
-					 */
+					// Gets the value for the Topic object referenced by intTopicId (Not Null)
+					// @return Topic
 					try {
 						if ((!$this->objTopic) && (!is_null($this->intTopicId)))
 							$this->objTopic = Topic::Load($this->intTopicId);
@@ -902,10 +935,8 @@
 					}
 
 				case 'TopicLink':
-					/**
-					 * Gets the value for the TopicLink object referenced by intTopicLinkId (Not Null)
-					 * @return TopicLink
-					 */
+					// Gets the value for the TopicLink object referenced by intTopicLinkId (Not Null)
+					// @return TopicLink
 					try {
 						if ((!$this->objTopicLink) && (!is_null($this->intTopicLinkId)))
 							$this->objTopicLink = TopicLink::Load($this->intTopicLinkId);
@@ -916,10 +947,8 @@
 					}
 
 				case 'Person':
-					/**
-					 * Gets the value for the Person object referenced by intPersonId 
-					 * @return Person
-					 */
+					// Gets the value for the Person object referenced by intPersonId 
+					// @return Person
 					try {
 						if ((!$this->objPerson) && (!is_null($this->intPersonId)))
 							$this->objPerson = Person::Load($this->intPersonId);
@@ -963,11 +992,9 @@
 				// Member Variables
 				///////////////////
 				case 'TopicId':
-					/**
-					 * Sets the value for intTopicId (Not Null)
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intTopicId (Not Null)
+					// @param integer $mixValue
+					// @return integer
 					try {
 						$this->objTopic = null;
 						return ($this->intTopicId = QType::Cast($mixValue, QType::Integer));
@@ -977,11 +1004,9 @@
 					}
 
 				case 'TopicLinkId':
-					/**
-					 * Sets the value for intTopicLinkId (Not Null)
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intTopicLinkId (Not Null)
+					// @param integer $mixValue
+					// @return integer
 					try {
 						$this->objTopicLink = null;
 						return ($this->intTopicLinkId = QType::Cast($mixValue, QType::Integer));
@@ -991,11 +1016,9 @@
 					}
 
 				case 'PersonId':
-					/**
-					 * Sets the value for intPersonId 
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intPersonId 
+					// @param integer $mixValue
+					// @return integer
 					try {
 						$this->objPerson = null;
 						return ($this->intPersonId = QType::Cast($mixValue, QType::Integer));
@@ -1005,11 +1028,9 @@
 					}
 
 				case 'Message':
-					/**
-					 * Sets the value for strMessage 
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strMessage 
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strMessage = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -1018,11 +1039,9 @@
 					}
 
 				case 'CompiledHtml':
-					/**
-					 * Sets the value for strCompiledHtml 
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strCompiledHtml 
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strCompiledHtml = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -1031,11 +1050,9 @@
 					}
 
 				case 'ReplyNumber':
-					/**
-					 * Sets the value for intReplyNumber (Not Null)
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intReplyNumber (Not Null)
+					// @param integer $mixValue
+					// @return integer
 					try {
 						return ($this->intReplyNumber = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {
@@ -1044,11 +1061,9 @@
 					}
 
 				case 'PostDate':
-					/**
-					 * Sets the value for dttPostDate (Not Null)
-					 * @param QDateTime $mixValue
-					 * @return QDateTime
-					 */
+					// Sets the value for dttPostDate (Not Null)
+					// @param QDateTime $mixValue
+					// @return QDateTime
 					try {
 						return ($this->dttPostDate = QType::Cast($mixValue, QType::DateTime));
 					} catch (QCallerException $objExc) {
@@ -1061,11 +1076,9 @@
 				// Member Objects
 				///////////////////
 				case 'Topic':
-					/**
-					 * Sets the value for the Topic object referenced by intTopicId (Not Null)
-					 * @param Topic $mixValue
-					 * @return Topic
-					 */
+					// Sets the value for the Topic object referenced by intTopicId (Not Null)
+					// @param Topic $mixValue
+					// @return Topic
 					if (is_null($mixValue)) {
 						$this->intTopicId = null;
 						$this->objTopic = null;
@@ -1093,11 +1106,9 @@
 					break;
 
 				case 'TopicLink':
-					/**
-					 * Sets the value for the TopicLink object referenced by intTopicLinkId (Not Null)
-					 * @param TopicLink $mixValue
-					 * @return TopicLink
-					 */
+					// Sets the value for the TopicLink object referenced by intTopicLinkId (Not Null)
+					// @param TopicLink $mixValue
+					// @return TopicLink
 					if (is_null($mixValue)) {
 						$this->intTopicLinkId = null;
 						$this->objTopicLink = null;
@@ -1125,11 +1136,9 @@
 					break;
 
 				case 'Person':
-					/**
-					 * Sets the value for the Person object referenced by intPersonId 
-					 * @param Person $mixValue
-					 * @return Person
-					 */
+					// Sets the value for the Person object referenced by intPersonId 
+					// @param Person $mixValue
+					// @return Person
 					if (is_null($mixValue)) {
 						$this->intPersonId = null;
 						$this->objPerson = null;

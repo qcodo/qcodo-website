@@ -21,7 +21,7 @@
 	 * @property integer $Height the value for intHeight 
 	 * @property string $Description the value for strDescription 
 	 * @property WikiVersion $WikiVersion the value for the WikiVersion object referenced by intWikiVersionId (PK)
-	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
+	 * @property boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
 	class WikiImageGen extends QBaseClass {
 
@@ -172,7 +172,7 @@
 		 * on load methods.
 		 * @param QQueryBuilder &$objQueryBuilder the QueryBuilder object that will be created
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause object or array of QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with (sending in null will skip the PrepareStatement step)
 		 * @param boolean $blnCountOnly only select a rowcount
 		 * @return string the query statement
@@ -234,7 +234,7 @@
 		 * Static Qcodo Query method to query for a single WikiImage object.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return WikiImage the queried object
 		 */
@@ -256,7 +256,7 @@
 		 * Static Qcodo Query method to query for an array of WikiImage objects.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return WikiImage[] the queried objects as an array
 		 */
@@ -275,10 +275,35 @@
 		}
 
 		/**
+		 * Static Qcodo query method to issue a query and get a cursor to progressively fetch its results.
+		 * Uses BuildQueryStatment to perform most of the work.
+		 * @param QQCondition $objConditions any conditions on the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
+		 * @return QDatabaseResultBase the cursor resource instance
+		 */
+		public static function QueryCursor(QQCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
+			// Get the query statement
+			try {
+				$strQuery = WikiImage::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+
+			// Perform the query
+			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
+		
+			// Return the results cursor
+			$objDbResult->QueryBuilder = $objQueryBuilder;
+			return $objDbResult;
+		}
+
+		/**
 		 * Static Qcodo Query method to query for a count of WikiImage objects.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return integer the count of queried objects as an integer
 		 */
@@ -390,7 +415,7 @@
 		 * Takes in an optional strAliasPrefix, used in case another Object::InstantiateDbRow
 		 * is calling this WikiImage::InstantiateDbRow in order to perform
 		 * early binding on referenced objects.
-		 * @param DatabaseRowBase $objDbRow
+		 * @param QDatabaseRowBase $objDbRow
 		 * @param string $strAliasPrefix
 		 * @param string $strExpandAsArrayNodes
 		 * @param QBaseClass $objPreviousItem
@@ -445,7 +470,7 @@
 
 		/**
 		 * Instantiate an array of WikiImages from a Database Result
-		 * @param DatabaseResultBase $objDbResult
+		 * @param QDatabaseResultBase $objDbResult
 		 * @param string $strExpandAsArrayNodes
 		 * @param string[] $strColumnAliasArray
 		 * @return WikiImage[]
@@ -476,6 +501,32 @@
 			}
 
 			return $objToReturn;
+		}
+
+		/**
+		 * Instantiate a single WikiImage object from a query cursor (e.g. a DB ResultSet).
+		 * Cursor is automatically moved to the "next row" of the result set.
+		 * Will return NULL if no cursor or if the cursor has no more rows in the resultset.
+		 * @param QDatabaseResultBase $objDbResult cursor resource
+		 * @return WikiImage next row resulting from the query
+		 */
+		public static function InstantiateCursor(QDatabaseResultBase $objDbResult) {
+			// If blank resultset, then return empty result
+			if (!$objDbResult) return null;
+
+			// If empty resultset, then return empty result
+			$objDbRow = $objDbResult->GetNextRow();
+			if (!$objDbRow) return null;
+
+			// We need the Column Aliases
+			$strColumnAliasArray = $objDbResult->QueryBuilder->ColumnAliasArray;
+			if (!$strColumnAliasArray) $strColumnAliasArray = array();
+
+			// Pull Expansions (if applicable)
+			$strExpandAsArrayNodes = $objDbResult->QueryBuilder->ExpandAsArrayNodes;
+
+			// Load up the return result with a row and return it
+			return WikiImage::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, null, $strColumnAliasArray);
 		}
 
 
@@ -695,38 +746,28 @@
 				// Member Variables
 				///////////////////
 				case 'WikiVersionId':
-					/**
-					 * Gets the value for intWikiVersionId (PK)
-					 * @return integer
-					 */
+					// Gets the value for intWikiVersionId (PK)
+					// @return integer
 					return $this->intWikiVersionId;
 
 				case 'ImageFileTypeId':
-					/**
-					 * Gets the value for intImageFileTypeId (Not Null)
-					 * @return integer
-					 */
+					// Gets the value for intImageFileTypeId (Not Null)
+					// @return integer
 					return $this->intImageFileTypeId;
 
 				case 'Width':
-					/**
-					 * Gets the value for intWidth 
-					 * @return integer
-					 */
+					// Gets the value for intWidth 
+					// @return integer
 					return $this->intWidth;
 
 				case 'Height':
-					/**
-					 * Gets the value for intHeight 
-					 * @return integer
-					 */
+					// Gets the value for intHeight 
+					// @return integer
 					return $this->intHeight;
 
 				case 'Description':
-					/**
-					 * Gets the value for strDescription 
-					 * @return string
-					 */
+					// Gets the value for strDescription 
+					// @return string
 					return $this->strDescription;
 
 
@@ -734,10 +775,8 @@
 				// Member Objects
 				///////////////////
 				case 'WikiVersion':
-					/**
-					 * Gets the value for the WikiVersion object referenced by intWikiVersionId (PK)
-					 * @return WikiVersion
-					 */
+					// Gets the value for the WikiVersion object referenced by intWikiVersionId (PK)
+					// @return WikiVersion
 					try {
 						if ((!$this->objWikiVersion) && (!is_null($this->intWikiVersionId)))
 							$this->objWikiVersion = WikiVersion::Load($this->intWikiVersionId);
@@ -781,11 +820,9 @@
 				// Member Variables
 				///////////////////
 				case 'WikiVersionId':
-					/**
-					 * Sets the value for intWikiVersionId (PK)
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intWikiVersionId (PK)
+					// @param integer $mixValue
+					// @return integer
 					try {
 						$this->objWikiVersion = null;
 						return ($this->intWikiVersionId = QType::Cast($mixValue, QType::Integer));
@@ -795,11 +832,9 @@
 					}
 
 				case 'ImageFileTypeId':
-					/**
-					 * Sets the value for intImageFileTypeId (Not Null)
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intImageFileTypeId (Not Null)
+					// @param integer $mixValue
+					// @return integer
 					try {
 						return ($this->intImageFileTypeId = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {
@@ -808,11 +843,9 @@
 					}
 
 				case 'Width':
-					/**
-					 * Sets the value for intWidth 
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intWidth 
+					// @param integer $mixValue
+					// @return integer
 					try {
 						return ($this->intWidth = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {
@@ -821,11 +854,9 @@
 					}
 
 				case 'Height':
-					/**
-					 * Sets the value for intHeight 
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intHeight 
+					// @param integer $mixValue
+					// @return integer
 					try {
 						return ($this->intHeight = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {
@@ -834,11 +865,9 @@
 					}
 
 				case 'Description':
-					/**
-					 * Sets the value for strDescription 
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strDescription 
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strDescription = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -851,11 +880,9 @@
 				// Member Objects
 				///////////////////
 				case 'WikiVersion':
-					/**
-					 * Sets the value for the WikiVersion object referenced by intWikiVersionId (PK)
-					 * @param WikiVersion $mixValue
-					 * @return WikiVersion
-					 */
+					// Sets the value for the WikiVersion object referenced by intWikiVersionId (PK)
+					// @param WikiVersion $mixValue
+					// @return WikiVersion
 					if (is_null($mixValue)) {
 						$this->intWikiVersionId = null;
 						$this->objWikiVersion = null;

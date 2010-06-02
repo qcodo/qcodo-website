@@ -185,21 +185,30 @@
 		/**
 		 * Create and setup QListBox lstTopicLink
 		 * @param string $strControlId optional ControlId to use
+		 * @param QQCondition $objConditions override the default condition of QQ::All() to the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for the query
 		 * @return QListBox
 		 */
-		public function lstTopicLink_Create($strControlId = null) {
+		public function lstTopicLink_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstTopicLink = new QListBox($this->objParentObject, $strControlId);
 			$this->lstTopicLink->Name = QApplication::Translate('Topic Link');
 			$this->lstTopicLink->Required = true;
 			if (!$this->blnEditMode)
 				$this->lstTopicLink->AddItem(QApplication::Translate('- Select One -'), null);
-			$objTopicLinkArray = TopicLink::LoadAll();
-			if ($objTopicLinkArray) foreach ($objTopicLinkArray as $objTopicLink) {
+
+			// Setup and perform the Query
+			if (is_null($objCondition)) $objCondition = QQ::All();
+			$objTopicLinkCursor = TopicLink::QueryCursor($objCondition, $objOptionalClauses);
+
+			// Iterate through the Cursor
+			while ($objTopicLink = TopicLink::InstantiateCursor($objTopicLinkCursor)) {
 				$objListItem = new QListItem($objTopicLink->__toString(), $objTopicLink->Id);
 				if (($this->objTopic->TopicLink) && ($this->objTopic->TopicLink->Id == $objTopicLink->Id))
 					$objListItem->Selected = true;
 				$this->lstTopicLink->AddItem($objListItem);
 			}
+
+			// Return the QListBox
 			return $this->lstTopicLink;
 		}
 
@@ -244,19 +253,28 @@
 		/**
 		 * Create and setup QListBox lstPerson
 		 * @param string $strControlId optional ControlId to use
+		 * @param QQCondition $objConditions override the default condition of QQ::All() to the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for the query
 		 * @return QListBox
 		 */
-		public function lstPerson_Create($strControlId = null) {
+		public function lstPerson_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstPerson = new QListBox($this->objParentObject, $strControlId);
 			$this->lstPerson->Name = QApplication::Translate('Person');
 			$this->lstPerson->AddItem(QApplication::Translate('- Select One -'), null);
-			$objPersonArray = Person::LoadAll();
-			if ($objPersonArray) foreach ($objPersonArray as $objPerson) {
+
+			// Setup and perform the Query
+			if (is_null($objCondition)) $objCondition = QQ::All();
+			$objPersonCursor = Person::QueryCursor($objCondition, $objOptionalClauses);
+
+			// Iterate through the Cursor
+			while ($objPerson = Person::InstantiateCursor($objPersonCursor)) {
 				$objListItem = new QListItem($objPerson->__toString(), $objPerson->Id);
 				if (($this->objTopic->Person) && ($this->objTopic->Person->Id == $objPerson->Id))
 					$objListItem->Selected = true;
 				$this->lstPerson->AddItem($objListItem);
 			}
+
+			// Return the QListBox
 			return $this->lstPerson;
 		}
 
@@ -356,15 +374,24 @@
 		/**
 		 * Create and setup QListBox lstPeopleAsEmail
 		 * @param string $strControlId optional ControlId to use
+		 * @param QQCondition $objConditions override the default condition of QQ::All() to the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for the query
 		 * @return QListBox
 		 */
-		public function lstPeopleAsEmail_Create($strControlId = null) {
+		public function lstPeopleAsEmail_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstPeopleAsEmail = new QListBox($this->objParentObject, $strControlId);
 			$this->lstPeopleAsEmail->Name = QApplication::Translate('People As Email');
 			$this->lstPeopleAsEmail->SelectionMode = QSelectionMode::Multiple;
+
+			// We need to know which items to "Pre-Select"
 			$objAssociatedArray = $this->objTopic->GetPersonAsEmailArray();
-			$objPersonArray = Person::LoadAll();
-			if ($objPersonArray) foreach ($objPersonArray as $objPerson) {
+
+			// Setup and perform the Query
+			if (is_null($objCondition)) $objCondition = QQ::All();
+			$objPersonCursor = Person::QueryCursor($objCondition, $objOptionalClauses);
+
+			// Iterate through the Cursor
+			while ($objPerson = Person::InstantiateCursor($objPersonCursor)) {
 				$objListItem = new QListItem($objPerson->__toString(), $objPerson->Id);
 				foreach ($objAssociatedArray as $objAssociated) {
 					if ($objAssociated->Id == $objPerson->Id)
@@ -372,6 +399,8 @@
 				}
 				$this->lstPeopleAsEmail->AddItem($objListItem);
 			}
+
+			// Return the QListControl
 			return $this->lstPeopleAsEmail;
 		}
 
@@ -396,15 +425,24 @@
 		/**
 		 * Create and setup QListBox lstPeopleAsReadOnce
 		 * @param string $strControlId optional ControlId to use
+		 * @param QQCondition $objConditions override the default condition of QQ::All() to the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for the query
 		 * @return QListBox
 		 */
-		public function lstPeopleAsReadOnce_Create($strControlId = null) {
+		public function lstPeopleAsReadOnce_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstPeopleAsReadOnce = new QListBox($this->objParentObject, $strControlId);
 			$this->lstPeopleAsReadOnce->Name = QApplication::Translate('People As Read Once');
 			$this->lstPeopleAsReadOnce->SelectionMode = QSelectionMode::Multiple;
+
+			// We need to know which items to "Pre-Select"
 			$objAssociatedArray = $this->objTopic->GetPersonAsReadOnceArray();
-			$objPersonArray = Person::LoadAll();
-			if ($objPersonArray) foreach ($objPersonArray as $objPerson) {
+
+			// Setup and perform the Query
+			if (is_null($objCondition)) $objCondition = QQ::All();
+			$objPersonCursor = Person::QueryCursor($objCondition, $objOptionalClauses);
+
+			// Iterate through the Cursor
+			while ($objPerson = Person::InstantiateCursor($objPersonCursor)) {
 				$objListItem = new QListItem($objPerson->__toString(), $objPerson->Id);
 				foreach ($objAssociatedArray as $objAssociated) {
 					if ($objAssociated->Id == $objPerson->Id)
@@ -412,6 +450,8 @@
 				}
 				$this->lstPeopleAsReadOnce->AddItem($objListItem);
 			}
+
+			// Return the QListControl
 			return $this->lstPeopleAsReadOnce;
 		}
 
@@ -436,15 +476,24 @@
 		/**
 		 * Create and setup QListBox lstPeopleAsRead
 		 * @param string $strControlId optional ControlId to use
+		 * @param QQCondition $objConditions override the default condition of QQ::All() to the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for the query
 		 * @return QListBox
 		 */
-		public function lstPeopleAsRead_Create($strControlId = null) {
+		public function lstPeopleAsRead_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstPeopleAsRead = new QListBox($this->objParentObject, $strControlId);
 			$this->lstPeopleAsRead->Name = QApplication::Translate('People As Read');
 			$this->lstPeopleAsRead->SelectionMode = QSelectionMode::Multiple;
+
+			// We need to know which items to "Pre-Select"
 			$objAssociatedArray = $this->objTopic->GetPersonAsReadArray();
-			$objPersonArray = Person::LoadAll();
-			if ($objPersonArray) foreach ($objPersonArray as $objPerson) {
+
+			// Setup and perform the Query
+			if (is_null($objCondition)) $objCondition = QQ::All();
+			$objPersonCursor = Person::QueryCursor($objCondition, $objOptionalClauses);
+
+			// Iterate through the Cursor
+			while ($objPerson = Person::InstantiateCursor($objPersonCursor)) {
 				$objListItem = new QListItem($objPerson->__toString(), $objPerson->Id);
 				foreach ($objAssociatedArray as $objAssociated) {
 					if ($objAssociated->Id == $objPerson->Id)
@@ -452,6 +501,8 @@
 				}
 				$this->lstPeopleAsRead->AddItem($objListItem);
 			}
+
+			// Return the QListControl
 			return $this->lstPeopleAsRead;
 		}
 

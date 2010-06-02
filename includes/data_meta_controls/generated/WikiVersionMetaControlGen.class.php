@@ -185,21 +185,30 @@
 		/**
 		 * Create and setup QListBox lstWikiItem
 		 * @param string $strControlId optional ControlId to use
+		 * @param QQCondition $objConditions override the default condition of QQ::All() to the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for the query
 		 * @return QListBox
 		 */
-		public function lstWikiItem_Create($strControlId = null) {
+		public function lstWikiItem_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstWikiItem = new QListBox($this->objParentObject, $strControlId);
 			$this->lstWikiItem->Name = QApplication::Translate('Wiki Item');
 			$this->lstWikiItem->Required = true;
 			if (!$this->blnEditMode)
 				$this->lstWikiItem->AddItem(QApplication::Translate('- Select One -'), null);
-			$objWikiItemArray = WikiItem::LoadAll();
-			if ($objWikiItemArray) foreach ($objWikiItemArray as $objWikiItem) {
+
+			// Setup and perform the Query
+			if (is_null($objCondition)) $objCondition = QQ::All();
+			$objWikiItemCursor = WikiItem::QueryCursor($objCondition, $objOptionalClauses);
+
+			// Iterate through the Cursor
+			while ($objWikiItem = WikiItem::InstantiateCursor($objWikiItemCursor)) {
 				$objListItem = new QListItem($objWikiItem->__toString(), $objWikiItem->Id);
 				if (($this->objWikiVersion->WikiItem) && ($this->objWikiVersion->WikiItem->Id == $objWikiItem->Id))
 					$objListItem->Selected = true;
 				$this->lstWikiItem->AddItem($objListItem);
 			}
+
+			// Return the QListBox
 			return $this->lstWikiItem;
 		}
 
@@ -272,21 +281,30 @@
 		/**
 		 * Create and setup QListBox lstPostedByPerson
 		 * @param string $strControlId optional ControlId to use
+		 * @param QQCondition $objConditions override the default condition of QQ::All() to the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for the query
 		 * @return QListBox
 		 */
-		public function lstPostedByPerson_Create($strControlId = null) {
+		public function lstPostedByPerson_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstPostedByPerson = new QListBox($this->objParentObject, $strControlId);
 			$this->lstPostedByPerson->Name = QApplication::Translate('Posted By Person');
 			$this->lstPostedByPerson->Required = true;
 			if (!$this->blnEditMode)
 				$this->lstPostedByPerson->AddItem(QApplication::Translate('- Select One -'), null);
-			$objPostedByPersonArray = Person::LoadAll();
-			if ($objPostedByPersonArray) foreach ($objPostedByPersonArray as $objPostedByPerson) {
+
+			// Setup and perform the Query
+			if (is_null($objCondition)) $objCondition = QQ::All();
+			$objPostedByPersonCursor = Person::QueryCursor($objCondition, $objOptionalClauses);
+
+			// Iterate through the Cursor
+			while ($objPostedByPerson = Person::InstantiateCursor($objPostedByPersonCursor)) {
 				$objListItem = new QListItem($objPostedByPerson->__toString(), $objPostedByPerson->Id);
 				if (($this->objWikiVersion->PostedByPerson) && ($this->objWikiVersion->PostedByPerson->Id == $objPostedByPerson->Id))
 					$objListItem->Selected = true;
 				$this->lstPostedByPerson->AddItem($objListItem);
 			}
+
+			// Return the QListBox
 			return $this->lstPostedByPerson;
 		}
 
@@ -337,22 +355,32 @@
 		/**
 		 * Create and setup QListBox lstWikiFile
 		 * @param string $strControlId optional ControlId to use
+		 * @param QQCondition $objConditions override the default condition of QQ::All() to the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for the query
 		 * @return QListBox
 		 */
-		public function lstWikiFile_Create($strControlId = null) {
+		public function lstWikiFile_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstWikiFile = new QListBox($this->objParentObject, $strControlId);
 			$this->lstWikiFile->Name = QApplication::Translate('Wiki File');
 			$this->lstWikiFile->AddItem(QApplication::Translate('- Select One -'), null);
-			$objWikiFileArray = WikiFile::LoadAll();
-			if ($objWikiFileArray) foreach ($objWikiFileArray as $objWikiFile) {
+
+			// Setup and perform the Query
+			if (is_null($objCondition)) $objCondition = QQ::All();
+			$objWikiFileCursor = WikiFile::QueryCursor($objCondition, $objOptionalClauses);
+
+			// Iterate through the Cursor
+			while ($objWikiFile = WikiFile::InstantiateCursor($objWikiFileCursor)) {
 				$objListItem = new QListItem($objWikiFile->__toString(), $objWikiFile->WikiVersionId);
 				if ($objWikiFile->WikiVersionId == $this->objWikiVersion->Id)
 					$objListItem->Selected = true;
 				$this->lstWikiFile->AddItem($objListItem);
 			}
+
 			// Because WikiFile's WikiFile is not null, if a value is already selected, it cannot be changed.
 			if ($this->lstWikiFile->SelectedValue)
 				$this->lstWikiFile->Enabled = false;
+
+			// Return the QListBox
 			return $this->lstWikiFile;
 		}
 
@@ -371,22 +399,32 @@
 		/**
 		 * Create and setup QListBox lstWikiImage
 		 * @param string $strControlId optional ControlId to use
+		 * @param QQCondition $objConditions override the default condition of QQ::All() to the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for the query
 		 * @return QListBox
 		 */
-		public function lstWikiImage_Create($strControlId = null) {
+		public function lstWikiImage_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstWikiImage = new QListBox($this->objParentObject, $strControlId);
 			$this->lstWikiImage->Name = QApplication::Translate('Wiki Image');
 			$this->lstWikiImage->AddItem(QApplication::Translate('- Select One -'), null);
-			$objWikiImageArray = WikiImage::LoadAll();
-			if ($objWikiImageArray) foreach ($objWikiImageArray as $objWikiImage) {
+
+			// Setup and perform the Query
+			if (is_null($objCondition)) $objCondition = QQ::All();
+			$objWikiImageCursor = WikiImage::QueryCursor($objCondition, $objOptionalClauses);
+
+			// Iterate through the Cursor
+			while ($objWikiImage = WikiImage::InstantiateCursor($objWikiImageCursor)) {
 				$objListItem = new QListItem($objWikiImage->__toString(), $objWikiImage->WikiVersionId);
 				if ($objWikiImage->WikiVersionId == $this->objWikiVersion->Id)
 					$objListItem->Selected = true;
 				$this->lstWikiImage->AddItem($objListItem);
 			}
+
 			// Because WikiImage's WikiImage is not null, if a value is already selected, it cannot be changed.
 			if ($this->lstWikiImage->SelectedValue)
 				$this->lstWikiImage->Enabled = false;
+
+			// Return the QListBox
 			return $this->lstWikiImage;
 		}
 
@@ -405,19 +443,28 @@
 		/**
 		 * Create and setup QListBox lstWikiItemAsCurrent
 		 * @param string $strControlId optional ControlId to use
+		 * @param QQCondition $objConditions override the default condition of QQ::All() to the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for the query
 		 * @return QListBox
 		 */
-		public function lstWikiItemAsCurrent_Create($strControlId = null) {
+		public function lstWikiItemAsCurrent_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstWikiItemAsCurrent = new QListBox($this->objParentObject, $strControlId);
 			$this->lstWikiItemAsCurrent->Name = QApplication::Translate('Wiki Item As Current');
 			$this->lstWikiItemAsCurrent->AddItem(QApplication::Translate('- Select One -'), null);
-			$objWikiItemArray = WikiItem::LoadAll();
-			if ($objWikiItemArray) foreach ($objWikiItemArray as $objWikiItem) {
+
+			// Setup and perform the Query
+			if (is_null($objCondition)) $objCondition = QQ::All();
+			$objWikiItemCursor = WikiItem::QueryCursor($objCondition, $objOptionalClauses);
+
+			// Iterate through the Cursor
+			while ($objWikiItem = WikiItem::InstantiateCursor($objWikiItemCursor)) {
 				$objListItem = new QListItem($objWikiItem->__toString(), $objWikiItem->Id);
 				if ($objWikiItem->CurrentWikiVersionId == $this->objWikiVersion->Id)
 					$objListItem->Selected = true;
 				$this->lstWikiItemAsCurrent->AddItem($objListItem);
 			}
+
+			// Return the QListBox
 			return $this->lstWikiItemAsCurrent;
 		}
 
@@ -436,22 +483,32 @@
 		/**
 		 * Create and setup QListBox lstWikiPage
 		 * @param string $strControlId optional ControlId to use
+		 * @param QQCondition $objConditions override the default condition of QQ::All() to the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for the query
 		 * @return QListBox
 		 */
-		public function lstWikiPage_Create($strControlId = null) {
+		public function lstWikiPage_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstWikiPage = new QListBox($this->objParentObject, $strControlId);
 			$this->lstWikiPage->Name = QApplication::Translate('Wiki Page');
 			$this->lstWikiPage->AddItem(QApplication::Translate('- Select One -'), null);
-			$objWikiPageArray = WikiPage::LoadAll();
-			if ($objWikiPageArray) foreach ($objWikiPageArray as $objWikiPage) {
+
+			// Setup and perform the Query
+			if (is_null($objCondition)) $objCondition = QQ::All();
+			$objWikiPageCursor = WikiPage::QueryCursor($objCondition, $objOptionalClauses);
+
+			// Iterate through the Cursor
+			while ($objWikiPage = WikiPage::InstantiateCursor($objWikiPageCursor)) {
 				$objListItem = new QListItem($objWikiPage->__toString(), $objWikiPage->WikiVersionId);
 				if ($objWikiPage->WikiVersionId == $this->objWikiVersion->Id)
 					$objListItem->Selected = true;
 				$this->lstWikiPage->AddItem($objListItem);
 			}
+
 			// Because WikiPage's WikiPage is not null, if a value is already selected, it cannot be changed.
 			if ($this->lstWikiPage->SelectedValue)
 				$this->lstWikiPage->Enabled = false;
+
+			// Return the QListBox
 			return $this->lstWikiPage;
 		}
 

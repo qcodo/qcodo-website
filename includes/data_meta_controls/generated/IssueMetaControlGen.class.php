@@ -443,21 +443,30 @@
 		/**
 		 * Create and setup QListBox lstPostedByPerson
 		 * @param string $strControlId optional ControlId to use
+		 * @param QQCondition $objConditions override the default condition of QQ::All() to the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for the query
 		 * @return QListBox
 		 */
-		public function lstPostedByPerson_Create($strControlId = null) {
+		public function lstPostedByPerson_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstPostedByPerson = new QListBox($this->objParentObject, $strControlId);
 			$this->lstPostedByPerson->Name = QApplication::Translate('Posted By Person');
 			$this->lstPostedByPerson->Required = true;
 			if (!$this->blnEditMode)
 				$this->lstPostedByPerson->AddItem(QApplication::Translate('- Select One -'), null);
-			$objPostedByPersonArray = Person::LoadAll();
-			if ($objPostedByPersonArray) foreach ($objPostedByPersonArray as $objPostedByPerson) {
+
+			// Setup and perform the Query
+			if (is_null($objCondition)) $objCondition = QQ::All();
+			$objPostedByPersonCursor = Person::QueryCursor($objCondition, $objOptionalClauses);
+
+			// Iterate through the Cursor
+			while ($objPostedByPerson = Person::InstantiateCursor($objPostedByPersonCursor)) {
 				$objListItem = new QListItem($objPostedByPerson->__toString(), $objPostedByPerson->Id);
 				if (($this->objIssue->PostedByPerson) && ($this->objIssue->PostedByPerson->Id == $objPostedByPerson->Id))
 					$objListItem->Selected = true;
 				$this->lstPostedByPerson->AddItem($objListItem);
 			}
+
+			// Return the QListBox
 			return $this->lstPostedByPerson;
 		}
 
@@ -477,19 +486,28 @@
 		/**
 		 * Create and setup QListBox lstAssignedToPerson
 		 * @param string $strControlId optional ControlId to use
+		 * @param QQCondition $objConditions override the default condition of QQ::All() to the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for the query
 		 * @return QListBox
 		 */
-		public function lstAssignedToPerson_Create($strControlId = null) {
+		public function lstAssignedToPerson_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstAssignedToPerson = new QListBox($this->objParentObject, $strControlId);
 			$this->lstAssignedToPerson->Name = QApplication::Translate('Assigned To Person');
 			$this->lstAssignedToPerson->AddItem(QApplication::Translate('- Select One -'), null);
-			$objAssignedToPersonArray = Person::LoadAll();
-			if ($objAssignedToPersonArray) foreach ($objAssignedToPersonArray as $objAssignedToPerson) {
+
+			// Setup and perform the Query
+			if (is_null($objCondition)) $objCondition = QQ::All();
+			$objAssignedToPersonCursor = Person::QueryCursor($objCondition, $objOptionalClauses);
+
+			// Iterate through the Cursor
+			while ($objAssignedToPerson = Person::InstantiateCursor($objAssignedToPersonCursor)) {
 				$objListItem = new QListItem($objAssignedToPerson->__toString(), $objAssignedToPerson->Id);
 				if (($this->objIssue->AssignedToPerson) && ($this->objIssue->AssignedToPerson->Id == $objAssignedToPerson->Id))
 					$objListItem->Selected = true;
 				$this->lstAssignedToPerson->AddItem($objListItem);
 			}
+
+			// Return the QListBox
 			return $this->lstAssignedToPerson;
 		}
 
@@ -623,19 +641,28 @@
 		/**
 		 * Create and setup QListBox lstTopicLink
 		 * @param string $strControlId optional ControlId to use
+		 * @param QQCondition $objConditions override the default condition of QQ::All() to the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for the query
 		 * @return QListBox
 		 */
-		public function lstTopicLink_Create($strControlId = null) {
+		public function lstTopicLink_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstTopicLink = new QListBox($this->objParentObject, $strControlId);
 			$this->lstTopicLink->Name = QApplication::Translate('Topic Link');
 			$this->lstTopicLink->AddItem(QApplication::Translate('- Select One -'), null);
-			$objTopicLinkArray = TopicLink::LoadAll();
-			if ($objTopicLinkArray) foreach ($objTopicLinkArray as $objTopicLink) {
+
+			// Setup and perform the Query
+			if (is_null($objCondition)) $objCondition = QQ::All();
+			$objTopicLinkCursor = TopicLink::QueryCursor($objCondition, $objOptionalClauses);
+
+			// Iterate through the Cursor
+			while ($objTopicLink = TopicLink::InstantiateCursor($objTopicLinkCursor)) {
 				$objListItem = new QListItem($objTopicLink->__toString(), $objTopicLink->Id);
 				if ($objTopicLink->IssueId == $this->objIssue->Id)
 					$objListItem->Selected = true;
 				$this->lstTopicLink->AddItem($objListItem);
 			}
+
+			// Return the QListBox
 			return $this->lstTopicLink;
 		}
 

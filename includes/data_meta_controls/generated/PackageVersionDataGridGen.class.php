@@ -188,14 +188,15 @@
 					$strLinkUrl .= '?intId=<?=urlencode($_ITEM->Id)?>';
 					break;
 				case QMetaControlArgumentType::PathInfo:
-					$strLinkUrl .= '/<?=urlencode($_ITEM->Id)?>';
+					$strLinkUrl .= '/<?=str_replace("+","%20",urlencode($_ITEM->Id))?>';
 					break;
 				default:
 					throw new QCallerException('Unable to pass arguments with this intArgumentType: ' . $intArgumentType);
 			}
 
-			$strHtml = '<a href="' . $strLinkUrl . '">' . $strLinkHtml . '</a>';
-			$colEditColumn = new QDataGridColumn($strColumnTitle, $strHtml, 'HtmlEntities=False');
+			$strHtml = '<a href="' . $strLinkUrl . '">' . QApplication::Translate($strLinkHtml) . '</a>';
+			$colEditColumn = new QDataGridColumn(QApplication::Translate($strColumnTitle), $strHtml, 'HtmlEntities=False');
+
 			$this->AddColumn($colEditColumn);
 			return $colEditColumn;
 		}
@@ -209,8 +210,8 @@
 		 * @param string $strColumnTitle the HTML of the link text
 		 */
 		public function MetaAddEditProxyColumn(QControlProxy $pxyControl, $strLinkHtml = 'Edit', $strColumnTitle = 'Edit') {
-			$strHtml = '<a href="#" <?= $_FORM->GetControl("' . $pxyControl->ControlId . '")->RenderAsEvents($_ITEM->Id, false); ?>>' . $strLinkHtml . '</a>';
-			$colEditColumn = new QDataGridColumn($strColumnTitle, $strHtml, 'HtmlEntities=False');
+			$strHtml = '<a href="#" <?= $_FORM->GetControl("' . $pxyControl->ControlId . '")->RenderAsEvents($_ITEM->Id, false); ?>>' . QApplication::Translate($strLinkHtml) . '</a>';
+			$colEditColumn = new QDataGridColumn(QApplication::Translate($strColumnTitle), $strHtml, 'HtmlEntities=False');
 			$this->AddColumn($colEditColumn);
 			return $colEditColumn;
 		}

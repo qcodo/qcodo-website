@@ -177,19 +177,28 @@
 		/**
 		 * Create and setup QListBox lstParentPackageCategory
 		 * @param string $strControlId optional ControlId to use
+		 * @param QQCondition $objConditions override the default condition of QQ::All() to the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for the query
 		 * @return QListBox
 		 */
-		public function lstParentPackageCategory_Create($strControlId = null) {
+		public function lstParentPackageCategory_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstParentPackageCategory = new QListBox($this->objParentObject, $strControlId);
 			$this->lstParentPackageCategory->Name = QApplication::Translate('Parent Package Category');
 			$this->lstParentPackageCategory->AddItem(QApplication::Translate('- Select One -'), null);
-			$objParentPackageCategoryArray = PackageCategory::LoadAll();
-			if ($objParentPackageCategoryArray) foreach ($objParentPackageCategoryArray as $objParentPackageCategory) {
+
+			// Setup and perform the Query
+			if (is_null($objCondition)) $objCondition = QQ::All();
+			$objParentPackageCategoryCursor = PackageCategory::QueryCursor($objCondition, $objOptionalClauses);
+
+			// Iterate through the Cursor
+			while ($objParentPackageCategory = PackageCategory::InstantiateCursor($objParentPackageCategoryCursor)) {
 				$objListItem = new QListItem($objParentPackageCategory->__toString(), $objParentPackageCategory->Id);
 				if (($this->objPackageCategory->ParentPackageCategory) && ($this->objPackageCategory->ParentPackageCategory->Id == $objParentPackageCategory->Id))
 					$objListItem->Selected = true;
 				$this->lstParentPackageCategory->AddItem($objListItem);
 			}
+
+			// Return the QListBox
 			return $this->lstParentPackageCategory;
 		}
 

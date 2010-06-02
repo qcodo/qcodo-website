@@ -169,21 +169,30 @@
 		/**
 		 * Create and setup QListBox lstPackage
 		 * @param string $strControlId optional ControlId to use
+		 * @param QQCondition $objConditions override the default condition of QQ::All() to the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for the query
 		 * @return QListBox
 		 */
-		public function lstPackage_Create($strControlId = null) {
+		public function lstPackage_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstPackage = new QListBox($this->objParentObject, $strControlId);
 			$this->lstPackage->Name = QApplication::Translate('Package');
 			$this->lstPackage->Required = true;
 			if (!$this->blnEditMode)
 				$this->lstPackage->AddItem(QApplication::Translate('- Select One -'), null);
-			$objPackageArray = Package::LoadAll();
-			if ($objPackageArray) foreach ($objPackageArray as $objPackage) {
+
+			// Setup and perform the Query
+			if (is_null($objCondition)) $objCondition = QQ::All();
+			$objPackageCursor = Package::QueryCursor($objCondition, $objOptionalClauses);
+
+			// Iterate through the Cursor
+			while ($objPackage = Package::InstantiateCursor($objPackageCursor)) {
 				$objListItem = new QListItem($objPackage->__toString(), $objPackage->Id);
 				if (($this->objPackageContribution->Package) && ($this->objPackageContribution->Package->Id == $objPackage->Id))
 					$objListItem->Selected = true;
 				$this->lstPackage->AddItem($objListItem);
 			}
+
+			// Return the QListBox
 			return $this->lstPackage;
 		}
 
@@ -203,21 +212,30 @@
 		/**
 		 * Create and setup QListBox lstPerson
 		 * @param string $strControlId optional ControlId to use
+		 * @param QQCondition $objConditions override the default condition of QQ::All() to the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for the query
 		 * @return QListBox
 		 */
-		public function lstPerson_Create($strControlId = null) {
+		public function lstPerson_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstPerson = new QListBox($this->objParentObject, $strControlId);
 			$this->lstPerson->Name = QApplication::Translate('Person');
 			$this->lstPerson->Required = true;
 			if (!$this->blnEditMode)
 				$this->lstPerson->AddItem(QApplication::Translate('- Select One -'), null);
-			$objPersonArray = Person::LoadAll();
-			if ($objPersonArray) foreach ($objPersonArray as $objPerson) {
+
+			// Setup and perform the Query
+			if (is_null($objCondition)) $objCondition = QQ::All();
+			$objPersonCursor = Person::QueryCursor($objCondition, $objOptionalClauses);
+
+			// Iterate through the Cursor
+			while ($objPerson = Person::InstantiateCursor($objPersonCursor)) {
 				$objListItem = new QListItem($objPerson->__toString(), $objPerson->Id);
 				if (($this->objPackageContribution->Person) && ($this->objPackageContribution->Person->Id == $objPerson->Id))
 					$objListItem->Selected = true;
 				$this->lstPerson->AddItem($objListItem);
 			}
+
+			// Return the QListBox
 			return $this->lstPerson;
 		}
 
@@ -237,19 +255,28 @@
 		/**
 		 * Create and setup QListBox lstCurrentPackageVersion
 		 * @param string $strControlId optional ControlId to use
+		 * @param QQCondition $objConditions override the default condition of QQ::All() to the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for the query
 		 * @return QListBox
 		 */
-		public function lstCurrentPackageVersion_Create($strControlId = null) {
+		public function lstCurrentPackageVersion_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstCurrentPackageVersion = new QListBox($this->objParentObject, $strControlId);
 			$this->lstCurrentPackageVersion->Name = QApplication::Translate('Current Package Version');
 			$this->lstCurrentPackageVersion->AddItem(QApplication::Translate('- Select One -'), null);
-			$objCurrentPackageVersionArray = PackageVersion::LoadAll();
-			if ($objCurrentPackageVersionArray) foreach ($objCurrentPackageVersionArray as $objCurrentPackageVersion) {
+
+			// Setup and perform the Query
+			if (is_null($objCondition)) $objCondition = QQ::All();
+			$objCurrentPackageVersionCursor = PackageVersion::QueryCursor($objCondition, $objOptionalClauses);
+
+			// Iterate through the Cursor
+			while ($objCurrentPackageVersion = PackageVersion::InstantiateCursor($objCurrentPackageVersionCursor)) {
 				$objListItem = new QListItem($objCurrentPackageVersion->__toString(), $objCurrentPackageVersion->Id);
 				if (($this->objPackageContribution->CurrentPackageVersion) && ($this->objPackageContribution->CurrentPackageVersion->Id == $objCurrentPackageVersion->Id))
 					$objListItem->Selected = true;
 				$this->lstCurrentPackageVersion->AddItem($objListItem);
 			}
+
+			// Return the QListBox
 			return $this->lstCurrentPackageVersion;
 		}
 

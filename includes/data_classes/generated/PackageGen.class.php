@@ -15,7 +15,7 @@
 	 * 
 	 * @package Qcodo Website
 	 * @subpackage GeneratedDataObjects
-	 * @property-read integer $Id the value for intId (Read-Only PK)
+	 * @property integer $Id the value for intId (Read-Only PK)
 	 * @property integer $PackageCategoryId the value for intPackageCategoryId (Not Null)
 	 * @property string $Token the value for strToken (Unique)
 	 * @property string $Name the value for strName 
@@ -25,9 +25,9 @@
 	 * @property PackageCategory $PackageCategory the value for the PackageCategory object referenced by intPackageCategoryId (Not Null)
 	 * @property Person $LastPostedByPerson the value for the Person object referenced by intLastPostedByPersonId 
 	 * @property TopicLink $TopicLink the value for the TopicLink object that uniquely references this Package
-	 * @property-read PackageContribution $_PackageContribution the value for the private _objPackageContribution (Read-Only) if set due to an expansion on the package_contribution.package_id reverse relationship
-	 * @property-read PackageContribution[] $_PackageContributionArray the value for the private _objPackageContributionArray (Read-Only) if set due to an ExpandAsArray on the package_contribution.package_id reverse relationship
-	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
+	 * @property PackageContribution $_PackageContribution the value for the private _objPackageContribution (Read-Only) if set due to an expansion on the package_contribution.package_id reverse relationship
+	 * @property PackageContribution[] $_PackageContributionArray the value for the private _objPackageContributionArray (Read-Only) if set due to an ExpandAsArray on the package_contribution.package_id reverse relationship
+	 * @property boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
 	class PackageGen extends QBaseClass {
 
@@ -233,7 +233,7 @@
 		 * on load methods.
 		 * @param QQueryBuilder &$objQueryBuilder the QueryBuilder object that will be created
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause object or array of QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with (sending in null will skip the PrepareStatement step)
 		 * @param boolean $blnCountOnly only select a rowcount
 		 * @return string the query statement
@@ -295,7 +295,7 @@
 		 * Static Qcodo Query method to query for a single Package object.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return Package the queried object
 		 */
@@ -317,7 +317,7 @@
 		 * Static Qcodo Query method to query for an array of Package objects.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return Package[] the queried objects as an array
 		 */
@@ -336,10 +336,35 @@
 		}
 
 		/**
+		 * Static Qcodo query method to issue a query and get a cursor to progressively fetch its results.
+		 * Uses BuildQueryStatment to perform most of the work.
+		 * @param QQCondition $objConditions any conditions on the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
+		 * @return QDatabaseResultBase the cursor resource instance
+		 */
+		public static function QueryCursor(QQCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
+			// Get the query statement
+			try {
+				$strQuery = Package::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+
+			// Perform the query
+			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
+		
+			// Return the results cursor
+			$objDbResult->QueryBuilder = $objQueryBuilder;
+			return $objDbResult;
+		}
+
+		/**
 		 * Static Qcodo Query method to query for a count of Package objects.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return integer the count of queried objects as an integer
 		 */
@@ -453,7 +478,7 @@
 		 * Takes in an optional strAliasPrefix, used in case another Object::InstantiateDbRow
 		 * is calling this Package::InstantiateDbRow in order to perform
 		 * early binding on referenced objects.
-		 * @param DatabaseRowBase $objDbRow
+		 * @param QDatabaseRowBase $objDbRow
 		 * @param string $strAliasPrefix
 		 * @param string $strExpandAsArrayNodes
 		 * @param QBaseClass $objPreviousItem
@@ -571,7 +596,7 @@
 
 		/**
 		 * Instantiate an array of Packages from a Database Result
-		 * @param DatabaseResultBase $objDbResult
+		 * @param QDatabaseResultBase $objDbResult
 		 * @param string $strExpandAsArrayNodes
 		 * @param string[] $strColumnAliasArray
 		 * @return Package[]
@@ -602,6 +627,32 @@
 			}
 
 			return $objToReturn;
+		}
+
+		/**
+		 * Instantiate a single Package object from a query cursor (e.g. a DB ResultSet).
+		 * Cursor is automatically moved to the "next row" of the result set.
+		 * Will return NULL if no cursor or if the cursor has no more rows in the resultset.
+		 * @param QDatabaseResultBase $objDbResult cursor resource
+		 * @return Package next row resulting from the query
+		 */
+		public static function InstantiateCursor(QDatabaseResultBase $objDbResult) {
+			// If blank resultset, then return empty result
+			if (!$objDbResult) return null;
+
+			// If empty resultset, then return empty result
+			$objDbRow = $objDbResult->GetNextRow();
+			if (!$objDbRow) return null;
+
+			// We need the Column Aliases
+			$strColumnAliasArray = $objDbResult->QueryBuilder->ColumnAliasArray;
+			if (!$strColumnAliasArray) $strColumnAliasArray = array();
+
+			// Pull Expansions (if applicable)
+			$strExpandAsArrayNodes = $objDbResult->QueryBuilder->ExpandAsArrayNodes;
+
+			// Load up the return result with a row and return it
+			return Package::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, null, $strColumnAliasArray);
 		}
 
 
@@ -898,52 +949,38 @@
 				// Member Variables
 				///////////////////
 				case 'Id':
-					/**
-					 * Gets the value for intId (Read-Only PK)
-					 * @return integer
-					 */
+					// Gets the value for intId (Read-Only PK)
+					// @return integer
 					return $this->intId;
 
 				case 'PackageCategoryId':
-					/**
-					 * Gets the value for intPackageCategoryId (Not Null)
-					 * @return integer
-					 */
+					// Gets the value for intPackageCategoryId (Not Null)
+					// @return integer
 					return $this->intPackageCategoryId;
 
 				case 'Token':
-					/**
-					 * Gets the value for strToken (Unique)
-					 * @return string
-					 */
+					// Gets the value for strToken (Unique)
+					// @return string
 					return $this->strToken;
 
 				case 'Name':
-					/**
-					 * Gets the value for strName 
-					 * @return string
-					 */
+					// Gets the value for strName 
+					// @return string
 					return $this->strName;
 
 				case 'Description':
-					/**
-					 * Gets the value for strDescription 
-					 * @return string
-					 */
+					// Gets the value for strDescription 
+					// @return string
 					return $this->strDescription;
 
 				case 'LastPostDate':
-					/**
-					 * Gets the value for dttLastPostDate 
-					 * @return QDateTime
-					 */
+					// Gets the value for dttLastPostDate 
+					// @return QDateTime
 					return $this->dttLastPostDate;
 
 				case 'LastPostedByPersonId':
-					/**
-					 * Gets the value for intLastPostedByPersonId 
-					 * @return integer
-					 */
+					// Gets the value for intLastPostedByPersonId 
+					// @return integer
 					return $this->intLastPostedByPersonId;
 
 
@@ -951,10 +988,8 @@
 				// Member Objects
 				///////////////////
 				case 'PackageCategory':
-					/**
-					 * Gets the value for the PackageCategory object referenced by intPackageCategoryId (Not Null)
-					 * @return PackageCategory
-					 */
+					// Gets the value for the PackageCategory object referenced by intPackageCategoryId (Not Null)
+					// @return PackageCategory
 					try {
 						if ((!$this->objPackageCategory) && (!is_null($this->intPackageCategoryId)))
 							$this->objPackageCategory = PackageCategory::Load($this->intPackageCategoryId);
@@ -965,10 +1000,8 @@
 					}
 
 				case 'LastPostedByPerson':
-					/**
-					 * Gets the value for the Person object referenced by intLastPostedByPersonId 
-					 * @return Person
-					 */
+					// Gets the value for the Person object referenced by intLastPostedByPersonId 
+					// @return Person
 					try {
 						if ((!$this->objLastPostedByPerson) && (!is_null($this->intLastPostedByPersonId)))
 							$this->objLastPostedByPerson = Person::Load($this->intLastPostedByPersonId);
@@ -981,11 +1014,9 @@
 		
 		
 				case 'TopicLink':
-					/**
-					 * Gets the value for the TopicLink object that uniquely references this Package
-					 * by objTopicLink (Unique)
-					 * @return TopicLink
-					 */
+					// Gets the value for the TopicLink object that uniquely references this Package
+					// by objTopicLink (Unique)
+					// @return TopicLink
 					try {
 						if ($this->objTopicLink === false)
 							// We've attempted early binding -- and the reverse reference object does not exist
@@ -1005,19 +1036,15 @@
 				////////////////////////////
 
 				case '_PackageContribution':
-					/**
-					 * Gets the value for the private _objPackageContribution (Read-Only)
-					 * if set due to an expansion on the package_contribution.package_id reverse relationship
-					 * @return PackageContribution
-					 */
+					// Gets the value for the private _objPackageContribution (Read-Only)
+					// if set due to an expansion on the package_contribution.package_id reverse relationship
+					// @return PackageContribution
 					return $this->_objPackageContribution;
 
 				case '_PackageContributionArray':
-					/**
-					 * Gets the value for the private _objPackageContributionArray (Read-Only)
-					 * if set due to an ExpandAsArray on the package_contribution.package_id reverse relationship
-					 * @return PackageContribution[]
-					 */
+					// Gets the value for the private _objPackageContributionArray (Read-Only)
+					// if set due to an ExpandAsArray on the package_contribution.package_id reverse relationship
+					// @return PackageContribution[]
 					return (array) $this->_objPackageContributionArray;
 
 
@@ -1048,11 +1075,9 @@
 				// Member Variables
 				///////////////////
 				case 'PackageCategoryId':
-					/**
-					 * Sets the value for intPackageCategoryId (Not Null)
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intPackageCategoryId (Not Null)
+					// @param integer $mixValue
+					// @return integer
 					try {
 						$this->objPackageCategory = null;
 						return ($this->intPackageCategoryId = QType::Cast($mixValue, QType::Integer));
@@ -1062,11 +1087,9 @@
 					}
 
 				case 'Token':
-					/**
-					 * Sets the value for strToken (Unique)
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strToken (Unique)
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strToken = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -1075,11 +1098,9 @@
 					}
 
 				case 'Name':
-					/**
-					 * Sets the value for strName 
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strName 
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strName = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -1088,11 +1109,9 @@
 					}
 
 				case 'Description':
-					/**
-					 * Sets the value for strDescription 
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strDescription 
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strDescription = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -1101,11 +1120,9 @@
 					}
 
 				case 'LastPostDate':
-					/**
-					 * Sets the value for dttLastPostDate 
-					 * @param QDateTime $mixValue
-					 * @return QDateTime
-					 */
+					// Sets the value for dttLastPostDate 
+					// @param QDateTime $mixValue
+					// @return QDateTime
 					try {
 						return ($this->dttLastPostDate = QType::Cast($mixValue, QType::DateTime));
 					} catch (QCallerException $objExc) {
@@ -1114,11 +1131,9 @@
 					}
 
 				case 'LastPostedByPersonId':
-					/**
-					 * Sets the value for intLastPostedByPersonId 
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intLastPostedByPersonId 
+					// @param integer $mixValue
+					// @return integer
 					try {
 						$this->objLastPostedByPerson = null;
 						return ($this->intLastPostedByPersonId = QType::Cast($mixValue, QType::Integer));
@@ -1132,11 +1147,9 @@
 				// Member Objects
 				///////////////////
 				case 'PackageCategory':
-					/**
-					 * Sets the value for the PackageCategory object referenced by intPackageCategoryId (Not Null)
-					 * @param PackageCategory $mixValue
-					 * @return PackageCategory
-					 */
+					// Sets the value for the PackageCategory object referenced by intPackageCategoryId (Not Null)
+					// @param PackageCategory $mixValue
+					// @return PackageCategory
 					if (is_null($mixValue)) {
 						$this->intPackageCategoryId = null;
 						$this->objPackageCategory = null;
@@ -1164,11 +1177,9 @@
 					break;
 
 				case 'LastPostedByPerson':
-					/**
-					 * Sets the value for the Person object referenced by intLastPostedByPersonId 
-					 * @param Person $mixValue
-					 * @return Person
-					 */
+					// Sets the value for the Person object referenced by intLastPostedByPersonId 
+					// @param Person $mixValue
+					// @return Person
 					if (is_null($mixValue)) {
 						$this->intLastPostedByPersonId = null;
 						$this->objLastPostedByPerson = null;
@@ -1196,11 +1207,9 @@
 					break;
 
 				case 'TopicLink':
-					/**
-					 * Sets the value for the TopicLink object referenced by objTopicLink (Unique)
-					 * @param TopicLink $mixValue
-					 * @return TopicLink
-					 */
+					// Sets the value for the TopicLink object referenced by objTopicLink (Unique)
+					// @param TopicLink $mixValue
+					// @return TopicLink
 					if (is_null($mixValue)) {
 						$this->objTopicLink = null;
 

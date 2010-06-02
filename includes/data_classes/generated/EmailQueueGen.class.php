@@ -15,7 +15,7 @@
 	 * 
 	 * @package Qcodo Website
 	 * @subpackage GeneratedDataObjects
-	 * @property-read integer $Id the value for intId (Read-Only PK)
+	 * @property integer $Id the value for intId (Read-Only PK)
 	 * @property string $ToAddress the value for strToAddress 
 	 * @property string $FromAddress the value for strFromAddress 
 	 * @property string $Subject the value for strSubject 
@@ -24,7 +24,7 @@
 	 * @property boolean $HighPriorityFlag the value for blnHighPriorityFlag 
 	 * @property boolean $ErrorFlag the value for blnErrorFlag 
 	 * @property string $ErrorMessage the value for strErrorMessage 
-	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
+	 * @property boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
 	class EmailQueueGen extends QBaseClass {
 
@@ -193,7 +193,7 @@
 		 * on load methods.
 		 * @param QQueryBuilder &$objQueryBuilder the QueryBuilder object that will be created
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause object or array of QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with (sending in null will skip the PrepareStatement step)
 		 * @param boolean $blnCountOnly only select a rowcount
 		 * @return string the query statement
@@ -255,7 +255,7 @@
 		 * Static Qcodo Query method to query for a single EmailQueue object.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return EmailQueue the queried object
 		 */
@@ -277,7 +277,7 @@
 		 * Static Qcodo Query method to query for an array of EmailQueue objects.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return EmailQueue[] the queried objects as an array
 		 */
@@ -296,10 +296,35 @@
 		}
 
 		/**
+		 * Static Qcodo query method to issue a query and get a cursor to progressively fetch its results.
+		 * Uses BuildQueryStatment to perform most of the work.
+		 * @param QQCondition $objConditions any conditions on the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
+		 * @return QDatabaseResultBase the cursor resource instance
+		 */
+		public static function QueryCursor(QQCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
+			// Get the query statement
+			try {
+				$strQuery = EmailQueue::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+
+			// Perform the query
+			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
+		
+			// Return the results cursor
+			$objDbResult->QueryBuilder = $objQueryBuilder;
+			return $objDbResult;
+		}
+
+		/**
 		 * Static Qcodo Query method to query for a count of EmailQueue objects.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return integer the count of queried objects as an integer
 		 */
@@ -415,7 +440,7 @@
 		 * Takes in an optional strAliasPrefix, used in case another Object::InstantiateDbRow
 		 * is calling this EmailQueue::InstantiateDbRow in order to perform
 		 * early binding on referenced objects.
-		 * @param DatabaseRowBase $objDbRow
+		 * @param QDatabaseRowBase $objDbRow
 		 * @param string $strAliasPrefix
 		 * @param string $strExpandAsArrayNodes
 		 * @param QBaseClass $objPreviousItem
@@ -471,7 +496,7 @@
 
 		/**
 		 * Instantiate an array of EmailQueues from a Database Result
-		 * @param DatabaseResultBase $objDbResult
+		 * @param QDatabaseResultBase $objDbResult
 		 * @param string $strExpandAsArrayNodes
 		 * @param string[] $strColumnAliasArray
 		 * @return EmailQueue[]
@@ -502,6 +527,32 @@
 			}
 
 			return $objToReturn;
+		}
+
+		/**
+		 * Instantiate a single EmailQueue object from a query cursor (e.g. a DB ResultSet).
+		 * Cursor is automatically moved to the "next row" of the result set.
+		 * Will return NULL if no cursor or if the cursor has no more rows in the resultset.
+		 * @param QDatabaseResultBase $objDbResult cursor resource
+		 * @return EmailQueue next row resulting from the query
+		 */
+		public static function InstantiateCursor(QDatabaseResultBase $objDbResult) {
+			// If blank resultset, then return empty result
+			if (!$objDbResult) return null;
+
+			// If empty resultset, then return empty result
+			$objDbRow = $objDbResult->GetNextRow();
+			if (!$objDbRow) return null;
+
+			// We need the Column Aliases
+			$strColumnAliasArray = $objDbResult->QueryBuilder->ColumnAliasArray;
+			if (!$strColumnAliasArray) $strColumnAliasArray = array();
+
+			// Pull Expansions (if applicable)
+			$strExpandAsArrayNodes = $objDbResult->QueryBuilder->ExpandAsArrayNodes;
+
+			// Load up the return result with a row and return it
+			return EmailQueue::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, null, $strColumnAliasArray);
 		}
 
 
@@ -764,66 +815,48 @@
 				// Member Variables
 				///////////////////
 				case 'Id':
-					/**
-					 * Gets the value for intId (Read-Only PK)
-					 * @return integer
-					 */
+					// Gets the value for intId (Read-Only PK)
+					// @return integer
 					return $this->intId;
 
 				case 'ToAddress':
-					/**
-					 * Gets the value for strToAddress 
-					 * @return string
-					 */
+					// Gets the value for strToAddress 
+					// @return string
 					return $this->strToAddress;
 
 				case 'FromAddress':
-					/**
-					 * Gets the value for strFromAddress 
-					 * @return string
-					 */
+					// Gets the value for strFromAddress 
+					// @return string
 					return $this->strFromAddress;
 
 				case 'Subject':
-					/**
-					 * Gets the value for strSubject 
-					 * @return string
-					 */
+					// Gets the value for strSubject 
+					// @return string
 					return $this->strSubject;
 
 				case 'Body':
-					/**
-					 * Gets the value for strBody 
-					 * @return string
-					 */
+					// Gets the value for strBody 
+					// @return string
 					return $this->strBody;
 
 				case 'Html':
-					/**
-					 * Gets the value for strHtml 
-					 * @return string
-					 */
+					// Gets the value for strHtml 
+					// @return string
 					return $this->strHtml;
 
 				case 'HighPriorityFlag':
-					/**
-					 * Gets the value for blnHighPriorityFlag 
-					 * @return boolean
-					 */
+					// Gets the value for blnHighPriorityFlag 
+					// @return boolean
 					return $this->blnHighPriorityFlag;
 
 				case 'ErrorFlag':
-					/**
-					 * Gets the value for blnErrorFlag 
-					 * @return boolean
-					 */
+					// Gets the value for blnErrorFlag 
+					// @return boolean
 					return $this->blnErrorFlag;
 
 				case 'ErrorMessage':
-					/**
-					 * Gets the value for strErrorMessage 
-					 * @return string
-					 */
+					// Gets the value for strErrorMessage 
+					// @return string
 					return $this->strErrorMessage;
 
 
@@ -864,11 +897,9 @@
 				// Member Variables
 				///////////////////
 				case 'ToAddress':
-					/**
-					 * Sets the value for strToAddress 
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strToAddress 
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strToAddress = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -877,11 +908,9 @@
 					}
 
 				case 'FromAddress':
-					/**
-					 * Sets the value for strFromAddress 
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strFromAddress 
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strFromAddress = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -890,11 +919,9 @@
 					}
 
 				case 'Subject':
-					/**
-					 * Sets the value for strSubject 
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strSubject 
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strSubject = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -903,11 +930,9 @@
 					}
 
 				case 'Body':
-					/**
-					 * Sets the value for strBody 
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strBody 
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strBody = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -916,11 +941,9 @@
 					}
 
 				case 'Html':
-					/**
-					 * Sets the value for strHtml 
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strHtml 
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strHtml = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -929,11 +952,9 @@
 					}
 
 				case 'HighPriorityFlag':
-					/**
-					 * Sets the value for blnHighPriorityFlag 
-					 * @param boolean $mixValue
-					 * @return boolean
-					 */
+					// Sets the value for blnHighPriorityFlag 
+					// @param boolean $mixValue
+					// @return boolean
 					try {
 						return ($this->blnHighPriorityFlag = QType::Cast($mixValue, QType::Boolean));
 					} catch (QCallerException $objExc) {
@@ -942,11 +963,9 @@
 					}
 
 				case 'ErrorFlag':
-					/**
-					 * Sets the value for blnErrorFlag 
-					 * @param boolean $mixValue
-					 * @return boolean
-					 */
+					// Sets the value for blnErrorFlag 
+					// @param boolean $mixValue
+					// @return boolean
 					try {
 						return ($this->blnErrorFlag = QType::Cast($mixValue, QType::Boolean));
 					} catch (QCallerException $objExc) {
@@ -955,11 +974,9 @@
 					}
 
 				case 'ErrorMessage':
-					/**
-					 * Sets the value for strErrorMessage 
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strErrorMessage 
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strErrorMessage = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {

@@ -15,7 +15,7 @@
 	 * 
 	 * @package Qcodo Website
 	 * @subpackage GeneratedDataObjects
-	 * @property-read integer $Id the value for intId (Read-Only PK)
+	 * @property integer $Id the value for intId (Read-Only PK)
 	 * @property integer $ImageFileTypeId the value for intImageFileTypeId (Not Null)
 	 * @property integer $PersonId the value for intPersonId (Not Null)
 	 * @property string $Name the value for strName 
@@ -23,7 +23,7 @@
 	 * @property string $Url the value for strUrl 
 	 * @property boolean $LiveFlag the value for blnLiveFlag (Not Null)
 	 * @property Person $Person the value for the Person object referenced by intPersonId (Not Null)
-	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
+	 * @property boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
 	class ShowcaseItemGen extends QBaseClass {
 
@@ -185,7 +185,7 @@
 		 * on load methods.
 		 * @param QQueryBuilder &$objQueryBuilder the QueryBuilder object that will be created
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause object or array of QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with (sending in null will skip the PrepareStatement step)
 		 * @param boolean $blnCountOnly only select a rowcount
 		 * @return string the query statement
@@ -247,7 +247,7 @@
 		 * Static Qcodo Query method to query for a single ShowcaseItem object.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return ShowcaseItem the queried object
 		 */
@@ -269,7 +269,7 @@
 		 * Static Qcodo Query method to query for an array of ShowcaseItem objects.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return ShowcaseItem[] the queried objects as an array
 		 */
@@ -288,10 +288,35 @@
 		}
 
 		/**
+		 * Static Qcodo query method to issue a query and get a cursor to progressively fetch its results.
+		 * Uses BuildQueryStatment to perform most of the work.
+		 * @param QQCondition $objConditions any conditions on the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
+		 * @return QDatabaseResultBase the cursor resource instance
+		 */
+		public static function QueryCursor(QQCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
+			// Get the query statement
+			try {
+				$strQuery = ShowcaseItem::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+
+			// Perform the query
+			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
+		
+			// Return the results cursor
+			$objDbResult->QueryBuilder = $objQueryBuilder;
+			return $objDbResult;
+		}
+
+		/**
 		 * Static Qcodo Query method to query for a count of ShowcaseItem objects.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return integer the count of queried objects as an integer
 		 */
@@ -405,7 +430,7 @@
 		 * Takes in an optional strAliasPrefix, used in case another Object::InstantiateDbRow
 		 * is calling this ShowcaseItem::InstantiateDbRow in order to perform
 		 * early binding on referenced objects.
-		 * @param DatabaseRowBase $objDbRow
+		 * @param QDatabaseRowBase $objDbRow
 		 * @param string $strAliasPrefix
 		 * @param string $strExpandAsArrayNodes
 		 * @param QBaseClass $objPreviousItem
@@ -463,7 +488,7 @@
 
 		/**
 		 * Instantiate an array of ShowcaseItems from a Database Result
-		 * @param DatabaseResultBase $objDbResult
+		 * @param QDatabaseResultBase $objDbResult
 		 * @param string $strExpandAsArrayNodes
 		 * @param string[] $strColumnAliasArray
 		 * @return ShowcaseItem[]
@@ -494,6 +519,32 @@
 			}
 
 			return $objToReturn;
+		}
+
+		/**
+		 * Instantiate a single ShowcaseItem object from a query cursor (e.g. a DB ResultSet).
+		 * Cursor is automatically moved to the "next row" of the result set.
+		 * Will return NULL if no cursor or if the cursor has no more rows in the resultset.
+		 * @param QDatabaseResultBase $objDbResult cursor resource
+		 * @return ShowcaseItem next row resulting from the query
+		 */
+		public static function InstantiateCursor(QDatabaseResultBase $objDbResult) {
+			// If blank resultset, then return empty result
+			if (!$objDbResult) return null;
+
+			// If empty resultset, then return empty result
+			$objDbRow = $objDbResult->GetNextRow();
+			if (!$objDbRow) return null;
+
+			// We need the Column Aliases
+			$strColumnAliasArray = $objDbResult->QueryBuilder->ColumnAliasArray;
+			if (!$strColumnAliasArray) $strColumnAliasArray = array();
+
+			// Pull Expansions (if applicable)
+			$strExpandAsArrayNodes = $objDbResult->QueryBuilder->ExpandAsArrayNodes;
+
+			// Load up the return result with a row and return it
+			return ShowcaseItem::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, null, $strColumnAliasArray);
 		}
 
 
@@ -780,52 +831,38 @@
 				// Member Variables
 				///////////////////
 				case 'Id':
-					/**
-					 * Gets the value for intId (Read-Only PK)
-					 * @return integer
-					 */
+					// Gets the value for intId (Read-Only PK)
+					// @return integer
 					return $this->intId;
 
 				case 'ImageFileTypeId':
-					/**
-					 * Gets the value for intImageFileTypeId (Not Null)
-					 * @return integer
-					 */
+					// Gets the value for intImageFileTypeId (Not Null)
+					// @return integer
 					return $this->intImageFileTypeId;
 
 				case 'PersonId':
-					/**
-					 * Gets the value for intPersonId (Not Null)
-					 * @return integer
-					 */
+					// Gets the value for intPersonId (Not Null)
+					// @return integer
 					return $this->intPersonId;
 
 				case 'Name':
-					/**
-					 * Gets the value for strName 
-					 * @return string
-					 */
+					// Gets the value for strName 
+					// @return string
 					return $this->strName;
 
 				case 'Description':
-					/**
-					 * Gets the value for strDescription 
-					 * @return string
-					 */
+					// Gets the value for strDescription 
+					// @return string
 					return $this->strDescription;
 
 				case 'Url':
-					/**
-					 * Gets the value for strUrl 
-					 * @return string
-					 */
+					// Gets the value for strUrl 
+					// @return string
 					return $this->strUrl;
 
 				case 'LiveFlag':
-					/**
-					 * Gets the value for blnLiveFlag (Not Null)
-					 * @return boolean
-					 */
+					// Gets the value for blnLiveFlag (Not Null)
+					// @return boolean
 					return $this->blnLiveFlag;
 
 
@@ -833,10 +870,8 @@
 				// Member Objects
 				///////////////////
 				case 'Person':
-					/**
-					 * Gets the value for the Person object referenced by intPersonId (Not Null)
-					 * @return Person
-					 */
+					// Gets the value for the Person object referenced by intPersonId (Not Null)
+					// @return Person
 					try {
 						if ((!$this->objPerson) && (!is_null($this->intPersonId)))
 							$this->objPerson = Person::Load($this->intPersonId);
@@ -880,11 +915,9 @@
 				// Member Variables
 				///////////////////
 				case 'ImageFileTypeId':
-					/**
-					 * Sets the value for intImageFileTypeId (Not Null)
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intImageFileTypeId (Not Null)
+					// @param integer $mixValue
+					// @return integer
 					try {
 						return ($this->intImageFileTypeId = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {
@@ -893,11 +926,9 @@
 					}
 
 				case 'PersonId':
-					/**
-					 * Sets the value for intPersonId (Not Null)
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intPersonId (Not Null)
+					// @param integer $mixValue
+					// @return integer
 					try {
 						$this->objPerson = null;
 						return ($this->intPersonId = QType::Cast($mixValue, QType::Integer));
@@ -907,11 +938,9 @@
 					}
 
 				case 'Name':
-					/**
-					 * Sets the value for strName 
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strName 
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strName = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -920,11 +949,9 @@
 					}
 
 				case 'Description':
-					/**
-					 * Sets the value for strDescription 
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strDescription 
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strDescription = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -933,11 +960,9 @@
 					}
 
 				case 'Url':
-					/**
-					 * Sets the value for strUrl 
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strUrl 
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strUrl = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -946,11 +971,9 @@
 					}
 
 				case 'LiveFlag':
-					/**
-					 * Sets the value for blnLiveFlag (Not Null)
-					 * @param boolean $mixValue
-					 * @return boolean
-					 */
+					// Sets the value for blnLiveFlag (Not Null)
+					// @param boolean $mixValue
+					// @return boolean
 					try {
 						return ($this->blnLiveFlag = QType::Cast($mixValue, QType::Boolean));
 					} catch (QCallerException $objExc) {
@@ -963,11 +986,9 @@
 				// Member Objects
 				///////////////////
 				case 'Person':
-					/**
-					 * Sets the value for the Person object referenced by intPersonId (Not Null)
-					 * @param Person $mixValue
-					 * @return Person
-					 */
+					// Sets the value for the Person object referenced by intPersonId (Not Null)
+					// @param Person $mixValue
+					// @return Person
 					if (is_null($mixValue)) {
 						$this->intPersonId = null;
 						$this->objPerson = null;

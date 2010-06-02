@@ -559,19 +559,28 @@
 		/**
 		 * Create and setup QListBox lstCountry
 		 * @param string $strControlId optional ControlId to use
+		 * @param QQCondition $objConditions override the default condition of QQ::All() to the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for the query
 		 * @return QListBox
 		 */
-		public function lstCountry_Create($strControlId = null) {
+		public function lstCountry_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstCountry = new QListBox($this->objParentObject, $strControlId);
 			$this->lstCountry->Name = QApplication::Translate('Country');
 			$this->lstCountry->AddItem(QApplication::Translate('- Select One -'), null);
-			$objCountryArray = Country::LoadAll();
-			if ($objCountryArray) foreach ($objCountryArray as $objCountry) {
+
+			// Setup and perform the Query
+			if (is_null($objCondition)) $objCondition = QQ::All();
+			$objCountryCursor = Country::QueryCursor($objCondition, $objOptionalClauses);
+
+			// Iterate through the Cursor
+			while ($objCountry = Country::InstantiateCursor($objCountryCursor)) {
 				$objListItem = new QListItem($objCountry->__toString(), $objCountry->Id);
 				if (($this->objPerson->Country) && ($this->objPerson->Country->Id == $objCountry->Id))
 					$objListItem->Selected = true;
 				$this->lstCountry->AddItem($objListItem);
 			}
+
+			// Return the QListBox
 			return $this->lstCountry;
 		}
 
@@ -615,19 +624,28 @@
 		/**
 		 * Create and setup QListBox lstTimezone
 		 * @param string $strControlId optional ControlId to use
+		 * @param QQCondition $objConditions override the default condition of QQ::All() to the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for the query
 		 * @return QListBox
 		 */
-		public function lstTimezone_Create($strControlId = null) {
+		public function lstTimezone_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstTimezone = new QListBox($this->objParentObject, $strControlId);
 			$this->lstTimezone->Name = QApplication::Translate('Timezone');
 			$this->lstTimezone->AddItem(QApplication::Translate('- Select One -'), null);
-			$objTimezoneArray = Timezone::LoadAll();
-			if ($objTimezoneArray) foreach ($objTimezoneArray as $objTimezone) {
+
+			// Setup and perform the Query
+			if (is_null($objCondition)) $objCondition = QQ::All();
+			$objTimezoneCursor = Timezone::QueryCursor($objCondition, $objOptionalClauses);
+
+			// Iterate through the Cursor
+			while ($objTimezone = Timezone::InstantiateCursor($objTimezoneCursor)) {
 				$objListItem = new QListItem($objTimezone->__toString(), $objTimezone->Id);
 				if (($this->objPerson->Timezone) && ($this->objPerson->Timezone->Id == $objTimezone->Id))
 					$objListItem->Selected = true;
 				$this->lstTimezone->AddItem($objListItem);
 			}
+
+			// Return the QListBox
 			return $this->lstTimezone;
 		}
 
@@ -677,15 +695,24 @@
 		/**
 		 * Create and setup QListBox lstTopicsAsEmail
 		 * @param string $strControlId optional ControlId to use
+		 * @param QQCondition $objConditions override the default condition of QQ::All() to the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for the query
 		 * @return QListBox
 		 */
-		public function lstTopicsAsEmail_Create($strControlId = null) {
+		public function lstTopicsAsEmail_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstTopicsAsEmail = new QListBox($this->objParentObject, $strControlId);
 			$this->lstTopicsAsEmail->Name = QApplication::Translate('Topics As Email');
 			$this->lstTopicsAsEmail->SelectionMode = QSelectionMode::Multiple;
+
+			// We need to know which items to "Pre-Select"
 			$objAssociatedArray = $this->objPerson->GetTopicAsEmailArray();
-			$objTopicArray = Topic::LoadAll();
-			if ($objTopicArray) foreach ($objTopicArray as $objTopic) {
+
+			// Setup and perform the Query
+			if (is_null($objCondition)) $objCondition = QQ::All();
+			$objTopicCursor = Topic::QueryCursor($objCondition, $objOptionalClauses);
+
+			// Iterate through the Cursor
+			while ($objTopic = Topic::InstantiateCursor($objTopicCursor)) {
 				$objListItem = new QListItem($objTopic->__toString(), $objTopic->Id);
 				foreach ($objAssociatedArray as $objAssociated) {
 					if ($objAssociated->Id == $objTopic->Id)
@@ -693,6 +720,8 @@
 				}
 				$this->lstTopicsAsEmail->AddItem($objListItem);
 			}
+
+			// Return the QListControl
 			return $this->lstTopicsAsEmail;
 		}
 
@@ -717,15 +746,24 @@
 		/**
 		 * Create and setup QListBox lstTopicsAsReadOnce
 		 * @param string $strControlId optional ControlId to use
+		 * @param QQCondition $objConditions override the default condition of QQ::All() to the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for the query
 		 * @return QListBox
 		 */
-		public function lstTopicsAsReadOnce_Create($strControlId = null) {
+		public function lstTopicsAsReadOnce_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstTopicsAsReadOnce = new QListBox($this->objParentObject, $strControlId);
 			$this->lstTopicsAsReadOnce->Name = QApplication::Translate('Topics As Read Once');
 			$this->lstTopicsAsReadOnce->SelectionMode = QSelectionMode::Multiple;
+
+			// We need to know which items to "Pre-Select"
 			$objAssociatedArray = $this->objPerson->GetTopicAsReadOnceArray();
-			$objTopicArray = Topic::LoadAll();
-			if ($objTopicArray) foreach ($objTopicArray as $objTopic) {
+
+			// Setup and perform the Query
+			if (is_null($objCondition)) $objCondition = QQ::All();
+			$objTopicCursor = Topic::QueryCursor($objCondition, $objOptionalClauses);
+
+			// Iterate through the Cursor
+			while ($objTopic = Topic::InstantiateCursor($objTopicCursor)) {
 				$objListItem = new QListItem($objTopic->__toString(), $objTopic->Id);
 				foreach ($objAssociatedArray as $objAssociated) {
 					if ($objAssociated->Id == $objTopic->Id)
@@ -733,6 +771,8 @@
 				}
 				$this->lstTopicsAsReadOnce->AddItem($objListItem);
 			}
+
+			// Return the QListControl
 			return $this->lstTopicsAsReadOnce;
 		}
 
@@ -757,15 +797,24 @@
 		/**
 		 * Create and setup QListBox lstTopicsAsRead
 		 * @param string $strControlId optional ControlId to use
+		 * @param QQCondition $objConditions override the default condition of QQ::All() to the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for the query
 		 * @return QListBox
 		 */
-		public function lstTopicsAsRead_Create($strControlId = null) {
+		public function lstTopicsAsRead_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstTopicsAsRead = new QListBox($this->objParentObject, $strControlId);
 			$this->lstTopicsAsRead->Name = QApplication::Translate('Topics As Read');
 			$this->lstTopicsAsRead->SelectionMode = QSelectionMode::Multiple;
+
+			// We need to know which items to "Pre-Select"
 			$objAssociatedArray = $this->objPerson->GetTopicAsReadArray();
-			$objTopicArray = Topic::LoadAll();
-			if ($objTopicArray) foreach ($objTopicArray as $objTopic) {
+
+			// Setup and perform the Query
+			if (is_null($objCondition)) $objCondition = QQ::All();
+			$objTopicCursor = Topic::QueryCursor($objCondition, $objOptionalClauses);
+
+			// Iterate through the Cursor
+			while ($objTopic = Topic::InstantiateCursor($objTopicCursor)) {
 				$objListItem = new QListItem($objTopic->__toString(), $objTopic->Id);
 				foreach ($objAssociatedArray as $objAssociated) {
 					if ($objAssociated->Id == $objTopic->Id)
@@ -773,6 +822,8 @@
 				}
 				$this->lstTopicsAsRead->AddItem($objListItem);
 			}
+
+			// Return the QListControl
 			return $this->lstTopicsAsRead;
 		}
 

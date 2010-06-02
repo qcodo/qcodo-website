@@ -15,16 +15,16 @@
 	 * 
 	 * @package Qcodo Website
 	 * @subpackage GeneratedDataObjects
-	 * @property-read integer $Id the value for intId (Read-Only PK)
+	 * @property integer $Id the value for intId (Read-Only PK)
 	 * @property integer $IssueFieldId the value for intIssueFieldId (Not Null)
 	 * @property string $Name the value for strName (Not Null)
 	 * @property string $Token the value for strToken (Not Null)
 	 * @property integer $OrderNumber the value for intOrderNumber 
 	 * @property boolean $ActiveFlag the value for blnActiveFlag 
 	 * @property IssueField $IssueField the value for the IssueField object referenced by intIssueFieldId (Not Null)
-	 * @property-read IssueFieldValue $_IssueFieldValue the value for the private _objIssueFieldValue (Read-Only) if set due to an expansion on the issue_field_value.issue_field_option_id reverse relationship
-	 * @property-read IssueFieldValue[] $_IssueFieldValueArray the value for the private _objIssueFieldValueArray (Read-Only) if set due to an ExpandAsArray on the issue_field_value.issue_field_option_id reverse relationship
-	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
+	 * @property IssueFieldValue $_IssueFieldValue the value for the private _objIssueFieldValue (Read-Only) if set due to an expansion on the issue_field_value.issue_field_option_id reverse relationship
+	 * @property IssueFieldValue[] $_IssueFieldValueArray the value for the private _objIssueFieldValueArray (Read-Only) if set due to an ExpandAsArray on the issue_field_value.issue_field_option_id reverse relationship
+	 * @property boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
 	class IssueFieldOptionGen extends QBaseClass {
 
@@ -194,7 +194,7 @@
 		 * on load methods.
 		 * @param QQueryBuilder &$objQueryBuilder the QueryBuilder object that will be created
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause object or array of QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with (sending in null will skip the PrepareStatement step)
 		 * @param boolean $blnCountOnly only select a rowcount
 		 * @return string the query statement
@@ -256,7 +256,7 @@
 		 * Static Qcodo Query method to query for a single IssueFieldOption object.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return IssueFieldOption the queried object
 		 */
@@ -278,7 +278,7 @@
 		 * Static Qcodo Query method to query for an array of IssueFieldOption objects.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return IssueFieldOption[] the queried objects as an array
 		 */
@@ -297,10 +297,35 @@
 		}
 
 		/**
+		 * Static Qcodo query method to issue a query and get a cursor to progressively fetch its results.
+		 * Uses BuildQueryStatment to perform most of the work.
+		 * @param QQCondition $objConditions any conditions on the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
+		 * @return QDatabaseResultBase the cursor resource instance
+		 */
+		public static function QueryCursor(QQCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
+			// Get the query statement
+			try {
+				$strQuery = IssueFieldOption::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+
+			// Perform the query
+			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
+		
+			// Return the results cursor
+			$objDbResult->QueryBuilder = $objQueryBuilder;
+			return $objDbResult;
+		}
+
+		/**
 		 * Static Qcodo Query method to query for a count of IssueFieldOption objects.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return integer the count of queried objects as an integer
 		 */
@@ -413,7 +438,7 @@
 		 * Takes in an optional strAliasPrefix, used in case another Object::InstantiateDbRow
 		 * is calling this IssueFieldOption::InstantiateDbRow in order to perform
 		 * early binding on referenced objects.
-		 * @param DatabaseRowBase $objDbRow
+		 * @param QDatabaseRowBase $objDbRow
 		 * @param string $strAliasPrefix
 		 * @param string $strExpandAsArrayNodes
 		 * @param QBaseClass $objPreviousItem
@@ -511,7 +536,7 @@
 
 		/**
 		 * Instantiate an array of IssueFieldOptions from a Database Result
-		 * @param DatabaseResultBase $objDbResult
+		 * @param QDatabaseResultBase $objDbResult
 		 * @param string $strExpandAsArrayNodes
 		 * @param string[] $strColumnAliasArray
 		 * @return IssueFieldOption[]
@@ -542,6 +567,32 @@
 			}
 
 			return $objToReturn;
+		}
+
+		/**
+		 * Instantiate a single IssueFieldOption object from a query cursor (e.g. a DB ResultSet).
+		 * Cursor is automatically moved to the "next row" of the result set.
+		 * Will return NULL if no cursor or if the cursor has no more rows in the resultset.
+		 * @param QDatabaseResultBase $objDbResult cursor resource
+		 * @return IssueFieldOption next row resulting from the query
+		 */
+		public static function InstantiateCursor(QDatabaseResultBase $objDbResult) {
+			// If blank resultset, then return empty result
+			if (!$objDbResult) return null;
+
+			// If empty resultset, then return empty result
+			$objDbRow = $objDbResult->GetNextRow();
+			if (!$objDbRow) return null;
+
+			// We need the Column Aliases
+			$strColumnAliasArray = $objDbResult->QueryBuilder->ColumnAliasArray;
+			if (!$strColumnAliasArray) $strColumnAliasArray = array();
+
+			// Pull Expansions (if applicable)
+			$strExpandAsArrayNodes = $objDbResult->QueryBuilder->ExpandAsArrayNodes;
+
+			// Load up the return result with a row and return it
+			return IssueFieldOption::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, null, $strColumnAliasArray);
 		}
 
 
@@ -816,45 +867,33 @@
 				// Member Variables
 				///////////////////
 				case 'Id':
-					/**
-					 * Gets the value for intId (Read-Only PK)
-					 * @return integer
-					 */
+					// Gets the value for intId (Read-Only PK)
+					// @return integer
 					return $this->intId;
 
 				case 'IssueFieldId':
-					/**
-					 * Gets the value for intIssueFieldId (Not Null)
-					 * @return integer
-					 */
+					// Gets the value for intIssueFieldId (Not Null)
+					// @return integer
 					return $this->intIssueFieldId;
 
 				case 'Name':
-					/**
-					 * Gets the value for strName (Not Null)
-					 * @return string
-					 */
+					// Gets the value for strName (Not Null)
+					// @return string
 					return $this->strName;
 
 				case 'Token':
-					/**
-					 * Gets the value for strToken (Not Null)
-					 * @return string
-					 */
+					// Gets the value for strToken (Not Null)
+					// @return string
 					return $this->strToken;
 
 				case 'OrderNumber':
-					/**
-					 * Gets the value for intOrderNumber 
-					 * @return integer
-					 */
+					// Gets the value for intOrderNumber 
+					// @return integer
 					return $this->intOrderNumber;
 
 				case 'ActiveFlag':
-					/**
-					 * Gets the value for blnActiveFlag 
-					 * @return boolean
-					 */
+					// Gets the value for blnActiveFlag 
+					// @return boolean
 					return $this->blnActiveFlag;
 
 
@@ -862,10 +901,8 @@
 				// Member Objects
 				///////////////////
 				case 'IssueField':
-					/**
-					 * Gets the value for the IssueField object referenced by intIssueFieldId (Not Null)
-					 * @return IssueField
-					 */
+					// Gets the value for the IssueField object referenced by intIssueFieldId (Not Null)
+					// @return IssueField
 					try {
 						if ((!$this->objIssueField) && (!is_null($this->intIssueFieldId)))
 							$this->objIssueField = IssueField::Load($this->intIssueFieldId);
@@ -882,19 +919,15 @@
 				////////////////////////////
 
 				case '_IssueFieldValue':
-					/**
-					 * Gets the value for the private _objIssueFieldValue (Read-Only)
-					 * if set due to an expansion on the issue_field_value.issue_field_option_id reverse relationship
-					 * @return IssueFieldValue
-					 */
+					// Gets the value for the private _objIssueFieldValue (Read-Only)
+					// if set due to an expansion on the issue_field_value.issue_field_option_id reverse relationship
+					// @return IssueFieldValue
 					return $this->_objIssueFieldValue;
 
 				case '_IssueFieldValueArray':
-					/**
-					 * Gets the value for the private _objIssueFieldValueArray (Read-Only)
-					 * if set due to an ExpandAsArray on the issue_field_value.issue_field_option_id reverse relationship
-					 * @return IssueFieldValue[]
-					 */
+					// Gets the value for the private _objIssueFieldValueArray (Read-Only)
+					// if set due to an ExpandAsArray on the issue_field_value.issue_field_option_id reverse relationship
+					// @return IssueFieldValue[]
 					return (array) $this->_objIssueFieldValueArray;
 
 
@@ -925,11 +958,9 @@
 				// Member Variables
 				///////////////////
 				case 'IssueFieldId':
-					/**
-					 * Sets the value for intIssueFieldId (Not Null)
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intIssueFieldId (Not Null)
+					// @param integer $mixValue
+					// @return integer
 					try {
 						$this->objIssueField = null;
 						return ($this->intIssueFieldId = QType::Cast($mixValue, QType::Integer));
@@ -939,11 +970,9 @@
 					}
 
 				case 'Name':
-					/**
-					 * Sets the value for strName (Not Null)
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strName (Not Null)
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strName = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -952,11 +981,9 @@
 					}
 
 				case 'Token':
-					/**
-					 * Sets the value for strToken (Not Null)
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strToken (Not Null)
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strToken = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -965,11 +992,9 @@
 					}
 
 				case 'OrderNumber':
-					/**
-					 * Sets the value for intOrderNumber 
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intOrderNumber 
+					// @param integer $mixValue
+					// @return integer
 					try {
 						return ($this->intOrderNumber = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {
@@ -978,11 +1003,9 @@
 					}
 
 				case 'ActiveFlag':
-					/**
-					 * Sets the value for blnActiveFlag 
-					 * @param boolean $mixValue
-					 * @return boolean
-					 */
+					// Sets the value for blnActiveFlag 
+					// @param boolean $mixValue
+					// @return boolean
 					try {
 						return ($this->blnActiveFlag = QType::Cast($mixValue, QType::Boolean));
 					} catch (QCallerException $objExc) {
@@ -995,11 +1018,9 @@
 				// Member Objects
 				///////////////////
 				case 'IssueField':
-					/**
-					 * Sets the value for the IssueField object referenced by intIssueFieldId (Not Null)
-					 * @param IssueField $mixValue
-					 * @return IssueField
-					 */
+					// Sets the value for the IssueField object referenced by intIssueFieldId (Not Null)
+					// @param IssueField $mixValue
+					// @return IssueField
 					if (is_null($mixValue)) {
 						$this->intIssueFieldId = null;
 						$this->objIssueField = null;

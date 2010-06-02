@@ -151,21 +151,30 @@
 		/**
 		 * Create and setup QListBox lstWikiVersion
 		 * @param string $strControlId optional ControlId to use
+		 * @param QQCondition $objConditions override the default condition of QQ::All() to the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for the query
 		 * @return QListBox
 		 */
-		public function lstWikiVersion_Create($strControlId = null) {
+		public function lstWikiVersion_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstWikiVersion = new QListBox($this->objParentObject, $strControlId);
 			$this->lstWikiVersion->Name = QApplication::Translate('Wiki Version');
 			$this->lstWikiVersion->Required = true;
 			if (!$this->blnEditMode)
 				$this->lstWikiVersion->AddItem(QApplication::Translate('- Select One -'), null);
-			$objWikiVersionArray = WikiVersion::LoadAll();
-			if ($objWikiVersionArray) foreach ($objWikiVersionArray as $objWikiVersion) {
+
+			// Setup and perform the Query
+			if (is_null($objCondition)) $objCondition = QQ::All();
+			$objWikiVersionCursor = WikiVersion::QueryCursor($objCondition, $objOptionalClauses);
+
+			// Iterate through the Cursor
+			while ($objWikiVersion = WikiVersion::InstantiateCursor($objWikiVersionCursor)) {
 				$objListItem = new QListItem($objWikiVersion->__toString(), $objWikiVersion->Id);
 				if (($this->objWikiImage->WikiVersion) && ($this->objWikiImage->WikiVersion->Id == $objWikiVersion->Id))
 					$objListItem->Selected = true;
 				$this->lstWikiVersion->AddItem($objListItem);
 			}
+
+			// Return the QListBox
 			return $this->lstWikiVersion;
 		}
 

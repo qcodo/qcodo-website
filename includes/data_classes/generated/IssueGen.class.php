@@ -15,7 +15,7 @@
 	 * 
 	 * @package Qcodo Website
 	 * @subpackage GeneratedDataObjects
-	 * @property-read integer $Id the value for intId (Read-Only PK)
+	 * @property integer $Id the value for intId (Read-Only PK)
 	 * @property integer $IssuePriorityTypeId the value for intIssuePriorityTypeId (Not Null)
 	 * @property integer $IssueStatusTypeId the value for intIssueStatusTypeId (Not Null)
 	 * @property integer $IssueResolutionTypeId the value for intIssueResolutionTypeId 
@@ -34,11 +34,11 @@
 	 * @property Person $PostedByPerson the value for the Person object referenced by intPostedByPersonId (Not Null)
 	 * @property Person $AssignedToPerson the value for the Person object referenced by intAssignedToPersonId 
 	 * @property TopicLink $TopicLink the value for the TopicLink object that uniquely references this Issue
-	 * @property-read IssueFieldValue $_IssueFieldValue the value for the private _objIssueFieldValue (Read-Only) if set due to an expansion on the issue_field_value.issue_id reverse relationship
-	 * @property-read IssueFieldValue[] $_IssueFieldValueArray the value for the private _objIssueFieldValueArray (Read-Only) if set due to an ExpandAsArray on the issue_field_value.issue_id reverse relationship
-	 * @property-read IssueVote $_IssueVote the value for the private _objIssueVote (Read-Only) if set due to an expansion on the issue_vote.issue_id reverse relationship
-	 * @property-read IssueVote[] $_IssueVoteArray the value for the private _objIssueVoteArray (Read-Only) if set due to an ExpandAsArray on the issue_vote.issue_id reverse relationship
-	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
+	 * @property IssueFieldValue $_IssueFieldValue the value for the private _objIssueFieldValue (Read-Only) if set due to an expansion on the issue_field_value.issue_id reverse relationship
+	 * @property IssueFieldValue[] $_IssueFieldValueArray the value for the private _objIssueFieldValueArray (Read-Only) if set due to an ExpandAsArray on the issue_field_value.issue_id reverse relationship
+	 * @property IssueVote $_IssueVote the value for the private _objIssueVote (Read-Only) if set due to an expansion on the issue_vote.issue_id reverse relationship
+	 * @property IssueVote[] $_IssueVoteArray the value for the private _objIssueVoteArray (Read-Only) if set due to an ExpandAsArray on the issue_vote.issue_id reverse relationship
+	 * @property boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
 	class IssueGen extends QBaseClass {
 
@@ -331,7 +331,7 @@
 		 * on load methods.
 		 * @param QQueryBuilder &$objQueryBuilder the QueryBuilder object that will be created
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause object or array of QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with (sending in null will skip the PrepareStatement step)
 		 * @param boolean $blnCountOnly only select a rowcount
 		 * @return string the query statement
@@ -393,7 +393,7 @@
 		 * Static Qcodo Query method to query for a single Issue object.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return Issue the queried object
 		 */
@@ -415,7 +415,7 @@
 		 * Static Qcodo Query method to query for an array of Issue objects.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return Issue[] the queried objects as an array
 		 */
@@ -434,10 +434,35 @@
 		}
 
 		/**
+		 * Static Qcodo query method to issue a query and get a cursor to progressively fetch its results.
+		 * Uses BuildQueryStatment to perform most of the work.
+		 * @param QQCondition $objConditions any conditions on the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
+		 * @return QDatabaseResultBase the cursor resource instance
+		 */
+		public static function QueryCursor(QQCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
+			// Get the query statement
+			try {
+				$strQuery = Issue::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+
+			// Perform the query
+			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
+		
+			// Return the results cursor
+			$objDbResult->QueryBuilder = $objQueryBuilder;
+			return $objDbResult;
+		}
+
+		/**
 		 * Static Qcodo Query method to query for a count of Issue objects.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return integer the count of queried objects as an integer
 		 */
@@ -560,7 +585,7 @@
 		 * Takes in an optional strAliasPrefix, used in case another Object::InstantiateDbRow
 		 * is calling this Issue::InstantiateDbRow in order to perform
 		 * early binding on referenced objects.
-		 * @param DatabaseRowBase $objDbRow
+		 * @param QDatabaseRowBase $objDbRow
 		 * @param string $strAliasPrefix
 		 * @param string $strExpandAsArrayNodes
 		 * @param QBaseClass $objPreviousItem
@@ -720,7 +745,7 @@
 
 		/**
 		 * Instantiate an array of Issues from a Database Result
-		 * @param DatabaseResultBase $objDbResult
+		 * @param QDatabaseResultBase $objDbResult
 		 * @param string $strExpandAsArrayNodes
 		 * @param string[] $strColumnAliasArray
 		 * @return Issue[]
@@ -751,6 +776,32 @@
 			}
 
 			return $objToReturn;
+		}
+
+		/**
+		 * Instantiate a single Issue object from a query cursor (e.g. a DB ResultSet).
+		 * Cursor is automatically moved to the "next row" of the result set.
+		 * Will return NULL if no cursor or if the cursor has no more rows in the resultset.
+		 * @param QDatabaseResultBase $objDbResult cursor resource
+		 * @return Issue next row resulting from the query
+		 */
+		public static function InstantiateCursor(QDatabaseResultBase $objDbResult) {
+			// If blank resultset, then return empty result
+			if (!$objDbResult) return null;
+
+			// If empty resultset, then return empty result
+			$objDbRow = $objDbResult->GetNextRow();
+			if (!$objDbRow) return null;
+
+			// We need the Column Aliases
+			$strColumnAliasArray = $objDbResult->QueryBuilder->ColumnAliasArray;
+			if (!$strColumnAliasArray) $strColumnAliasArray = array();
+
+			// Pull Expansions (if applicable)
+			$strExpandAsArrayNodes = $objDbResult->QueryBuilder->ExpandAsArrayNodes;
+
+			// Load up the return result with a row and return it
+			return Issue::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, null, $strColumnAliasArray);
 		}
 
 
@@ -1199,115 +1250,83 @@
 				// Member Variables
 				///////////////////
 				case 'Id':
-					/**
-					 * Gets the value for intId (Read-Only PK)
-					 * @return integer
-					 */
+					// Gets the value for intId (Read-Only PK)
+					// @return integer
 					return $this->intId;
 
 				case 'IssuePriorityTypeId':
-					/**
-					 * Gets the value for intIssuePriorityTypeId (Not Null)
-					 * @return integer
-					 */
+					// Gets the value for intIssuePriorityTypeId (Not Null)
+					// @return integer
 					return $this->intIssuePriorityTypeId;
 
 				case 'IssueStatusTypeId':
-					/**
-					 * Gets the value for intIssueStatusTypeId (Not Null)
-					 * @return integer
-					 */
+					// Gets the value for intIssueStatusTypeId (Not Null)
+					// @return integer
 					return $this->intIssueStatusTypeId;
 
 				case 'IssueResolutionTypeId':
-					/**
-					 * Gets the value for intIssueResolutionTypeId 
-					 * @return integer
-					 */
+					// Gets the value for intIssueResolutionTypeId 
+					// @return integer
 					return $this->intIssueResolutionTypeId;
 
 				case 'Title':
-					/**
-					 * Gets the value for strTitle 
-					 * @return string
-					 */
+					// Gets the value for strTitle 
+					// @return string
 					return $this->strTitle;
 
 				case 'ExampleCode':
-					/**
-					 * Gets the value for strExampleCode 
-					 * @return string
-					 */
+					// Gets the value for strExampleCode 
+					// @return string
 					return $this->strExampleCode;
 
 				case 'ExampleTemplate':
-					/**
-					 * Gets the value for strExampleTemplate 
-					 * @return string
-					 */
+					// Gets the value for strExampleTemplate 
+					// @return string
 					return $this->strExampleTemplate;
 
 				case 'ExampleData':
-					/**
-					 * Gets the value for strExampleData 
-					 * @return string
-					 */
+					// Gets the value for strExampleData 
+					// @return string
 					return $this->strExampleData;
 
 				case 'ExpectedOutput':
-					/**
-					 * Gets the value for strExpectedOutput 
-					 * @return string
-					 */
+					// Gets the value for strExpectedOutput 
+					// @return string
 					return $this->strExpectedOutput;
 
 				case 'ActualOutput':
-					/**
-					 * Gets the value for strActualOutput 
-					 * @return string
-					 */
+					// Gets the value for strActualOutput 
+					// @return string
 					return $this->strActualOutput;
 
 				case 'PostedByPersonId':
-					/**
-					 * Gets the value for intPostedByPersonId (Not Null)
-					 * @return integer
-					 */
+					// Gets the value for intPostedByPersonId (Not Null)
+					// @return integer
 					return $this->intPostedByPersonId;
 
 				case 'AssignedToPersonId':
-					/**
-					 * Gets the value for intAssignedToPersonId 
-					 * @return integer
-					 */
+					// Gets the value for intAssignedToPersonId 
+					// @return integer
 					return $this->intAssignedToPersonId;
 
 				case 'PostDate':
-					/**
-					 * Gets the value for dttPostDate (Not Null)
-					 * @return QDateTime
-					 */
+					// Gets the value for dttPostDate (Not Null)
+					// @return QDateTime
 					return $this->dttPostDate;
 
 				case 'AssignedDate':
-					/**
-					 * Gets the value for dttAssignedDate 
-					 * @return QDateTime
-					 */
+					// Gets the value for dttAssignedDate 
+					// @return QDateTime
 					return $this->dttAssignedDate;
 
 				case 'DueDate':
-					/**
-					 * Gets the value for dttDueDate 
-					 * @return QDateTime
-					 */
+					// Gets the value for dttDueDate 
+					// @return QDateTime
 					return $this->dttDueDate;
 
 				case 'VoteCount':
-					/**
-					 * Gets the value for intVoteCount 
-					 * @return integer
-					 */
+					// Gets the value for intVoteCount 
+					// @return integer
 					return $this->intVoteCount;
 
 
@@ -1315,10 +1334,8 @@
 				// Member Objects
 				///////////////////
 				case 'PostedByPerson':
-					/**
-					 * Gets the value for the Person object referenced by intPostedByPersonId (Not Null)
-					 * @return Person
-					 */
+					// Gets the value for the Person object referenced by intPostedByPersonId (Not Null)
+					// @return Person
 					try {
 						if ((!$this->objPostedByPerson) && (!is_null($this->intPostedByPersonId)))
 							$this->objPostedByPerson = Person::Load($this->intPostedByPersonId);
@@ -1329,10 +1346,8 @@
 					}
 
 				case 'AssignedToPerson':
-					/**
-					 * Gets the value for the Person object referenced by intAssignedToPersonId 
-					 * @return Person
-					 */
+					// Gets the value for the Person object referenced by intAssignedToPersonId 
+					// @return Person
 					try {
 						if ((!$this->objAssignedToPerson) && (!is_null($this->intAssignedToPersonId)))
 							$this->objAssignedToPerson = Person::Load($this->intAssignedToPersonId);
@@ -1345,11 +1360,9 @@
 		
 		
 				case 'TopicLink':
-					/**
-					 * Gets the value for the TopicLink object that uniquely references this Issue
-					 * by objTopicLink (Unique)
-					 * @return TopicLink
-					 */
+					// Gets the value for the TopicLink object that uniquely references this Issue
+					// by objTopicLink (Unique)
+					// @return TopicLink
 					try {
 						if ($this->objTopicLink === false)
 							// We've attempted early binding -- and the reverse reference object does not exist
@@ -1369,35 +1382,27 @@
 				////////////////////////////
 
 				case '_IssueFieldValue':
-					/**
-					 * Gets the value for the private _objIssueFieldValue (Read-Only)
-					 * if set due to an expansion on the issue_field_value.issue_id reverse relationship
-					 * @return IssueFieldValue
-					 */
+					// Gets the value for the private _objIssueFieldValue (Read-Only)
+					// if set due to an expansion on the issue_field_value.issue_id reverse relationship
+					// @return IssueFieldValue
 					return $this->_objIssueFieldValue;
 
 				case '_IssueFieldValueArray':
-					/**
-					 * Gets the value for the private _objIssueFieldValueArray (Read-Only)
-					 * if set due to an ExpandAsArray on the issue_field_value.issue_id reverse relationship
-					 * @return IssueFieldValue[]
-					 */
+					// Gets the value for the private _objIssueFieldValueArray (Read-Only)
+					// if set due to an ExpandAsArray on the issue_field_value.issue_id reverse relationship
+					// @return IssueFieldValue[]
 					return (array) $this->_objIssueFieldValueArray;
 
 				case '_IssueVote':
-					/**
-					 * Gets the value for the private _objIssueVote (Read-Only)
-					 * if set due to an expansion on the issue_vote.issue_id reverse relationship
-					 * @return IssueVote
-					 */
+					// Gets the value for the private _objIssueVote (Read-Only)
+					// if set due to an expansion on the issue_vote.issue_id reverse relationship
+					// @return IssueVote
 					return $this->_objIssueVote;
 
 				case '_IssueVoteArray':
-					/**
-					 * Gets the value for the private _objIssueVoteArray (Read-Only)
-					 * if set due to an ExpandAsArray on the issue_vote.issue_id reverse relationship
-					 * @return IssueVote[]
-					 */
+					// Gets the value for the private _objIssueVoteArray (Read-Only)
+					// if set due to an ExpandAsArray on the issue_vote.issue_id reverse relationship
+					// @return IssueVote[]
 					return (array) $this->_objIssueVoteArray;
 
 
@@ -1428,11 +1433,9 @@
 				// Member Variables
 				///////////////////
 				case 'IssuePriorityTypeId':
-					/**
-					 * Sets the value for intIssuePriorityTypeId (Not Null)
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intIssuePriorityTypeId (Not Null)
+					// @param integer $mixValue
+					// @return integer
 					try {
 						return ($this->intIssuePriorityTypeId = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {
@@ -1441,11 +1444,9 @@
 					}
 
 				case 'IssueStatusTypeId':
-					/**
-					 * Sets the value for intIssueStatusTypeId (Not Null)
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intIssueStatusTypeId (Not Null)
+					// @param integer $mixValue
+					// @return integer
 					try {
 						return ($this->intIssueStatusTypeId = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {
@@ -1454,11 +1455,9 @@
 					}
 
 				case 'IssueResolutionTypeId':
-					/**
-					 * Sets the value for intIssueResolutionTypeId 
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intIssueResolutionTypeId 
+					// @param integer $mixValue
+					// @return integer
 					try {
 						return ($this->intIssueResolutionTypeId = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {
@@ -1467,11 +1466,9 @@
 					}
 
 				case 'Title':
-					/**
-					 * Sets the value for strTitle 
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strTitle 
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strTitle = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -1480,11 +1477,9 @@
 					}
 
 				case 'ExampleCode':
-					/**
-					 * Sets the value for strExampleCode 
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strExampleCode 
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strExampleCode = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -1493,11 +1488,9 @@
 					}
 
 				case 'ExampleTemplate':
-					/**
-					 * Sets the value for strExampleTemplate 
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strExampleTemplate 
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strExampleTemplate = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -1506,11 +1499,9 @@
 					}
 
 				case 'ExampleData':
-					/**
-					 * Sets the value for strExampleData 
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strExampleData 
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strExampleData = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -1519,11 +1510,9 @@
 					}
 
 				case 'ExpectedOutput':
-					/**
-					 * Sets the value for strExpectedOutput 
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strExpectedOutput 
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strExpectedOutput = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -1532,11 +1521,9 @@
 					}
 
 				case 'ActualOutput':
-					/**
-					 * Sets the value for strActualOutput 
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strActualOutput 
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strActualOutput = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -1545,11 +1532,9 @@
 					}
 
 				case 'PostedByPersonId':
-					/**
-					 * Sets the value for intPostedByPersonId (Not Null)
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intPostedByPersonId (Not Null)
+					// @param integer $mixValue
+					// @return integer
 					try {
 						$this->objPostedByPerson = null;
 						return ($this->intPostedByPersonId = QType::Cast($mixValue, QType::Integer));
@@ -1559,11 +1544,9 @@
 					}
 
 				case 'AssignedToPersonId':
-					/**
-					 * Sets the value for intAssignedToPersonId 
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intAssignedToPersonId 
+					// @param integer $mixValue
+					// @return integer
 					try {
 						$this->objAssignedToPerson = null;
 						return ($this->intAssignedToPersonId = QType::Cast($mixValue, QType::Integer));
@@ -1573,11 +1556,9 @@
 					}
 
 				case 'PostDate':
-					/**
-					 * Sets the value for dttPostDate (Not Null)
-					 * @param QDateTime $mixValue
-					 * @return QDateTime
-					 */
+					// Sets the value for dttPostDate (Not Null)
+					// @param QDateTime $mixValue
+					// @return QDateTime
 					try {
 						return ($this->dttPostDate = QType::Cast($mixValue, QType::DateTime));
 					} catch (QCallerException $objExc) {
@@ -1586,11 +1567,9 @@
 					}
 
 				case 'AssignedDate':
-					/**
-					 * Sets the value for dttAssignedDate 
-					 * @param QDateTime $mixValue
-					 * @return QDateTime
-					 */
+					// Sets the value for dttAssignedDate 
+					// @param QDateTime $mixValue
+					// @return QDateTime
 					try {
 						return ($this->dttAssignedDate = QType::Cast($mixValue, QType::DateTime));
 					} catch (QCallerException $objExc) {
@@ -1599,11 +1578,9 @@
 					}
 
 				case 'DueDate':
-					/**
-					 * Sets the value for dttDueDate 
-					 * @param QDateTime $mixValue
-					 * @return QDateTime
-					 */
+					// Sets the value for dttDueDate 
+					// @param QDateTime $mixValue
+					// @return QDateTime
 					try {
 						return ($this->dttDueDate = QType::Cast($mixValue, QType::DateTime));
 					} catch (QCallerException $objExc) {
@@ -1612,11 +1589,9 @@
 					}
 
 				case 'VoteCount':
-					/**
-					 * Sets the value for intVoteCount 
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intVoteCount 
+					// @param integer $mixValue
+					// @return integer
 					try {
 						return ($this->intVoteCount = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {
@@ -1629,11 +1604,9 @@
 				// Member Objects
 				///////////////////
 				case 'PostedByPerson':
-					/**
-					 * Sets the value for the Person object referenced by intPostedByPersonId (Not Null)
-					 * @param Person $mixValue
-					 * @return Person
-					 */
+					// Sets the value for the Person object referenced by intPostedByPersonId (Not Null)
+					// @param Person $mixValue
+					// @return Person
 					if (is_null($mixValue)) {
 						$this->intPostedByPersonId = null;
 						$this->objPostedByPerson = null;
@@ -1661,11 +1634,9 @@
 					break;
 
 				case 'AssignedToPerson':
-					/**
-					 * Sets the value for the Person object referenced by intAssignedToPersonId 
-					 * @param Person $mixValue
-					 * @return Person
-					 */
+					// Sets the value for the Person object referenced by intAssignedToPersonId 
+					// @param Person $mixValue
+					// @return Person
 					if (is_null($mixValue)) {
 						$this->intAssignedToPersonId = null;
 						$this->objAssignedToPerson = null;
@@ -1693,11 +1664,9 @@
 					break;
 
 				case 'TopicLink':
-					/**
-					 * Sets the value for the TopicLink object referenced by objTopicLink (Unique)
-					 * @param TopicLink $mixValue
-					 * @return TopicLink
-					 */
+					// Sets the value for the TopicLink object referenced by objTopicLink (Unique)
+					// @param TopicLink $mixValue
+					// @return TopicLink
 					if (is_null($mixValue)) {
 						$this->objTopicLink = null;
 

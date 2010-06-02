@@ -15,7 +15,7 @@
 	 * 
 	 * @package Qcodo Website
 	 * @subpackage GeneratedDataObjects
-	 * @property-read integer $Id the value for intId (Read-Only PK)
+	 * @property integer $Id the value for intId (Read-Only PK)
 	 * @property string $Path the value for strPath (Not Null)
 	 * @property integer $WikiItemTypeId the value for intWikiItemTypeId (Not Null)
 	 * @property integer $EditorMinimumPersonTypeId the value for intEditorMinimumPersonTypeId (Not Null)
@@ -28,9 +28,9 @@
 	 * @property WikiVersion $CurrentWikiVersion the value for the WikiVersion object referenced by intCurrentWikiVersionId (Unique)
 	 * @property Person $CurrentPostedByPerson the value for the Person object referenced by intCurrentPostedByPersonId 
 	 * @property TopicLink $TopicLink the value for the TopicLink object that uniquely references this WikiItem
-	 * @property-read WikiVersion $_WikiVersion the value for the private _objWikiVersion (Read-Only) if set due to an expansion on the wiki_version.wiki_item_id reverse relationship
-	 * @property-read WikiVersion[] $_WikiVersionArray the value for the private _objWikiVersionArray (Read-Only) if set due to an ExpandAsArray on the wiki_version.wiki_item_id reverse relationship
-	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
+	 * @property WikiVersion $_WikiVersion the value for the private _objWikiVersion (Read-Only) if set due to an expansion on the wiki_version.wiki_item_id reverse relationship
+	 * @property WikiVersion[] $_WikiVersionArray the value for the private _objWikiVersionArray (Read-Only) if set due to an ExpandAsArray on the wiki_version.wiki_item_id reverse relationship
+	 * @property boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
 	class WikiItemGen extends QBaseClass {
 
@@ -260,7 +260,7 @@
 		 * on load methods.
 		 * @param QQueryBuilder &$objQueryBuilder the QueryBuilder object that will be created
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause object or array of QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with (sending in null will skip the PrepareStatement step)
 		 * @param boolean $blnCountOnly only select a rowcount
 		 * @return string the query statement
@@ -322,7 +322,7 @@
 		 * Static Qcodo Query method to query for a single WikiItem object.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return WikiItem the queried object
 		 */
@@ -344,7 +344,7 @@
 		 * Static Qcodo Query method to query for an array of WikiItem objects.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return WikiItem[] the queried objects as an array
 		 */
@@ -363,10 +363,35 @@
 		}
 
 		/**
+		 * Static Qcodo query method to issue a query and get a cursor to progressively fetch its results.
+		 * Uses BuildQueryStatment to perform most of the work.
+		 * @param QQCondition $objConditions any conditions on the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
+		 * @return QDatabaseResultBase the cursor resource instance
+		 */
+		public static function QueryCursor(QQCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
+			// Get the query statement
+			try {
+				$strQuery = WikiItem::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+
+			// Perform the query
+			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
+		
+			// Return the results cursor
+			$objDbResult->QueryBuilder = $objQueryBuilder;
+			return $objDbResult;
+		}
+
+		/**
 		 * Static Qcodo Query method to query for a count of WikiItem objects.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return integer the count of queried objects as an integer
 		 */
@@ -483,7 +508,7 @@
 		 * Takes in an optional strAliasPrefix, used in case another Object::InstantiateDbRow
 		 * is calling this WikiItem::InstantiateDbRow in order to perform
 		 * early binding on referenced objects.
-		 * @param DatabaseRowBase $objDbRow
+		 * @param QDatabaseRowBase $objDbRow
 		 * @param string $strAliasPrefix
 		 * @param string $strExpandAsArrayNodes
 		 * @param QBaseClass $objPreviousItem
@@ -607,7 +632,7 @@
 
 		/**
 		 * Instantiate an array of WikiItems from a Database Result
-		 * @param DatabaseResultBase $objDbResult
+		 * @param QDatabaseResultBase $objDbResult
 		 * @param string $strExpandAsArrayNodes
 		 * @param string[] $strColumnAliasArray
 		 * @return WikiItem[]
@@ -638,6 +663,32 @@
 			}
 
 			return $objToReturn;
+		}
+
+		/**
+		 * Instantiate a single WikiItem object from a query cursor (e.g. a DB ResultSet).
+		 * Cursor is automatically moved to the "next row" of the result set.
+		 * Will return NULL if no cursor or if the cursor has no more rows in the resultset.
+		 * @param QDatabaseResultBase $objDbResult cursor resource
+		 * @return WikiItem next row resulting from the query
+		 */
+		public static function InstantiateCursor(QDatabaseResultBase $objDbResult) {
+			// If blank resultset, then return empty result
+			if (!$objDbResult) return null;
+
+			// If empty resultset, then return empty result
+			$objDbRow = $objDbResult->GetNextRow();
+			if (!$objDbRow) return null;
+
+			// We need the Column Aliases
+			$strColumnAliasArray = $objDbResult->QueryBuilder->ColumnAliasArray;
+			if (!$strColumnAliasArray) $strColumnAliasArray = array();
+
+			// Pull Expansions (if applicable)
+			$strExpandAsArrayNodes = $objDbResult->QueryBuilder->ExpandAsArrayNodes;
+
+			// Load up the return result with a row and return it
+			return WikiItem::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, null, $strColumnAliasArray);
 		}
 
 
@@ -994,73 +1045,53 @@
 				// Member Variables
 				///////////////////
 				case 'Id':
-					/**
-					 * Gets the value for intId (Read-Only PK)
-					 * @return integer
-					 */
+					// Gets the value for intId (Read-Only PK)
+					// @return integer
 					return $this->intId;
 
 				case 'Path':
-					/**
-					 * Gets the value for strPath (Not Null)
-					 * @return string
-					 */
+					// Gets the value for strPath (Not Null)
+					// @return string
 					return $this->strPath;
 
 				case 'WikiItemTypeId':
-					/**
-					 * Gets the value for intWikiItemTypeId (Not Null)
-					 * @return integer
-					 */
+					// Gets the value for intWikiItemTypeId (Not Null)
+					// @return integer
 					return $this->intWikiItemTypeId;
 
 				case 'EditorMinimumPersonTypeId':
-					/**
-					 * Gets the value for intEditorMinimumPersonTypeId (Not Null)
-					 * @return integer
-					 */
+					// Gets the value for intEditorMinimumPersonTypeId (Not Null)
+					// @return integer
 					return $this->intEditorMinimumPersonTypeId;
 
 				case 'OverrideNavbarIndex':
-					/**
-					 * Gets the value for intOverrideNavbarIndex 
-					 * @return integer
-					 */
+					// Gets the value for intOverrideNavbarIndex 
+					// @return integer
 					return $this->intOverrideNavbarIndex;
 
 				case 'OverrideSubnavIndex':
-					/**
-					 * Gets the value for intOverrideSubnavIndex 
-					 * @return integer
-					 */
+					// Gets the value for intOverrideSubnavIndex 
+					// @return integer
 					return $this->intOverrideSubnavIndex;
 
 				case 'CurrentWikiVersionId':
-					/**
-					 * Gets the value for intCurrentWikiVersionId (Unique)
-					 * @return integer
-					 */
+					// Gets the value for intCurrentWikiVersionId (Unique)
+					// @return integer
 					return $this->intCurrentWikiVersionId;
 
 				case 'CurrentName':
-					/**
-					 * Gets the value for strCurrentName 
-					 * @return string
-					 */
+					// Gets the value for strCurrentName 
+					// @return string
 					return $this->strCurrentName;
 
 				case 'CurrentPostedByPersonId':
-					/**
-					 * Gets the value for intCurrentPostedByPersonId 
-					 * @return integer
-					 */
+					// Gets the value for intCurrentPostedByPersonId 
+					// @return integer
 					return $this->intCurrentPostedByPersonId;
 
 				case 'CurrentPostDate':
-					/**
-					 * Gets the value for dttCurrentPostDate 
-					 * @return QDateTime
-					 */
+					// Gets the value for dttCurrentPostDate 
+					// @return QDateTime
 					return $this->dttCurrentPostDate;
 
 
@@ -1068,10 +1099,8 @@
 				// Member Objects
 				///////////////////
 				case 'CurrentWikiVersion':
-					/**
-					 * Gets the value for the WikiVersion object referenced by intCurrentWikiVersionId (Unique)
-					 * @return WikiVersion
-					 */
+					// Gets the value for the WikiVersion object referenced by intCurrentWikiVersionId (Unique)
+					// @return WikiVersion
 					try {
 						if ((!$this->objCurrentWikiVersion) && (!is_null($this->intCurrentWikiVersionId)))
 							$this->objCurrentWikiVersion = WikiVersion::Load($this->intCurrentWikiVersionId);
@@ -1082,10 +1111,8 @@
 					}
 
 				case 'CurrentPostedByPerson':
-					/**
-					 * Gets the value for the Person object referenced by intCurrentPostedByPersonId 
-					 * @return Person
-					 */
+					// Gets the value for the Person object referenced by intCurrentPostedByPersonId 
+					// @return Person
 					try {
 						if ((!$this->objCurrentPostedByPerson) && (!is_null($this->intCurrentPostedByPersonId)))
 							$this->objCurrentPostedByPerson = Person::Load($this->intCurrentPostedByPersonId);
@@ -1098,11 +1125,9 @@
 		
 		
 				case 'TopicLink':
-					/**
-					 * Gets the value for the TopicLink object that uniquely references this WikiItem
-					 * by objTopicLink (Unique)
-					 * @return TopicLink
-					 */
+					// Gets the value for the TopicLink object that uniquely references this WikiItem
+					// by objTopicLink (Unique)
+					// @return TopicLink
 					try {
 						if ($this->objTopicLink === false)
 							// We've attempted early binding -- and the reverse reference object does not exist
@@ -1122,19 +1147,15 @@
 				////////////////////////////
 
 				case '_WikiVersion':
-					/**
-					 * Gets the value for the private _objWikiVersion (Read-Only)
-					 * if set due to an expansion on the wiki_version.wiki_item_id reverse relationship
-					 * @return WikiVersion
-					 */
+					// Gets the value for the private _objWikiVersion (Read-Only)
+					// if set due to an expansion on the wiki_version.wiki_item_id reverse relationship
+					// @return WikiVersion
 					return $this->_objWikiVersion;
 
 				case '_WikiVersionArray':
-					/**
-					 * Gets the value for the private _objWikiVersionArray (Read-Only)
-					 * if set due to an ExpandAsArray on the wiki_version.wiki_item_id reverse relationship
-					 * @return WikiVersion[]
-					 */
+					// Gets the value for the private _objWikiVersionArray (Read-Only)
+					// if set due to an ExpandAsArray on the wiki_version.wiki_item_id reverse relationship
+					// @return WikiVersion[]
 					return (array) $this->_objWikiVersionArray;
 
 
@@ -1165,11 +1186,9 @@
 				// Member Variables
 				///////////////////
 				case 'Path':
-					/**
-					 * Sets the value for strPath (Not Null)
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strPath (Not Null)
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strPath = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -1178,11 +1197,9 @@
 					}
 
 				case 'WikiItemTypeId':
-					/**
-					 * Sets the value for intWikiItemTypeId (Not Null)
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intWikiItemTypeId (Not Null)
+					// @param integer $mixValue
+					// @return integer
 					try {
 						return ($this->intWikiItemTypeId = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {
@@ -1191,11 +1208,9 @@
 					}
 
 				case 'EditorMinimumPersonTypeId':
-					/**
-					 * Sets the value for intEditorMinimumPersonTypeId (Not Null)
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intEditorMinimumPersonTypeId (Not Null)
+					// @param integer $mixValue
+					// @return integer
 					try {
 						return ($this->intEditorMinimumPersonTypeId = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {
@@ -1204,11 +1219,9 @@
 					}
 
 				case 'OverrideNavbarIndex':
-					/**
-					 * Sets the value for intOverrideNavbarIndex 
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intOverrideNavbarIndex 
+					// @param integer $mixValue
+					// @return integer
 					try {
 						return ($this->intOverrideNavbarIndex = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {
@@ -1217,11 +1230,9 @@
 					}
 
 				case 'OverrideSubnavIndex':
-					/**
-					 * Sets the value for intOverrideSubnavIndex 
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intOverrideSubnavIndex 
+					// @param integer $mixValue
+					// @return integer
 					try {
 						return ($this->intOverrideSubnavIndex = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {
@@ -1230,11 +1241,9 @@
 					}
 
 				case 'CurrentWikiVersionId':
-					/**
-					 * Sets the value for intCurrentWikiVersionId (Unique)
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intCurrentWikiVersionId (Unique)
+					// @param integer $mixValue
+					// @return integer
 					try {
 						$this->objCurrentWikiVersion = null;
 						return ($this->intCurrentWikiVersionId = QType::Cast($mixValue, QType::Integer));
@@ -1244,11 +1253,9 @@
 					}
 
 				case 'CurrentName':
-					/**
-					 * Sets the value for strCurrentName 
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strCurrentName 
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strCurrentName = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -1257,11 +1264,9 @@
 					}
 
 				case 'CurrentPostedByPersonId':
-					/**
-					 * Sets the value for intCurrentPostedByPersonId 
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intCurrentPostedByPersonId 
+					// @param integer $mixValue
+					// @return integer
 					try {
 						$this->objCurrentPostedByPerson = null;
 						return ($this->intCurrentPostedByPersonId = QType::Cast($mixValue, QType::Integer));
@@ -1271,11 +1276,9 @@
 					}
 
 				case 'CurrentPostDate':
-					/**
-					 * Sets the value for dttCurrentPostDate 
-					 * @param QDateTime $mixValue
-					 * @return QDateTime
-					 */
+					// Sets the value for dttCurrentPostDate 
+					// @param QDateTime $mixValue
+					// @return QDateTime
 					try {
 						return ($this->dttCurrentPostDate = QType::Cast($mixValue, QType::DateTime));
 					} catch (QCallerException $objExc) {
@@ -1288,11 +1291,9 @@
 				// Member Objects
 				///////////////////
 				case 'CurrentWikiVersion':
-					/**
-					 * Sets the value for the WikiVersion object referenced by intCurrentWikiVersionId (Unique)
-					 * @param WikiVersion $mixValue
-					 * @return WikiVersion
-					 */
+					// Sets the value for the WikiVersion object referenced by intCurrentWikiVersionId (Unique)
+					// @param WikiVersion $mixValue
+					// @return WikiVersion
 					if (is_null($mixValue)) {
 						$this->intCurrentWikiVersionId = null;
 						$this->objCurrentWikiVersion = null;
@@ -1320,11 +1321,9 @@
 					break;
 
 				case 'CurrentPostedByPerson':
-					/**
-					 * Sets the value for the Person object referenced by intCurrentPostedByPersonId 
-					 * @param Person $mixValue
-					 * @return Person
-					 */
+					// Sets the value for the Person object referenced by intCurrentPostedByPersonId 
+					// @param Person $mixValue
+					// @return Person
 					if (is_null($mixValue)) {
 						$this->intCurrentPostedByPersonId = null;
 						$this->objCurrentPostedByPerson = null;
@@ -1352,11 +1351,9 @@
 					break;
 
 				case 'TopicLink':
-					/**
-					 * Sets the value for the TopicLink object referenced by objTopicLink (Unique)
-					 * @param TopicLink $mixValue
-					 * @return TopicLink
-					 */
+					// Sets the value for the TopicLink object referenced by objTopicLink (Unique)
+					// @param TopicLink $mixValue
+					// @return TopicLink
 					if (is_null($mixValue)) {
 						$this->objTopicLink = null;
 

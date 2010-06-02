@@ -169,21 +169,30 @@
 		/**
 		 * Create and setup QListBox lstIssueField
 		 * @param string $strControlId optional ControlId to use
+		 * @param QQCondition $objConditions override the default condition of QQ::All() to the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for the query
 		 * @return QListBox
 		 */
-		public function lstIssueField_Create($strControlId = null) {
+		public function lstIssueField_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstIssueField = new QListBox($this->objParentObject, $strControlId);
 			$this->lstIssueField->Name = QApplication::Translate('Issue Field');
 			$this->lstIssueField->Required = true;
 			if (!$this->blnEditMode)
 				$this->lstIssueField->AddItem(QApplication::Translate('- Select One -'), null);
-			$objIssueFieldArray = IssueField::LoadAll();
-			if ($objIssueFieldArray) foreach ($objIssueFieldArray as $objIssueField) {
+
+			// Setup and perform the Query
+			if (is_null($objCondition)) $objCondition = QQ::All();
+			$objIssueFieldCursor = IssueField::QueryCursor($objCondition, $objOptionalClauses);
+
+			// Iterate through the Cursor
+			while ($objIssueField = IssueField::InstantiateCursor($objIssueFieldCursor)) {
 				$objListItem = new QListItem($objIssueField->__toString(), $objIssueField->Id);
 				if (($this->objIssueFieldOption->IssueField) && ($this->objIssueFieldOption->IssueField->Id == $objIssueField->Id))
 					$objListItem->Selected = true;
 				$this->lstIssueField->AddItem($objListItem);
 			}
+
+			// Return the QListBox
 			return $this->lstIssueField;
 		}
 

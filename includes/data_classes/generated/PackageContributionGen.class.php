@@ -15,7 +15,7 @@
 	 * 
 	 * @package Qcodo Website
 	 * @subpackage GeneratedDataObjects
-	 * @property-read integer $Id the value for intId (Read-Only PK)
+	 * @property integer $Id the value for intId (Read-Only PK)
 	 * @property integer $PackageId the value for intPackageId (Not Null)
 	 * @property integer $PersonId the value for intPersonId (Not Null)
 	 * @property integer $CurrentPackageVersionId the value for intCurrentPackageVersionId 
@@ -24,9 +24,9 @@
 	 * @property Package $Package the value for the Package object referenced by intPackageId (Not Null)
 	 * @property Person $Person the value for the Person object referenced by intPersonId (Not Null)
 	 * @property PackageVersion $CurrentPackageVersion the value for the PackageVersion object referenced by intCurrentPackageVersionId 
-	 * @property-read PackageVersion $_PackageVersion the value for the private _objPackageVersion (Read-Only) if set due to an expansion on the package_version.package_contribution_id reverse relationship
-	 * @property-read PackageVersion[] $_PackageVersionArray the value for the private _objPackageVersionArray (Read-Only) if set due to an ExpandAsArray on the package_version.package_contribution_id reverse relationship
-	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
+	 * @property PackageVersion $_PackageVersion the value for the private _objPackageVersion (Read-Only) if set due to an expansion on the package_version.package_contribution_id reverse relationship
+	 * @property PackageVersion[] $_PackageVersionArray the value for the private _objPackageVersionArray (Read-Only) if set due to an ExpandAsArray on the package_version.package_contribution_id reverse relationship
+	 * @property boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
 	class PackageContributionGen extends QBaseClass {
 
@@ -214,7 +214,7 @@
 		 * on load methods.
 		 * @param QQueryBuilder &$objQueryBuilder the QueryBuilder object that will be created
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause object or array of QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with (sending in null will skip the PrepareStatement step)
 		 * @param boolean $blnCountOnly only select a rowcount
 		 * @return string the query statement
@@ -276,7 +276,7 @@
 		 * Static Qcodo Query method to query for a single PackageContribution object.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return PackageContribution the queried object
 		 */
@@ -298,7 +298,7 @@
 		 * Static Qcodo Query method to query for an array of PackageContribution objects.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return PackageContribution[] the queried objects as an array
 		 */
@@ -317,10 +317,35 @@
 		}
 
 		/**
+		 * Static Qcodo query method to issue a query and get a cursor to progressively fetch its results.
+		 * Uses BuildQueryStatment to perform most of the work.
+		 * @param QQCondition $objConditions any conditions on the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
+		 * @return QDatabaseResultBase the cursor resource instance
+		 */
+		public static function QueryCursor(QQCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
+			// Get the query statement
+			try {
+				$strQuery = PackageContribution::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+
+			// Perform the query
+			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
+		
+			// Return the results cursor
+			$objDbResult->QueryBuilder = $objQueryBuilder;
+			return $objDbResult;
+		}
+
+		/**
 		 * Static Qcodo Query method to query for a count of PackageContribution objects.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return integer the count of queried objects as an integer
 		 */
@@ -433,7 +458,7 @@
 		 * Takes in an optional strAliasPrefix, used in case another Object::InstantiateDbRow
 		 * is calling this PackageContribution::InstantiateDbRow in order to perform
 		 * early binding on referenced objects.
-		 * @param DatabaseRowBase $objDbRow
+		 * @param QDatabaseRowBase $objDbRow
 		 * @param string $strAliasPrefix
 		 * @param string $strExpandAsArrayNodes
 		 * @param QBaseClass $objPreviousItem
@@ -543,7 +568,7 @@
 
 		/**
 		 * Instantiate an array of PackageContributions from a Database Result
-		 * @param DatabaseResultBase $objDbResult
+		 * @param QDatabaseResultBase $objDbResult
 		 * @param string $strExpandAsArrayNodes
 		 * @param string[] $strColumnAliasArray
 		 * @return PackageContribution[]
@@ -574,6 +599,32 @@
 			}
 
 			return $objToReturn;
+		}
+
+		/**
+		 * Instantiate a single PackageContribution object from a query cursor (e.g. a DB ResultSet).
+		 * Cursor is automatically moved to the "next row" of the result set.
+		 * Will return NULL if no cursor or if the cursor has no more rows in the resultset.
+		 * @param QDatabaseResultBase $objDbResult cursor resource
+		 * @return PackageContribution next row resulting from the query
+		 */
+		public static function InstantiateCursor(QDatabaseResultBase $objDbResult) {
+			// If blank resultset, then return empty result
+			if (!$objDbResult) return null;
+
+			// If empty resultset, then return empty result
+			$objDbRow = $objDbResult->GetNextRow();
+			if (!$objDbRow) return null;
+
+			// We need the Column Aliases
+			$strColumnAliasArray = $objDbResult->QueryBuilder->ColumnAliasArray;
+			if (!$strColumnAliasArray) $strColumnAliasArray = array();
+
+			// Pull Expansions (if applicable)
+			$strExpandAsArrayNodes = $objDbResult->QueryBuilder->ExpandAsArrayNodes;
+
+			// Load up the return result with a row and return it
+			return PackageContribution::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, null, $strColumnAliasArray);
 		}
 
 
@@ -872,45 +923,33 @@
 				// Member Variables
 				///////////////////
 				case 'Id':
-					/**
-					 * Gets the value for intId (Read-Only PK)
-					 * @return integer
-					 */
+					// Gets the value for intId (Read-Only PK)
+					// @return integer
 					return $this->intId;
 
 				case 'PackageId':
-					/**
-					 * Gets the value for intPackageId (Not Null)
-					 * @return integer
-					 */
+					// Gets the value for intPackageId (Not Null)
+					// @return integer
 					return $this->intPackageId;
 
 				case 'PersonId':
-					/**
-					 * Gets the value for intPersonId (Not Null)
-					 * @return integer
-					 */
+					// Gets the value for intPersonId (Not Null)
+					// @return integer
 					return $this->intPersonId;
 
 				case 'CurrentPackageVersionId':
-					/**
-					 * Gets the value for intCurrentPackageVersionId 
-					 * @return integer
-					 */
+					// Gets the value for intCurrentPackageVersionId 
+					// @return integer
 					return $this->intCurrentPackageVersionId;
 
 				case 'CurrentPostDate':
-					/**
-					 * Gets the value for dttCurrentPostDate 
-					 * @return QDateTime
-					 */
+					// Gets the value for dttCurrentPostDate 
+					// @return QDateTime
 					return $this->dttCurrentPostDate;
 
 				case 'DownloadCount':
-					/**
-					 * Gets the value for intDownloadCount 
-					 * @return integer
-					 */
+					// Gets the value for intDownloadCount 
+					// @return integer
 					return $this->intDownloadCount;
 
 
@@ -918,10 +957,8 @@
 				// Member Objects
 				///////////////////
 				case 'Package':
-					/**
-					 * Gets the value for the Package object referenced by intPackageId (Not Null)
-					 * @return Package
-					 */
+					// Gets the value for the Package object referenced by intPackageId (Not Null)
+					// @return Package
 					try {
 						if ((!$this->objPackage) && (!is_null($this->intPackageId)))
 							$this->objPackage = Package::Load($this->intPackageId);
@@ -932,10 +969,8 @@
 					}
 
 				case 'Person':
-					/**
-					 * Gets the value for the Person object referenced by intPersonId (Not Null)
-					 * @return Person
-					 */
+					// Gets the value for the Person object referenced by intPersonId (Not Null)
+					// @return Person
 					try {
 						if ((!$this->objPerson) && (!is_null($this->intPersonId)))
 							$this->objPerson = Person::Load($this->intPersonId);
@@ -946,10 +981,8 @@
 					}
 
 				case 'CurrentPackageVersion':
-					/**
-					 * Gets the value for the PackageVersion object referenced by intCurrentPackageVersionId 
-					 * @return PackageVersion
-					 */
+					// Gets the value for the PackageVersion object referenced by intCurrentPackageVersionId 
+					// @return PackageVersion
 					try {
 						if ((!$this->objCurrentPackageVersion) && (!is_null($this->intCurrentPackageVersionId)))
 							$this->objCurrentPackageVersion = PackageVersion::Load($this->intCurrentPackageVersionId);
@@ -966,19 +999,15 @@
 				////////////////////////////
 
 				case '_PackageVersion':
-					/**
-					 * Gets the value for the private _objPackageVersion (Read-Only)
-					 * if set due to an expansion on the package_version.package_contribution_id reverse relationship
-					 * @return PackageVersion
-					 */
+					// Gets the value for the private _objPackageVersion (Read-Only)
+					// if set due to an expansion on the package_version.package_contribution_id reverse relationship
+					// @return PackageVersion
 					return $this->_objPackageVersion;
 
 				case '_PackageVersionArray':
-					/**
-					 * Gets the value for the private _objPackageVersionArray (Read-Only)
-					 * if set due to an ExpandAsArray on the package_version.package_contribution_id reverse relationship
-					 * @return PackageVersion[]
-					 */
+					// Gets the value for the private _objPackageVersionArray (Read-Only)
+					// if set due to an ExpandAsArray on the package_version.package_contribution_id reverse relationship
+					// @return PackageVersion[]
 					return (array) $this->_objPackageVersionArray;
 
 
@@ -1009,11 +1038,9 @@
 				// Member Variables
 				///////////////////
 				case 'PackageId':
-					/**
-					 * Sets the value for intPackageId (Not Null)
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intPackageId (Not Null)
+					// @param integer $mixValue
+					// @return integer
 					try {
 						$this->objPackage = null;
 						return ($this->intPackageId = QType::Cast($mixValue, QType::Integer));
@@ -1023,11 +1050,9 @@
 					}
 
 				case 'PersonId':
-					/**
-					 * Sets the value for intPersonId (Not Null)
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intPersonId (Not Null)
+					// @param integer $mixValue
+					// @return integer
 					try {
 						$this->objPerson = null;
 						return ($this->intPersonId = QType::Cast($mixValue, QType::Integer));
@@ -1037,11 +1062,9 @@
 					}
 
 				case 'CurrentPackageVersionId':
-					/**
-					 * Sets the value for intCurrentPackageVersionId 
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intCurrentPackageVersionId 
+					// @param integer $mixValue
+					// @return integer
 					try {
 						$this->objCurrentPackageVersion = null;
 						return ($this->intCurrentPackageVersionId = QType::Cast($mixValue, QType::Integer));
@@ -1051,11 +1074,9 @@
 					}
 
 				case 'CurrentPostDate':
-					/**
-					 * Sets the value for dttCurrentPostDate 
-					 * @param QDateTime $mixValue
-					 * @return QDateTime
-					 */
+					// Sets the value for dttCurrentPostDate 
+					// @param QDateTime $mixValue
+					// @return QDateTime
 					try {
 						return ($this->dttCurrentPostDate = QType::Cast($mixValue, QType::DateTime));
 					} catch (QCallerException $objExc) {
@@ -1064,11 +1085,9 @@
 					}
 
 				case 'DownloadCount':
-					/**
-					 * Sets the value for intDownloadCount 
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intDownloadCount 
+					// @param integer $mixValue
+					// @return integer
 					try {
 						return ($this->intDownloadCount = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {
@@ -1081,11 +1100,9 @@
 				// Member Objects
 				///////////////////
 				case 'Package':
-					/**
-					 * Sets the value for the Package object referenced by intPackageId (Not Null)
-					 * @param Package $mixValue
-					 * @return Package
-					 */
+					// Sets the value for the Package object referenced by intPackageId (Not Null)
+					// @param Package $mixValue
+					// @return Package
 					if (is_null($mixValue)) {
 						$this->intPackageId = null;
 						$this->objPackage = null;
@@ -1113,11 +1130,9 @@
 					break;
 
 				case 'Person':
-					/**
-					 * Sets the value for the Person object referenced by intPersonId (Not Null)
-					 * @param Person $mixValue
-					 * @return Person
-					 */
+					// Sets the value for the Person object referenced by intPersonId (Not Null)
+					// @param Person $mixValue
+					// @return Person
 					if (is_null($mixValue)) {
 						$this->intPersonId = null;
 						$this->objPerson = null;
@@ -1145,11 +1160,9 @@
 					break;
 
 				case 'CurrentPackageVersion':
-					/**
-					 * Sets the value for the PackageVersion object referenced by intCurrentPackageVersionId 
-					 * @param PackageVersion $mixValue
-					 * @return PackageVersion
-					 */
+					// Sets the value for the PackageVersion object referenced by intCurrentPackageVersionId 
+					// @param PackageVersion $mixValue
+					// @return PackageVersion
 					if (is_null($mixValue)) {
 						$this->intCurrentPackageVersionId = null;
 						$this->objCurrentPackageVersion = null;

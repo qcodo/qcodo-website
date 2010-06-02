@@ -15,13 +15,13 @@
 	 * 
 	 * @package Qcodo Website
 	 * @subpackage GeneratedDataObjects
-	 * @property-read integer $Id the value for intId (Read-Only PK)
+	 * @property integer $Id the value for intId (Read-Only PK)
 	 * @property integer $IssueId the value for intIssueId (Not Null)
 	 * @property integer $PersonId the value for intPersonId (Not Null)
 	 * @property QDateTime $VoteDate the value for dttVoteDate (Not Null)
 	 * @property Issue $Issue the value for the Issue object referenced by intIssueId (Not Null)
 	 * @property Person $Person the value for the Person object referenced by intPersonId (Not Null)
-	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
+	 * @property boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
 	class IssueVoteGen extends QBaseClass {
 
@@ -167,7 +167,7 @@
 		 * on load methods.
 		 * @param QQueryBuilder &$objQueryBuilder the QueryBuilder object that will be created
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause object or array of QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with (sending in null will skip the PrepareStatement step)
 		 * @param boolean $blnCountOnly only select a rowcount
 		 * @return string the query statement
@@ -229,7 +229,7 @@
 		 * Static Qcodo Query method to query for a single IssueVote object.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return IssueVote the queried object
 		 */
@@ -251,7 +251,7 @@
 		 * Static Qcodo Query method to query for an array of IssueVote objects.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return IssueVote[] the queried objects as an array
 		 */
@@ -270,10 +270,35 @@
 		}
 
 		/**
+		 * Static Qcodo query method to issue a query and get a cursor to progressively fetch its results.
+		 * Uses BuildQueryStatment to perform most of the work.
+		 * @param QQCondition $objConditions any conditions on the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
+		 * @return QDatabaseResultBase the cursor resource instance
+		 */
+		public static function QueryCursor(QQCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
+			// Get the query statement
+			try {
+				$strQuery = IssueVote::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+
+			// Perform the query
+			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
+		
+			// Return the results cursor
+			$objDbResult->QueryBuilder = $objQueryBuilder;
+			return $objDbResult;
+		}
+
+		/**
 		 * Static Qcodo Query method to query for a count of IssueVote objects.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return integer the count of queried objects as an integer
 		 */
@@ -384,7 +409,7 @@
 		 * Takes in an optional strAliasPrefix, used in case another Object::InstantiateDbRow
 		 * is calling this IssueVote::InstantiateDbRow in order to perform
 		 * early binding on referenced objects.
-		 * @param DatabaseRowBase $objDbRow
+		 * @param QDatabaseRowBase $objDbRow
 		 * @param string $strAliasPrefix
 		 * @param string $strExpandAsArrayNodes
 		 * @param QBaseClass $objPreviousItem
@@ -442,7 +467,7 @@
 
 		/**
 		 * Instantiate an array of IssueVotes from a Database Result
-		 * @param DatabaseResultBase $objDbResult
+		 * @param QDatabaseResultBase $objDbResult
 		 * @param string $strExpandAsArrayNodes
 		 * @param string[] $strColumnAliasArray
 		 * @return IssueVote[]
@@ -473,6 +498,32 @@
 			}
 
 			return $objToReturn;
+		}
+
+		/**
+		 * Instantiate a single IssueVote object from a query cursor (e.g. a DB ResultSet).
+		 * Cursor is automatically moved to the "next row" of the result set.
+		 * Will return NULL if no cursor or if the cursor has no more rows in the resultset.
+		 * @param QDatabaseResultBase $objDbResult cursor resource
+		 * @return IssueVote next row resulting from the query
+		 */
+		public static function InstantiateCursor(QDatabaseResultBase $objDbResult) {
+			// If blank resultset, then return empty result
+			if (!$objDbResult) return null;
+
+			// If empty resultset, then return empty result
+			$objDbRow = $objDbResult->GetNextRow();
+			if (!$objDbRow) return null;
+
+			// We need the Column Aliases
+			$strColumnAliasArray = $objDbResult->QueryBuilder->ColumnAliasArray;
+			if (!$strColumnAliasArray) $strColumnAliasArray = array();
+
+			// Pull Expansions (if applicable)
+			$strExpandAsArrayNodes = $objDbResult->QueryBuilder->ExpandAsArrayNodes;
+
+			// Load up the return result with a row and return it
+			return IssueVote::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, null, $strColumnAliasArray);
 		}
 
 
@@ -731,31 +782,23 @@
 				// Member Variables
 				///////////////////
 				case 'Id':
-					/**
-					 * Gets the value for intId (Read-Only PK)
-					 * @return integer
-					 */
+					// Gets the value for intId (Read-Only PK)
+					// @return integer
 					return $this->intId;
 
 				case 'IssueId':
-					/**
-					 * Gets the value for intIssueId (Not Null)
-					 * @return integer
-					 */
+					// Gets the value for intIssueId (Not Null)
+					// @return integer
 					return $this->intIssueId;
 
 				case 'PersonId':
-					/**
-					 * Gets the value for intPersonId (Not Null)
-					 * @return integer
-					 */
+					// Gets the value for intPersonId (Not Null)
+					// @return integer
 					return $this->intPersonId;
 
 				case 'VoteDate':
-					/**
-					 * Gets the value for dttVoteDate (Not Null)
-					 * @return QDateTime
-					 */
+					// Gets the value for dttVoteDate (Not Null)
+					// @return QDateTime
 					return $this->dttVoteDate;
 
 
@@ -763,10 +806,8 @@
 				// Member Objects
 				///////////////////
 				case 'Issue':
-					/**
-					 * Gets the value for the Issue object referenced by intIssueId (Not Null)
-					 * @return Issue
-					 */
+					// Gets the value for the Issue object referenced by intIssueId (Not Null)
+					// @return Issue
 					try {
 						if ((!$this->objIssue) && (!is_null($this->intIssueId)))
 							$this->objIssue = Issue::Load($this->intIssueId);
@@ -777,10 +818,8 @@
 					}
 
 				case 'Person':
-					/**
-					 * Gets the value for the Person object referenced by intPersonId (Not Null)
-					 * @return Person
-					 */
+					// Gets the value for the Person object referenced by intPersonId (Not Null)
+					// @return Person
 					try {
 						if ((!$this->objPerson) && (!is_null($this->intPersonId)))
 							$this->objPerson = Person::Load($this->intPersonId);
@@ -824,11 +863,9 @@
 				// Member Variables
 				///////////////////
 				case 'IssueId':
-					/**
-					 * Sets the value for intIssueId (Not Null)
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intIssueId (Not Null)
+					// @param integer $mixValue
+					// @return integer
 					try {
 						$this->objIssue = null;
 						return ($this->intIssueId = QType::Cast($mixValue, QType::Integer));
@@ -838,11 +875,9 @@
 					}
 
 				case 'PersonId':
-					/**
-					 * Sets the value for intPersonId (Not Null)
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intPersonId (Not Null)
+					// @param integer $mixValue
+					// @return integer
 					try {
 						$this->objPerson = null;
 						return ($this->intPersonId = QType::Cast($mixValue, QType::Integer));
@@ -852,11 +887,9 @@
 					}
 
 				case 'VoteDate':
-					/**
-					 * Sets the value for dttVoteDate (Not Null)
-					 * @param QDateTime $mixValue
-					 * @return QDateTime
-					 */
+					// Sets the value for dttVoteDate (Not Null)
+					// @param QDateTime $mixValue
+					// @return QDateTime
 					try {
 						return ($this->dttVoteDate = QType::Cast($mixValue, QType::DateTime));
 					} catch (QCallerException $objExc) {
@@ -869,11 +902,9 @@
 				// Member Objects
 				///////////////////
 				case 'Issue':
-					/**
-					 * Sets the value for the Issue object referenced by intIssueId (Not Null)
-					 * @param Issue $mixValue
-					 * @return Issue
-					 */
+					// Sets the value for the Issue object referenced by intIssueId (Not Null)
+					// @param Issue $mixValue
+					// @return Issue
 					if (is_null($mixValue)) {
 						$this->intIssueId = null;
 						$this->objIssue = null;
@@ -901,11 +932,9 @@
 					break;
 
 				case 'Person':
-					/**
-					 * Sets the value for the Person object referenced by intPersonId (Not Null)
-					 * @param Person $mixValue
-					 * @return Person
-					 */
+					// Sets the value for the Person object referenced by intPersonId (Not Null)
+					// @param Person $mixValue
+					// @return Person
 					if (is_null($mixValue)) {
 						$this->intPersonId = null;
 						$this->objPerson = null;

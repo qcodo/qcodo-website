@@ -181,21 +181,30 @@
 		/**
 		 * Create and setup QListBox lstPackageContribution
 		 * @param string $strControlId optional ControlId to use
+		 * @param QQCondition $objConditions override the default condition of QQ::All() to the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for the query
 		 * @return QListBox
 		 */
-		public function lstPackageContribution_Create($strControlId = null) {
+		public function lstPackageContribution_Create($strControlId = null, QQCondition $objCondition = null, $objOptionalClauses = null) {
 			$this->lstPackageContribution = new QListBox($this->objParentObject, $strControlId);
 			$this->lstPackageContribution->Name = QApplication::Translate('Package Contribution');
 			$this->lstPackageContribution->Required = true;
 			if (!$this->blnEditMode)
 				$this->lstPackageContribution->AddItem(QApplication::Translate('- Select One -'), null);
-			$objPackageContributionArray = PackageContribution::LoadAll();
-			if ($objPackageContributionArray) foreach ($objPackageContributionArray as $objPackageContribution) {
+
+			// Setup and perform the Query
+			if (is_null($objCondition)) $objCondition = QQ::All();
+			$objPackageContributionCursor = PackageContribution::QueryCursor($objCondition, $objOptionalClauses);
+
+			// Iterate through the Cursor
+			while ($objPackageContribution = PackageContribution::InstantiateCursor($objPackageContributionCursor)) {
 				$objListItem = new QListItem($objPackageContribution->__toString(), $objPackageContribution->Id);
 				if (($this->objPackageVersion->PackageContribution) && ($this->objPackageVersion->PackageContribution->Id == $objPackageContribution->Id))
 					$objListItem->Selected = true;
 				$this->lstPackageContribution->AddItem($objListItem);
 			}
+
+			// Return the QListBox
 			return $this->lstPackageContribution;
 		}
 

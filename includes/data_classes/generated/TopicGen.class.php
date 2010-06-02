@@ -15,7 +15,7 @@
 	 * 
 	 * @package Qcodo Website
 	 * @subpackage GeneratedDataObjects
-	 * @property-read integer $Id the value for intId (Read-Only PK)
+	 * @property integer $Id the value for intId (Read-Only PK)
 	 * @property integer $TopicLinkId the value for intTopicLinkId (Not Null)
 	 * @property string $Name the value for strName 
 	 * @property integer $PersonId the value for intPersonId 
@@ -24,15 +24,15 @@
 	 * @property integer $ViewCount the value for intViewCount 
 	 * @property TopicLink $TopicLink the value for the TopicLink object referenced by intTopicLinkId (Not Null)
 	 * @property Person $Person the value for the Person object referenced by intPersonId 
-	 * @property-read Person $_PersonAsEmail the value for the private _objPersonAsEmail (Read-Only) if set due to an expansion on the email_topic_person_assn association table
-	 * @property-read Person[] $_PersonAsEmailArray the value for the private _objPersonAsEmailArray (Read-Only) if set due to an ExpandAsArray on the email_topic_person_assn association table
-	 * @property-read Person $_PersonAsReadOnce the value for the private _objPersonAsReadOnce (Read-Only) if set due to an expansion on the read_once_topic_person_assn association table
-	 * @property-read Person[] $_PersonAsReadOnceArray the value for the private _objPersonAsReadOnceArray (Read-Only) if set due to an ExpandAsArray on the read_once_topic_person_assn association table
-	 * @property-read Person $_PersonAsRead the value for the private _objPersonAsRead (Read-Only) if set due to an expansion on the read_topic_person_assn association table
-	 * @property-read Person[] $_PersonAsReadArray the value for the private _objPersonAsReadArray (Read-Only) if set due to an ExpandAsArray on the read_topic_person_assn association table
-	 * @property-read Message $_Message the value for the private _objMessage (Read-Only) if set due to an expansion on the message.topic_id reverse relationship
-	 * @property-read Message[] $_MessageArray the value for the private _objMessageArray (Read-Only) if set due to an ExpandAsArray on the message.topic_id reverse relationship
-	 * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
+	 * @property Person $_PersonAsEmail the value for the private _objPersonAsEmail (Read-Only) if set due to an expansion on the email_topic_person_assn association table
+	 * @property Person[] $_PersonAsEmailArray the value for the private _objPersonAsEmailArray (Read-Only) if set due to an ExpandAsArray on the email_topic_person_assn association table
+	 * @property Person $_PersonAsReadOnce the value for the private _objPersonAsReadOnce (Read-Only) if set due to an expansion on the read_once_topic_person_assn association table
+	 * @property Person[] $_PersonAsReadOnceArray the value for the private _objPersonAsReadOnceArray (Read-Only) if set due to an ExpandAsArray on the read_once_topic_person_assn association table
+	 * @property Person $_PersonAsRead the value for the private _objPersonAsRead (Read-Only) if set due to an expansion on the read_topic_person_assn association table
+	 * @property Person[] $_PersonAsReadArray the value for the private _objPersonAsReadArray (Read-Only) if set due to an ExpandAsArray on the read_topic_person_assn association table
+	 * @property Message $_Message the value for the private _objMessage (Read-Only) if set due to an expansion on the message.topic_id reverse relationship
+	 * @property Message[] $_MessageArray the value for the private _objMessageArray (Read-Only) if set due to an ExpandAsArray on the message.topic_id reverse relationship
+	 * @property boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
 	 */
 	class TopicGen extends QBaseClass {
 
@@ -267,7 +267,7 @@
 		 * on load methods.
 		 * @param QQueryBuilder &$objQueryBuilder the QueryBuilder object that will be created
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause object or array of QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause object or array of QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with (sending in null will skip the PrepareStatement step)
 		 * @param boolean $blnCountOnly only select a rowcount
 		 * @return string the query statement
@@ -329,7 +329,7 @@
 		 * Static Qcodo Query method to query for a single Topic object.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return Topic the queried object
 		 */
@@ -351,7 +351,7 @@
 		 * Static Qcodo Query method to query for an array of Topic objects.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return Topic[] the queried objects as an array
 		 */
@@ -370,10 +370,35 @@
 		}
 
 		/**
+		 * Static Qcodo query method to issue a query and get a cursor to progressively fetch its results.
+		 * Uses BuildQueryStatment to perform most of the work.
+		 * @param QQCondition $objConditions any conditions on the query, itself
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
+		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
+		 * @return QDatabaseResultBase the cursor resource instance
+		 */
+		public static function QueryCursor(QQCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
+			// Get the query statement
+			try {
+				$strQuery = Topic::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+			}
+
+			// Perform the query
+			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
+		
+			// Return the results cursor
+			$objDbResult->QueryBuilder = $objQueryBuilder;
+			return $objDbResult;
+		}
+
+		/**
 		 * Static Qcodo Query method to query for a count of Topic objects.
 		 * Uses BuildQueryStatment to perform most of the work.
 		 * @param QQCondition $objConditions any conditions on the query, itself
-		 * @param QQClause[] $objOptionalClausees additional optional QQClause objects for this query
+		 * @param QQClause[] $objOptionalClauses additional optional QQClause objects for this query
 		 * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
 		 * @return integer the count of queried objects as an integer
 		 */
@@ -487,7 +512,7 @@
 		 * Takes in an optional strAliasPrefix, used in case another Object::InstantiateDbRow
 		 * is calling this Topic::InstantiateDbRow in order to perform
 		 * early binding on referenced objects.
-		 * @param DatabaseRowBase $objDbRow
+		 * @param QDatabaseRowBase $objDbRow
 		 * @param string $strAliasPrefix
 		 * @param string $strExpandAsArrayNodes
 		 * @param QBaseClass $objPreviousItem
@@ -665,7 +690,7 @@
 
 		/**
 		 * Instantiate an array of Topics from a Database Result
-		 * @param DatabaseResultBase $objDbResult
+		 * @param QDatabaseResultBase $objDbResult
 		 * @param string $strExpandAsArrayNodes
 		 * @param string[] $strColumnAliasArray
 		 * @return Topic[]
@@ -696,6 +721,32 @@
 			}
 
 			return $objToReturn;
+		}
+
+		/**
+		 * Instantiate a single Topic object from a query cursor (e.g. a DB ResultSet).
+		 * Cursor is automatically moved to the "next row" of the result set.
+		 * Will return NULL if no cursor or if the cursor has no more rows in the resultset.
+		 * @param QDatabaseResultBase $objDbResult cursor resource
+		 * @return Topic next row resulting from the query
+		 */
+		public static function InstantiateCursor(QDatabaseResultBase $objDbResult) {
+			// If blank resultset, then return empty result
+			if (!$objDbResult) return null;
+
+			// If empty resultset, then return empty result
+			$objDbRow = $objDbResult->GetNextRow();
+			if (!$objDbRow) return null;
+
+			// We need the Column Aliases
+			$strColumnAliasArray = $objDbResult->QueryBuilder->ColumnAliasArray;
+			if (!$strColumnAliasArray) $strColumnAliasArray = array();
+
+			// Pull Expansions (if applicable)
+			$strExpandAsArrayNodes = $objDbResult->QueryBuilder->ExpandAsArrayNodes;
+
+			// Load up the return result with a row and return it
+			return Topic::InstantiateDbRow($objDbRow, null, $strExpandAsArrayNodes, null, $strColumnAliasArray);
 		}
 
 
@@ -1043,52 +1094,38 @@
 				// Member Variables
 				///////////////////
 				case 'Id':
-					/**
-					 * Gets the value for intId (Read-Only PK)
-					 * @return integer
-					 */
+					// Gets the value for intId (Read-Only PK)
+					// @return integer
 					return $this->intId;
 
 				case 'TopicLinkId':
-					/**
-					 * Gets the value for intTopicLinkId (Not Null)
-					 * @return integer
-					 */
+					// Gets the value for intTopicLinkId (Not Null)
+					// @return integer
 					return $this->intTopicLinkId;
 
 				case 'Name':
-					/**
-					 * Gets the value for strName 
-					 * @return string
-					 */
+					// Gets the value for strName 
+					// @return string
 					return $this->strName;
 
 				case 'PersonId':
-					/**
-					 * Gets the value for intPersonId 
-					 * @return integer
-					 */
+					// Gets the value for intPersonId 
+					// @return integer
 					return $this->intPersonId;
 
 				case 'LastPostDate':
-					/**
-					 * Gets the value for dttLastPostDate 
-					 * @return QDateTime
-					 */
+					// Gets the value for dttLastPostDate 
+					// @return QDateTime
 					return $this->dttLastPostDate;
 
 				case 'MessageCount':
-					/**
-					 * Gets the value for intMessageCount 
-					 * @return integer
-					 */
+					// Gets the value for intMessageCount 
+					// @return integer
 					return $this->intMessageCount;
 
 				case 'ViewCount':
-					/**
-					 * Gets the value for intViewCount 
-					 * @return integer
-					 */
+					// Gets the value for intViewCount 
+					// @return integer
 					return $this->intViewCount;
 
 
@@ -1096,10 +1133,8 @@
 				// Member Objects
 				///////////////////
 				case 'TopicLink':
-					/**
-					 * Gets the value for the TopicLink object referenced by intTopicLinkId (Not Null)
-					 * @return TopicLink
-					 */
+					// Gets the value for the TopicLink object referenced by intTopicLinkId (Not Null)
+					// @return TopicLink
 					try {
 						if ((!$this->objTopicLink) && (!is_null($this->intTopicLinkId)))
 							$this->objTopicLink = TopicLink::Load($this->intTopicLinkId);
@@ -1110,10 +1145,8 @@
 					}
 
 				case 'Person':
-					/**
-					 * Gets the value for the Person object referenced by intPersonId 
-					 * @return Person
-					 */
+					// Gets the value for the Person object referenced by intPersonId 
+					// @return Person
 					try {
 						if ((!$this->objPerson) && (!is_null($this->intPersonId)))
 							$this->objPerson = Person::Load($this->intPersonId);
@@ -1130,67 +1163,51 @@
 				////////////////////////////
 
 				case '_PersonAsEmail':
-					/**
-					 * Gets the value for the private _objPersonAsEmail (Read-Only)
-					 * if set due to an expansion on the email_topic_person_assn association table
-					 * @return Person
-					 */
+					// Gets the value for the private _objPersonAsEmail (Read-Only)
+					// if set due to an expansion on the email_topic_person_assn association table
+					// @return Person
 					return $this->_objPersonAsEmail;
 
 				case '_PersonAsEmailArray':
-					/**
-					 * Gets the value for the private _objPersonAsEmailArray (Read-Only)
-					 * if set due to an ExpandAsArray on the email_topic_person_assn association table
-					 * @return Person[]
-					 */
+					// Gets the value for the private _objPersonAsEmailArray (Read-Only)
+					// if set due to an ExpandAsArray on the email_topic_person_assn association table
+					// @return Person[]
 					return (array) $this->_objPersonAsEmailArray;
 
 				case '_PersonAsReadOnce':
-					/**
-					 * Gets the value for the private _objPersonAsReadOnce (Read-Only)
-					 * if set due to an expansion on the read_once_topic_person_assn association table
-					 * @return Person
-					 */
+					// Gets the value for the private _objPersonAsReadOnce (Read-Only)
+					// if set due to an expansion on the read_once_topic_person_assn association table
+					// @return Person
 					return $this->_objPersonAsReadOnce;
 
 				case '_PersonAsReadOnceArray':
-					/**
-					 * Gets the value for the private _objPersonAsReadOnceArray (Read-Only)
-					 * if set due to an ExpandAsArray on the read_once_topic_person_assn association table
-					 * @return Person[]
-					 */
+					// Gets the value for the private _objPersonAsReadOnceArray (Read-Only)
+					// if set due to an ExpandAsArray on the read_once_topic_person_assn association table
+					// @return Person[]
 					return (array) $this->_objPersonAsReadOnceArray;
 
 				case '_PersonAsRead':
-					/**
-					 * Gets the value for the private _objPersonAsRead (Read-Only)
-					 * if set due to an expansion on the read_topic_person_assn association table
-					 * @return Person
-					 */
+					// Gets the value for the private _objPersonAsRead (Read-Only)
+					// if set due to an expansion on the read_topic_person_assn association table
+					// @return Person
 					return $this->_objPersonAsRead;
 
 				case '_PersonAsReadArray':
-					/**
-					 * Gets the value for the private _objPersonAsReadArray (Read-Only)
-					 * if set due to an ExpandAsArray on the read_topic_person_assn association table
-					 * @return Person[]
-					 */
+					// Gets the value for the private _objPersonAsReadArray (Read-Only)
+					// if set due to an ExpandAsArray on the read_topic_person_assn association table
+					// @return Person[]
 					return (array) $this->_objPersonAsReadArray;
 
 				case '_Message':
-					/**
-					 * Gets the value for the private _objMessage (Read-Only)
-					 * if set due to an expansion on the message.topic_id reverse relationship
-					 * @return Message
-					 */
+					// Gets the value for the private _objMessage (Read-Only)
+					// if set due to an expansion on the message.topic_id reverse relationship
+					// @return Message
 					return $this->_objMessage;
 
 				case '_MessageArray':
-					/**
-					 * Gets the value for the private _objMessageArray (Read-Only)
-					 * if set due to an ExpandAsArray on the message.topic_id reverse relationship
-					 * @return Message[]
-					 */
+					// Gets the value for the private _objMessageArray (Read-Only)
+					// if set due to an ExpandAsArray on the message.topic_id reverse relationship
+					// @return Message[]
 					return (array) $this->_objMessageArray;
 
 
@@ -1221,11 +1238,9 @@
 				// Member Variables
 				///////////////////
 				case 'TopicLinkId':
-					/**
-					 * Sets the value for intTopicLinkId (Not Null)
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intTopicLinkId (Not Null)
+					// @param integer $mixValue
+					// @return integer
 					try {
 						$this->objTopicLink = null;
 						return ($this->intTopicLinkId = QType::Cast($mixValue, QType::Integer));
@@ -1235,11 +1250,9 @@
 					}
 
 				case 'Name':
-					/**
-					 * Sets the value for strName 
-					 * @param string $mixValue
-					 * @return string
-					 */
+					// Sets the value for strName 
+					// @param string $mixValue
+					// @return string
 					try {
 						return ($this->strName = QType::Cast($mixValue, QType::String));
 					} catch (QCallerException $objExc) {
@@ -1248,11 +1261,9 @@
 					}
 
 				case 'PersonId':
-					/**
-					 * Sets the value for intPersonId 
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intPersonId 
+					// @param integer $mixValue
+					// @return integer
 					try {
 						$this->objPerson = null;
 						return ($this->intPersonId = QType::Cast($mixValue, QType::Integer));
@@ -1262,11 +1273,9 @@
 					}
 
 				case 'LastPostDate':
-					/**
-					 * Sets the value for dttLastPostDate 
-					 * @param QDateTime $mixValue
-					 * @return QDateTime
-					 */
+					// Sets the value for dttLastPostDate 
+					// @param QDateTime $mixValue
+					// @return QDateTime
 					try {
 						return ($this->dttLastPostDate = QType::Cast($mixValue, QType::DateTime));
 					} catch (QCallerException $objExc) {
@@ -1275,11 +1284,9 @@
 					}
 
 				case 'MessageCount':
-					/**
-					 * Sets the value for intMessageCount 
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intMessageCount 
+					// @param integer $mixValue
+					// @return integer
 					try {
 						return ($this->intMessageCount = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {
@@ -1288,11 +1295,9 @@
 					}
 
 				case 'ViewCount':
-					/**
-					 * Sets the value for intViewCount 
-					 * @param integer $mixValue
-					 * @return integer
-					 */
+					// Sets the value for intViewCount 
+					// @param integer $mixValue
+					// @return integer
 					try {
 						return ($this->intViewCount = QType::Cast($mixValue, QType::Integer));
 					} catch (QCallerException $objExc) {
@@ -1305,11 +1310,9 @@
 				// Member Objects
 				///////////////////
 				case 'TopicLink':
-					/**
-					 * Sets the value for the TopicLink object referenced by intTopicLinkId (Not Null)
-					 * @param TopicLink $mixValue
-					 * @return TopicLink
-					 */
+					// Sets the value for the TopicLink object referenced by intTopicLinkId (Not Null)
+					// @param TopicLink $mixValue
+					// @return TopicLink
 					if (is_null($mixValue)) {
 						$this->intTopicLinkId = null;
 						$this->objTopicLink = null;
@@ -1337,11 +1340,9 @@
 					break;
 
 				case 'Person':
-					/**
-					 * Sets the value for the Person object referenced by intPersonId 
-					 * @param Person $mixValue
-					 * @return Person
-					 */
+					// Sets the value for the Person object referenced by intPersonId 
+					// @param Person $mixValue
+					// @return Person
 					if (is_null($mixValue)) {
 						$this->intPersonId = null;
 						$this->objPerson = null;
