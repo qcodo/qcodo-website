@@ -80,8 +80,11 @@
 	define ('__IMAGE_ASSETS__', __SUBDIRECTORY__ . '/assets/images');
 	define ('__PHP_ASSETS__', __SUBDIRECTORY__ . '/assets/php');
 
+	define('__ERROR_LOG__', __DATA_ASSETS__ . '/error_log');
+	define('__QCODO_LOG__', __DATA_ASSETS__ . '/qcodo_log');
+	define('__TEST_CASES__', __DOCROOT__ . '/../tests');
+
 	define ('__IMAGES_CACHED__', '/images/cached');
-	define('ERROR_LOG_PATH', __DATA_ASSETS__ . '/error_log');
 
 	// Enable Error Loggin and "Friendly" Errors, Specifically in Production Only
 	if (SERVER_INSTANCE == 'prod') {

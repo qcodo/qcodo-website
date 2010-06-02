@@ -202,10 +202,11 @@
 		// URL Hash Processing
 		////////////////////////////////////
 			this.processHashCurrent = null;
+			this.processHashIntervalId = null;
 
 			this.registerHashProcessor = function(strControlId, intPollingInterval) {
 				qc.processHashCurrent = null;
-				setInterval("qc.processHash('" + strControlId + "');", intPollingInterval);
+				this.processHashIntervalId = setInterval("qc.processHash('" + strControlId + "');", intPollingInterval);
 			};
 
 			this.processHash = function(strControlId) {
@@ -221,18 +222,41 @@
 					var strFormId = document.getElementById("Qform__FormId").value;
 
 					// Figure out the Hash data
-					var intPosition = strUrl.indexOf('#');
-					var strHashData = "";
-
-					if (intPosition > 0)
-						strHashData = strUrl.substring(intPosition + 1);
+					var strHashData = qc.getHashContent();
 
 					// Make the callback
 					qc.pA(strFormId, strControlId, 'QClickEvent', strHashData, null);
 				};
 			};
 
+			this.getHashContent = function() {
+				var intPosition = qc.processHashCurrent.indexOf('#');
+				var strHashData = "";
 
+				if (intPosition > 0) strHashData = qc.processHashCurrent.substring(intPosition + 1);
+				return strHashData;
+			};
+
+			this.clearHashProcessor = function() {
+				if (this.processHashIntervalId) {
+					clearInterval(this.processHashIntervalId);
+				}
+			};
+
+		////////////////////////////////////
+		// Polling Processing
+		////////////////////////////////////
+			this.registerPollingProcessor = function(strControlId, intPollingInterval) {
+				setTimeout("qc.processPolling('" + strControlId + "');", intPollingInterval);
+			};
+
+			this.processPolling = function(strControlId) {
+				// Get Info Needed for the Control Proxy call
+				var strFormId = document.getElementById("Qform__FormId").value;
+
+				// Make the callback
+				qc.pA(strFormId, strControlId, 'QClickEvent');
+			};
 
 		////////////////////////////////////
 		// Mouse Drag Handling Functionality
@@ -387,3 +411,5 @@
 	qc.initialize();
 	qc.regAL = qcodo.registerAssetLocations;
 	qc.regHP = qcodo.registerHashProcessor;
+	qc.clrHP = qcodo.clearHashProcessor;
+	qc.regPP = qcodo.registerPollingProcessor;
