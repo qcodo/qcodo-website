@@ -51,11 +51,11 @@
 				$this->btnAdmin->Text = 'Administer Showcase Items';
 				$this->btnAdmin->LinkUrl = '/showcase/admin.php';
 			}
-			
+
 			$this->dlgBox = new QDialogBox($this);
-			$this->dlgBox->MatteClickable = false;
+			$this->dlgBox->MatteClickable = true;
 			$this->dlgBox->HideDialogBox();
-			
+
 			$this->btnClose = new QButton($this->dlgBox);
 			$this->btnClose->AddAction(new QClickEvent(), new QHideDialogBox($this->dlgBox));
 			
