@@ -47,33 +47,36 @@
 <div class="mainContent">
 
 <p>The <strong>Qcodo Development Framework</strong> is an open-source <a href="http://www.php.net/">PHP</a> framework
-that focuses on freeing developers from unnecessary tedious, mundane coding. The result is that developers can do what they do best:
-<ul>
-<li>Focus on implementing <b>functionality</b> and <b>usability</b></li>
-<li>Improving <b>performance</b></li>
-<li>Ensuring <b>security</b></li>
-</ul></p>
+that focuses on freeing developers from unnecessary tedious, mundane coding.</p>
 
-<p>It is a <strong><em>completely</em> object-oriented framework</strong> that takes the best of PHP and provides a truly rapid application development
-platform. Initial prototypes roll out in <strong>minutes instead of hours</strong>. Iterations come around in <strong>hours instead of days</strong> (or even
-weeks). As projects iterate into more cohesive solutions, the framework allows developers to take prototypes to the next
-level by providing the <strong>capability of bringing the application to maturity</strong>.</p>
+<p>
+	Qcodo <a href="/showcase/">powers</a> some the most highly trafficked websites and data intensive applications for
+	companies like <strong>Lockheed Martin</strong> and <strong>Hewlett-Packard</strong>, large
+	organizations like <strong>Stanford School of Medicine</strong>, <strong>Academy of Country Music</strong>
+	and <strong>NASA</strong>, and startups like <strong>Chess.com</strong> and <strong>Uloop</strong>.
+	<br/><br/>
+	Qcodo-powered websites deliver over <strong>100 Million Page Views</strong> every month.
+</p>
 
-<br/>
+<p style="margin-top: 32px; padding-top: 32px; border-top: 1px dashed #999; width: 720px;">
+	As a <strong><em>completely</em> object-oriented framework</strong>, it takes the best of PHP and provides a truly rapid application development
+	platform. Initial prototypes roll out in <strong>minutes instead of days</strong>. Iterations come around in <strong>hours instead of weeks</strong>.
+	As projects iterate into more cohesive solutions, the framework allows developers to take prototypes to the next
+	level by providing the <strong>capability of bringing the application to maturity</strong>.
+	<br/><br/>
+	The following is just a sample of the <strong>many features</strong> of Qcodo that make it a <strong>robust, scalable PHP development
+	framework</strong> that is being used for everything from
+	<a href="/showcase/"><strong>large scale enterprise applications</strong></a> to <a href="/showcase/"><strong>agile Web 2.0 startups</strong></a>:
 
-<p>The following is just a sample of the <strong>many features</strong> of Qcodo that make it a <strong>robust, scalable PHP development
-framework</strong> that is already being used for everything from
-<a href="/showcase/"><strong>large scale enterprise applications</strong></a> to <a href="/showcase/"><strong>agile Web 2.0 startups</strong></a>:
-<ul>
-
-<li>Code generation-based object relational model</li>
-<li>Component-based event-driven view / controller library</li>
-<li>Fully-integrated PHP-based AJAX support (no JavaScripting required)</li>
-<li>Object oriented database querying library (no SQL required)</li>
-<li>Built-in database profiling tools</li>
-<li>Internationalization support</li>
-<li><a href="/wiki/qcodo/overview">And much more...</a></li>
-</ul>
+	<ul>
+		<li>Code generation-based object relational model</li>
+		<li>Component-based event-driven view / controller library</li>
+		<li>Fully-integrated PHP-based AJAX support (no JavaScripting required)</li>
+		<li>Object oriented database querying library (no SQL required)</li>
+		<li>Built-in database profiling tools</li>
+		<li>Internationalization support</li>
+		<li><a href="/wiki/qcodo/overview">And much more...</a></li>
+	</ul>
 </p>
 
 </div>

@@ -9,7 +9,7 @@
 			<div class="left" onmouseover="this.className='left hover';" onmouseout="this.className='left';">
 				<div>
 					Copyright &copy; 2005 - <?php _p(date('Y')); ?>, <a href="http://www.quasidea.com/">Quasidea Development, LLC</a><br/>
-					This open-source framework for <a href="http://www.php.net/">PHP 5</a> is released under the terms of <a href="http://www.opensource.org/licenses/mit-license.php">The MIT License</a>.
+					This open-source framework for <a href="http://www.php.net/">PHP</a> is released under the terms of <a href="http://www.opensource.org/licenses/mit-license.php">The MIT License</a>.
 				</div>
 			</div>
 		</div>

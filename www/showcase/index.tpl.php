@@ -9,7 +9,16 @@
 </style>
 
 <p style="font-size: 18px; margin: 12px 0 24px 0;">
-	The following are sites, companies, projects and applications that showcase Qcodo at work.<br/>
+	Qcodo is the technology behind some the web's most highly trafficked sites and data intensive applications, enabling
+	Fortune 500 companies like <strong>Lockheed Martin</strong>, <strong>Hewlett-Packard</strong> and <strong>Pentax</strong>, large
+	organizations like <strong>Stanford School of Medicine</strong>, <strong>Academy of Country Music</strong>
+	and <strong>NASA</strong>, and hot startups like <strong>Chess.com</strong>, <strong>Uloop</strong>
+	and <strong>Broadjam</strong>.
+	<br/><br/>
+	Qcodo-powered websites generate over <strong>100 Million Page Views</strong> every month.
+</p>
+<p>
+	The following are just a sample of sites, companies, projects and applications that showcase Qcodo at work.
 	Click on any icon to find out more, or feel free and submit your own.
 </p>
 
