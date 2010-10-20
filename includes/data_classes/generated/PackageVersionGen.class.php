@@ -295,9 +295,31 @@
 				throw $objExc;
 			}
 
-			// Perform the Query, Get the First Row, and Instantiate a new PackageVersion object
+			// Perform the Query
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return PackageVersion::InstantiateDbRow($objDbResult->GetNextRow(), null, null, null, $objQueryBuilder->ColumnAliasArray);
+
+			// Instantiate a new PackageVersion object and return it
+
+			// Do we have to expand anything?
+			if ($objQueryBuilder->ExpandAsArrayNodes) {
+				$objToReturn = array();
+				while ($objDbRow = $objDbResult->GetNextRow()) {
+					$objItem = PackageVersion::InstantiateDbRow($objDbRow, null, $objQueryBuilder->ExpandAsArrayNodes, $objToReturn, $objQueryBuilder->ColumnAliasArray);
+					if ($objItem) $objToReturn[] = $objItem;
+				}
+
+				if (count($objToReturn)) {
+					// Since we only want the object to return, lets return the object and not the array.
+					return $objToReturn[0];
+				} else {
+					return null;
+				}
+			} else {
+				// No expands just return the first row
+				$objDbRow = $objDbResult->GetNextRow();
+				if (is_null($objDbRow)) return null;
+				return PackageVersion::InstantiateDbRow($objDbRow, null, null, null, $objQueryBuilder->ColumnAliasArray);
+			}
 		}
 
 		/**
@@ -706,9 +728,9 @@
 
 
 
-		//////////////////////////
-		// SAVE, DELETE AND RELOAD
-		//////////////////////////
+		//////////////////////////////////////
+		// SAVE, DELETE, RELOAD and JOURNALING
+		//////////////////////////////////////
 
 		/**
 		 * Save this PackageVersion
@@ -749,6 +771,10 @@
 
 					// Update Identity column and return its value
 					$mixToReturn = $this->intId = $objDatabase->InsertId('package_version', 'id');
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('INSERT');
+
 				} else {
 					// Perform an UPDATE query
 
@@ -770,6 +796,9 @@
 						WHERE
 							`id` = ' . $objDatabase->SqlVariable($this->intId) . '
 					');
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('UPDATE');
 				}
 
 			} catch (QCallerException $objExc) {
@@ -803,6 +832,9 @@
 					`package_version`
 				WHERE
 					`id` = ' . $objDatabase->SqlVariable($this->intId) . '');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) $this->Journal('DELETE');
 		}
 
 		/**
@@ -854,6 +886,70 @@
 			$this->dttPostDate = $objReloaded->dttPostDate;
 			$this->intDownloadCount = $objReloaded->intDownloadCount;
 		}
+
+		/**
+		 * Journals the current object into the Log database.
+		 * Used internally as a helper method.
+		 * @param string $strJournalCommand
+		 */
+		public function Journal($strJournalCommand) {
+			$objDatabase = PackageVersion::GetDatabase()->JournalingDatabase;
+
+			$objDatabase->NonQuery('
+				INSERT INTO `package_version` (
+					`id`,
+					`package_contribution_id`,
+					`version_number`,
+					`notes`,
+					`qcodo_version`,
+					`new_file_count`,
+					`changed_file_count`,
+					`post_date`,
+					`download_count`,
+					__sys_login_id,
+					__sys_action,
+					__sys_date
+				) VALUES (
+					' . $objDatabase->SqlVariable($this->intId) . ',
+					' . $objDatabase->SqlVariable($this->intPackageContributionId) . ',
+					' . $objDatabase->SqlVariable($this->intVersionNumber) . ',
+					' . $objDatabase->SqlVariable($this->strNotes) . ',
+					' . $objDatabase->SqlVariable($this->strQcodoVersion) . ',
+					' . $objDatabase->SqlVariable($this->intNewFileCount) . ',
+					' . $objDatabase->SqlVariable($this->intChangedFileCount) . ',
+					' . $objDatabase->SqlVariable($this->dttPostDate) . ',
+					' . $objDatabase->SqlVariable($this->intDownloadCount) . ',
+					' . (($objDatabase->JournaledById) ? $objDatabase->JournaledById : 'NULL') . ',
+					' . $objDatabase->SqlVariable($strJournalCommand) . ',
+					NOW()
+				);
+			');
+		}
+
+		/**
+		 * Gets the historical journal for an object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @param integer intId
+		 * @return PackageVersion[]
+		 */
+		public static function GetJournalForId($intId) {
+			$objDatabase = PackageVersion::GetDatabase()->JournalingDatabase;
+
+			$objResult = $objDatabase->Query('SELECT * FROM package_version WHERE id = ' .
+				$objDatabase->SqlVariable($intId) . ' ORDER BY __sys_date');
+
+			return PackageVersion::InstantiateDbResult($objResult);
+		}
+
+		/**
+		 * Gets the historical journal for this object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @return PackageVersion[]
+		 */
+		public function GetJournal() {
+			return PackageVersion::GetJournalForId($this->intId);
+		}
+
 
 
 
@@ -1185,6 +1281,12 @@
 				WHERE
 					`id` = ' . $objDatabase->SqlVariable($objPackageContribution->Id) . '
 			');
+
+			// Journaling (if applicable)
+			if ($objDatabase->JournalingDatabase) {
+				$objPackageContribution->CurrentPackageVersionId = $this->intId;
+				$objPackageContribution->Journal('UPDATE');
+			}
 		}
 
 		/**
@@ -1211,6 +1313,12 @@
 					`id` = ' . $objDatabase->SqlVariable($objPackageContribution->Id) . ' AND
 					`current_package_version_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 			');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				$objPackageContribution->CurrentPackageVersionId = null;
+				$objPackageContribution->Journal('UPDATE');
+			}
 		}
 
 		/**
@@ -1223,6 +1331,14 @@
 
 			// Get the Database Object for this Class
 			$objDatabase = PackageVersion::GetDatabase();
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				foreach (PackageContribution::LoadArrayByCurrentPackageVersionId($this->intId) as $objPackageContribution) {
+					$objPackageContribution->CurrentPackageVersionId = null;
+					$objPackageContribution->Journal('UPDATE');
+				}
+			}
 
 			// Perform the SQL Query
 			$objDatabase->NonQuery('
@@ -1257,6 +1373,11 @@
 					`id` = ' . $objDatabase->SqlVariable($objPackageContribution->Id) . ' AND
 					`current_package_version_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 			');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				$objPackageContribution->Journal('DELETE');
+			}
 		}
 
 		/**
@@ -1269,6 +1390,13 @@
 
 			// Get the Database Object for this Class
 			$objDatabase = PackageVersion::GetDatabase();
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				foreach (PackageContribution::LoadArrayByCurrentPackageVersionId($this->intId) as $objPackageContribution) {
+					$objPackageContribution->Journal('DELETE');
+				}
+			}
 
 			// Perform the SQL Query
 			$objDatabase->NonQuery('
@@ -1378,6 +1506,19 @@
 	// ADDITIONAL CLASSES for QCODO QUERY
 	/////////////////////////////////////
 
+	/**
+	 * @property-read QQNode $Id
+	 * @property-read QQNode $PackageContributionId
+	 * @property-read QQNodePackageContribution $PackageContribution
+	 * @property-read QQNode $VersionNumber
+	 * @property-read QQNode $Notes
+	 * @property-read QQNode $QcodoVersion
+	 * @property-read QQNode $NewFileCount
+	 * @property-read QQNode $ChangedFileCount
+	 * @property-read QQNode $PostDate
+	 * @property-read QQNode $DownloadCount
+	 * @property-read QQReverseReferenceNodePackageContribution $PackageContributionAsCurrent
+	 */
 	class QQNodePackageVersion extends QQNode {
 		protected $strTableName = 'package_version';
 		protected $strPrimaryKey = 'id';
@@ -1419,7 +1560,21 @@
 			}
 		}
 	}
-
+	
+	/**
+	 * @property-read QQNode $Id
+	 * @property-read QQNode $PackageContributionId
+	 * @property-read QQNodePackageContribution $PackageContribution
+	 * @property-read QQNode $VersionNumber
+	 * @property-read QQNode $Notes
+	 * @property-read QQNode $QcodoVersion
+	 * @property-read QQNode $NewFileCount
+	 * @property-read QQNode $ChangedFileCount
+	 * @property-read QQNode $PostDate
+	 * @property-read QQNode $DownloadCount
+	 * @property-read QQReverseReferenceNodePackageContribution $PackageContributionAsCurrent
+	 * @property-read QQNode $_PrimaryKeyNode
+	 */
 	class QQReverseReferenceNodePackageVersion extends QQReverseReferenceNode {
 		protected $strTableName = 'package_version';
 		protected $strPrimaryKey = 'id';

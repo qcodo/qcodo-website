@@ -285,9 +285,31 @@
 				throw $objExc;
 			}
 
-			// Perform the Query, Get the First Row, and Instantiate a new IssueField object
+			// Perform the Query
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return IssueField::InstantiateDbRow($objDbResult->GetNextRow(), null, null, null, $objQueryBuilder->ColumnAliasArray);
+
+			// Instantiate a new IssueField object and return it
+
+			// Do we have to expand anything?
+			if ($objQueryBuilder->ExpandAsArrayNodes) {
+				$objToReturn = array();
+				while ($objDbRow = $objDbResult->GetNextRow()) {
+					$objItem = IssueField::InstantiateDbRow($objDbRow, null, $objQueryBuilder->ExpandAsArrayNodes, $objToReturn, $objQueryBuilder->ColumnAliasArray);
+					if ($objItem) $objToReturn[] = $objItem;
+				}
+
+				if (count($objToReturn)) {
+					// Since we only want the object to return, lets return the object and not the array.
+					return $objToReturn[0];
+				} else {
+					return null;
+				}
+			} else {
+				// No expands just return the first row
+				$objDbRow = $objDbResult->GetNextRow();
+				if (is_null($objDbRow)) return null;
+				return IssueField::InstantiateDbRow($objDbRow, null, null, null, $objQueryBuilder->ColumnAliasArray);
+			}
 		}
 
 		/**
@@ -704,9 +726,9 @@
 
 
 
-		//////////////////////////
-		// SAVE, DELETE AND RELOAD
-		//////////////////////////
+		//////////////////////////////////////
+		// SAVE, DELETE, RELOAD and JOURNALING
+		//////////////////////////////////////
 
 		/**
 		 * Save this IssueField
@@ -743,6 +765,10 @@
 
 					// Update Identity column and return its value
 					$mixToReturn = $this->intId = $objDatabase->InsertId('issue_field', 'id');
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('INSERT');
+
 				} else {
 					// Perform an UPDATE query
 
@@ -762,6 +788,9 @@
 						WHERE
 							`id` = ' . $objDatabase->SqlVariable($this->intId) . '
 					');
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('UPDATE');
 				}
 
 			} catch (QCallerException $objExc) {
@@ -795,6 +824,9 @@
 					`issue_field`
 				WHERE
 					`id` = ' . $objDatabase->SqlVariable($this->intId) . '');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) $this->Journal('DELETE');
 		}
 
 		/**
@@ -844,6 +876,66 @@
 			$this->blnMutableFlag = $objReloaded->blnMutableFlag;
 			$this->blnActiveFlag = $objReloaded->blnActiveFlag;
 		}
+
+		/**
+		 * Journals the current object into the Log database.
+		 * Used internally as a helper method.
+		 * @param string $strJournalCommand
+		 */
+		public function Journal($strJournalCommand) {
+			$objDatabase = IssueField::GetDatabase()->JournalingDatabase;
+
+			$objDatabase->NonQuery('
+				INSERT INTO `issue_field` (
+					`id`,
+					`name`,
+					`token`,
+					`order_number`,
+					`required_flag`,
+					`mutable_flag`,
+					`active_flag`,
+					__sys_login_id,
+					__sys_action,
+					__sys_date
+				) VALUES (
+					' . $objDatabase->SqlVariable($this->intId) . ',
+					' . $objDatabase->SqlVariable($this->strName) . ',
+					' . $objDatabase->SqlVariable($this->strToken) . ',
+					' . $objDatabase->SqlVariable($this->intOrderNumber) . ',
+					' . $objDatabase->SqlVariable($this->blnRequiredFlag) . ',
+					' . $objDatabase->SqlVariable($this->blnMutableFlag) . ',
+					' . $objDatabase->SqlVariable($this->blnActiveFlag) . ',
+					' . (($objDatabase->JournaledById) ? $objDatabase->JournaledById : 'NULL') . ',
+					' . $objDatabase->SqlVariable($strJournalCommand) . ',
+					NOW()
+				);
+			');
+		}
+
+		/**
+		 * Gets the historical journal for an object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @param integer intId
+		 * @return IssueField[]
+		 */
+		public static function GetJournalForId($intId) {
+			$objDatabase = IssueField::GetDatabase()->JournalingDatabase;
+
+			$objResult = $objDatabase->Query('SELECT * FROM issue_field WHERE id = ' .
+				$objDatabase->SqlVariable($intId) . ' ORDER BY __sys_date');
+
+			return IssueField::InstantiateDbResult($objResult);
+		}
+
+		/**
+		 * Gets the historical journal for this object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @return IssueField[]
+		 */
+		public function GetJournal() {
+			return IssueField::GetJournalForId($this->intId);
+		}
+
 
 
 
@@ -1112,6 +1204,12 @@
 				WHERE
 					`id` = ' . $objDatabase->SqlVariable($objIssueFieldOption->Id) . '
 			');
+
+			// Journaling (if applicable)
+			if ($objDatabase->JournalingDatabase) {
+				$objIssueFieldOption->IssueFieldId = $this->intId;
+				$objIssueFieldOption->Journal('UPDATE');
+			}
 		}
 
 		/**
@@ -1138,6 +1236,12 @@
 					`id` = ' . $objDatabase->SqlVariable($objIssueFieldOption->Id) . ' AND
 					`issue_field_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 			');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				$objIssueFieldOption->IssueFieldId = null;
+				$objIssueFieldOption->Journal('UPDATE');
+			}
 		}
 
 		/**
@@ -1150,6 +1254,14 @@
 
 			// Get the Database Object for this Class
 			$objDatabase = IssueField::GetDatabase();
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				foreach (IssueFieldOption::LoadArrayByIssueFieldId($this->intId) as $objIssueFieldOption) {
+					$objIssueFieldOption->IssueFieldId = null;
+					$objIssueFieldOption->Journal('UPDATE');
+				}
+			}
 
 			// Perform the SQL Query
 			$objDatabase->NonQuery('
@@ -1184,6 +1296,11 @@
 					`id` = ' . $objDatabase->SqlVariable($objIssueFieldOption->Id) . ' AND
 					`issue_field_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 			');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				$objIssueFieldOption->Journal('DELETE');
+			}
 		}
 
 		/**
@@ -1196,6 +1313,13 @@
 
 			// Get the Database Object for this Class
 			$objDatabase = IssueField::GetDatabase();
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				foreach (IssueFieldOption::LoadArrayByIssueFieldId($this->intId) as $objIssueFieldOption) {
+					$objIssueFieldOption->Journal('DELETE');
+				}
+			}
 
 			// Perform the SQL Query
 			$objDatabase->NonQuery('
@@ -1262,6 +1386,12 @@
 				WHERE
 					`id` = ' . $objDatabase->SqlVariable($objIssueFieldValue->Id) . '
 			');
+
+			// Journaling (if applicable)
+			if ($objDatabase->JournalingDatabase) {
+				$objIssueFieldValue->IssueFieldId = $this->intId;
+				$objIssueFieldValue->Journal('UPDATE');
+			}
 		}
 
 		/**
@@ -1288,6 +1418,12 @@
 					`id` = ' . $objDatabase->SqlVariable($objIssueFieldValue->Id) . ' AND
 					`issue_field_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 			');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				$objIssueFieldValue->IssueFieldId = null;
+				$objIssueFieldValue->Journal('UPDATE');
+			}
 		}
 
 		/**
@@ -1300,6 +1436,14 @@
 
 			// Get the Database Object for this Class
 			$objDatabase = IssueField::GetDatabase();
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				foreach (IssueFieldValue::LoadArrayByIssueFieldId($this->intId) as $objIssueFieldValue) {
+					$objIssueFieldValue->IssueFieldId = null;
+					$objIssueFieldValue->Journal('UPDATE');
+				}
+			}
 
 			// Perform the SQL Query
 			$objDatabase->NonQuery('
@@ -1334,6 +1478,11 @@
 					`id` = ' . $objDatabase->SqlVariable($objIssueFieldValue->Id) . ' AND
 					`issue_field_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 			');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				$objIssueFieldValue->Journal('DELETE');
+			}
 		}
 
 		/**
@@ -1346,6 +1495,13 @@
 
 			// Get the Database Object for this Class
 			$objDatabase = IssueField::GetDatabase();
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				foreach (IssueFieldValue::LoadArrayByIssueFieldId($this->intId) as $objIssueFieldValue) {
+					$objIssueFieldValue->Journal('DELETE');
+				}
+			}
 
 			// Perform the SQL Query
 			$objDatabase->NonQuery('
@@ -1441,6 +1597,17 @@
 	// ADDITIONAL CLASSES for QCODO QUERY
 	/////////////////////////////////////
 
+	/**
+	 * @property-read QQNode $Id
+	 * @property-read QQNode $Name
+	 * @property-read QQNode $Token
+	 * @property-read QQNode $OrderNumber
+	 * @property-read QQNode $RequiredFlag
+	 * @property-read QQNode $MutableFlag
+	 * @property-read QQNode $ActiveFlag
+	 * @property-read QQReverseReferenceNodeIssueFieldOption $IssueFieldOption
+	 * @property-read QQReverseReferenceNodeIssueFieldValue $IssueFieldValue
+	 */
 	class QQNodeIssueField extends QQNode {
 		protected $strTableName = 'issue_field';
 		protected $strPrimaryKey = 'id';
@@ -1478,7 +1645,19 @@
 			}
 		}
 	}
-
+	
+	/**
+	 * @property-read QQNode $Id
+	 * @property-read QQNode $Name
+	 * @property-read QQNode $Token
+	 * @property-read QQNode $OrderNumber
+	 * @property-read QQNode $RequiredFlag
+	 * @property-read QQNode $MutableFlag
+	 * @property-read QQNode $ActiveFlag
+	 * @property-read QQReverseReferenceNodeIssueFieldOption $IssueFieldOption
+	 * @property-read QQReverseReferenceNodeIssueFieldValue $IssueFieldValue
+	 * @property-read QQNode $_PrimaryKeyNode
+	 */
 	class QQReverseReferenceNodeIssueField extends QQReverseReferenceNode {
 		protected $strTableName = 'issue_field';
 		protected $strPrimaryKey = 'id';

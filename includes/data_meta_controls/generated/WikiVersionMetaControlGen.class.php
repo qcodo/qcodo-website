@@ -42,37 +42,151 @@
 
 	class WikiVersionMetaControlGen extends QBaseClass {
 		// General Variables
+		/**
+		 * @var WikiVersion objWikiVersion
+		 * @access protected
+		 */
 		protected $objWikiVersion;
+
+		/**
+		 * @var QForm|QControl objParentObject
+		 * @access protected
+		 */
 		protected $objParentObject;
+
+		/**
+		 * @var string  strTitleVerb
+		 * @access protected
+		 */
 		protected $strTitleVerb;
+
+		/**
+		 * @var boolean blnEditMode
+		 * @access protected
+		 */
 		protected $blnEditMode;
 
 		// Controls that allow the editing of WikiVersion's individual data fields
+        /**
+         * @var QLabel lblId;
+         * @access protected
+         */
 		protected $lblId;
+
+        /**
+         * @var QListBox lstWikiItem;
+         * @access protected
+         */
 		protected $lstWikiItem;
+
+        /**
+         * @var QIntegerTextBox txtVersionNumber;
+         * @access protected
+         */
 		protected $txtVersionNumber;
+
+        /**
+         * @var QTextBox txtName;
+         * @access protected
+         */
 		protected $txtName;
+
+        /**
+         * @var QListBox lstPostedByPerson;
+         * @access protected
+         */
 		protected $lstPostedByPerson;
+
+        /**
+         * @var QDateTimePicker calPostDate;
+         * @access protected
+         */
 		protected $calPostDate;
 
+
 		// Controls that allow the viewing of WikiVersion's individual data fields
+        /**
+         * @var QLabel lblWikiItemId
+         * @access protected
+         */
 		protected $lblWikiItemId;
+
+        /**
+         * @var QLabel lblVersionNumber
+         * @access protected
+         */
 		protected $lblVersionNumber;
+
+        /**
+         * @var QLabel lblName
+         * @access protected
+         */
 		protected $lblName;
+
+        /**
+         * @var QLabel lblPostedByPersonId
+         * @access protected
+         */
 		protected $lblPostedByPersonId;
+
+        /**
+         * @var QLabel lblPostDate
+         * @access protected
+         */
 		protected $lblPostDate;
 
+
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
+        /**
+         * @var QListBox lstWikiFile
+         * @access protected
+         */
 		protected $lstWikiFile;
+
+        /**
+         * @var QListBox lstWikiImage
+         * @access protected
+         */
 		protected $lstWikiImage;
+
+        /**
+         * @var QListBox lstWikiItemAsCurrent
+         * @access protected
+         */
 		protected $lstWikiItemAsCurrent;
+
+        /**
+         * @var QListBox lstWikiPage
+         * @access protected
+         */
 		protected $lstWikiPage;
 
+
 		// QLabel Controls (if applicable) to view Unique ReverseReferences and ManyToMany References
+        /**
+         * @var QLabel lblWikiFile
+         * @access protected
+         */
 		protected $lblWikiFile;
+
+        /**
+         * @var QLabel lblWikiImage
+         * @access protected
+         */
 		protected $lblWikiImage;
+
+        /**
+         * @var QLabel lblWikiItemAsCurrent
+         * @access protected
+         */
 		protected $lblWikiItemAsCurrent;
+
+        /**
+         * @var QLabel lblWikiPage
+         * @access protected
+         */
 		protected $lblWikiPage;
+
 
 
 		/**

@@ -30,22 +30,81 @@
 
 	class WikiPageMetaControlGen extends QBaseClass {
 		// General Variables
+		/**
+		 * @var WikiPage objWikiPage
+		 * @access protected
+		 */
 		protected $objWikiPage;
+
+		/**
+		 * @var QForm|QControl objParentObject
+		 * @access protected
+		 */
 		protected $objParentObject;
+
+		/**
+		 * @var string  strTitleVerb
+		 * @access protected
+		 */
 		protected $strTitleVerb;
+
+		/**
+		 * @var boolean blnEditMode
+		 * @access protected
+		 */
 		protected $blnEditMode;
 
 		// Controls that allow the editing of WikiPage's individual data fields
+        /**
+         * @var QListBox lstWikiVersion;
+         * @access protected
+         */
 		protected $lstWikiVersion;
+
+        /**
+         * @var QTextBox txtContent;
+         * @access protected
+         */
 		protected $txtContent;
+
+        /**
+         * @var QTextBox txtCompiledHtml;
+         * @access protected
+         */
 		protected $txtCompiledHtml;
+
+        /**
+         * @var QIntegerTextBox txtViewCount;
+         * @access protected
+         */
 		protected $txtViewCount;
 
+
 		// Controls that allow the viewing of WikiPage's individual data fields
+        /**
+         * @var QLabel lblWikiVersionId
+         * @access protected
+         */
 		protected $lblWikiVersionId;
+
+        /**
+         * @var QLabel lblContent
+         * @access protected
+         */
 		protected $lblContent;
+
+        /**
+         * @var QLabel lblCompiledHtml
+         * @access protected
+         */
 		protected $lblCompiledHtml;
+
+        /**
+         * @var QLabel lblViewCount
+         * @access protected
+         */
 		protected $lblViewCount;
+
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
 

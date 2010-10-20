@@ -40,31 +40,135 @@
 
 	class EmailQueueMetaControlGen extends QBaseClass {
 		// General Variables
+		/**
+		 * @var EmailQueue objEmailQueue
+		 * @access protected
+		 */
 		protected $objEmailQueue;
+
+		/**
+		 * @var QForm|QControl objParentObject
+		 * @access protected
+		 */
 		protected $objParentObject;
+
+		/**
+		 * @var string  strTitleVerb
+		 * @access protected
+		 */
 		protected $strTitleVerb;
+
+		/**
+		 * @var boolean blnEditMode
+		 * @access protected
+		 */
 		protected $blnEditMode;
 
 		// Controls that allow the editing of EmailQueue's individual data fields
+        /**
+         * @var QLabel lblId;
+         * @access protected
+         */
 		protected $lblId;
+
+        /**
+         * @var QTextBox txtToAddress;
+         * @access protected
+         */
 		protected $txtToAddress;
+
+        /**
+         * @var QTextBox txtFromAddress;
+         * @access protected
+         */
 		protected $txtFromAddress;
+
+        /**
+         * @var QTextBox txtSubject;
+         * @access protected
+         */
 		protected $txtSubject;
+
+        /**
+         * @var QTextBox txtBody;
+         * @access protected
+         */
 		protected $txtBody;
+
+        /**
+         * @var QTextBox txtHtml;
+         * @access protected
+         */
 		protected $txtHtml;
+
+        /**
+         * @var QCheckBox chkHighPriorityFlag;
+         * @access protected
+         */
 		protected $chkHighPriorityFlag;
+
+        /**
+         * @var QCheckBox chkErrorFlag;
+         * @access protected
+         */
 		protected $chkErrorFlag;
+
+        /**
+         * @var QTextBox txtErrorMessage;
+         * @access protected
+         */
 		protected $txtErrorMessage;
 
+
 		// Controls that allow the viewing of EmailQueue's individual data fields
+        /**
+         * @var QLabel lblToAddress
+         * @access protected
+         */
 		protected $lblToAddress;
+
+        /**
+         * @var QLabel lblFromAddress
+         * @access protected
+         */
 		protected $lblFromAddress;
+
+        /**
+         * @var QLabel lblSubject
+         * @access protected
+         */
 		protected $lblSubject;
+
+        /**
+         * @var QLabel lblBody
+         * @access protected
+         */
 		protected $lblBody;
+
+        /**
+         * @var QLabel lblHtml
+         * @access protected
+         */
 		protected $lblHtml;
+
+        /**
+         * @var QLabel lblHighPriorityFlag
+         * @access protected
+         */
 		protected $lblHighPriorityFlag;
+
+        /**
+         * @var QLabel lblErrorFlag
+         * @access protected
+         */
 		protected $lblErrorFlag;
+
+        /**
+         * @var QLabel lblErrorMessage
+         * @access protected
+         */
 		protected $lblErrorMessage;
+
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
 

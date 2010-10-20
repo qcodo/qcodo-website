@@ -337,9 +337,31 @@
 				throw $objExc;
 			}
 
-			// Perform the Query, Get the First Row, and Instantiate a new WikiVersion object
+			// Perform the Query
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return WikiVersion::InstantiateDbRow($objDbResult->GetNextRow(), null, null, null, $objQueryBuilder->ColumnAliasArray);
+
+			// Instantiate a new WikiVersion object and return it
+
+			// Do we have to expand anything?
+			if ($objQueryBuilder->ExpandAsArrayNodes) {
+				$objToReturn = array();
+				while ($objDbRow = $objDbResult->GetNextRow()) {
+					$objItem = WikiVersion::InstantiateDbRow($objDbRow, null, $objQueryBuilder->ExpandAsArrayNodes, $objToReturn, $objQueryBuilder->ColumnAliasArray);
+					if ($objItem) $objToReturn[] = $objItem;
+				}
+
+				if (count($objToReturn)) {
+					// Since we only want the object to return, lets return the object and not the array.
+					return $objToReturn[0];
+				} else {
+					return null;
+				}
+			} else {
+				// No expands just return the first row
+				$objDbRow = $objDbResult->GetNextRow();
+				if (is_null($objDbRow)) return null;
+				return WikiVersion::InstantiateDbRow($objDbRow, null, null, null, $objQueryBuilder->ColumnAliasArray);
+			}
 		}
 
 		/**
@@ -783,9 +805,9 @@
 
 
 
-		//////////////////////////
-		// SAVE, DELETE AND RELOAD
-		//////////////////////////
+		//////////////////////////////////////
+		// SAVE, DELETE, RELOAD and JOURNALING
+		//////////////////////////////////////
 
 		/**
 		 * Save this WikiVersion
@@ -820,6 +842,10 @@
 
 					// Update Identity column and return its value
 					$mixToReturn = $this->intId = $objDatabase->InsertId('wiki_version', 'id');
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('INSERT');
+
 				} else {
 					// Perform an UPDATE query
 
@@ -838,6 +864,9 @@
 						WHERE
 							`id` = ' . $objDatabase->SqlVariable($this->intId) . '
 					');
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('UPDATE');
 				}
 
 		
@@ -988,6 +1017,9 @@
 					`wiki_version`
 				WHERE
 					`id` = ' . $objDatabase->SqlVariable($this->intId) . '');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) $this->Journal('DELETE');
 		}
 
 		/**
@@ -1036,6 +1068,64 @@
 			$this->PostedByPersonId = $objReloaded->PostedByPersonId;
 			$this->dttPostDate = $objReloaded->dttPostDate;
 		}
+
+		/**
+		 * Journals the current object into the Log database.
+		 * Used internally as a helper method.
+		 * @param string $strJournalCommand
+		 */
+		public function Journal($strJournalCommand) {
+			$objDatabase = WikiVersion::GetDatabase()->JournalingDatabase;
+
+			$objDatabase->NonQuery('
+				INSERT INTO `wiki_version` (
+					`id`,
+					`wiki_item_id`,
+					`version_number`,
+					`name`,
+					`posted_by_person_id`,
+					`post_date`,
+					__sys_login_id,
+					__sys_action,
+					__sys_date
+				) VALUES (
+					' . $objDatabase->SqlVariable($this->intId) . ',
+					' . $objDatabase->SqlVariable($this->intWikiItemId) . ',
+					' . $objDatabase->SqlVariable($this->intVersionNumber) . ',
+					' . $objDatabase->SqlVariable($this->strName) . ',
+					' . $objDatabase->SqlVariable($this->intPostedByPersonId) . ',
+					' . $objDatabase->SqlVariable($this->dttPostDate) . ',
+					' . (($objDatabase->JournaledById) ? $objDatabase->JournaledById : 'NULL') . ',
+					' . $objDatabase->SqlVariable($strJournalCommand) . ',
+					NOW()
+				);
+			');
+		}
+
+		/**
+		 * Gets the historical journal for an object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @param integer intId
+		 * @return WikiVersion[]
+		 */
+		public static function GetJournalForId($intId) {
+			$objDatabase = WikiVersion::GetDatabase()->JournalingDatabase;
+
+			$objResult = $objDatabase->Query('SELECT * FROM wiki_version WHERE id = ' .
+				$objDatabase->SqlVariable($intId) . ' ORDER BY __sys_date');
+
+			return WikiVersion::InstantiateDbResult($objResult);
+		}
+
+		/**
+		 * Gets the historical journal for this object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @return WikiVersion[]
+		 */
+		public function GetJournal() {
+			return WikiVersion::GetJournalForId($this->intId);
+		}
+
 
 
 
@@ -1610,6 +1700,20 @@
 	// ADDITIONAL CLASSES for QCODO QUERY
 	/////////////////////////////////////
 
+	/**
+	 * @property-read QQNode $Id
+	 * @property-read QQNode $WikiItemId
+	 * @property-read QQNodeWikiItem $WikiItem
+	 * @property-read QQNode $VersionNumber
+	 * @property-read QQNode $Name
+	 * @property-read QQNode $PostedByPersonId
+	 * @property-read QQNodePerson $PostedByPerson
+	 * @property-read QQNode $PostDate
+	 * @property-read QQReverseReferenceNodeWikiFile $WikiFile
+	 * @property-read QQReverseReferenceNodeWikiImage $WikiImage
+	 * @property-read QQReverseReferenceNodeWikiItem $WikiItemAsCurrent
+	 * @property-read QQReverseReferenceNodeWikiPage $WikiPage
+	 */
 	class QQNodeWikiVersion extends QQNode {
 		protected $strTableName = 'wiki_version';
 		protected $strPrimaryKey = 'id';
@@ -1653,7 +1757,22 @@
 			}
 		}
 	}
-
+	
+	/**
+	 * @property-read QQNode $Id
+	 * @property-read QQNode $WikiItemId
+	 * @property-read QQNodeWikiItem $WikiItem
+	 * @property-read QQNode $VersionNumber
+	 * @property-read QQNode $Name
+	 * @property-read QQNode $PostedByPersonId
+	 * @property-read QQNodePerson $PostedByPerson
+	 * @property-read QQNode $PostDate
+	 * @property-read QQReverseReferenceNodeWikiFile $WikiFile
+	 * @property-read QQReverseReferenceNodeWikiImage $WikiImage
+	 * @property-read QQReverseReferenceNodeWikiItem $WikiItemAsCurrent
+	 * @property-read QQReverseReferenceNodeWikiPage $WikiPage
+	 * @property-read QQNode $_PrimaryKeyNode
+	 */
 	class QQReverseReferenceNodeWikiVersion extends QQReverseReferenceNode {
 		protected $strTableName = 'wiki_version';
 		protected $strPrimaryKey = 'id';

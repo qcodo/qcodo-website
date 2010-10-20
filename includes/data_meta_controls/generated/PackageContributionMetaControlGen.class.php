@@ -34,25 +34,99 @@
 
 	class PackageContributionMetaControlGen extends QBaseClass {
 		// General Variables
+		/**
+		 * @var PackageContribution objPackageContribution
+		 * @access protected
+		 */
 		protected $objPackageContribution;
+
+		/**
+		 * @var QForm|QControl objParentObject
+		 * @access protected
+		 */
 		protected $objParentObject;
+
+		/**
+		 * @var string  strTitleVerb
+		 * @access protected
+		 */
 		protected $strTitleVerb;
+
+		/**
+		 * @var boolean blnEditMode
+		 * @access protected
+		 */
 		protected $blnEditMode;
 
 		// Controls that allow the editing of PackageContribution's individual data fields
+        /**
+         * @var QLabel lblId;
+         * @access protected
+         */
 		protected $lblId;
+
+        /**
+         * @var QListBox lstPackage;
+         * @access protected
+         */
 		protected $lstPackage;
+
+        /**
+         * @var QListBox lstPerson;
+         * @access protected
+         */
 		protected $lstPerson;
+
+        /**
+         * @var QListBox lstCurrentPackageVersion;
+         * @access protected
+         */
 		protected $lstCurrentPackageVersion;
+
+        /**
+         * @var QDateTimePicker calCurrentPostDate;
+         * @access protected
+         */
 		protected $calCurrentPostDate;
+
+        /**
+         * @var QIntegerTextBox txtDownloadCount;
+         * @access protected
+         */
 		protected $txtDownloadCount;
 
+
 		// Controls that allow the viewing of PackageContribution's individual data fields
+        /**
+         * @var QLabel lblPackageId
+         * @access protected
+         */
 		protected $lblPackageId;
+
+        /**
+         * @var QLabel lblPersonId
+         * @access protected
+         */
 		protected $lblPersonId;
+
+        /**
+         * @var QLabel lblCurrentPackageVersionId
+         * @access protected
+         */
 		protected $lblCurrentPackageVersionId;
+
+        /**
+         * @var QLabel lblCurrentPostDate
+         * @access protected
+         */
 		protected $lblCurrentPostDate;
+
+        /**
+         * @var QLabel lblDownloadCount
+         * @access protected
+         */
 		protected $lblDownloadCount;
+
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
 

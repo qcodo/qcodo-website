@@ -212,9 +212,31 @@
 				throw $objExc;
 			}
 
-			// Perform the Query, Get the First Row, and Instantiate a new Registry object
+			// Perform the Query
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return Registry::InstantiateDbRow($objDbResult->GetNextRow(), null, null, null, $objQueryBuilder->ColumnAliasArray);
+
+			// Instantiate a new Registry object and return it
+
+			// Do we have to expand anything?
+			if ($objQueryBuilder->ExpandAsArrayNodes) {
+				$objToReturn = array();
+				while ($objDbRow = $objDbResult->GetNextRow()) {
+					$objItem = Registry::InstantiateDbRow($objDbRow, null, $objQueryBuilder->ExpandAsArrayNodes, $objToReturn, $objQueryBuilder->ColumnAliasArray);
+					if ($objItem) $objToReturn[] = $objItem;
+				}
+
+				if (count($objToReturn)) {
+					// Since we only want the object to return, lets return the object and not the array.
+					return $objToReturn[0];
+				} else {
+					return null;
+				}
+			} else {
+				// No expands just return the first row
+				$objDbRow = $objDbResult->GetNextRow();
+				if (is_null($objDbRow)) return null;
+				return Registry::InstantiateDbRow($objDbRow, null, null, null, $objQueryBuilder->ColumnAliasArray);
+			}
 		}
 
 		/**
@@ -521,9 +543,9 @@
 
 
 
-		//////////////////////////
-		// SAVE, DELETE AND RELOAD
-		//////////////////////////
+		//////////////////////////////////////
+		// SAVE, DELETE, RELOAD and JOURNALING
+		//////////////////////////////////////
 
 		/**
 		 * Save this Registry
@@ -552,6 +574,10 @@
 
 					// Update Identity column and return its value
 					$mixToReturn = $this->intId = $objDatabase->InsertId('registry', 'id');
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('INSERT');
+
 				} else {
 					// Perform an UPDATE query
 
@@ -567,6 +593,9 @@
 						WHERE
 							`id` = ' . $objDatabase->SqlVariable($this->intId) . '
 					');
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('UPDATE');
 				}
 
 			} catch (QCallerException $objExc) {
@@ -600,6 +629,9 @@
 					`registry`
 				WHERE
 					`id` = ' . $objDatabase->SqlVariable($this->intId) . '');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) $this->Journal('DELETE');
 		}
 
 		/**
@@ -645,6 +677,58 @@
 			$this->strName = $objReloaded->strName;
 			$this->strValue = $objReloaded->strValue;
 		}
+
+		/**
+		 * Journals the current object into the Log database.
+		 * Used internally as a helper method.
+		 * @param string $strJournalCommand
+		 */
+		public function Journal($strJournalCommand) {
+			$objDatabase = Registry::GetDatabase()->JournalingDatabase;
+
+			$objDatabase->NonQuery('
+				INSERT INTO `registry` (
+					`id`,
+					`name`,
+					`value`,
+					__sys_login_id,
+					__sys_action,
+					__sys_date
+				) VALUES (
+					' . $objDatabase->SqlVariable($this->intId) . ',
+					' . $objDatabase->SqlVariable($this->strName) . ',
+					' . $objDatabase->SqlVariable($this->strValue) . ',
+					' . (($objDatabase->JournaledById) ? $objDatabase->JournaledById : 'NULL') . ',
+					' . $objDatabase->SqlVariable($strJournalCommand) . ',
+					NOW()
+				);
+			');
+		}
+
+		/**
+		 * Gets the historical journal for an object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @param integer intId
+		 * @return Registry[]
+		 */
+		public static function GetJournalForId($intId) {
+			$objDatabase = Registry::GetDatabase()->JournalingDatabase;
+
+			$objResult = $objDatabase->Query('SELECT * FROM registry WHERE id = ' .
+				$objDatabase->SqlVariable($intId) . ' ORDER BY __sys_date');
+
+			return Registry::InstantiateDbResult($objResult);
+		}
+
+		/**
+		 * Gets the historical journal for this object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @return Registry[]
+		 */
+		public function GetJournal() {
+			return Registry::GetJournalForId($this->intId);
+		}
+
 
 
 
@@ -842,6 +926,11 @@
 	// ADDITIONAL CLASSES for QCODO QUERY
 	/////////////////////////////////////
 
+	/**
+	 * @property-read QQNode $Id
+	 * @property-read QQNode $Name
+	 * @property-read QQNode $Value
+	 */
 	class QQNodeRegistry extends QQNode {
 		protected $strTableName = 'registry';
 		protected $strPrimaryKey = 'id';
@@ -867,7 +956,13 @@
 			}
 		}
 	}
-
+	
+	/**
+	 * @property-read QQNode $Id
+	 * @property-read QQNode $Name
+	 * @property-read QQNode $Value
+	 * @property-read QQNode $_PrimaryKeyNode
+	 */
 	class QQReverseReferenceNodeRegistry extends QQReverseReferenceNode {
 		protected $strTableName = 'registry';
 		protected $strPrimaryKey = 'id';

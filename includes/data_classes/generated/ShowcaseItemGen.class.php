@@ -260,9 +260,31 @@
 				throw $objExc;
 			}
 
-			// Perform the Query, Get the First Row, and Instantiate a new ShowcaseItem object
+			// Perform the Query
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return ShowcaseItem::InstantiateDbRow($objDbResult->GetNextRow(), null, null, null, $objQueryBuilder->ColumnAliasArray);
+
+			// Instantiate a new ShowcaseItem object and return it
+
+			// Do we have to expand anything?
+			if ($objQueryBuilder->ExpandAsArrayNodes) {
+				$objToReturn = array();
+				while ($objDbRow = $objDbResult->GetNextRow()) {
+					$objItem = ShowcaseItem::InstantiateDbRow($objDbRow, null, $objQueryBuilder->ExpandAsArrayNodes, $objToReturn, $objQueryBuilder->ColumnAliasArray);
+					if ($objItem) $objToReturn[] = $objItem;
+				}
+
+				if (count($objToReturn)) {
+					// Since we only want the object to return, lets return the object and not the array.
+					return $objToReturn[0];
+				} else {
+					return null;
+				}
+			} else {
+				// No expands just return the first row
+				$objDbRow = $objDbResult->GetNextRow();
+				if (is_null($objDbRow)) return null;
+				return ShowcaseItem::InstantiateDbRow($objDbRow, null, null, null, $objQueryBuilder->ColumnAliasArray);
+			}
 		}
 
 		/**
@@ -671,9 +693,9 @@
 
 
 
-		//////////////////////////
-		// SAVE, DELETE AND RELOAD
-		//////////////////////////
+		//////////////////////////////////////
+		// SAVE, DELETE, RELOAD and JOURNALING
+		//////////////////////////////////////
 
 		/**
 		 * Save this ShowcaseItem
@@ -710,6 +732,10 @@
 
 					// Update Identity column and return its value
 					$mixToReturn = $this->intId = $objDatabase->InsertId('showcase_item', 'id');
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('INSERT');
+
 				} else {
 					// Perform an UPDATE query
 
@@ -729,6 +755,9 @@
 						WHERE
 							`id` = ' . $objDatabase->SqlVariable($this->intId) . '
 					');
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('UPDATE');
 				}
 
 			} catch (QCallerException $objExc) {
@@ -762,6 +791,9 @@
 					`showcase_item`
 				WHERE
 					`id` = ' . $objDatabase->SqlVariable($this->intId) . '');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) $this->Journal('DELETE');
 		}
 
 		/**
@@ -811,6 +843,66 @@
 			$this->strUrl = $objReloaded->strUrl;
 			$this->blnLiveFlag = $objReloaded->blnLiveFlag;
 		}
+
+		/**
+		 * Journals the current object into the Log database.
+		 * Used internally as a helper method.
+		 * @param string $strJournalCommand
+		 */
+		public function Journal($strJournalCommand) {
+			$objDatabase = ShowcaseItem::GetDatabase()->JournalingDatabase;
+
+			$objDatabase->NonQuery('
+				INSERT INTO `showcase_item` (
+					`id`,
+					`image_file_type_id`,
+					`person_id`,
+					`name`,
+					`description`,
+					`url`,
+					`live_flag`,
+					__sys_login_id,
+					__sys_action,
+					__sys_date
+				) VALUES (
+					' . $objDatabase->SqlVariable($this->intId) . ',
+					' . $objDatabase->SqlVariable($this->intImageFileTypeId) . ',
+					' . $objDatabase->SqlVariable($this->intPersonId) . ',
+					' . $objDatabase->SqlVariable($this->strName) . ',
+					' . $objDatabase->SqlVariable($this->strDescription) . ',
+					' . $objDatabase->SqlVariable($this->strUrl) . ',
+					' . $objDatabase->SqlVariable($this->blnLiveFlag) . ',
+					' . (($objDatabase->JournaledById) ? $objDatabase->JournaledById : 'NULL') . ',
+					' . $objDatabase->SqlVariable($strJournalCommand) . ',
+					NOW()
+				);
+			');
+		}
+
+		/**
+		 * Gets the historical journal for an object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @param integer intId
+		 * @return ShowcaseItem[]
+		 */
+		public static function GetJournalForId($intId) {
+			$objDatabase = ShowcaseItem::GetDatabase()->JournalingDatabase;
+
+			$objResult = $objDatabase->Query('SELECT * FROM showcase_item WHERE id = ' .
+				$objDatabase->SqlVariable($intId) . ' ORDER BY __sys_date');
+
+			return ShowcaseItem::InstantiateDbResult($objResult);
+		}
+
+		/**
+		 * Gets the historical journal for this object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @return ShowcaseItem[]
+		 */
+		public function GetJournal() {
+			return ShowcaseItem::GetJournalForId($this->intId);
+		}
+
 
 
 
@@ -1133,6 +1225,16 @@
 	// ADDITIONAL CLASSES for QCODO QUERY
 	/////////////////////////////////////
 
+	/**
+	 * @property-read QQNode $Id
+	 * @property-read QQNode $ImageFileTypeId
+	 * @property-read QQNode $PersonId
+	 * @property-read QQNodePerson $Person
+	 * @property-read QQNode $Name
+	 * @property-read QQNode $Description
+	 * @property-read QQNode $Url
+	 * @property-read QQNode $LiveFlag
+	 */
 	class QQNodeShowcaseItem extends QQNode {
 		protected $strTableName = 'showcase_item';
 		protected $strPrimaryKey = 'id';
@@ -1168,7 +1270,18 @@
 			}
 		}
 	}
-
+	
+	/**
+	 * @property-read QQNode $Id
+	 * @property-read QQNode $ImageFileTypeId
+	 * @property-read QQNode $PersonId
+	 * @property-read QQNodePerson $Person
+	 * @property-read QQNode $Name
+	 * @property-read QQNode $Description
+	 * @property-read QQNode $Url
+	 * @property-read QQNode $LiveFlag
+	 * @property-read QQNode $_PrimaryKeyNode
+	 */
 	class QQReverseReferenceNodeShowcaseItem extends QQReverseReferenceNode {
 		protected $strTableName = 'showcase_item';
 		protected $strPrimaryKey = 'id';

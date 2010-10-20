@@ -342,9 +342,31 @@
 				throw $objExc;
 			}
 
-			// Perform the Query, Get the First Row, and Instantiate a new Topic object
+			// Perform the Query
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return Topic::InstantiateDbRow($objDbResult->GetNextRow(), null, null, null, $objQueryBuilder->ColumnAliasArray);
+
+			// Instantiate a new Topic object and return it
+
+			// Do we have to expand anything?
+			if ($objQueryBuilder->ExpandAsArrayNodes) {
+				$objToReturn = array();
+				while ($objDbRow = $objDbResult->GetNextRow()) {
+					$objItem = Topic::InstantiateDbRow($objDbRow, null, $objQueryBuilder->ExpandAsArrayNodes, $objToReturn, $objQueryBuilder->ColumnAliasArray);
+					if ($objItem) $objToReturn[] = $objItem;
+				}
+
+				if (count($objToReturn)) {
+					// Since we only want the object to return, lets return the object and not the array.
+					return $objToReturn[0];
+				} else {
+					return null;
+				}
+			} else {
+				// No expands just return the first row
+				$objDbRow = $objDbResult->GetNextRow();
+				if (is_null($objDbRow)) return null;
+				return Topic::InstantiateDbRow($objDbRow, null, null, null, $objQueryBuilder->ColumnAliasArray);
+			}
 		}
 
 		/**
@@ -934,9 +956,9 @@
 
 
 
-		//////////////////////////
-		// SAVE, DELETE AND RELOAD
-		//////////////////////////
+		//////////////////////////////////////
+		// SAVE, DELETE, RELOAD and JOURNALING
+		//////////////////////////////////////
 
 		/**
 		 * Save this Topic
@@ -973,6 +995,10 @@
 
 					// Update Identity column and return its value
 					$mixToReturn = $this->intId = $objDatabase->InsertId('topic', 'id');
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('INSERT');
+
 				} else {
 					// Perform an UPDATE query
 
@@ -992,6 +1018,9 @@
 						WHERE
 							`id` = ' . $objDatabase->SqlVariable($this->intId) . '
 					');
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('UPDATE');
 				}
 
 			} catch (QCallerException $objExc) {
@@ -1025,6 +1054,9 @@
 					`topic`
 				WHERE
 					`id` = ' . $objDatabase->SqlVariable($this->intId) . '');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) $this->Journal('DELETE');
 		}
 
 		/**
@@ -1074,6 +1106,66 @@
 			$this->intMessageCount = $objReloaded->intMessageCount;
 			$this->intViewCount = $objReloaded->intViewCount;
 		}
+
+		/**
+		 * Journals the current object into the Log database.
+		 * Used internally as a helper method.
+		 * @param string $strJournalCommand
+		 */
+		public function Journal($strJournalCommand) {
+			$objDatabase = Topic::GetDatabase()->JournalingDatabase;
+
+			$objDatabase->NonQuery('
+				INSERT INTO `topic` (
+					`id`,
+					`topic_link_id`,
+					`name`,
+					`person_id`,
+					`last_post_date`,
+					`message_count`,
+					`view_count`,
+					__sys_login_id,
+					__sys_action,
+					__sys_date
+				) VALUES (
+					' . $objDatabase->SqlVariable($this->intId) . ',
+					' . $objDatabase->SqlVariable($this->intTopicLinkId) . ',
+					' . $objDatabase->SqlVariable($this->strName) . ',
+					' . $objDatabase->SqlVariable($this->intPersonId) . ',
+					' . $objDatabase->SqlVariable($this->dttLastPostDate) . ',
+					' . $objDatabase->SqlVariable($this->intMessageCount) . ',
+					' . $objDatabase->SqlVariable($this->intViewCount) . ',
+					' . (($objDatabase->JournaledById) ? $objDatabase->JournaledById : 'NULL') . ',
+					' . $objDatabase->SqlVariable($strJournalCommand) . ',
+					NOW()
+				);
+			');
+		}
+
+		/**
+		 * Gets the historical journal for an object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @param integer intId
+		 * @return Topic[]
+		 */
+		public static function GetJournalForId($intId) {
+			$objDatabase = Topic::GetDatabase()->JournalingDatabase;
+
+			$objResult = $objDatabase->Query('SELECT * FROM topic WHERE id = ' .
+				$objDatabase->SqlVariable($intId) . ' ORDER BY __sys_date');
+
+			return Topic::InstantiateDbResult($objResult);
+		}
+
+		/**
+		 * Gets the historical journal for this object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @return Topic[]
+		 */
+		public function GetJournal() {
+			return Topic::GetJournalForId($this->intId);
+		}
+
 
 
 
@@ -1452,6 +1544,12 @@
 				WHERE
 					`id` = ' . $objDatabase->SqlVariable($objMessage->Id) . '
 			');
+
+			// Journaling (if applicable)
+			if ($objDatabase->JournalingDatabase) {
+				$objMessage->TopicId = $this->intId;
+				$objMessage->Journal('UPDATE');
+			}
 		}
 
 		/**
@@ -1478,6 +1576,12 @@
 					`id` = ' . $objDatabase->SqlVariable($objMessage->Id) . ' AND
 					`topic_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 			');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				$objMessage->TopicId = null;
+				$objMessage->Journal('UPDATE');
+			}
 		}
 
 		/**
@@ -1490,6 +1594,14 @@
 
 			// Get the Database Object for this Class
 			$objDatabase = Topic::GetDatabase();
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				foreach (Message::LoadArrayByTopicId($this->intId) as $objMessage) {
+					$objMessage->TopicId = null;
+					$objMessage->Journal('UPDATE');
+				}
+			}
 
 			// Perform the SQL Query
 			$objDatabase->NonQuery('
@@ -1524,6 +1636,11 @@
 					`id` = ' . $objDatabase->SqlVariable($objMessage->Id) . ' AND
 					`topic_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 			');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				$objMessage->Journal('DELETE');
+			}
 		}
 
 		/**
@@ -1536,6 +1653,13 @@
 
 			// Get the Database Object for this Class
 			$objDatabase = Topic::GetDatabase();
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				foreach (Message::LoadArrayByTopicId($this->intId) as $objMessage) {
+					$objMessage->Journal('DELETE');
+				}
+			}
 
 			// Perform the SQL Query
 			$objDatabase->NonQuery('
@@ -1600,6 +1724,51 @@
 		}
 
 		/**
+		 * Journals the PersonAsEmail relationship into the Log database.
+		 * Used internally as a helper method.
+		 * @param string $strJournalCommand
+		 */
+		public function JournalPersonAsEmailAssociation($intAssociatedId, $strJournalCommand) {
+			$objDatabase = Topic::GetDatabase()->JournalingDatabase;
+
+			$objDatabase->NonQuery('
+				INSERT INTO `email_topic_person_assn` (
+					`topic_id`,
+					`person_id`,
+					__sys_login_id,
+					__sys_action,
+					__sys_date
+				) VALUES (
+					' . $objDatabase->SqlVariable($this->intId) . ',
+					' . $objDatabase->SqlVariable($intAssociatedId) . ',
+					' . (($objDatabase->JournaledById) ? $objDatabase->JournaledById : 'NULL') . ',
+					' . $objDatabase->SqlVariable($strJournalCommand) . ',
+					NOW()
+				);
+			');
+		}
+
+		/**
+		 * Gets the historical journal for an object's PersonAsEmail relationship from the log database.
+		 * @param integer intId
+		 * @return QDatabaseResult $objResult
+		 */
+		public static function GetJournalPersonAsEmailAssociationForId($intId) {
+			$objDatabase = Topic::GetDatabase()->JournalingDatabase;
+
+			return $objDatabase->Query('SELECT * FROM email_topic_person_assn WHERE topic_id = ' .
+				$objDatabase->SqlVariable($intId) . ' ORDER BY __sys_date');
+		}
+
+		/**
+		 * Gets the historical journal for this object's PersonAsEmail relationship from the log database.
+		 * @return QDatabaseResult $objResult
+		 */
+		public function GetJournalPersonAsEmailAssociation() {
+			return Topic::GetJournalPersonAsEmailAssociationForId($this->intId);
+		}
+
+		/**
 		 * Associates a PersonAsEmail
 		 * @param Person $objPerson
 		 * @return void
@@ -1623,6 +1792,10 @@
 					' . $objDatabase->SqlVariable($objPerson->Id) . '
 				)
 			');
+
+			// Journaling (if applicable)
+			if ($objDatabase->JournalingDatabase)
+				$this->JournalPersonAsEmailAssociation($objPerson->Id, 'INSERT');
 		}
 
 		/**
@@ -1647,6 +1820,10 @@
 					`topic_id` = ' . $objDatabase->SqlVariable($this->intId) . ' AND
 					`person_id` = ' . $objDatabase->SqlVariable($objPerson->Id) . '
 			');
+
+			// Journaling (if applicable)
+			if ($objDatabase->JournalingDatabase)
+				$this->JournalPersonAsEmailAssociation($objPerson->Id, 'DELETE');
 		}
 
 		/**
@@ -1659,6 +1836,14 @@
 
 			// Get the Database Object for this Class
 			$objDatabase = Topic::GetDatabase();
+
+			// Journaling (if applicable)
+			if ($objDatabase->JournalingDatabase) {
+				$objResult = $objDatabase->Query('SELECT `person_id` AS associated_id FROM `email_topic_person_assn` WHERE `topic_id` = ' . $objDatabase->SqlVariable($this->intId));
+				while ($objRow = $objResult->GetNextRow()) {
+					$this->JournalPersonAsEmailAssociation($objRow->GetColumn('associated_id'), 'DELETE');
+				}
+			}
 
 			// Perform the SQL Query
 			$objDatabase->NonQuery('
@@ -1722,6 +1907,51 @@
 		}
 
 		/**
+		 * Journals the PersonAsReadOnce relationship into the Log database.
+		 * Used internally as a helper method.
+		 * @param string $strJournalCommand
+		 */
+		public function JournalPersonAsReadOnceAssociation($intAssociatedId, $strJournalCommand) {
+			$objDatabase = Topic::GetDatabase()->JournalingDatabase;
+
+			$objDatabase->NonQuery('
+				INSERT INTO `read_once_topic_person_assn` (
+					`topic_id`,
+					`person_id`,
+					__sys_login_id,
+					__sys_action,
+					__sys_date
+				) VALUES (
+					' . $objDatabase->SqlVariable($this->intId) . ',
+					' . $objDatabase->SqlVariable($intAssociatedId) . ',
+					' . (($objDatabase->JournaledById) ? $objDatabase->JournaledById : 'NULL') . ',
+					' . $objDatabase->SqlVariable($strJournalCommand) . ',
+					NOW()
+				);
+			');
+		}
+
+		/**
+		 * Gets the historical journal for an object's PersonAsReadOnce relationship from the log database.
+		 * @param integer intId
+		 * @return QDatabaseResult $objResult
+		 */
+		public static function GetJournalPersonAsReadOnceAssociationForId($intId) {
+			$objDatabase = Topic::GetDatabase()->JournalingDatabase;
+
+			return $objDatabase->Query('SELECT * FROM read_once_topic_person_assn WHERE topic_id = ' .
+				$objDatabase->SqlVariable($intId) . ' ORDER BY __sys_date');
+		}
+
+		/**
+		 * Gets the historical journal for this object's PersonAsReadOnce relationship from the log database.
+		 * @return QDatabaseResult $objResult
+		 */
+		public function GetJournalPersonAsReadOnceAssociation() {
+			return Topic::GetJournalPersonAsReadOnceAssociationForId($this->intId);
+		}
+
+		/**
 		 * Associates a PersonAsReadOnce
 		 * @param Person $objPerson
 		 * @return void
@@ -1745,6 +1975,10 @@
 					' . $objDatabase->SqlVariable($objPerson->Id) . '
 				)
 			');
+
+			// Journaling (if applicable)
+			if ($objDatabase->JournalingDatabase)
+				$this->JournalPersonAsReadOnceAssociation($objPerson->Id, 'INSERT');
 		}
 
 		/**
@@ -1769,6 +2003,10 @@
 					`topic_id` = ' . $objDatabase->SqlVariable($this->intId) . ' AND
 					`person_id` = ' . $objDatabase->SqlVariable($objPerson->Id) . '
 			');
+
+			// Journaling (if applicable)
+			if ($objDatabase->JournalingDatabase)
+				$this->JournalPersonAsReadOnceAssociation($objPerson->Id, 'DELETE');
 		}
 
 		/**
@@ -1781,6 +2019,14 @@
 
 			// Get the Database Object for this Class
 			$objDatabase = Topic::GetDatabase();
+
+			// Journaling (if applicable)
+			if ($objDatabase->JournalingDatabase) {
+				$objResult = $objDatabase->Query('SELECT `person_id` AS associated_id FROM `read_once_topic_person_assn` WHERE `topic_id` = ' . $objDatabase->SqlVariable($this->intId));
+				while ($objRow = $objResult->GetNextRow()) {
+					$this->JournalPersonAsReadOnceAssociation($objRow->GetColumn('associated_id'), 'DELETE');
+				}
+			}
 
 			// Perform the SQL Query
 			$objDatabase->NonQuery('
@@ -1844,6 +2090,51 @@
 		}
 
 		/**
+		 * Journals the PersonAsRead relationship into the Log database.
+		 * Used internally as a helper method.
+		 * @param string $strJournalCommand
+		 */
+		public function JournalPersonAsReadAssociation($intAssociatedId, $strJournalCommand) {
+			$objDatabase = Topic::GetDatabase()->JournalingDatabase;
+
+			$objDatabase->NonQuery('
+				INSERT INTO `read_topic_person_assn` (
+					`topic_id`,
+					`person_id`,
+					__sys_login_id,
+					__sys_action,
+					__sys_date
+				) VALUES (
+					' . $objDatabase->SqlVariable($this->intId) . ',
+					' . $objDatabase->SqlVariable($intAssociatedId) . ',
+					' . (($objDatabase->JournaledById) ? $objDatabase->JournaledById : 'NULL') . ',
+					' . $objDatabase->SqlVariable($strJournalCommand) . ',
+					NOW()
+				);
+			');
+		}
+
+		/**
+		 * Gets the historical journal for an object's PersonAsRead relationship from the log database.
+		 * @param integer intId
+		 * @return QDatabaseResult $objResult
+		 */
+		public static function GetJournalPersonAsReadAssociationForId($intId) {
+			$objDatabase = Topic::GetDatabase()->JournalingDatabase;
+
+			return $objDatabase->Query('SELECT * FROM read_topic_person_assn WHERE topic_id = ' .
+				$objDatabase->SqlVariable($intId) . ' ORDER BY __sys_date');
+		}
+
+		/**
+		 * Gets the historical journal for this object's PersonAsRead relationship from the log database.
+		 * @return QDatabaseResult $objResult
+		 */
+		public function GetJournalPersonAsReadAssociation() {
+			return Topic::GetJournalPersonAsReadAssociationForId($this->intId);
+		}
+
+		/**
 		 * Associates a PersonAsRead
 		 * @param Person $objPerson
 		 * @return void
@@ -1867,6 +2158,10 @@
 					' . $objDatabase->SqlVariable($objPerson->Id) . '
 				)
 			');
+
+			// Journaling (if applicable)
+			if ($objDatabase->JournalingDatabase)
+				$this->JournalPersonAsReadAssociation($objPerson->Id, 'INSERT');
 		}
 
 		/**
@@ -1891,6 +2186,10 @@
 					`topic_id` = ' . $objDatabase->SqlVariable($this->intId) . ' AND
 					`person_id` = ' . $objDatabase->SqlVariable($objPerson->Id) . '
 			');
+
+			// Journaling (if applicable)
+			if ($objDatabase->JournalingDatabase)
+				$this->JournalPersonAsReadAssociation($objPerson->Id, 'DELETE');
 		}
 
 		/**
@@ -1903,6 +2202,14 @@
 
 			// Get the Database Object for this Class
 			$objDatabase = Topic::GetDatabase();
+
+			// Journaling (if applicable)
+			if ($objDatabase->JournalingDatabase) {
+				$objResult = $objDatabase->Query('SELECT `person_id` AS associated_id FROM `read_topic_person_assn` WHERE `topic_id` = ' . $objDatabase->SqlVariable($this->intId));
+				while ($objRow = $objResult->GetNextRow()) {
+					$this->JournalPersonAsReadAssociation($objRow->GetColumn('associated_id'), 'DELETE');
+				}
+			}
 
 			// Perform the SQL Query
 			$objDatabase->NonQuery('
@@ -2011,6 +2318,11 @@
 	// ADDITIONAL CLASSES for QCODO QUERY
 	/////////////////////////////////////
 
+	/**
+	 * @property-read QQNode $PersonId
+	 * @property-read QQNodePerson $Person
+	 * @property-read QQNodePerson $_ChildTableNode
+	 */
 	class QQNodeTopicPersonAsEmail extends QQAssociationNode {
 		protected $strType = 'association';
 		protected $strName = 'personasemail';
@@ -2038,6 +2350,11 @@
 		}
 	}
 
+	/**
+	 * @property-read QQNode $PersonId
+	 * @property-read QQNodePerson $Person
+	 * @property-read QQNodePerson $_ChildTableNode
+	 */
 	class QQNodeTopicPersonAsReadOnce extends QQAssociationNode {
 		protected $strType = 'association';
 		protected $strName = 'personasreadonce';
@@ -2065,6 +2382,11 @@
 		}
 	}
 
+	/**
+	 * @property-read QQNode $PersonId
+	 * @property-read QQNodePerson $Person
+	 * @property-read QQNodePerson $_ChildTableNode
+	 */
 	class QQNodeTopicPersonAsRead extends QQAssociationNode {
 		protected $strType = 'association';
 		protected $strName = 'personasread';
@@ -2092,6 +2414,21 @@
 		}
 	}
 
+	/**
+	 * @property-read QQNode $Id
+	 * @property-read QQNode $TopicLinkId
+	 * @property-read QQNodeTopicLink $TopicLink
+	 * @property-read QQNode $Name
+	 * @property-read QQNode $PersonId
+	 * @property-read QQNodePerson $Person
+	 * @property-read QQNode $LastPostDate
+	 * @property-read QQNode $MessageCount
+	 * @property-read QQNode $ViewCount
+	 * @property-read QQNodeTopicPersonAsEmail $PersonAsEmail
+	 * @property-read QQNodeTopicPersonAsReadOnce $PersonAsReadOnce
+	 * @property-read QQNodeTopicPersonAsRead $PersonAsRead
+	 * @property-read QQReverseReferenceNodeMessage $Message
+	 */
 	class QQNodeTopic extends QQNode {
 		protected $strTableName = 'topic';
 		protected $strPrimaryKey = 'id';
@@ -2137,7 +2474,23 @@
 			}
 		}
 	}
-
+	
+	/**
+	 * @property-read QQNode $Id
+	 * @property-read QQNode $TopicLinkId
+	 * @property-read QQNodeTopicLink $TopicLink
+	 * @property-read QQNode $Name
+	 * @property-read QQNode $PersonId
+	 * @property-read QQNodePerson $Person
+	 * @property-read QQNode $LastPostDate
+	 * @property-read QQNode $MessageCount
+	 * @property-read QQNode $ViewCount
+	 * @property-read QQNodeTopicPersonAsEmail $PersonAsEmail
+	 * @property-read QQNodeTopicPersonAsReadOnce $PersonAsReadOnce
+	 * @property-read QQNodeTopicPersonAsRead $PersonAsRead
+	 * @property-read QQReverseReferenceNodeMessage $Message
+	 * @property-read QQNode $_PrimaryKeyNode
+	 */
 	class QQReverseReferenceNodeTopic extends QQReverseReferenceNode {
 		protected $strTableName = 'topic';
 		protected $strPrimaryKey = 'id';

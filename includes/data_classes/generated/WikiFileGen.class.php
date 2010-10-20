@@ -258,9 +258,31 @@
 				throw $objExc;
 			}
 
-			// Perform the Query, Get the First Row, and Instantiate a new WikiFile object
+			// Perform the Query
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return WikiFile::InstantiateDbRow($objDbResult->GetNextRow(), null, null, null, $objQueryBuilder->ColumnAliasArray);
+
+			// Instantiate a new WikiFile object and return it
+
+			// Do we have to expand anything?
+			if ($objQueryBuilder->ExpandAsArrayNodes) {
+				$objToReturn = array();
+				while ($objDbRow = $objDbResult->GetNextRow()) {
+					$objItem = WikiFile::InstantiateDbRow($objDbRow, null, $objQueryBuilder->ExpandAsArrayNodes, $objToReturn, $objQueryBuilder->ColumnAliasArray);
+					if ($objItem) $objToReturn[] = $objItem;
+				}
+
+				if (count($objToReturn)) {
+					// Since we only want the object to return, lets return the object and not the array.
+					return $objToReturn[0];
+				} else {
+					return null;
+				}
+			} else {
+				// No expands just return the first row
+				$objDbRow = $objDbResult->GetNextRow();
+				if (is_null($objDbRow)) return null;
+				return WikiFile::InstantiateDbRow($objDbRow, null, null, null, $objQueryBuilder->ColumnAliasArray);
+			}
 		}
 
 		/**
@@ -571,9 +593,9 @@
 
 
 
-		//////////////////////////
-		// SAVE, DELETE AND RELOAD
-		//////////////////////////
+		//////////////////////////////////////
+		// SAVE, DELETE, RELOAD and JOURNALING
+		//////////////////////////////////////
 
 		/**
 		 * Save this WikiFile
@@ -609,6 +631,10 @@
 					');
 
 
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('INSERT');
+
 				} else {
 					// Perform an UPDATE query
 
@@ -628,6 +654,9 @@
 						WHERE
 							`wiki_version_id` = ' . $objDatabase->SqlVariable($this->__intWikiVersionId) . '
 					');
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('UPDATE');
 				}
 
 			} catch (QCallerException $objExc) {
@@ -662,6 +691,9 @@
 					`wiki_file`
 				WHERE
 					`wiki_version_id` = ' . $objDatabase->SqlVariable($this->intWikiVersionId) . '');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) $this->Journal('DELETE');
 		}
 
 		/**
@@ -712,6 +744,64 @@
 			$this->strDescription = $objReloaded->strDescription;
 			$this->intDownloadCount = $objReloaded->intDownloadCount;
 		}
+
+		/**
+		 * Journals the current object into the Log database.
+		 * Used internally as a helper method.
+		 * @param string $strJournalCommand
+		 */
+		public function Journal($strJournalCommand) {
+			$objDatabase = WikiFile::GetDatabase()->JournalingDatabase;
+
+			$objDatabase->NonQuery('
+				INSERT INTO `wiki_file` (
+					`wiki_version_id`,
+					`file_name`,
+					`file_size`,
+					`file_mime`,
+					`description`,
+					`download_count`,
+					__sys_login_id,
+					__sys_action,
+					__sys_date
+				) VALUES (
+					' . $objDatabase->SqlVariable($this->intWikiVersionId) . ',
+					' . $objDatabase->SqlVariable($this->strFileName) . ',
+					' . $objDatabase->SqlVariable($this->intFileSize) . ',
+					' . $objDatabase->SqlVariable($this->strFileMime) . ',
+					' . $objDatabase->SqlVariable($this->strDescription) . ',
+					' . $objDatabase->SqlVariable($this->intDownloadCount) . ',
+					' . (($objDatabase->JournaledById) ? $objDatabase->JournaledById : 'NULL') . ',
+					' . $objDatabase->SqlVariable($strJournalCommand) . ',
+					NOW()
+				);
+			');
+		}
+
+		/**
+		 * Gets the historical journal for an object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @param integer intWikiVersionId
+		 * @return WikiFile[]
+		 */
+		public static function GetJournalForId($intWikiVersionId) {
+			$objDatabase = WikiFile::GetDatabase()->JournalingDatabase;
+
+			$objResult = $objDatabase->Query('SELECT * FROM wiki_file WHERE wiki_version_id = ' .
+				$objDatabase->SqlVariable($intWikiVersionId) . ' ORDER BY __sys_date');
+
+			return WikiFile::InstantiateDbResult($objResult);
+		}
+
+		/**
+		 * Gets the historical journal for this object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @return WikiFile[]
+		 */
+		public function GetJournal() {
+			return WikiFile::GetJournalForId($this->intWikiVersionId);
+		}
+
 
 
 
@@ -1026,6 +1116,15 @@
 	// ADDITIONAL CLASSES for QCODO QUERY
 	/////////////////////////////////////
 
+	/**
+	 * @property-read QQNode $WikiVersionId
+	 * @property-read QQNodeWikiVersion $WikiVersion
+	 * @property-read QQNode $FileName
+	 * @property-read QQNode $FileSize
+	 * @property-read QQNode $FileMime
+	 * @property-read QQNode $Description
+	 * @property-read QQNode $DownloadCount
+	 */
 	class QQNodeWikiFile extends QQNode {
 		protected $strTableName = 'wiki_file';
 		protected $strPrimaryKey = 'wiki_version_id';
@@ -1059,7 +1158,17 @@
 			}
 		}
 	}
-
+	
+	/**
+	 * @property-read QQNode $WikiVersionId
+	 * @property-read QQNodeWikiVersion $WikiVersion
+	 * @property-read QQNode $FileName
+	 * @property-read QQNode $FileSize
+	 * @property-read QQNode $FileMime
+	 * @property-read QQNode $Description
+	 * @property-read QQNode $DownloadCount
+	 * @property-read QQNodeWikiVersion $_PrimaryKeyNode
+	 */
 	class QQReverseReferenceNodeWikiFile extends QQReverseReferenceNode {
 		protected $strTableName = 'wiki_file';
 		protected $strPrimaryKey = 'wiki_version_id';

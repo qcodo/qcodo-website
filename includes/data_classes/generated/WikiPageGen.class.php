@@ -238,9 +238,31 @@
 				throw $objExc;
 			}
 
-			// Perform the Query, Get the First Row, and Instantiate a new WikiPage object
+			// Perform the Query
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return WikiPage::InstantiateDbRow($objDbResult->GetNextRow(), null, null, null, $objQueryBuilder->ColumnAliasArray);
+
+			// Instantiate a new WikiPage object and return it
+
+			// Do we have to expand anything?
+			if ($objQueryBuilder->ExpandAsArrayNodes) {
+				$objToReturn = array();
+				while ($objDbRow = $objDbResult->GetNextRow()) {
+					$objItem = WikiPage::InstantiateDbRow($objDbRow, null, $objQueryBuilder->ExpandAsArrayNodes, $objToReturn, $objQueryBuilder->ColumnAliasArray);
+					if ($objItem) $objToReturn[] = $objItem;
+				}
+
+				if (count($objToReturn)) {
+					// Since we only want the object to return, lets return the object and not the array.
+					return $objToReturn[0];
+				} else {
+					return null;
+				}
+			} else {
+				// No expands just return the first row
+				$objDbRow = $objDbResult->GetNextRow();
+				if (is_null($objDbRow)) return null;
+				return WikiPage::InstantiateDbRow($objDbRow, null, null, null, $objQueryBuilder->ColumnAliasArray);
+			}
 		}
 
 		/**
@@ -545,9 +567,9 @@
 
 
 
-		//////////////////////////
-		// SAVE, DELETE AND RELOAD
-		//////////////////////////
+		//////////////////////////////////////
+		// SAVE, DELETE, RELOAD and JOURNALING
+		//////////////////////////////////////
 
 		/**
 		 * Save this WikiPage
@@ -579,6 +601,10 @@
 					');
 
 
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('INSERT');
+
 				} else {
 					// Perform an UPDATE query
 
@@ -596,6 +622,9 @@
 						WHERE
 							`wiki_version_id` = ' . $objDatabase->SqlVariable($this->__intWikiVersionId) . '
 					');
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('UPDATE');
 				}
 
 			} catch (QCallerException $objExc) {
@@ -630,6 +659,9 @@
 					`wiki_page`
 				WHERE
 					`wiki_version_id` = ' . $objDatabase->SqlVariable($this->intWikiVersionId) . '');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) $this->Journal('DELETE');
 		}
 
 		/**
@@ -678,6 +710,60 @@
 			$this->strCompiledHtml = $objReloaded->strCompiledHtml;
 			$this->intViewCount = $objReloaded->intViewCount;
 		}
+
+		/**
+		 * Journals the current object into the Log database.
+		 * Used internally as a helper method.
+		 * @param string $strJournalCommand
+		 */
+		public function Journal($strJournalCommand) {
+			$objDatabase = WikiPage::GetDatabase()->JournalingDatabase;
+
+			$objDatabase->NonQuery('
+				INSERT INTO `wiki_page` (
+					`wiki_version_id`,
+					`content`,
+					`compiled_html`,
+					`view_count`,
+					__sys_login_id,
+					__sys_action,
+					__sys_date
+				) VALUES (
+					' . $objDatabase->SqlVariable($this->intWikiVersionId) . ',
+					' . $objDatabase->SqlVariable($this->strContent) . ',
+					' . $objDatabase->SqlVariable($this->strCompiledHtml) . ',
+					' . $objDatabase->SqlVariable($this->intViewCount) . ',
+					' . (($objDatabase->JournaledById) ? $objDatabase->JournaledById : 'NULL') . ',
+					' . $objDatabase->SqlVariable($strJournalCommand) . ',
+					NOW()
+				);
+			');
+		}
+
+		/**
+		 * Gets the historical journal for an object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @param integer intWikiVersionId
+		 * @return WikiPage[]
+		 */
+		public static function GetJournalForId($intWikiVersionId) {
+			$objDatabase = WikiPage::GetDatabase()->JournalingDatabase;
+
+			$objResult = $objDatabase->Query('SELECT * FROM wiki_page WHERE wiki_version_id = ' .
+				$objDatabase->SqlVariable($intWikiVersionId) . ' ORDER BY __sys_date');
+
+			return WikiPage::InstantiateDbResult($objResult);
+		}
+
+		/**
+		 * Gets the historical journal for this object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @return WikiPage[]
+		 */
+		public function GetJournal() {
+			return WikiPage::GetJournalForId($this->intWikiVersionId);
+		}
+
 
 
 
@@ -954,6 +1040,13 @@
 	// ADDITIONAL CLASSES for QCODO QUERY
 	/////////////////////////////////////
 
+	/**
+	 * @property-read QQNode $WikiVersionId
+	 * @property-read QQNodeWikiVersion $WikiVersion
+	 * @property-read QQNode $Content
+	 * @property-read QQNode $CompiledHtml
+	 * @property-read QQNode $ViewCount
+	 */
 	class QQNodeWikiPage extends QQNode {
 		protected $strTableName = 'wiki_page';
 		protected $strPrimaryKey = 'wiki_version_id';
@@ -983,7 +1076,15 @@
 			}
 		}
 	}
-
+	
+	/**
+	 * @property-read QQNode $WikiVersionId
+	 * @property-read QQNodeWikiVersion $WikiVersion
+	 * @property-read QQNode $Content
+	 * @property-read QQNode $CompiledHtml
+	 * @property-read QQNode $ViewCount
+	 * @property-read QQNodeWikiVersion $_PrimaryKeyNode
+	 */
 	class QQReverseReferenceNodeWikiPage extends QQReverseReferenceNode {
 		protected $strTableName = 'wiki_page';
 		protected $strPrimaryKey = 'wiki_version_id';

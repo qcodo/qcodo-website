@@ -42,37 +42,127 @@
 
 	class TopicMetaControlGen extends QBaseClass {
 		// General Variables
+		/**
+		 * @var Topic objTopic
+		 * @access protected
+		 */
 		protected $objTopic;
+
+		/**
+		 * @var QForm|QControl objParentObject
+		 * @access protected
+		 */
 		protected $objParentObject;
+
+		/**
+		 * @var string  strTitleVerb
+		 * @access protected
+		 */
 		protected $strTitleVerb;
+
+		/**
+		 * @var boolean blnEditMode
+		 * @access protected
+		 */
 		protected $blnEditMode;
 
 		// Controls that allow the editing of Topic's individual data fields
+        /**
+         * @var QLabel lblId;
+         * @access protected
+         */
 		protected $lblId;
+
+        /**
+         * @var QListBox lstTopicLink;
+         * @access protected
+         */
 		protected $lstTopicLink;
+
+        /**
+         * @var QTextBox txtName;
+         * @access protected
+         */
 		protected $txtName;
+
+        /**
+         * @var QListBox lstPerson;
+         * @access protected
+         */
 		protected $lstPerson;
+
+        /**
+         * @var QDateTimePicker calLastPostDate;
+         * @access protected
+         */
 		protected $calLastPostDate;
+
+        /**
+         * @var QIntegerTextBox txtMessageCount;
+         * @access protected
+         */
 		protected $txtMessageCount;
+
+        /**
+         * @var QIntegerTextBox txtViewCount;
+         * @access protected
+         */
 		protected $txtViewCount;
 
+
 		// Controls that allow the viewing of Topic's individual data fields
+        /**
+         * @var QLabel lblTopicLinkId
+         * @access protected
+         */
 		protected $lblTopicLinkId;
+
+        /**
+         * @var QLabel lblName
+         * @access protected
+         */
 		protected $lblName;
+
+        /**
+         * @var QLabel lblPersonId
+         * @access protected
+         */
 		protected $lblPersonId;
+
+        /**
+         * @var QLabel lblLastPostDate
+         * @access protected
+         */
 		protected $lblLastPostDate;
+
+        /**
+         * @var QLabel lblMessageCount
+         * @access protected
+         */
 		protected $lblMessageCount;
+
+        /**
+         * @var QLabel lblViewCount
+         * @access protected
+         */
 		protected $lblViewCount;
+
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
 		protected $lstPeopleAsEmail;
+
 		protected $lstPeopleAsReadOnce;
+
 		protected $lstPeopleAsRead;
+
 
 		// QLabel Controls (if applicable) to view Unique ReverseReferences and ManyToMany References
 		protected $lblPeopleAsEmail;
+
 		protected $lblPeopleAsReadOnce;
+
 		protected $lblPeopleAsRead;
+
 
 
 		/**

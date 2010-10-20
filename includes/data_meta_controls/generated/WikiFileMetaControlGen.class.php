@@ -34,26 +34,105 @@
 
 	class WikiFileMetaControlGen extends QBaseClass {
 		// General Variables
+		/**
+		 * @var WikiFile objWikiFile
+		 * @access protected
+		 */
 		protected $objWikiFile;
+
+		/**
+		 * @var QForm|QControl objParentObject
+		 * @access protected
+		 */
 		protected $objParentObject;
+
+		/**
+		 * @var string  strTitleVerb
+		 * @access protected
+		 */
 		protected $strTitleVerb;
+
+		/**
+		 * @var boolean blnEditMode
+		 * @access protected
+		 */
 		protected $blnEditMode;
 
 		// Controls that allow the editing of WikiFile's individual data fields
+        /**
+         * @var QListBox lstWikiVersion;
+         * @access protected
+         */
 		protected $lstWikiVersion;
+
+        /**
+         * @var QTextBox txtFileName;
+         * @access protected
+         */
 		protected $txtFileName;
+
+        /**
+         * @var QIntegerTextBox txtFileSize;
+         * @access protected
+         */
 		protected $txtFileSize;
+
+        /**
+         * @var QTextBox txtFileMime;
+         * @access protected
+         */
 		protected $txtFileMime;
+
+        /**
+         * @var QTextBox txtDescription;
+         * @access protected
+         */
 		protected $txtDescription;
+
+        /**
+         * @var QIntegerTextBox txtDownloadCount;
+         * @access protected
+         */
 		protected $txtDownloadCount;
 
+
 		// Controls that allow the viewing of WikiFile's individual data fields
+        /**
+         * @var QLabel lblWikiVersionId
+         * @access protected
+         */
 		protected $lblWikiVersionId;
+
+        /**
+         * @var QLabel lblFileName
+         * @access protected
+         */
 		protected $lblFileName;
+
+        /**
+         * @var QLabel lblFileSize
+         * @access protected
+         */
 		protected $lblFileSize;
+
+        /**
+         * @var QLabel lblFileMime
+         * @access protected
+         */
 		protected $lblFileMime;
+
+        /**
+         * @var QLabel lblDescription
+         * @access protected
+         */
 		protected $lblDescription;
+
+        /**
+         * @var QLabel lblDownloadCount
+         * @access protected
+         */
 		protected $lblDownloadCount;
+
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
 

@@ -135,7 +135,7 @@
 		}
 
 		// Other Methods
-
+		
 		protected function RedirectToListPage() {
 			QApplication::Redirect(__VIRTUAL_DIRECTORY__ . __FORM_DRAFTS__ . '/<%= strtolower($objTable->Name) %>_list.php');
 		}

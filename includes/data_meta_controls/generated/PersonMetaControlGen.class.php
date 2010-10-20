@@ -64,59 +64,259 @@
 
 	class PersonMetaControlGen extends QBaseClass {
 		// General Variables
+		/**
+		 * @var Person objPerson
+		 * @access protected
+		 */
 		protected $objPerson;
+
+		/**
+		 * @var QForm|QControl objParentObject
+		 * @access protected
+		 */
 		protected $objParentObject;
+
+		/**
+		 * @var string  strTitleVerb
+		 * @access protected
+		 */
 		protected $strTitleVerb;
+
+		/**
+		 * @var boolean blnEditMode
+		 * @access protected
+		 */
 		protected $blnEditMode;
 
 		// Controls that allow the editing of Person's individual data fields
+        /**
+         * @var QLabel lblId;
+         * @access protected
+         */
 		protected $lblId;
+
+        /**
+         * @var QListBox lstPersonType;
+         * @access protected
+         */
 		protected $lstPersonType;
+
+        /**
+         * @var QTextBox txtUsername;
+         * @access protected
+         */
 		protected $txtUsername;
+
+        /**
+         * @var QTextBox txtPassword;
+         * @access protected
+         */
 		protected $txtPassword;
+
+        /**
+         * @var QTextBox txtFirstName;
+         * @access protected
+         */
 		protected $txtFirstName;
+
+        /**
+         * @var QTextBox txtLastName;
+         * @access protected
+         */
 		protected $txtLastName;
+
+        /**
+         * @var QTextBox txtEmail;
+         * @access protected
+         */
 		protected $txtEmail;
+
+        /**
+         * @var QTextBox txtDisplayName;
+         * @access protected
+         */
 		protected $txtDisplayName;
+
+        /**
+         * @var QCheckBox chkPasswordResetFlag;
+         * @access protected
+         */
 		protected $chkPasswordResetFlag;
+
+        /**
+         * @var QCheckBox chkDisplayRealNameFlag;
+         * @access protected
+         */
 		protected $chkDisplayRealNameFlag;
+
+        /**
+         * @var QCheckBox chkDisplayEmailFlag;
+         * @access protected
+         */
 		protected $chkDisplayEmailFlag;
+
+        /**
+         * @var QCheckBox chkOptInFlag;
+         * @access protected
+         */
 		protected $chkOptInFlag;
+
+        /**
+         * @var QCheckBox chkDonatedFlag;
+         * @access protected
+         */
 		protected $chkDonatedFlag;
+
+        /**
+         * @var QTextBox txtLocation;
+         * @access protected
+         */
 		protected $txtLocation;
+
+        /**
+         * @var QListBox lstCountry;
+         * @access protected
+         */
 		protected $lstCountry;
+
+        /**
+         * @var QTextBox txtUrl;
+         * @access protected
+         */
 		protected $txtUrl;
+
+        /**
+         * @var QListBox lstTimezone;
+         * @access protected
+         */
 		protected $lstTimezone;
+
+        /**
+         * @var QDateTimePicker calRegistrationDate;
+         * @access protected
+         */
 		protected $calRegistrationDate;
 
+
 		// Controls that allow the viewing of Person's individual data fields
+        /**
+         * @var QLabel lblPersonTypeId
+         * @access protected
+         */
 		protected $lblPersonTypeId;
+
+        /**
+         * @var QLabel lblUsername
+         * @access protected
+         */
 		protected $lblUsername;
+
+        /**
+         * @var QLabel lblPassword
+         * @access protected
+         */
 		protected $lblPassword;
+
+        /**
+         * @var QLabel lblFirstName
+         * @access protected
+         */
 		protected $lblFirstName;
+
+        /**
+         * @var QLabel lblLastName
+         * @access protected
+         */
 		protected $lblLastName;
+
+        /**
+         * @var QLabel lblEmail
+         * @access protected
+         */
 		protected $lblEmail;
+
+        /**
+         * @var QLabel lblDisplayName
+         * @access protected
+         */
 		protected $lblDisplayName;
+
+        /**
+         * @var QLabel lblPasswordResetFlag
+         * @access protected
+         */
 		protected $lblPasswordResetFlag;
+
+        /**
+         * @var QLabel lblDisplayRealNameFlag
+         * @access protected
+         */
 		protected $lblDisplayRealNameFlag;
+
+        /**
+         * @var QLabel lblDisplayEmailFlag
+         * @access protected
+         */
 		protected $lblDisplayEmailFlag;
+
+        /**
+         * @var QLabel lblOptInFlag
+         * @access protected
+         */
 		protected $lblOptInFlag;
+
+        /**
+         * @var QLabel lblDonatedFlag
+         * @access protected
+         */
 		protected $lblDonatedFlag;
+
+        /**
+         * @var QLabel lblLocation
+         * @access protected
+         */
 		protected $lblLocation;
+
+        /**
+         * @var QLabel lblCountryId
+         * @access protected
+         */
 		protected $lblCountryId;
+
+        /**
+         * @var QLabel lblUrl
+         * @access protected
+         */
 		protected $lblUrl;
+
+        /**
+         * @var QLabel lblTimezoneId
+         * @access protected
+         */
 		protected $lblTimezoneId;
+
+        /**
+         * @var QLabel lblRegistrationDate
+         * @access protected
+         */
 		protected $lblRegistrationDate;
+
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
 		protected $lstTopicsAsEmail;
+
 		protected $lstTopicsAsReadOnce;
+
 		protected $lstTopicsAsRead;
+
 
 		// QLabel Controls (if applicable) to view Unique ReverseReferences and ManyToMany References
 		protected $lblTopicsAsEmail;
+
 		protected $lblTopicsAsReadOnce;
+
 		protected $lblTopicsAsRead;
+
 
 
 		/**

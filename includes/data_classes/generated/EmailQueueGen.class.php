@@ -268,9 +268,31 @@
 				throw $objExc;
 			}
 
-			// Perform the Query, Get the First Row, and Instantiate a new EmailQueue object
+			// Perform the Query
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return EmailQueue::InstantiateDbRow($objDbResult->GetNextRow(), null, null, null, $objQueryBuilder->ColumnAliasArray);
+
+			// Instantiate a new EmailQueue object and return it
+
+			// Do we have to expand anything?
+			if ($objQueryBuilder->ExpandAsArrayNodes) {
+				$objToReturn = array();
+				while ($objDbRow = $objDbResult->GetNextRow()) {
+					$objItem = EmailQueue::InstantiateDbRow($objDbRow, null, $objQueryBuilder->ExpandAsArrayNodes, $objToReturn, $objQueryBuilder->ColumnAliasArray);
+					if ($objItem) $objToReturn[] = $objItem;
+				}
+
+				if (count($objToReturn)) {
+					// Since we only want the object to return, lets return the object and not the array.
+					return $objToReturn[0];
+				} else {
+					return null;
+				}
+			} else {
+				// No expands just return the first row
+				$objDbRow = $objDbResult->GetNextRow();
+				if (is_null($objDbRow)) return null;
+				return EmailQueue::InstantiateDbRow($objDbRow, null, null, null, $objQueryBuilder->ColumnAliasArray);
+			}
 		}
 
 		/**
@@ -647,9 +669,9 @@
 
 
 
-		//////////////////////////
-		// SAVE, DELETE AND RELOAD
-		//////////////////////////
+		//////////////////////////////////////
+		// SAVE, DELETE, RELOAD and JOURNALING
+		//////////////////////////////////////
 
 		/**
 		 * Save this EmailQueue
@@ -690,6 +712,10 @@
 
 					// Update Identity column and return its value
 					$mixToReturn = $this->intId = $objDatabase->InsertId('email_queue', 'id');
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('INSERT');
+
 				} else {
 					// Perform an UPDATE query
 
@@ -711,6 +737,9 @@
 						WHERE
 							`id` = ' . $objDatabase->SqlVariable($this->intId) . '
 					');
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('UPDATE');
 				}
 
 			} catch (QCallerException $objExc) {
@@ -744,6 +773,9 @@
 					`email_queue`
 				WHERE
 					`id` = ' . $objDatabase->SqlVariable($this->intId) . '');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) $this->Journal('DELETE');
 		}
 
 		/**
@@ -795,6 +827,70 @@
 			$this->blnErrorFlag = $objReloaded->blnErrorFlag;
 			$this->strErrorMessage = $objReloaded->strErrorMessage;
 		}
+
+		/**
+		 * Journals the current object into the Log database.
+		 * Used internally as a helper method.
+		 * @param string $strJournalCommand
+		 */
+		public function Journal($strJournalCommand) {
+			$objDatabase = EmailQueue::GetDatabase()->JournalingDatabase;
+
+			$objDatabase->NonQuery('
+				INSERT INTO `email_queue` (
+					`id`,
+					`to_address`,
+					`from_address`,
+					`subject`,
+					`body`,
+					`html`,
+					`high_priority_flag`,
+					`error_flag`,
+					`error_message`,
+					__sys_login_id,
+					__sys_action,
+					__sys_date
+				) VALUES (
+					' . $objDatabase->SqlVariable($this->intId) . ',
+					' . $objDatabase->SqlVariable($this->strToAddress) . ',
+					' . $objDatabase->SqlVariable($this->strFromAddress) . ',
+					' . $objDatabase->SqlVariable($this->strSubject) . ',
+					' . $objDatabase->SqlVariable($this->strBody) . ',
+					' . $objDatabase->SqlVariable($this->strHtml) . ',
+					' . $objDatabase->SqlVariable($this->blnHighPriorityFlag) . ',
+					' . $objDatabase->SqlVariable($this->blnErrorFlag) . ',
+					' . $objDatabase->SqlVariable($this->strErrorMessage) . ',
+					' . (($objDatabase->JournaledById) ? $objDatabase->JournaledById : 'NULL') . ',
+					' . $objDatabase->SqlVariable($strJournalCommand) . ',
+					NOW()
+				);
+			');
+		}
+
+		/**
+		 * Gets the historical journal for an object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @param integer intId
+		 * @return EmailQueue[]
+		 */
+		public static function GetJournalForId($intId) {
+			$objDatabase = EmailQueue::GetDatabase()->JournalingDatabase;
+
+			$objResult = $objDatabase->Query('SELECT * FROM email_queue WHERE id = ' .
+				$objDatabase->SqlVariable($intId) . ' ORDER BY __sys_date');
+
+			return EmailQueue::InstantiateDbResult($objResult);
+		}
+
+		/**
+		 * Gets the historical journal for this object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @return EmailQueue[]
+		 */
+		public function GetJournal() {
+			return EmailQueue::GetJournalForId($this->intId);
+		}
+
 
 
 
@@ -1106,6 +1202,17 @@
 	// ADDITIONAL CLASSES for QCODO QUERY
 	/////////////////////////////////////
 
+	/**
+	 * @property-read QQNode $Id
+	 * @property-read QQNode $ToAddress
+	 * @property-read QQNode $FromAddress
+	 * @property-read QQNode $Subject
+	 * @property-read QQNode $Body
+	 * @property-read QQNode $Html
+	 * @property-read QQNode $HighPriorityFlag
+	 * @property-read QQNode $ErrorFlag
+	 * @property-read QQNode $ErrorMessage
+	 */
 	class QQNodeEmailQueue extends QQNode {
 		protected $strTableName = 'email_queue';
 		protected $strPrimaryKey = 'id';
@@ -1143,7 +1250,19 @@
 			}
 		}
 	}
-
+	
+	/**
+	 * @property-read QQNode $Id
+	 * @property-read QQNode $ToAddress
+	 * @property-read QQNode $FromAddress
+	 * @property-read QQNode $Subject
+	 * @property-read QQNode $Body
+	 * @property-read QQNode $Html
+	 * @property-read QQNode $HighPriorityFlag
+	 * @property-read QQNode $ErrorFlag
+	 * @property-read QQNode $ErrorMessage
+	 * @property-read QQNode $_PrimaryKeyNode
+	 */
 	class QQReverseReferenceNodeEmailQueue extends QQReverseReferenceNode {
 		protected $strTableName = 'email_queue';
 		protected $strPrimaryKey = 'id';

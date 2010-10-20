@@ -247,9 +247,31 @@
 				throw $objExc;
 			}
 
-			// Perform the Query, Get the First Row, and Instantiate a new WikiImage object
+			// Perform the Query
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return WikiImage::InstantiateDbRow($objDbResult->GetNextRow(), null, null, null, $objQueryBuilder->ColumnAliasArray);
+
+			// Instantiate a new WikiImage object and return it
+
+			// Do we have to expand anything?
+			if ($objQueryBuilder->ExpandAsArrayNodes) {
+				$objToReturn = array();
+				while ($objDbRow = $objDbResult->GetNextRow()) {
+					$objItem = WikiImage::InstantiateDbRow($objDbRow, null, $objQueryBuilder->ExpandAsArrayNodes, $objToReturn, $objQueryBuilder->ColumnAliasArray);
+					if ($objItem) $objToReturn[] = $objItem;
+				}
+
+				if (count($objToReturn)) {
+					// Since we only want the object to return, lets return the object and not the array.
+					return $objToReturn[0];
+				} else {
+					return null;
+				}
+			} else {
+				// No expands just return the first row
+				$objDbRow = $objDbResult->GetNextRow();
+				if (is_null($objDbRow)) return null;
+				return WikiImage::InstantiateDbRow($objDbRow, null, null, null, $objQueryBuilder->ColumnAliasArray);
+			}
 		}
 
 		/**
@@ -589,9 +611,9 @@
 
 
 
-		//////////////////////////
-		// SAVE, DELETE AND RELOAD
-		//////////////////////////
+		//////////////////////////////////////
+		// SAVE, DELETE, RELOAD and JOURNALING
+		//////////////////////////////////////
 
 		/**
 		 * Save this WikiImage
@@ -625,6 +647,10 @@
 					');
 
 
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('INSERT');
+
 				} else {
 					// Perform an UPDATE query
 
@@ -643,6 +669,9 @@
 						WHERE
 							`wiki_version_id` = ' . $objDatabase->SqlVariable($this->__intWikiVersionId) . '
 					');
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('UPDATE');
 				}
 
 			} catch (QCallerException $objExc) {
@@ -677,6 +706,9 @@
 					`wiki_image`
 				WHERE
 					`wiki_version_id` = ' . $objDatabase->SqlVariable($this->intWikiVersionId) . '');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) $this->Journal('DELETE');
 		}
 
 		/**
@@ -726,6 +758,62 @@
 			$this->intHeight = $objReloaded->intHeight;
 			$this->strDescription = $objReloaded->strDescription;
 		}
+
+		/**
+		 * Journals the current object into the Log database.
+		 * Used internally as a helper method.
+		 * @param string $strJournalCommand
+		 */
+		public function Journal($strJournalCommand) {
+			$objDatabase = WikiImage::GetDatabase()->JournalingDatabase;
+
+			$objDatabase->NonQuery('
+				INSERT INTO `wiki_image` (
+					`wiki_version_id`,
+					`image_file_type_id`,
+					`width`,
+					`height`,
+					`description`,
+					__sys_login_id,
+					__sys_action,
+					__sys_date
+				) VALUES (
+					' . $objDatabase->SqlVariable($this->intWikiVersionId) . ',
+					' . $objDatabase->SqlVariable($this->intImageFileTypeId) . ',
+					' . $objDatabase->SqlVariable($this->intWidth) . ',
+					' . $objDatabase->SqlVariable($this->intHeight) . ',
+					' . $objDatabase->SqlVariable($this->strDescription) . ',
+					' . (($objDatabase->JournaledById) ? $objDatabase->JournaledById : 'NULL') . ',
+					' . $objDatabase->SqlVariable($strJournalCommand) . ',
+					NOW()
+				);
+			');
+		}
+
+		/**
+		 * Gets the historical journal for an object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @param integer intWikiVersionId
+		 * @return WikiImage[]
+		 */
+		public static function GetJournalForId($intWikiVersionId) {
+			$objDatabase = WikiImage::GetDatabase()->JournalingDatabase;
+
+			$objResult = $objDatabase->Query('SELECT * FROM wiki_image WHERE wiki_version_id = ' .
+				$objDatabase->SqlVariable($intWikiVersionId) . ' ORDER BY __sys_date');
+
+			return WikiImage::InstantiateDbResult($objResult);
+		}
+
+		/**
+		 * Gets the historical journal for this object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @return WikiImage[]
+		 */
+		public function GetJournal() {
+			return WikiImage::GetJournalForId($this->intWikiVersionId);
+		}
+
 
 
 
@@ -1021,6 +1109,14 @@
 	// ADDITIONAL CLASSES for QCODO QUERY
 	/////////////////////////////////////
 
+	/**
+	 * @property-read QQNode $WikiVersionId
+	 * @property-read QQNodeWikiVersion $WikiVersion
+	 * @property-read QQNode $ImageFileTypeId
+	 * @property-read QQNode $Width
+	 * @property-read QQNode $Height
+	 * @property-read QQNode $Description
+	 */
 	class QQNodeWikiImage extends QQNode {
 		protected $strTableName = 'wiki_image';
 		protected $strPrimaryKey = 'wiki_version_id';
@@ -1052,7 +1148,16 @@
 			}
 		}
 	}
-
+	
+	/**
+	 * @property-read QQNode $WikiVersionId
+	 * @property-read QQNodeWikiVersion $WikiVersion
+	 * @property-read QQNode $ImageFileTypeId
+	 * @property-read QQNode $Width
+	 * @property-read QQNode $Height
+	 * @property-read QQNode $Description
+	 * @property-read QQNodeWikiVersion $_PrimaryKeyNode
+	 */
 	class QQReverseReferenceNodeWikiImage extends QQReverseReferenceNode {
 		protected $strTableName = 'wiki_image';
 		protected $strPrimaryKey = 'wiki_version_id';

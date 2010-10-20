@@ -38,33 +38,127 @@
 
 	class PackageMetaControlGen extends QBaseClass {
 		// General Variables
+		/**
+		 * @var Package objPackage
+		 * @access protected
+		 */
 		protected $objPackage;
+
+		/**
+		 * @var QForm|QControl objParentObject
+		 * @access protected
+		 */
 		protected $objParentObject;
+
+		/**
+		 * @var string  strTitleVerb
+		 * @access protected
+		 */
 		protected $strTitleVerb;
+
+		/**
+		 * @var boolean blnEditMode
+		 * @access protected
+		 */
 		protected $blnEditMode;
 
 		// Controls that allow the editing of Package's individual data fields
+        /**
+         * @var QLabel lblId;
+         * @access protected
+         */
 		protected $lblId;
+
+        /**
+         * @var QListBox lstPackageCategory;
+         * @access protected
+         */
 		protected $lstPackageCategory;
+
+        /**
+         * @var QTextBox txtToken;
+         * @access protected
+         */
 		protected $txtToken;
+
+        /**
+         * @var QTextBox txtName;
+         * @access protected
+         */
 		protected $txtName;
+
+        /**
+         * @var QTextBox txtDescription;
+         * @access protected
+         */
 		protected $txtDescription;
+
+        /**
+         * @var QDateTimePicker calLastPostDate;
+         * @access protected
+         */
 		protected $calLastPostDate;
+
+        /**
+         * @var QListBox lstLastPostedByPerson;
+         * @access protected
+         */
 		protected $lstLastPostedByPerson;
 
+
 		// Controls that allow the viewing of Package's individual data fields
+        /**
+         * @var QLabel lblPackageCategoryId
+         * @access protected
+         */
 		protected $lblPackageCategoryId;
+
+        /**
+         * @var QLabel lblToken
+         * @access protected
+         */
 		protected $lblToken;
+
+        /**
+         * @var QLabel lblName
+         * @access protected
+         */
 		protected $lblName;
+
+        /**
+         * @var QLabel lblDescription
+         * @access protected
+         */
 		protected $lblDescription;
+
+        /**
+         * @var QLabel lblLastPostDate
+         * @access protected
+         */
 		protected $lblLastPostDate;
+
+        /**
+         * @var QLabel lblLastPostedByPersonId
+         * @access protected
+         */
 		protected $lblLastPostedByPersonId;
 
+
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
+        /**
+         * @var QListBox lstTopicLink
+         * @access protected
+         */
 		protected $lstTopicLink;
 
+
 		// QLabel Controls (if applicable) to view Unique ReverseReferences and ManyToMany References
+        /**
+         * @var QLabel lblTopicLink
+         * @access protected
+         */
 		protected $lblTopicLink;
+
 
 
 		/**

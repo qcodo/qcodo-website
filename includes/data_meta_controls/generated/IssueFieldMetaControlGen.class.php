@@ -36,27 +36,111 @@
 
 	class IssueFieldMetaControlGen extends QBaseClass {
 		// General Variables
+		/**
+		 * @var IssueField objIssueField
+		 * @access protected
+		 */
 		protected $objIssueField;
+
+		/**
+		 * @var QForm|QControl objParentObject
+		 * @access protected
+		 */
 		protected $objParentObject;
+
+		/**
+		 * @var string  strTitleVerb
+		 * @access protected
+		 */
 		protected $strTitleVerb;
+
+		/**
+		 * @var boolean blnEditMode
+		 * @access protected
+		 */
 		protected $blnEditMode;
 
 		// Controls that allow the editing of IssueField's individual data fields
+        /**
+         * @var QLabel lblId;
+         * @access protected
+         */
 		protected $lblId;
+
+        /**
+         * @var QTextBox txtName;
+         * @access protected
+         */
 		protected $txtName;
+
+        /**
+         * @var QTextBox txtToken;
+         * @access protected
+         */
 		protected $txtToken;
+
+        /**
+         * @var QIntegerTextBox txtOrderNumber;
+         * @access protected
+         */
 		protected $txtOrderNumber;
+
+        /**
+         * @var QCheckBox chkRequiredFlag;
+         * @access protected
+         */
 		protected $chkRequiredFlag;
+
+        /**
+         * @var QCheckBox chkMutableFlag;
+         * @access protected
+         */
 		protected $chkMutableFlag;
+
+        /**
+         * @var QCheckBox chkActiveFlag;
+         * @access protected
+         */
 		protected $chkActiveFlag;
 
+
 		// Controls that allow the viewing of IssueField's individual data fields
+        /**
+         * @var QLabel lblName
+         * @access protected
+         */
 		protected $lblName;
+
+        /**
+         * @var QLabel lblToken
+         * @access protected
+         */
 		protected $lblToken;
+
+        /**
+         * @var QLabel lblOrderNumber
+         * @access protected
+         */
 		protected $lblOrderNumber;
+
+        /**
+         * @var QLabel lblRequiredFlag
+         * @access protected
+         */
 		protected $lblRequiredFlag;
+
+        /**
+         * @var QLabel lblMutableFlag
+         * @access protected
+         */
 		protected $lblMutableFlag;
+
+        /**
+         * @var QLabel lblActiveFlag
+         * @access protected
+         */
 		protected $lblActiveFlag;
+
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
 

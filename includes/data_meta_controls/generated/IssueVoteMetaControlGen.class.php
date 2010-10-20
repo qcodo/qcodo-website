@@ -30,21 +30,75 @@
 
 	class IssueVoteMetaControlGen extends QBaseClass {
 		// General Variables
+		/**
+		 * @var IssueVote objIssueVote
+		 * @access protected
+		 */
 		protected $objIssueVote;
+
+		/**
+		 * @var QForm|QControl objParentObject
+		 * @access protected
+		 */
 		protected $objParentObject;
+
+		/**
+		 * @var string  strTitleVerb
+		 * @access protected
+		 */
 		protected $strTitleVerb;
+
+		/**
+		 * @var boolean blnEditMode
+		 * @access protected
+		 */
 		protected $blnEditMode;
 
 		// Controls that allow the editing of IssueVote's individual data fields
+        /**
+         * @var QLabel lblId;
+         * @access protected
+         */
 		protected $lblId;
+
+        /**
+         * @var QListBox lstIssue;
+         * @access protected
+         */
 		protected $lstIssue;
+
+        /**
+         * @var QListBox lstPerson;
+         * @access protected
+         */
 		protected $lstPerson;
+
+        /**
+         * @var QDateTimePicker calVoteDate;
+         * @access protected
+         */
 		protected $calVoteDate;
 
+
 		// Controls that allow the viewing of IssueVote's individual data fields
+        /**
+         * @var QLabel lblIssueId
+         * @access protected
+         */
 		protected $lblIssueId;
+
+        /**
+         * @var QLabel lblPersonId
+         * @access protected
+         */
 		protected $lblPersonId;
+
+        /**
+         * @var QLabel lblVoteDate
+         * @access protected
+         */
 		protected $lblVoteDate;
+
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
 

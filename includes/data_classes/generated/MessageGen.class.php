@@ -289,9 +289,31 @@
 				throw $objExc;
 			}
 
-			// Perform the Query, Get the First Row, and Instantiate a new Message object
+			// Perform the Query
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return Message::InstantiateDbRow($objDbResult->GetNextRow(), null, null, null, $objQueryBuilder->ColumnAliasArray);
+
+			// Instantiate a new Message object and return it
+
+			// Do we have to expand anything?
+			if ($objQueryBuilder->ExpandAsArrayNodes) {
+				$objToReturn = array();
+				while ($objDbRow = $objDbResult->GetNextRow()) {
+					$objItem = Message::InstantiateDbRow($objDbRow, null, $objQueryBuilder->ExpandAsArrayNodes, $objToReturn, $objQueryBuilder->ColumnAliasArray);
+					if ($objItem) $objToReturn[] = $objItem;
+				}
+
+				if (count($objToReturn)) {
+					// Since we only want the object to return, lets return the object and not the array.
+					return $objToReturn[0];
+				} else {
+					return null;
+				}
+			} else {
+				// No expands just return the first row
+				$objDbRow = $objDbResult->GetNextRow();
+				if (is_null($objDbRow)) return null;
+				return Message::InstantiateDbRow($objDbRow, null, null, null, $objQueryBuilder->ColumnAliasArray);
+			}
 		}
 
 		/**
@@ -715,9 +737,9 @@
 
 
 
-		//////////////////////////
-		// SAVE, DELETE AND RELOAD
-		//////////////////////////
+		//////////////////////////////////////
+		// SAVE, DELETE, RELOAD and JOURNALING
+		//////////////////////////////////////
 
 		/**
 		 * Save this Message
@@ -756,6 +778,10 @@
 
 					// Update Identity column and return its value
 					$mixToReturn = $this->intId = $objDatabase->InsertId('message', 'id');
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('INSERT');
+
 				} else {
 					// Perform an UPDATE query
 
@@ -776,6 +802,9 @@
 						WHERE
 							`id` = ' . $objDatabase->SqlVariable($this->intId) . '
 					');
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('UPDATE');
 				}
 
 			} catch (QCallerException $objExc) {
@@ -809,6 +838,9 @@
 					`message`
 				WHERE
 					`id` = ' . $objDatabase->SqlVariable($this->intId) . '');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) $this->Journal('DELETE');
 		}
 
 		/**
@@ -859,6 +891,68 @@
 			$this->intReplyNumber = $objReloaded->intReplyNumber;
 			$this->dttPostDate = $objReloaded->dttPostDate;
 		}
+
+		/**
+		 * Journals the current object into the Log database.
+		 * Used internally as a helper method.
+		 * @param string $strJournalCommand
+		 */
+		public function Journal($strJournalCommand) {
+			$objDatabase = Message::GetDatabase()->JournalingDatabase;
+
+			$objDatabase->NonQuery('
+				INSERT INTO `message` (
+					`id`,
+					`topic_id`,
+					`topic_link_id`,
+					`person_id`,
+					`message`,
+					`compiled_html`,
+					`reply_number`,
+					`post_date`,
+					__sys_login_id,
+					__sys_action,
+					__sys_date
+				) VALUES (
+					' . $objDatabase->SqlVariable($this->intId) . ',
+					' . $objDatabase->SqlVariable($this->intTopicId) . ',
+					' . $objDatabase->SqlVariable($this->intTopicLinkId) . ',
+					' . $objDatabase->SqlVariable($this->intPersonId) . ',
+					' . $objDatabase->SqlVariable($this->strMessage) . ',
+					' . $objDatabase->SqlVariable($this->strCompiledHtml) . ',
+					' . $objDatabase->SqlVariable($this->intReplyNumber) . ',
+					' . $objDatabase->SqlVariable($this->dttPostDate) . ',
+					' . (($objDatabase->JournaledById) ? $objDatabase->JournaledById : 'NULL') . ',
+					' . $objDatabase->SqlVariable($strJournalCommand) . ',
+					NOW()
+				);
+			');
+		}
+
+		/**
+		 * Gets the historical journal for an object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @param integer intId
+		 * @return Message[]
+		 */
+		public static function GetJournalForId($intId) {
+			$objDatabase = Message::GetDatabase()->JournalingDatabase;
+
+			$objResult = $objDatabase->Query('SELECT * FROM message WHERE id = ' .
+				$objDatabase->SqlVariable($intId) . ' ORDER BY __sys_date');
+
+			return Message::InstantiateDbResult($objResult);
+		}
+
+		/**
+		 * Gets the historical journal for this object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @return Message[]
+		 */
+		public function GetJournal() {
+			return Message::GetJournalForId($this->intId);
+		}
+
 
 
 
@@ -1300,6 +1394,19 @@
 	// ADDITIONAL CLASSES for QCODO QUERY
 	/////////////////////////////////////
 
+	/**
+	 * @property-read QQNode $Id
+	 * @property-read QQNode $TopicId
+	 * @property-read QQNodeTopic $Topic
+	 * @property-read QQNode $TopicLinkId
+	 * @property-read QQNodeTopicLink $TopicLink
+	 * @property-read QQNode $PersonId
+	 * @property-read QQNodePerson $Person
+	 * @property-read QQNode $Message
+	 * @property-read QQNode $CompiledHtml
+	 * @property-read QQNode $ReplyNumber
+	 * @property-read QQNode $PostDate
+	 */
 	class QQNodeMessage extends QQNode {
 		protected $strTableName = 'message';
 		protected $strPrimaryKey = 'id';
@@ -1341,7 +1448,21 @@
 			}
 		}
 	}
-
+	
+	/**
+	 * @property-read QQNode $Id
+	 * @property-read QQNode $TopicId
+	 * @property-read QQNodeTopic $Topic
+	 * @property-read QQNode $TopicLinkId
+	 * @property-read QQNodeTopicLink $TopicLink
+	 * @property-read QQNode $PersonId
+	 * @property-read QQNodePerson $Person
+	 * @property-read QQNode $Message
+	 * @property-read QQNode $CompiledHtml
+	 * @property-read QQNode $ReplyNumber
+	 * @property-read QQNode $PostDate
+	 * @property-read QQNode $_PrimaryKeyNode
+	 */
 	class QQReverseReferenceNodeMessage extends QQReverseReferenceNode {
 		protected $strTableName = 'message';
 		protected $strPrimaryKey = 'id';

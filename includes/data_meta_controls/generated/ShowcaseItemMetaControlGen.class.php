@@ -36,27 +36,111 @@
 
 	class ShowcaseItemMetaControlGen extends QBaseClass {
 		// General Variables
+		/**
+		 * @var ShowcaseItem objShowcaseItem
+		 * @access protected
+		 */
 		protected $objShowcaseItem;
+
+		/**
+		 * @var QForm|QControl objParentObject
+		 * @access protected
+		 */
 		protected $objParentObject;
+
+		/**
+		 * @var string  strTitleVerb
+		 * @access protected
+		 */
 		protected $strTitleVerb;
+
+		/**
+		 * @var boolean blnEditMode
+		 * @access protected
+		 */
 		protected $blnEditMode;
 
 		// Controls that allow the editing of ShowcaseItem's individual data fields
+        /**
+         * @var QLabel lblId;
+         * @access protected
+         */
 		protected $lblId;
+
+        /**
+         * @var QListBox lstImageFileType;
+         * @access protected
+         */
 		protected $lstImageFileType;
+
+        /**
+         * @var QListBox lstPerson;
+         * @access protected
+         */
 		protected $lstPerson;
+
+        /**
+         * @var QTextBox txtName;
+         * @access protected
+         */
 		protected $txtName;
+
+        /**
+         * @var QTextBox txtDescription;
+         * @access protected
+         */
 		protected $txtDescription;
+
+        /**
+         * @var QTextBox txtUrl;
+         * @access protected
+         */
 		protected $txtUrl;
+
+        /**
+         * @var QCheckBox chkLiveFlag;
+         * @access protected
+         */
 		protected $chkLiveFlag;
 
+
 		// Controls that allow the viewing of ShowcaseItem's individual data fields
+        /**
+         * @var QLabel lblImageFileTypeId
+         * @access protected
+         */
 		protected $lblImageFileTypeId;
+
+        /**
+         * @var QLabel lblPersonId
+         * @access protected
+         */
 		protected $lblPersonId;
+
+        /**
+         * @var QLabel lblName
+         * @access protected
+         */
 		protected $lblName;
+
+        /**
+         * @var QLabel lblDescription
+         * @access protected
+         */
 		protected $lblDescription;
+
+        /**
+         * @var QLabel lblUrl
+         * @access protected
+         */
 		protected $lblUrl;
+
+        /**
+         * @var QLabel lblLiveFlag
+         * @access protected
+         */
 		protected $lblLiveFlag;
+
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
 

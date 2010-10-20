@@ -406,9 +406,31 @@
 				throw $objExc;
 			}
 
-			// Perform the Query, Get the First Row, and Instantiate a new Issue object
+			// Perform the Query
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return Issue::InstantiateDbRow($objDbResult->GetNextRow(), null, null, null, $objQueryBuilder->ColumnAliasArray);
+
+			// Instantiate a new Issue object and return it
+
+			// Do we have to expand anything?
+			if ($objQueryBuilder->ExpandAsArrayNodes) {
+				$objToReturn = array();
+				while ($objDbRow = $objDbResult->GetNextRow()) {
+					$objItem = Issue::InstantiateDbRow($objDbRow, null, $objQueryBuilder->ExpandAsArrayNodes, $objToReturn, $objQueryBuilder->ColumnAliasArray);
+					if ($objItem) $objToReturn[] = $objItem;
+				}
+
+				if (count($objToReturn)) {
+					// Since we only want the object to return, lets return the object and not the array.
+					return $objToReturn[0];
+				} else {
+					return null;
+				}
+			} else {
+				// No expands just return the first row
+				$objDbRow = $objDbResult->GetNextRow();
+				if (is_null($objDbRow)) return null;
+				return Issue::InstantiateDbRow($objDbRow, null, null, null, $objQueryBuilder->ColumnAliasArray);
+			}
 		}
 
 		/**
@@ -1024,9 +1046,9 @@
 
 
 
-		//////////////////////////
-		// SAVE, DELETE AND RELOAD
-		//////////////////////////
+		//////////////////////////////////////
+		// SAVE, DELETE, RELOAD and JOURNALING
+		//////////////////////////////////////
 
 		/**
 		 * Save this Issue
@@ -1081,6 +1103,10 @@
 
 					// Update Identity column and return its value
 					$mixToReturn = $this->intId = $objDatabase->InsertId('issue', 'id');
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('INSERT');
+
 				} else {
 					// Perform an UPDATE query
 
@@ -1109,6 +1135,9 @@
 						WHERE
 							`id` = ' . $objDatabase->SqlVariable($this->intId) . '
 					');
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('UPDATE');
 				}
 
 		
@@ -1172,6 +1201,9 @@
 					`issue`
 				WHERE
 					`id` = ' . $objDatabase->SqlVariable($this->intId) . '');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) $this->Journal('DELETE');
 		}
 
 		/**
@@ -1230,6 +1262,84 @@
 			$this->dttDueDate = $objReloaded->dttDueDate;
 			$this->intVoteCount = $objReloaded->intVoteCount;
 		}
+
+		/**
+		 * Journals the current object into the Log database.
+		 * Used internally as a helper method.
+		 * @param string $strJournalCommand
+		 */
+		public function Journal($strJournalCommand) {
+			$objDatabase = Issue::GetDatabase()->JournalingDatabase;
+
+			$objDatabase->NonQuery('
+				INSERT INTO `issue` (
+					`id`,
+					`issue_priority_type_id`,
+					`issue_status_type_id`,
+					`issue_resolution_type_id`,
+					`title`,
+					`example_code`,
+					`example_template`,
+					`example_data`,
+					`expected_output`,
+					`actual_output`,
+					`posted_by_person_id`,
+					`assigned_to_person_id`,
+					`post_date`,
+					`assigned_date`,
+					`due_date`,
+					`vote_count`,
+					__sys_login_id,
+					__sys_action,
+					__sys_date
+				) VALUES (
+					' . $objDatabase->SqlVariable($this->intId) . ',
+					' . $objDatabase->SqlVariable($this->intIssuePriorityTypeId) . ',
+					' . $objDatabase->SqlVariable($this->intIssueStatusTypeId) . ',
+					' . $objDatabase->SqlVariable($this->intIssueResolutionTypeId) . ',
+					' . $objDatabase->SqlVariable($this->strTitle) . ',
+					' . $objDatabase->SqlVariable($this->strExampleCode) . ',
+					' . $objDatabase->SqlVariable($this->strExampleTemplate) . ',
+					' . $objDatabase->SqlVariable($this->strExampleData) . ',
+					' . $objDatabase->SqlVariable($this->strExpectedOutput) . ',
+					' . $objDatabase->SqlVariable($this->strActualOutput) . ',
+					' . $objDatabase->SqlVariable($this->intPostedByPersonId) . ',
+					' . $objDatabase->SqlVariable($this->intAssignedToPersonId) . ',
+					' . $objDatabase->SqlVariable($this->dttPostDate) . ',
+					' . $objDatabase->SqlVariable($this->dttAssignedDate) . ',
+					' . $objDatabase->SqlVariable($this->dttDueDate) . ',
+					' . $objDatabase->SqlVariable($this->intVoteCount) . ',
+					' . (($objDatabase->JournaledById) ? $objDatabase->JournaledById : 'NULL') . ',
+					' . $objDatabase->SqlVariable($strJournalCommand) . ',
+					NOW()
+				);
+			');
+		}
+
+		/**
+		 * Gets the historical journal for an object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @param integer intId
+		 * @return Issue[]
+		 */
+		public static function GetJournalForId($intId) {
+			$objDatabase = Issue::GetDatabase()->JournalingDatabase;
+
+			$objResult = $objDatabase->Query('SELECT * FROM issue WHERE id = ' .
+				$objDatabase->SqlVariable($intId) . ' ORDER BY __sys_date');
+
+			return Issue::InstantiateDbResult($objResult);
+		}
+
+		/**
+		 * Gets the historical journal for this object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @return Issue[]
+		 */
+		public function GetJournal() {
+			return Issue::GetJournalForId($this->intId);
+		}
+
 
 
 
@@ -1783,6 +1893,12 @@
 				WHERE
 					`id` = ' . $objDatabase->SqlVariable($objIssueFieldValue->Id) . '
 			');
+
+			// Journaling (if applicable)
+			if ($objDatabase->JournalingDatabase) {
+				$objIssueFieldValue->IssueId = $this->intId;
+				$objIssueFieldValue->Journal('UPDATE');
+			}
 		}
 
 		/**
@@ -1809,6 +1925,12 @@
 					`id` = ' . $objDatabase->SqlVariable($objIssueFieldValue->Id) . ' AND
 					`issue_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 			');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				$objIssueFieldValue->IssueId = null;
+				$objIssueFieldValue->Journal('UPDATE');
+			}
 		}
 
 		/**
@@ -1821,6 +1943,14 @@
 
 			// Get the Database Object for this Class
 			$objDatabase = Issue::GetDatabase();
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				foreach (IssueFieldValue::LoadArrayByIssueId($this->intId) as $objIssueFieldValue) {
+					$objIssueFieldValue->IssueId = null;
+					$objIssueFieldValue->Journal('UPDATE');
+				}
+			}
 
 			// Perform the SQL Query
 			$objDatabase->NonQuery('
@@ -1855,6 +1985,11 @@
 					`id` = ' . $objDatabase->SqlVariable($objIssueFieldValue->Id) . ' AND
 					`issue_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 			');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				$objIssueFieldValue->Journal('DELETE');
+			}
 		}
 
 		/**
@@ -1867,6 +2002,13 @@
 
 			// Get the Database Object for this Class
 			$objDatabase = Issue::GetDatabase();
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				foreach (IssueFieldValue::LoadArrayByIssueId($this->intId) as $objIssueFieldValue) {
+					$objIssueFieldValue->Journal('DELETE');
+				}
+			}
 
 			// Perform the SQL Query
 			$objDatabase->NonQuery('
@@ -1933,6 +2075,12 @@
 				WHERE
 					`id` = ' . $objDatabase->SqlVariable($objIssueVote->Id) . '
 			');
+
+			// Journaling (if applicable)
+			if ($objDatabase->JournalingDatabase) {
+				$objIssueVote->IssueId = $this->intId;
+				$objIssueVote->Journal('UPDATE');
+			}
 		}
 
 		/**
@@ -1959,6 +2107,12 @@
 					`id` = ' . $objDatabase->SqlVariable($objIssueVote->Id) . ' AND
 					`issue_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 			');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				$objIssueVote->IssueId = null;
+				$objIssueVote->Journal('UPDATE');
+			}
 		}
 
 		/**
@@ -1971,6 +2125,14 @@
 
 			// Get the Database Object for this Class
 			$objDatabase = Issue::GetDatabase();
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				foreach (IssueVote::LoadArrayByIssueId($this->intId) as $objIssueVote) {
+					$objIssueVote->IssueId = null;
+					$objIssueVote->Journal('UPDATE');
+				}
+			}
 
 			// Perform the SQL Query
 			$objDatabase->NonQuery('
@@ -2005,6 +2167,11 @@
 					`id` = ' . $objDatabase->SqlVariable($objIssueVote->Id) . ' AND
 					`issue_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 			');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				$objIssueVote->Journal('DELETE');
+			}
 		}
 
 		/**
@@ -2017,6 +2184,13 @@
 
 			// Get the Database Object for this Class
 			$objDatabase = Issue::GetDatabase();
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				foreach (IssueVote::LoadArrayByIssueId($this->intId) as $objIssueVote) {
+					$objIssueVote->Journal('DELETE');
+				}
+			}
 
 			// Perform the SQL Query
 			$objDatabase->NonQuery('
@@ -2157,6 +2331,29 @@
 	// ADDITIONAL CLASSES for QCODO QUERY
 	/////////////////////////////////////
 
+	/**
+	 * @property-read QQNode $Id
+	 * @property-read QQNode $IssuePriorityTypeId
+	 * @property-read QQNode $IssueStatusTypeId
+	 * @property-read QQNode $IssueResolutionTypeId
+	 * @property-read QQNode $Title
+	 * @property-read QQNode $ExampleCode
+	 * @property-read QQNode $ExampleTemplate
+	 * @property-read QQNode $ExampleData
+	 * @property-read QQNode $ExpectedOutput
+	 * @property-read QQNode $ActualOutput
+	 * @property-read QQNode $PostedByPersonId
+	 * @property-read QQNodePerson $PostedByPerson
+	 * @property-read QQNode $AssignedToPersonId
+	 * @property-read QQNodePerson $AssignedToPerson
+	 * @property-read QQNode $PostDate
+	 * @property-read QQNode $AssignedDate
+	 * @property-read QQNode $DueDate
+	 * @property-read QQNode $VoteCount
+	 * @property-read QQReverseReferenceNodeIssueFieldValue $IssueFieldValue
+	 * @property-read QQReverseReferenceNodeIssueVote $IssueVote
+	 * @property-read QQReverseReferenceNodeTopicLink $TopicLink
+	 */
 	class QQNodeIssue extends QQNode {
 		protected $strTableName = 'issue';
 		protected $strPrimaryKey = 'id';
@@ -2218,7 +2415,31 @@
 			}
 		}
 	}
-
+	
+	/**
+	 * @property-read QQNode $Id
+	 * @property-read QQNode $IssuePriorityTypeId
+	 * @property-read QQNode $IssueStatusTypeId
+	 * @property-read QQNode $IssueResolutionTypeId
+	 * @property-read QQNode $Title
+	 * @property-read QQNode $ExampleCode
+	 * @property-read QQNode $ExampleTemplate
+	 * @property-read QQNode $ExampleData
+	 * @property-read QQNode $ExpectedOutput
+	 * @property-read QQNode $ActualOutput
+	 * @property-read QQNode $PostedByPersonId
+	 * @property-read QQNodePerson $PostedByPerson
+	 * @property-read QQNode $AssignedToPersonId
+	 * @property-read QQNodePerson $AssignedToPerson
+	 * @property-read QQNode $PostDate
+	 * @property-read QQNode $AssignedDate
+	 * @property-read QQNode $DueDate
+	 * @property-read QQNode $VoteCount
+	 * @property-read QQReverseReferenceNodeIssueFieldValue $IssueFieldValue
+	 * @property-read QQReverseReferenceNodeIssueVote $IssueVote
+	 * @property-read QQReverseReferenceNodeTopicLink $TopicLink
+	 * @property-read QQNode $_PrimaryKeyNode
+	 */
 	class QQReverseReferenceNodeIssue extends QQReverseReferenceNode {
 		protected $strTableName = 'issue';
 		protected $strPrimaryKey = 'id';

@@ -108,10 +108,10 @@
 					return false;
 				}
 			} else {
-				if (defined('ERROR_FRIENDLY_PAGE_PATH') && ERROR_FRIENDLY_PAGE_PATH) {
+				if (!QApplication::$CliMode) header("HTTP/1.1 500 Internal Server Error");
+				if (defined('ERROR_FRIENDLY_PAGE_PATH') && ERROR_FRIENDLY_PAGE_PATH && !QApplication::$CliMode) {
 					// Reset the Buffer
 					while(ob_get_level()) ob_end_clean();
-					header("HTTP/1.1 500 Internal Server Error");
 					require(ERROR_FRIENDLY_PAGE_PATH);		
 				}
 			}
@@ -126,9 +126,7 @@
 			$strData = str_replace("\n", "\\n", $strData);
 			$strData = str_replace("\r", "\\r", $strData);
 			$strData = str_replace("\"", "&quot;", $strData);
-			$strData = str_replace("</script>", "&lt/script&gt", $strData);
-			$strData = str_replace("</Script>", "&lt/script&gt", $strData);
-			$strData = str_replace("</SCRIPT>", "&lt/script&gt", $strData);
+			$strData = str_ireplace("</script>", "&lt/script&gt", $strData);
 			return $strData;
 		}
 
@@ -228,6 +226,15 @@
 					break;
 				case E_USER_NOTICE:
 					QErrorHandler::$ObjectType = 'E_USER_NOTICE';
+					break;
+				case E_DEPRECATED:
+					QErrorHandler::$ObjectType = 'E_DEPRECATED';
+					break;
+				case E_USER_DEPRECATED:
+					QErrorHandler::$ObjectType = 'E_USER_DEPRECATED';
+					break;
+				case E_RECOVERABLE_ERROR:
+					QErrorHandler::$ObjectType = 'E_RECOVERABLE_ERROR';
 					break;
 				default:
 					QErrorHandler::$ObjectType = 'Unknown';

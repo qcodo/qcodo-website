@@ -305,9 +305,31 @@
 				throw $objExc;
 			}
 
-			// Perform the Query, Get the First Row, and Instantiate a new PackageCategory object
+			// Perform the Query
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return PackageCategory::InstantiateDbRow($objDbResult->GetNextRow(), null, null, null, $objQueryBuilder->ColumnAliasArray);
+
+			// Instantiate a new PackageCategory object and return it
+
+			// Do we have to expand anything?
+			if ($objQueryBuilder->ExpandAsArrayNodes) {
+				$objToReturn = array();
+				while ($objDbRow = $objDbResult->GetNextRow()) {
+					$objItem = PackageCategory::InstantiateDbRow($objDbRow, null, $objQueryBuilder->ExpandAsArrayNodes, $objToReturn, $objQueryBuilder->ColumnAliasArray);
+					if ($objItem) $objToReturn[] = $objItem;
+				}
+
+				if (count($objToReturn)) {
+					// Since we only want the object to return, lets return the object and not the array.
+					return $objToReturn[0];
+				} else {
+					return null;
+				}
+			} else {
+				// No expands just return the first row
+				$objDbRow = $objDbResult->GetNextRow();
+				if (is_null($objDbRow)) return null;
+				return PackageCategory::InstantiateDbRow($objDbRow, null, null, null, $objQueryBuilder->ColumnAliasArray);
+			}
 		}
 
 		/**
@@ -733,9 +755,9 @@
 
 
 
-		//////////////////////////
-		// SAVE, DELETE AND RELOAD
-		//////////////////////////
+		//////////////////////////////////////
+		// SAVE, DELETE, RELOAD and JOURNALING
+		//////////////////////////////////////
 
 		/**
 		 * Save this PackageCategory
@@ -774,6 +796,10 @@
 
 					// Update Identity column and return its value
 					$mixToReturn = $this->intId = $objDatabase->InsertId('package_category', 'id');
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('INSERT');
+
 				} else {
 					// Perform an UPDATE query
 
@@ -794,6 +820,9 @@
 						WHERE
 							`id` = ' . $objDatabase->SqlVariable($this->intId) . '
 					');
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('UPDATE');
 				}
 
 			} catch (QCallerException $objExc) {
@@ -827,6 +856,9 @@
 					`package_category`
 				WHERE
 					`id` = ' . $objDatabase->SqlVariable($this->intId) . '');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) $this->Journal('DELETE');
 		}
 
 		/**
@@ -877,6 +909,68 @@
 			$this->intPackageCount = $objReloaded->intPackageCount;
 			$this->dttLastPostDate = $objReloaded->dttLastPostDate;
 		}
+
+		/**
+		 * Journals the current object into the Log database.
+		 * Used internally as a helper method.
+		 * @param string $strJournalCommand
+		 */
+		public function Journal($strJournalCommand) {
+			$objDatabase = PackageCategory::GetDatabase()->JournalingDatabase;
+
+			$objDatabase->NonQuery('
+				INSERT INTO `package_category` (
+					`id`,
+					`parent_package_category_id`,
+					`token`,
+					`order_number`,
+					`name`,
+					`description`,
+					`package_count`,
+					`last_post_date`,
+					__sys_login_id,
+					__sys_action,
+					__sys_date
+				) VALUES (
+					' . $objDatabase->SqlVariable($this->intId) . ',
+					' . $objDatabase->SqlVariable($this->intParentPackageCategoryId) . ',
+					' . $objDatabase->SqlVariable($this->strToken) . ',
+					' . $objDatabase->SqlVariable($this->intOrderNumber) . ',
+					' . $objDatabase->SqlVariable($this->strName) . ',
+					' . $objDatabase->SqlVariable($this->strDescription) . ',
+					' . $objDatabase->SqlVariable($this->intPackageCount) . ',
+					' . $objDatabase->SqlVariable($this->dttLastPostDate) . ',
+					' . (($objDatabase->JournaledById) ? $objDatabase->JournaledById : 'NULL') . ',
+					' . $objDatabase->SqlVariable($strJournalCommand) . ',
+					NOW()
+				);
+			');
+		}
+
+		/**
+		 * Gets the historical journal for an object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @param integer intId
+		 * @return PackageCategory[]
+		 */
+		public static function GetJournalForId($intId) {
+			$objDatabase = PackageCategory::GetDatabase()->JournalingDatabase;
+
+			$objResult = $objDatabase->Query('SELECT * FROM package_category WHERE id = ' .
+				$objDatabase->SqlVariable($intId) . ' ORDER BY __sys_date');
+
+			return PackageCategory::InstantiateDbResult($objResult);
+		}
+
+		/**
+		 * Gets the historical journal for this object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @return PackageCategory[]
+		 */
+		public function GetJournal() {
+			return PackageCategory::GetJournalForId($this->intId);
+		}
+
 
 
 
@@ -1204,6 +1298,12 @@
 				WHERE
 					`id` = ' . $objDatabase->SqlVariable($objPackage->Id) . '
 			');
+
+			// Journaling (if applicable)
+			if ($objDatabase->JournalingDatabase) {
+				$objPackage->PackageCategoryId = $this->intId;
+				$objPackage->Journal('UPDATE');
+			}
 		}
 
 		/**
@@ -1230,6 +1330,12 @@
 					`id` = ' . $objDatabase->SqlVariable($objPackage->Id) . ' AND
 					`package_category_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 			');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				$objPackage->PackageCategoryId = null;
+				$objPackage->Journal('UPDATE');
+			}
 		}
 
 		/**
@@ -1242,6 +1348,14 @@
 
 			// Get the Database Object for this Class
 			$objDatabase = PackageCategory::GetDatabase();
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				foreach (Package::LoadArrayByPackageCategoryId($this->intId) as $objPackage) {
+					$objPackage->PackageCategoryId = null;
+					$objPackage->Journal('UPDATE');
+				}
+			}
 
 			// Perform the SQL Query
 			$objDatabase->NonQuery('
@@ -1276,6 +1390,11 @@
 					`id` = ' . $objDatabase->SqlVariable($objPackage->Id) . ' AND
 					`package_category_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 			');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				$objPackage->Journal('DELETE');
+			}
 		}
 
 		/**
@@ -1288,6 +1407,13 @@
 
 			// Get the Database Object for this Class
 			$objDatabase = PackageCategory::GetDatabase();
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				foreach (Package::LoadArrayByPackageCategoryId($this->intId) as $objPackage) {
+					$objPackage->Journal('DELETE');
+				}
+			}
 
 			// Perform the SQL Query
 			$objDatabase->NonQuery('
@@ -1354,6 +1480,12 @@
 				WHERE
 					`id` = ' . $objDatabase->SqlVariable($objPackageCategory->Id) . '
 			');
+
+			// Journaling (if applicable)
+			if ($objDatabase->JournalingDatabase) {
+				$objPackageCategory->ParentPackageCategoryId = $this->intId;
+				$objPackageCategory->Journal('UPDATE');
+			}
 		}
 
 		/**
@@ -1380,6 +1512,12 @@
 					`id` = ' . $objDatabase->SqlVariable($objPackageCategory->Id) . ' AND
 					`parent_package_category_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 			');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				$objPackageCategory->ParentPackageCategoryId = null;
+				$objPackageCategory->Journal('UPDATE');
+			}
 		}
 
 		/**
@@ -1392,6 +1530,14 @@
 
 			// Get the Database Object for this Class
 			$objDatabase = PackageCategory::GetDatabase();
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				foreach (PackageCategory::LoadArrayByParentPackageCategoryId($this->intId) as $objPackageCategory) {
+					$objPackageCategory->ParentPackageCategoryId = null;
+					$objPackageCategory->Journal('UPDATE');
+				}
+			}
 
 			// Perform the SQL Query
 			$objDatabase->NonQuery('
@@ -1426,6 +1572,11 @@
 					`id` = ' . $objDatabase->SqlVariable($objPackageCategory->Id) . ' AND
 					`parent_package_category_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 			');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				$objPackageCategory->Journal('DELETE');
+			}
 		}
 
 		/**
@@ -1438,6 +1589,13 @@
 
 			// Get the Database Object for this Class
 			$objDatabase = PackageCategory::GetDatabase();
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				foreach (PackageCategory::LoadArrayByParentPackageCategoryId($this->intId) as $objPackageCategory) {
+					$objPackageCategory->Journal('DELETE');
+				}
+			}
 
 			// Perform the SQL Query
 			$objDatabase->NonQuery('
@@ -1544,6 +1702,19 @@
 	// ADDITIONAL CLASSES for QCODO QUERY
 	/////////////////////////////////////
 
+	/**
+	 * @property-read QQNode $Id
+	 * @property-read QQNode $ParentPackageCategoryId
+	 * @property-read QQNodePackageCategory $ParentPackageCategory
+	 * @property-read QQNode $Token
+	 * @property-read QQNode $OrderNumber
+	 * @property-read QQNode $Name
+	 * @property-read QQNode $Description
+	 * @property-read QQNode $PackageCount
+	 * @property-read QQNode $LastPostDate
+	 * @property-read QQReverseReferenceNodePackage $Package
+	 * @property-read QQReverseReferenceNodePackageCategory $ChildPackageCategory
+	 */
 	class QQNodePackageCategory extends QQNode {
 		protected $strTableName = 'package_category';
 		protected $strPrimaryKey = 'id';
@@ -1585,7 +1756,21 @@
 			}
 		}
 	}
-
+	
+	/**
+	 * @property-read QQNode $Id
+	 * @property-read QQNode $ParentPackageCategoryId
+	 * @property-read QQNodePackageCategory $ParentPackageCategory
+	 * @property-read QQNode $Token
+	 * @property-read QQNode $OrderNumber
+	 * @property-read QQNode $Name
+	 * @property-read QQNode $Description
+	 * @property-read QQNode $PackageCount
+	 * @property-read QQNode $LastPostDate
+	 * @property-read QQReverseReferenceNodePackage $Package
+	 * @property-read QQReverseReferenceNodePackageCategory $ChildPackageCategory
+	 * @property-read QQNode $_PrimaryKeyNode
+	 */
 	class QQReverseReferenceNodePackageCategory extends QQReverseReferenceNode {
 		protected $strTableName = 'package_category';
 		protected $strPrimaryKey = 'id';

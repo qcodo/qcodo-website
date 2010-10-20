@@ -30,21 +30,75 @@
 
 	class CounterMetaControlGen extends QBaseClass {
 		// General Variables
+		/**
+		 * @var Counter objCounter
+		 * @access protected
+		 */
 		protected $objCounter;
+
+		/**
+		 * @var QForm|QControl objParentObject
+		 * @access protected
+		 */
 		protected $objParentObject;
+
+		/**
+		 * @var string  strTitleVerb
+		 * @access protected
+		 */
 		protected $strTitleVerb;
+
+		/**
+		 * @var boolean blnEditMode
+		 * @access protected
+		 */
 		protected $blnEditMode;
 
 		// Controls that allow the editing of Counter's individual data fields
+        /**
+         * @var QLabel lblId;
+         * @access protected
+         */
 		protected $lblId;
+
+        /**
+         * @var QTextBox txtFilename;
+         * @access protected
+         */
 		protected $txtFilename;
+
+        /**
+         * @var QTextBox txtToken;
+         * @access protected
+         */
 		protected $txtToken;
+
+        /**
+         * @var QIntegerTextBox txtCounter;
+         * @access protected
+         */
 		protected $txtCounter;
 
+
 		// Controls that allow the viewing of Counter's individual data fields
+        /**
+         * @var QLabel lblFilename
+         * @access protected
+         */
 		protected $lblFilename;
+
+        /**
+         * @var QLabel lblToken
+         * @access protected
+         */
 		protected $lblToken;
+
+        /**
+         * @var QLabel lblCounter
+         * @access protected
+         */
 		protected $lblCounter;
+
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
 

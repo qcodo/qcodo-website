@@ -308,9 +308,31 @@
 				throw $objExc;
 			}
 
-			// Perform the Query, Get the First Row, and Instantiate a new Package object
+			// Perform the Query
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return Package::InstantiateDbRow($objDbResult->GetNextRow(), null, null, null, $objQueryBuilder->ColumnAliasArray);
+
+			// Instantiate a new Package object and return it
+
+			// Do we have to expand anything?
+			if ($objQueryBuilder->ExpandAsArrayNodes) {
+				$objToReturn = array();
+				while ($objDbRow = $objDbResult->GetNextRow()) {
+					$objItem = Package::InstantiateDbRow($objDbRow, null, $objQueryBuilder->ExpandAsArrayNodes, $objToReturn, $objQueryBuilder->ColumnAliasArray);
+					if ($objItem) $objToReturn[] = $objItem;
+				}
+
+				if (count($objToReturn)) {
+					// Since we only want the object to return, lets return the object and not the array.
+					return $objToReturn[0];
+				} else {
+					return null;
+				}
+			} else {
+				// No expands just return the first row
+				$objDbRow = $objDbResult->GetNextRow();
+				if (is_null($objDbRow)) return null;
+				return Package::InstantiateDbRow($objDbRow, null, null, null, $objQueryBuilder->ColumnAliasArray);
+			}
 		}
 
 		/**
@@ -759,9 +781,9 @@
 
 
 
-		//////////////////////////
-		// SAVE, DELETE AND RELOAD
-		//////////////////////////
+		//////////////////////////////////////
+		// SAVE, DELETE, RELOAD and JOURNALING
+		//////////////////////////////////////
 
 		/**
 		 * Save this Package
@@ -798,6 +820,10 @@
 
 					// Update Identity column and return its value
 					$mixToReturn = $this->intId = $objDatabase->InsertId('package', 'id');
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('INSERT');
+
 				} else {
 					// Perform an UPDATE query
 
@@ -817,6 +843,9 @@
 						WHERE
 							`id` = ' . $objDatabase->SqlVariable($this->intId) . '
 					');
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('UPDATE');
 				}
 
 		
@@ -880,6 +909,9 @@
 					`package`
 				WHERE
 					`id` = ' . $objDatabase->SqlVariable($this->intId) . '');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) $this->Journal('DELETE');
 		}
 
 		/**
@@ -929,6 +961,66 @@
 			$this->dttLastPostDate = $objReloaded->dttLastPostDate;
 			$this->LastPostedByPersonId = $objReloaded->LastPostedByPersonId;
 		}
+
+		/**
+		 * Journals the current object into the Log database.
+		 * Used internally as a helper method.
+		 * @param string $strJournalCommand
+		 */
+		public function Journal($strJournalCommand) {
+			$objDatabase = Package::GetDatabase()->JournalingDatabase;
+
+			$objDatabase->NonQuery('
+				INSERT INTO `package` (
+					`id`,
+					`package_category_id`,
+					`token`,
+					`name`,
+					`description`,
+					`last_post_date`,
+					`last_posted_by_person_id`,
+					__sys_login_id,
+					__sys_action,
+					__sys_date
+				) VALUES (
+					' . $objDatabase->SqlVariable($this->intId) . ',
+					' . $objDatabase->SqlVariable($this->intPackageCategoryId) . ',
+					' . $objDatabase->SqlVariable($this->strToken) . ',
+					' . $objDatabase->SqlVariable($this->strName) . ',
+					' . $objDatabase->SqlVariable($this->strDescription) . ',
+					' . $objDatabase->SqlVariable($this->dttLastPostDate) . ',
+					' . $objDatabase->SqlVariable($this->intLastPostedByPersonId) . ',
+					' . (($objDatabase->JournaledById) ? $objDatabase->JournaledById : 'NULL') . ',
+					' . $objDatabase->SqlVariable($strJournalCommand) . ',
+					NOW()
+				);
+			');
+		}
+
+		/**
+		 * Gets the historical journal for an object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @param integer intId
+		 * @return Package[]
+		 */
+		public static function GetJournalForId($intId) {
+			$objDatabase = Package::GetDatabase()->JournalingDatabase;
+
+			$objResult = $objDatabase->Query('SELECT * FROM package WHERE id = ' .
+				$objDatabase->SqlVariable($intId) . ' ORDER BY __sys_date');
+
+			return Package::InstantiateDbResult($objResult);
+		}
+
+		/**
+		 * Gets the historical journal for this object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @return Package[]
+		 */
+		public function GetJournal() {
+			return Package::GetJournalForId($this->intId);
+		}
+
 
 
 
@@ -1326,6 +1418,12 @@
 				WHERE
 					`id` = ' . $objDatabase->SqlVariable($objPackageContribution->Id) . '
 			');
+
+			// Journaling (if applicable)
+			if ($objDatabase->JournalingDatabase) {
+				$objPackageContribution->PackageId = $this->intId;
+				$objPackageContribution->Journal('UPDATE');
+			}
 		}
 
 		/**
@@ -1352,6 +1450,12 @@
 					`id` = ' . $objDatabase->SqlVariable($objPackageContribution->Id) . ' AND
 					`package_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 			');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				$objPackageContribution->PackageId = null;
+				$objPackageContribution->Journal('UPDATE');
+			}
 		}
 
 		/**
@@ -1364,6 +1468,14 @@
 
 			// Get the Database Object for this Class
 			$objDatabase = Package::GetDatabase();
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				foreach (PackageContribution::LoadArrayByPackageId($this->intId) as $objPackageContribution) {
+					$objPackageContribution->PackageId = null;
+					$objPackageContribution->Journal('UPDATE');
+				}
+			}
 
 			// Perform the SQL Query
 			$objDatabase->NonQuery('
@@ -1398,6 +1510,11 @@
 					`id` = ' . $objDatabase->SqlVariable($objPackageContribution->Id) . ' AND
 					`package_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 			');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				$objPackageContribution->Journal('DELETE');
+			}
 		}
 
 		/**
@@ -1410,6 +1527,13 @@
 
 			// Get the Database Object for this Class
 			$objDatabase = Package::GetDatabase();
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				foreach (PackageContribution::LoadArrayByPackageId($this->intId) as $objPackageContribution) {
+					$objPackageContribution->Journal('DELETE');
+				}
+			}
 
 			// Perform the SQL Query
 			$objDatabase->NonQuery('
@@ -1519,6 +1643,19 @@
 	// ADDITIONAL CLASSES for QCODO QUERY
 	/////////////////////////////////////
 
+	/**
+	 * @property-read QQNode $Id
+	 * @property-read QQNode $PackageCategoryId
+	 * @property-read QQNodePackageCategory $PackageCategory
+	 * @property-read QQNode $Token
+	 * @property-read QQNode $Name
+	 * @property-read QQNode $Description
+	 * @property-read QQNode $LastPostDate
+	 * @property-read QQNode $LastPostedByPersonId
+	 * @property-read QQNodePerson $LastPostedByPerson
+	 * @property-read QQReverseReferenceNodePackageContribution $PackageContribution
+	 * @property-read QQReverseReferenceNodeTopicLink $TopicLink
+	 */
 	class QQNodePackage extends QQNode {
 		protected $strTableName = 'package';
 		protected $strPrimaryKey = 'id';
@@ -1560,7 +1697,21 @@
 			}
 		}
 	}
-
+	
+	/**
+	 * @property-read QQNode $Id
+	 * @property-read QQNode $PackageCategoryId
+	 * @property-read QQNodePackageCategory $PackageCategory
+	 * @property-read QQNode $Token
+	 * @property-read QQNode $Name
+	 * @property-read QQNode $Description
+	 * @property-read QQNode $LastPostDate
+	 * @property-read QQNode $LastPostedByPersonId
+	 * @property-read QQNodePerson $LastPostedByPerson
+	 * @property-read QQReverseReferenceNodePackageContribution $PackageContribution
+	 * @property-read QQReverseReferenceNodeTopicLink $TopicLink
+	 * @property-read QQNode $_PrimaryKeyNode
+	 */
 	class QQReverseReferenceNodePackage extends QQReverseReferenceNode {
 		protected $strTableName = 'package';
 		protected $strPrimaryKey = 'id';

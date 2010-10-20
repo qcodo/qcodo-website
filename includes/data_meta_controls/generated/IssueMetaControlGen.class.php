@@ -56,51 +56,235 @@
 
 	class IssueMetaControlGen extends QBaseClass {
 		// General Variables
+		/**
+		 * @var Issue objIssue
+		 * @access protected
+		 */
 		protected $objIssue;
+
+		/**
+		 * @var QForm|QControl objParentObject
+		 * @access protected
+		 */
 		protected $objParentObject;
+
+		/**
+		 * @var string  strTitleVerb
+		 * @access protected
+		 */
 		protected $strTitleVerb;
+
+		/**
+		 * @var boolean blnEditMode
+		 * @access protected
+		 */
 		protected $blnEditMode;
 
 		// Controls that allow the editing of Issue's individual data fields
+        /**
+         * @var QLabel lblId;
+         * @access protected
+         */
 		protected $lblId;
+
+        /**
+         * @var QListBox lstIssuePriorityType;
+         * @access protected
+         */
 		protected $lstIssuePriorityType;
+
+        /**
+         * @var QListBox lstIssueStatusType;
+         * @access protected
+         */
 		protected $lstIssueStatusType;
+
+        /**
+         * @var QListBox lstIssueResolutionType;
+         * @access protected
+         */
 		protected $lstIssueResolutionType;
+
+        /**
+         * @var QTextBox txtTitle;
+         * @access protected
+         */
 		protected $txtTitle;
+
+        /**
+         * @var QTextBox txtExampleCode;
+         * @access protected
+         */
 		protected $txtExampleCode;
+
+        /**
+         * @var QTextBox txtExampleTemplate;
+         * @access protected
+         */
 		protected $txtExampleTemplate;
+
+        /**
+         * @var QTextBox txtExampleData;
+         * @access protected
+         */
 		protected $txtExampleData;
+
+        /**
+         * @var QTextBox txtExpectedOutput;
+         * @access protected
+         */
 		protected $txtExpectedOutput;
+
+        /**
+         * @var QTextBox txtActualOutput;
+         * @access protected
+         */
 		protected $txtActualOutput;
+
+        /**
+         * @var QListBox lstPostedByPerson;
+         * @access protected
+         */
 		protected $lstPostedByPerson;
+
+        /**
+         * @var QListBox lstAssignedToPerson;
+         * @access protected
+         */
 		protected $lstAssignedToPerson;
+
+        /**
+         * @var QDateTimePicker calPostDate;
+         * @access protected
+         */
 		protected $calPostDate;
+
+        /**
+         * @var QDateTimePicker calAssignedDate;
+         * @access protected
+         */
 		protected $calAssignedDate;
+
+        /**
+         * @var QDateTimePicker calDueDate;
+         * @access protected
+         */
 		protected $calDueDate;
+
+        /**
+         * @var QIntegerTextBox txtVoteCount;
+         * @access protected
+         */
 		protected $txtVoteCount;
 
+
 		// Controls that allow the viewing of Issue's individual data fields
+        /**
+         * @var QLabel lblIssuePriorityTypeId
+         * @access protected
+         */
 		protected $lblIssuePriorityTypeId;
+
+        /**
+         * @var QLabel lblIssueStatusTypeId
+         * @access protected
+         */
 		protected $lblIssueStatusTypeId;
+
+        /**
+         * @var QLabel lblIssueResolutionTypeId
+         * @access protected
+         */
 		protected $lblIssueResolutionTypeId;
+
+        /**
+         * @var QLabel lblTitle
+         * @access protected
+         */
 		protected $lblTitle;
+
+        /**
+         * @var QLabel lblExampleCode
+         * @access protected
+         */
 		protected $lblExampleCode;
+
+        /**
+         * @var QLabel lblExampleTemplate
+         * @access protected
+         */
 		protected $lblExampleTemplate;
+
+        /**
+         * @var QLabel lblExampleData
+         * @access protected
+         */
 		protected $lblExampleData;
+
+        /**
+         * @var QLabel lblExpectedOutput
+         * @access protected
+         */
 		protected $lblExpectedOutput;
+
+        /**
+         * @var QLabel lblActualOutput
+         * @access protected
+         */
 		protected $lblActualOutput;
+
+        /**
+         * @var QLabel lblPostedByPersonId
+         * @access protected
+         */
 		protected $lblPostedByPersonId;
+
+        /**
+         * @var QLabel lblAssignedToPersonId
+         * @access protected
+         */
 		protected $lblAssignedToPersonId;
+
+        /**
+         * @var QLabel lblPostDate
+         * @access protected
+         */
 		protected $lblPostDate;
+
+        /**
+         * @var QLabel lblAssignedDate
+         * @access protected
+         */
 		protected $lblAssignedDate;
+
+        /**
+         * @var QLabel lblDueDate
+         * @access protected
+         */
 		protected $lblDueDate;
+
+        /**
+         * @var QLabel lblVoteCount
+         * @access protected
+         */
 		protected $lblVoteCount;
 
+
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
+        /**
+         * @var QListBox lstTopicLink
+         * @access protected
+         */
 		protected $lstTopicLink;
 
+
 		// QLabel Controls (if applicable) to view Unique ReverseReferences and ManyToMany References
+        /**
+         * @var QLabel lblTopicLink
+         * @access protected
+         */
 		protected $lblTopicLink;
+
 
 
 		/**

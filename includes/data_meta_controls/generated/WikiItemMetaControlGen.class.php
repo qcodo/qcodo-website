@@ -44,39 +44,163 @@
 
 	class WikiItemMetaControlGen extends QBaseClass {
 		// General Variables
+		/**
+		 * @var WikiItem objWikiItem
+		 * @access protected
+		 */
 		protected $objWikiItem;
+
+		/**
+		 * @var QForm|QControl objParentObject
+		 * @access protected
+		 */
 		protected $objParentObject;
+
+		/**
+		 * @var string  strTitleVerb
+		 * @access protected
+		 */
 		protected $strTitleVerb;
+
+		/**
+		 * @var boolean blnEditMode
+		 * @access protected
+		 */
 		protected $blnEditMode;
 
 		// Controls that allow the editing of WikiItem's individual data fields
+        /**
+         * @var QLabel lblId;
+         * @access protected
+         */
 		protected $lblId;
+
+        /**
+         * @var QTextBox txtPath;
+         * @access protected
+         */
 		protected $txtPath;
+
+        /**
+         * @var QListBox lstWikiItemType;
+         * @access protected
+         */
 		protected $lstWikiItemType;
+
+        /**
+         * @var QListBox lstEditorMinimumPersonType;
+         * @access protected
+         */
 		protected $lstEditorMinimumPersonType;
+
+        /**
+         * @var QIntegerTextBox txtOverrideNavbarIndex;
+         * @access protected
+         */
 		protected $txtOverrideNavbarIndex;
+
+        /**
+         * @var QIntegerTextBox txtOverrideSubnavIndex;
+         * @access protected
+         */
 		protected $txtOverrideSubnavIndex;
+
+        /**
+         * @var QListBox lstCurrentWikiVersion;
+         * @access protected
+         */
 		protected $lstCurrentWikiVersion;
+
+        /**
+         * @var QTextBox txtCurrentName;
+         * @access protected
+         */
 		protected $txtCurrentName;
+
+        /**
+         * @var QListBox lstCurrentPostedByPerson;
+         * @access protected
+         */
 		protected $lstCurrentPostedByPerson;
+
+        /**
+         * @var QDateTimePicker calCurrentPostDate;
+         * @access protected
+         */
 		protected $calCurrentPostDate;
 
+
 		// Controls that allow the viewing of WikiItem's individual data fields
+        /**
+         * @var QLabel lblPath
+         * @access protected
+         */
 		protected $lblPath;
+
+        /**
+         * @var QLabel lblWikiItemTypeId
+         * @access protected
+         */
 		protected $lblWikiItemTypeId;
+
+        /**
+         * @var QLabel lblEditorMinimumPersonTypeId
+         * @access protected
+         */
 		protected $lblEditorMinimumPersonTypeId;
+
+        /**
+         * @var QLabel lblOverrideNavbarIndex
+         * @access protected
+         */
 		protected $lblOverrideNavbarIndex;
+
+        /**
+         * @var QLabel lblOverrideSubnavIndex
+         * @access protected
+         */
 		protected $lblOverrideSubnavIndex;
+
+        /**
+         * @var QLabel lblCurrentWikiVersionId
+         * @access protected
+         */
 		protected $lblCurrentWikiVersionId;
+
+        /**
+         * @var QLabel lblCurrentName
+         * @access protected
+         */
 		protected $lblCurrentName;
+
+        /**
+         * @var QLabel lblCurrentPostedByPersonId
+         * @access protected
+         */
 		protected $lblCurrentPostedByPersonId;
+
+        /**
+         * @var QLabel lblCurrentPostDate
+         * @access protected
+         */
 		protected $lblCurrentPostDate;
 
+
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
+        /**
+         * @var QListBox lstTopicLink
+         * @access protected
+         */
 		protected $lstTopicLink;
 
+
 		// QLabel Controls (if applicable) to view Unique ReverseReferences and ManyToMany References
+        /**
+         * @var QLabel lblTopicLink
+         * @access protected
+         */
 		protected $lblTopicLink;
+
 
 
 		/**

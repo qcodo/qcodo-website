@@ -32,24 +32,93 @@
 
 	class WikiImageMetaControlGen extends QBaseClass {
 		// General Variables
+		/**
+		 * @var WikiImage objWikiImage
+		 * @access protected
+		 */
 		protected $objWikiImage;
+
+		/**
+		 * @var QForm|QControl objParentObject
+		 * @access protected
+		 */
 		protected $objParentObject;
+
+		/**
+		 * @var string  strTitleVerb
+		 * @access protected
+		 */
 		protected $strTitleVerb;
+
+		/**
+		 * @var boolean blnEditMode
+		 * @access protected
+		 */
 		protected $blnEditMode;
 
 		// Controls that allow the editing of WikiImage's individual data fields
+        /**
+         * @var QListBox lstWikiVersion;
+         * @access protected
+         */
 		protected $lstWikiVersion;
+
+        /**
+         * @var QListBox lstImageFileType;
+         * @access protected
+         */
 		protected $lstImageFileType;
+
+        /**
+         * @var QIntegerTextBox txtWidth;
+         * @access protected
+         */
 		protected $txtWidth;
+
+        /**
+         * @var QIntegerTextBox txtHeight;
+         * @access protected
+         */
 		protected $txtHeight;
+
+        /**
+         * @var QTextBox txtDescription;
+         * @access protected
+         */
 		protected $txtDescription;
 
+
 		// Controls that allow the viewing of WikiImage's individual data fields
+        /**
+         * @var QLabel lblWikiVersionId
+         * @access protected
+         */
 		protected $lblWikiVersionId;
+
+        /**
+         * @var QLabel lblImageFileTypeId
+         * @access protected
+         */
 		protected $lblImageFileTypeId;
+
+        /**
+         * @var QLabel lblWidth
+         * @access protected
+         */
 		protected $lblWidth;
+
+        /**
+         * @var QLabel lblHeight
+         * @access protected
+         */
 		protected $lblHeight;
+
+        /**
+         * @var QLabel lblDescription
+         * @access protected
+         */
 		protected $lblDescription;
+
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
 

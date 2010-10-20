@@ -34,29 +34,103 @@
 
 	class ForumMetaControlGen extends QBaseClass {
 		// General Variables
+		/**
+		 * @var Forum objForum
+		 * @access protected
+		 */
 		protected $objForum;
+
+		/**
+		 * @var QForm|QControl objParentObject
+		 * @access protected
+		 */
 		protected $objParentObject;
+
+		/**
+		 * @var string  strTitleVerb
+		 * @access protected
+		 */
 		protected $strTitleVerb;
+
+		/**
+		 * @var boolean blnEditMode
+		 * @access protected
+		 */
 		protected $blnEditMode;
 
 		// Controls that allow the editing of Forum's individual data fields
+        /**
+         * @var QLabel lblId;
+         * @access protected
+         */
 		protected $lblId;
+
+        /**
+         * @var QIntegerTextBox txtOrderNumber;
+         * @access protected
+         */
 		protected $txtOrderNumber;
+
+        /**
+         * @var QTextBox txtName;
+         * @access protected
+         */
 		protected $txtName;
+
+        /**
+         * @var QCheckBox chkAnnounceOnlyFlag;
+         * @access protected
+         */
 		protected $chkAnnounceOnlyFlag;
+
+        /**
+         * @var QTextBox txtDescription;
+         * @access protected
+         */
 		protected $txtDescription;
 
+
 		// Controls that allow the viewing of Forum's individual data fields
+        /**
+         * @var QLabel lblOrderNumber
+         * @access protected
+         */
 		protected $lblOrderNumber;
+
+        /**
+         * @var QLabel lblName
+         * @access protected
+         */
 		protected $lblName;
+
+        /**
+         * @var QLabel lblAnnounceOnlyFlag
+         * @access protected
+         */
 		protected $lblAnnounceOnlyFlag;
+
+        /**
+         * @var QLabel lblDescription
+         * @access protected
+         */
 		protected $lblDescription;
 
+
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
+        /**
+         * @var QListBox lstTopicLink
+         * @access protected
+         */
 		protected $lstTopicLink;
 
+
 		// QLabel Controls (if applicable) to view Unique ReverseReferences and ManyToMany References
+        /**
+         * @var QLabel lblTopicLink
+         * @access protected
+         */
 		protected $lblTopicLink;
+
 
 
 		/**

@@ -38,29 +38,123 @@
 
 	class MessageMetaControlGen extends QBaseClass {
 		// General Variables
+		/**
+		 * @var Message objMessage
+		 * @access protected
+		 */
 		protected $objMessage;
+
+		/**
+		 * @var QForm|QControl objParentObject
+		 * @access protected
+		 */
 		protected $objParentObject;
+
+		/**
+		 * @var string  strTitleVerb
+		 * @access protected
+		 */
 		protected $strTitleVerb;
+
+		/**
+		 * @var boolean blnEditMode
+		 * @access protected
+		 */
 		protected $blnEditMode;
 
 		// Controls that allow the editing of Message's individual data fields
+        /**
+         * @var QLabel lblId;
+         * @access protected
+         */
 		protected $lblId;
+
+        /**
+         * @var QListBox lstTopic;
+         * @access protected
+         */
 		protected $lstTopic;
+
+        /**
+         * @var QListBox lstTopicLink;
+         * @access protected
+         */
 		protected $lstTopicLink;
+
+        /**
+         * @var QListBox lstPerson;
+         * @access protected
+         */
 		protected $lstPerson;
+
+        /**
+         * @var QTextBox txtMessage;
+         * @access protected
+         */
 		protected $txtMessage;
+
+        /**
+         * @var QTextBox txtCompiledHtml;
+         * @access protected
+         */
 		protected $txtCompiledHtml;
+
+        /**
+         * @var QIntegerTextBox txtReplyNumber;
+         * @access protected
+         */
 		protected $txtReplyNumber;
+
+        /**
+         * @var QDateTimePicker calPostDate;
+         * @access protected
+         */
 		protected $calPostDate;
 
+
 		// Controls that allow the viewing of Message's individual data fields
+        /**
+         * @var QLabel lblTopicId
+         * @access protected
+         */
 		protected $lblTopicId;
+
+        /**
+         * @var QLabel lblTopicLinkId
+         * @access protected
+         */
 		protected $lblTopicLinkId;
+
+        /**
+         * @var QLabel lblPersonId
+         * @access protected
+         */
 		protected $lblPersonId;
+
+        /**
+         * @var QLabel lblMessage
+         * @access protected
+         */
 		protected $lblMessage;
+
+        /**
+         * @var QLabel lblCompiledHtml
+         * @access protected
+         */
 		protected $lblCompiledHtml;
+
+        /**
+         * @var QLabel lblReplyNumber
+         * @access protected
+         */
 		protected $lblReplyNumber;
+
+        /**
+         * @var QLabel lblPostDate
+         * @access protected
+         */
 		protected $lblPostDate;
+
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
 

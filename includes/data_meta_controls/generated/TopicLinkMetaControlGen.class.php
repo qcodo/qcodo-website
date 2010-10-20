@@ -40,31 +40,135 @@
 
 	class TopicLinkMetaControlGen extends QBaseClass {
 		// General Variables
+		/**
+		 * @var TopicLink objTopicLink
+		 * @access protected
+		 */
 		protected $objTopicLink;
+
+		/**
+		 * @var QForm|QControl objParentObject
+		 * @access protected
+		 */
 		protected $objParentObject;
+
+		/**
+		 * @var string  strTitleVerb
+		 * @access protected
+		 */
 		protected $strTitleVerb;
+
+		/**
+		 * @var boolean blnEditMode
+		 * @access protected
+		 */
 		protected $blnEditMode;
 
 		// Controls that allow the editing of TopicLink's individual data fields
+        /**
+         * @var QLabel lblId;
+         * @access protected
+         */
 		protected $lblId;
+
+        /**
+         * @var QListBox lstTopicLinkType;
+         * @access protected
+         */
 		protected $lstTopicLinkType;
+
+        /**
+         * @var QIntegerTextBox txtTopicCount;
+         * @access protected
+         */
 		protected $txtTopicCount;
+
+        /**
+         * @var QIntegerTextBox txtMessageCount;
+         * @access protected
+         */
 		protected $txtMessageCount;
+
+        /**
+         * @var QDateTimePicker calLastPostDate;
+         * @access protected
+         */
 		protected $calLastPostDate;
+
+        /**
+         * @var QListBox lstForum;
+         * @access protected
+         */
 		protected $lstForum;
+
+        /**
+         * @var QListBox lstIssue;
+         * @access protected
+         */
 		protected $lstIssue;
+
+        /**
+         * @var QListBox lstWikiItem;
+         * @access protected
+         */
 		protected $lstWikiItem;
+
+        /**
+         * @var QListBox lstPackage;
+         * @access protected
+         */
 		protected $lstPackage;
 
+
 		// Controls that allow the viewing of TopicLink's individual data fields
+        /**
+         * @var QLabel lblTopicLinkTypeId
+         * @access protected
+         */
 		protected $lblTopicLinkTypeId;
+
+        /**
+         * @var QLabel lblTopicCount
+         * @access protected
+         */
 		protected $lblTopicCount;
+
+        /**
+         * @var QLabel lblMessageCount
+         * @access protected
+         */
 		protected $lblMessageCount;
+
+        /**
+         * @var QLabel lblLastPostDate
+         * @access protected
+         */
 		protected $lblLastPostDate;
+
+        /**
+         * @var QLabel lblForumId
+         * @access protected
+         */
 		protected $lblForumId;
+
+        /**
+         * @var QLabel lblIssueId
+         * @access protected
+         */
 		protected $lblIssueId;
+
+        /**
+         * @var QLabel lblWikiItemId
+         * @access protected
+         */
 		protected $lblWikiItemId;
+
+        /**
+         * @var QLabel lblPackageId
+         * @access protected
+         */
 		protected $lblPackageId;
+
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
 

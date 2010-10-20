@@ -30,21 +30,75 @@
 
 	class IssueFieldValueMetaControlGen extends QBaseClass {
 		// General Variables
+		/**
+		 * @var IssueFieldValue objIssueFieldValue
+		 * @access protected
+		 */
 		protected $objIssueFieldValue;
+
+		/**
+		 * @var QForm|QControl objParentObject
+		 * @access protected
+		 */
 		protected $objParentObject;
+
+		/**
+		 * @var string  strTitleVerb
+		 * @access protected
+		 */
 		protected $strTitleVerb;
+
+		/**
+		 * @var boolean blnEditMode
+		 * @access protected
+		 */
 		protected $blnEditMode;
 
 		// Controls that allow the editing of IssueFieldValue's individual data fields
+        /**
+         * @var QLabel lblId;
+         * @access protected
+         */
 		protected $lblId;
+
+        /**
+         * @var QListBox lstIssue;
+         * @access protected
+         */
 		protected $lstIssue;
+
+        /**
+         * @var QListBox lstIssueField;
+         * @access protected
+         */
 		protected $lstIssueField;
+
+        /**
+         * @var QListBox lstIssueFieldOption;
+         * @access protected
+         */
 		protected $lstIssueFieldOption;
 
+
 		// Controls that allow the viewing of IssueFieldValue's individual data fields
+        /**
+         * @var QLabel lblIssueId
+         * @access protected
+         */
 		protected $lblIssueId;
+
+        /**
+         * @var QLabel lblIssueFieldId
+         * @access protected
+         */
 		protected $lblIssueFieldId;
+
+        /**
+         * @var QLabel lblIssueFieldOptionId
+         * @access protected
+         */
 		protected $lblIssueFieldOptionId;
+
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
 

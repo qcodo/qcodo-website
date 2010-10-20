@@ -34,25 +34,99 @@
 
 	class IssueFieldOptionMetaControlGen extends QBaseClass {
 		// General Variables
+		/**
+		 * @var IssueFieldOption objIssueFieldOption
+		 * @access protected
+		 */
 		protected $objIssueFieldOption;
+
+		/**
+		 * @var QForm|QControl objParentObject
+		 * @access protected
+		 */
 		protected $objParentObject;
+
+		/**
+		 * @var string  strTitleVerb
+		 * @access protected
+		 */
 		protected $strTitleVerb;
+
+		/**
+		 * @var boolean blnEditMode
+		 * @access protected
+		 */
 		protected $blnEditMode;
 
 		// Controls that allow the editing of IssueFieldOption's individual data fields
+        /**
+         * @var QLabel lblId;
+         * @access protected
+         */
 		protected $lblId;
+
+        /**
+         * @var QListBox lstIssueField;
+         * @access protected
+         */
 		protected $lstIssueField;
+
+        /**
+         * @var QTextBox txtName;
+         * @access protected
+         */
 		protected $txtName;
+
+        /**
+         * @var QTextBox txtToken;
+         * @access protected
+         */
 		protected $txtToken;
+
+        /**
+         * @var QIntegerTextBox txtOrderNumber;
+         * @access protected
+         */
 		protected $txtOrderNumber;
+
+        /**
+         * @var QCheckBox chkActiveFlag;
+         * @access protected
+         */
 		protected $chkActiveFlag;
 
+
 		// Controls that allow the viewing of IssueFieldOption's individual data fields
+        /**
+         * @var QLabel lblIssueFieldId
+         * @access protected
+         */
 		protected $lblIssueFieldId;
+
+        /**
+         * @var QLabel lblName
+         * @access protected
+         */
 		protected $lblName;
+
+        /**
+         * @var QLabel lblToken
+         * @access protected
+         */
 		protected $lblToken;
+
+        /**
+         * @var QLabel lblOrderNumber
+         * @access protected
+         */
 		protected $lblOrderNumber;
+
+        /**
+         * @var QLabel lblActiveFlag
+         * @access protected
+         */
 		protected $lblActiveFlag;
+
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
 

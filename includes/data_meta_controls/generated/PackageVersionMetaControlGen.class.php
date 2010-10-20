@@ -40,31 +40,135 @@
 
 	class PackageVersionMetaControlGen extends QBaseClass {
 		// General Variables
+		/**
+		 * @var PackageVersion objPackageVersion
+		 * @access protected
+		 */
 		protected $objPackageVersion;
+
+		/**
+		 * @var QForm|QControl objParentObject
+		 * @access protected
+		 */
 		protected $objParentObject;
+
+		/**
+		 * @var string  strTitleVerb
+		 * @access protected
+		 */
 		protected $strTitleVerb;
+
+		/**
+		 * @var boolean blnEditMode
+		 * @access protected
+		 */
 		protected $blnEditMode;
 
 		// Controls that allow the editing of PackageVersion's individual data fields
+        /**
+         * @var QLabel lblId;
+         * @access protected
+         */
 		protected $lblId;
+
+        /**
+         * @var QListBox lstPackageContribution;
+         * @access protected
+         */
 		protected $lstPackageContribution;
+
+        /**
+         * @var QIntegerTextBox txtVersionNumber;
+         * @access protected
+         */
 		protected $txtVersionNumber;
+
+        /**
+         * @var QTextBox txtNotes;
+         * @access protected
+         */
 		protected $txtNotes;
+
+        /**
+         * @var QTextBox txtQcodoVersion;
+         * @access protected
+         */
 		protected $txtQcodoVersion;
+
+        /**
+         * @var QIntegerTextBox txtNewFileCount;
+         * @access protected
+         */
 		protected $txtNewFileCount;
+
+        /**
+         * @var QIntegerTextBox txtChangedFileCount;
+         * @access protected
+         */
 		protected $txtChangedFileCount;
+
+        /**
+         * @var QDateTimePicker calPostDate;
+         * @access protected
+         */
 		protected $calPostDate;
+
+        /**
+         * @var QIntegerTextBox txtDownloadCount;
+         * @access protected
+         */
 		protected $txtDownloadCount;
 
+
 		// Controls that allow the viewing of PackageVersion's individual data fields
+        /**
+         * @var QLabel lblPackageContributionId
+         * @access protected
+         */
 		protected $lblPackageContributionId;
+
+        /**
+         * @var QLabel lblVersionNumber
+         * @access protected
+         */
 		protected $lblVersionNumber;
+
+        /**
+         * @var QLabel lblNotes
+         * @access protected
+         */
 		protected $lblNotes;
+
+        /**
+         * @var QLabel lblQcodoVersion
+         * @access protected
+         */
 		protected $lblQcodoVersion;
+
+        /**
+         * @var QLabel lblNewFileCount
+         * @access protected
+         */
 		protected $lblNewFileCount;
+
+        /**
+         * @var QLabel lblChangedFileCount
+         * @access protected
+         */
 		protected $lblChangedFileCount;
+
+        /**
+         * @var QLabel lblPostDate
+         * @access protected
+         */
 		protected $lblPostDate;
+
+        /**
+         * @var QLabel lblDownloadCount
+         * @access protected
+         */
 		protected $lblDownloadCount;
+
 
 		// QListBox Controls (if applicable) to edit Unique ReverseReferences and ManyToMany References
 

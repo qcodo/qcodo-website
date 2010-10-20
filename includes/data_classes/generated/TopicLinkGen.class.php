@@ -345,9 +345,31 @@
 				throw $objExc;
 			}
 
-			// Perform the Query, Get the First Row, and Instantiate a new TopicLink object
+			// Perform the Query
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return TopicLink::InstantiateDbRow($objDbResult->GetNextRow(), null, null, null, $objQueryBuilder->ColumnAliasArray);
+
+			// Instantiate a new TopicLink object and return it
+
+			// Do we have to expand anything?
+			if ($objQueryBuilder->ExpandAsArrayNodes) {
+				$objToReturn = array();
+				while ($objDbRow = $objDbResult->GetNextRow()) {
+					$objItem = TopicLink::InstantiateDbRow($objDbRow, null, $objQueryBuilder->ExpandAsArrayNodes, $objToReturn, $objQueryBuilder->ColumnAliasArray);
+					if ($objItem) $objToReturn[] = $objItem;
+				}
+
+				if (count($objToReturn)) {
+					// Since we only want the object to return, lets return the object and not the array.
+					return $objToReturn[0];
+				} else {
+					return null;
+				}
+			} else {
+				// No expands just return the first row
+				$objDbRow = $objDbResult->GetNextRow();
+				if (is_null($objDbRow)) return null;
+				return TopicLink::InstantiateDbRow($objDbRow, null, null, null, $objQueryBuilder->ColumnAliasArray);
+			}
 		}
 
 		/**
@@ -830,9 +852,9 @@
 
 
 
-		//////////////////////////
-		// SAVE, DELETE AND RELOAD
-		//////////////////////////
+		//////////////////////////////////////
+		// SAVE, DELETE, RELOAD and JOURNALING
+		//////////////////////////////////////
 
 		/**
 		 * Save this TopicLink
@@ -873,6 +895,10 @@
 
 					// Update Identity column and return its value
 					$mixToReturn = $this->intId = $objDatabase->InsertId('topic_link', 'id');
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('INSERT');
+
 				} else {
 					// Perform an UPDATE query
 
@@ -894,6 +920,9 @@
 						WHERE
 							`id` = ' . $objDatabase->SqlVariable($this->intId) . '
 					');
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('UPDATE');
 				}
 
 			} catch (QCallerException $objExc) {
@@ -927,6 +956,9 @@
 					`topic_link`
 				WHERE
 					`id` = ' . $objDatabase->SqlVariable($this->intId) . '');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) $this->Journal('DELETE');
 		}
 
 		/**
@@ -978,6 +1010,70 @@
 			$this->WikiItemId = $objReloaded->WikiItemId;
 			$this->PackageId = $objReloaded->PackageId;
 		}
+
+		/**
+		 * Journals the current object into the Log database.
+		 * Used internally as a helper method.
+		 * @param string $strJournalCommand
+		 */
+		public function Journal($strJournalCommand) {
+			$objDatabase = TopicLink::GetDatabase()->JournalingDatabase;
+
+			$objDatabase->NonQuery('
+				INSERT INTO `topic_link` (
+					`id`,
+					`topic_link_type_id`,
+					`topic_count`,
+					`message_count`,
+					`last_post_date`,
+					`forum_id`,
+					`issue_id`,
+					`wiki_item_id`,
+					`package_id`,
+					__sys_login_id,
+					__sys_action,
+					__sys_date
+				) VALUES (
+					' . $objDatabase->SqlVariable($this->intId) . ',
+					' . $objDatabase->SqlVariable($this->intTopicLinkTypeId) . ',
+					' . $objDatabase->SqlVariable($this->intTopicCount) . ',
+					' . $objDatabase->SqlVariable($this->intMessageCount) . ',
+					' . $objDatabase->SqlVariable($this->dttLastPostDate) . ',
+					' . $objDatabase->SqlVariable($this->intForumId) . ',
+					' . $objDatabase->SqlVariable($this->intIssueId) . ',
+					' . $objDatabase->SqlVariable($this->intWikiItemId) . ',
+					' . $objDatabase->SqlVariable($this->intPackageId) . ',
+					' . (($objDatabase->JournaledById) ? $objDatabase->JournaledById : 'NULL') . ',
+					' . $objDatabase->SqlVariable($strJournalCommand) . ',
+					NOW()
+				);
+			');
+		}
+
+		/**
+		 * Gets the historical journal for an object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @param integer intId
+		 * @return TopicLink[]
+		 */
+		public static function GetJournalForId($intId) {
+			$objDatabase = TopicLink::GetDatabase()->JournalingDatabase;
+
+			$objResult = $objDatabase->Query('SELECT * FROM topic_link WHERE id = ' .
+				$objDatabase->SqlVariable($intId) . ' ORDER BY __sys_date');
+
+			return TopicLink::InstantiateDbResult($objResult);
+		}
+
+		/**
+		 * Gets the historical journal for this object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @return TopicLink[]
+		 */
+		public function GetJournal() {
+			return TopicLink::GetJournalForId($this->intId);
+		}
+
 
 
 
@@ -1450,6 +1546,12 @@
 				WHERE
 					`id` = ' . $objDatabase->SqlVariable($objMessage->Id) . '
 			');
+
+			// Journaling (if applicable)
+			if ($objDatabase->JournalingDatabase) {
+				$objMessage->TopicLinkId = $this->intId;
+				$objMessage->Journal('UPDATE');
+			}
 		}
 
 		/**
@@ -1476,6 +1578,12 @@
 					`id` = ' . $objDatabase->SqlVariable($objMessage->Id) . ' AND
 					`topic_link_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 			');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				$objMessage->TopicLinkId = null;
+				$objMessage->Journal('UPDATE');
+			}
 		}
 
 		/**
@@ -1488,6 +1596,14 @@
 
 			// Get the Database Object for this Class
 			$objDatabase = TopicLink::GetDatabase();
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				foreach (Message::LoadArrayByTopicLinkId($this->intId) as $objMessage) {
+					$objMessage->TopicLinkId = null;
+					$objMessage->Journal('UPDATE');
+				}
+			}
 
 			// Perform the SQL Query
 			$objDatabase->NonQuery('
@@ -1522,6 +1638,11 @@
 					`id` = ' . $objDatabase->SqlVariable($objMessage->Id) . ' AND
 					`topic_link_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 			');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				$objMessage->Journal('DELETE');
+			}
 		}
 
 		/**
@@ -1534,6 +1655,13 @@
 
 			// Get the Database Object for this Class
 			$objDatabase = TopicLink::GetDatabase();
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				foreach (Message::LoadArrayByTopicLinkId($this->intId) as $objMessage) {
+					$objMessage->Journal('DELETE');
+				}
+			}
 
 			// Perform the SQL Query
 			$objDatabase->NonQuery('
@@ -1600,6 +1728,12 @@
 				WHERE
 					`id` = ' . $objDatabase->SqlVariable($objTopic->Id) . '
 			');
+
+			// Journaling (if applicable)
+			if ($objDatabase->JournalingDatabase) {
+				$objTopic->TopicLinkId = $this->intId;
+				$objTopic->Journal('UPDATE');
+			}
 		}
 
 		/**
@@ -1626,6 +1760,12 @@
 					`id` = ' . $objDatabase->SqlVariable($objTopic->Id) . ' AND
 					`topic_link_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 			');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				$objTopic->TopicLinkId = null;
+				$objTopic->Journal('UPDATE');
+			}
 		}
 
 		/**
@@ -1638,6 +1778,14 @@
 
 			// Get the Database Object for this Class
 			$objDatabase = TopicLink::GetDatabase();
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				foreach (Topic::LoadArrayByTopicLinkId($this->intId) as $objTopic) {
+					$objTopic->TopicLinkId = null;
+					$objTopic->Journal('UPDATE');
+				}
+			}
 
 			// Perform the SQL Query
 			$objDatabase->NonQuery('
@@ -1672,6 +1820,11 @@
 					`id` = ' . $objDatabase->SqlVariable($objTopic->Id) . ' AND
 					`topic_link_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 			');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				$objTopic->Journal('DELETE');
+			}
 		}
 
 		/**
@@ -1684,6 +1837,13 @@
 
 			// Get the Database Object for this Class
 			$objDatabase = TopicLink::GetDatabase();
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				foreach (Topic::LoadArrayByTopicLinkId($this->intId) as $objTopic) {
+					$objTopic->Journal('DELETE');
+				}
+			}
 
 			// Perform the SQL Query
 			$objDatabase->NonQuery('
@@ -1811,6 +1971,23 @@
 	// ADDITIONAL CLASSES for QCODO QUERY
 	/////////////////////////////////////
 
+	/**
+	 * @property-read QQNode $Id
+	 * @property-read QQNode $TopicLinkTypeId
+	 * @property-read QQNode $TopicCount
+	 * @property-read QQNode $MessageCount
+	 * @property-read QQNode $LastPostDate
+	 * @property-read QQNode $ForumId
+	 * @property-read QQNodeForum $Forum
+	 * @property-read QQNode $IssueId
+	 * @property-read QQNodeIssue $Issue
+	 * @property-read QQNode $WikiItemId
+	 * @property-read QQNodeWikiItem $WikiItem
+	 * @property-read QQNode $PackageId
+	 * @property-read QQNodePackage $Package
+	 * @property-read QQReverseReferenceNodeMessage $Message
+	 * @property-read QQReverseReferenceNodeTopic $Topic
+	 */
 	class QQNodeTopicLink extends QQNode {
 		protected $strTableName = 'topic_link';
 		protected $strPrimaryKey = 'id';
@@ -1860,7 +2037,25 @@
 			}
 		}
 	}
-
+	
+	/**
+	 * @property-read QQNode $Id
+	 * @property-read QQNode $TopicLinkTypeId
+	 * @property-read QQNode $TopicCount
+	 * @property-read QQNode $MessageCount
+	 * @property-read QQNode $LastPostDate
+	 * @property-read QQNode $ForumId
+	 * @property-read QQNodeForum $Forum
+	 * @property-read QQNode $IssueId
+	 * @property-read QQNodeIssue $Issue
+	 * @property-read QQNode $WikiItemId
+	 * @property-read QQNodeWikiItem $WikiItem
+	 * @property-read QQNode $PackageId
+	 * @property-read QQNodePackage $Package
+	 * @property-read QQReverseReferenceNodeMessage $Message
+	 * @property-read QQReverseReferenceNodeTopic $Topic
+	 * @property-read QQNode $_PrimaryKeyNode
+	 */
 	class QQReverseReferenceNodeTopicLink extends QQReverseReferenceNode {
 		protected $strTableName = 'topic_link';
 		protected $strPrimaryKey = 'id';

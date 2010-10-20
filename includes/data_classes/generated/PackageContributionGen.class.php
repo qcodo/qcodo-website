@@ -289,9 +289,31 @@
 				throw $objExc;
 			}
 
-			// Perform the Query, Get the First Row, and Instantiate a new PackageContribution object
+			// Perform the Query
 			$objDbResult = $objQueryBuilder->Database->Query($strQuery);
-			return PackageContribution::InstantiateDbRow($objDbResult->GetNextRow(), null, null, null, $objQueryBuilder->ColumnAliasArray);
+
+			// Instantiate a new PackageContribution object and return it
+
+			// Do we have to expand anything?
+			if ($objQueryBuilder->ExpandAsArrayNodes) {
+				$objToReturn = array();
+				while ($objDbRow = $objDbResult->GetNextRow()) {
+					$objItem = PackageContribution::InstantiateDbRow($objDbRow, null, $objQueryBuilder->ExpandAsArrayNodes, $objToReturn, $objQueryBuilder->ColumnAliasArray);
+					if ($objItem) $objToReturn[] = $objItem;
+				}
+
+				if (count($objToReturn)) {
+					// Since we only want the object to return, lets return the object and not the array.
+					return $objToReturn[0];
+				} else {
+					return null;
+				}
+			} else {
+				// No expands just return the first row
+				$objDbRow = $objDbResult->GetNextRow();
+				if (is_null($objDbRow)) return null;
+				return PackageContribution::InstantiateDbRow($objDbRow, null, null, null, $objQueryBuilder->ColumnAliasArray);
+			}
 		}
 
 		/**
@@ -767,9 +789,9 @@
 
 
 
-		//////////////////////////
-		// SAVE, DELETE AND RELOAD
-		//////////////////////////
+		//////////////////////////////////////
+		// SAVE, DELETE, RELOAD and JOURNALING
+		//////////////////////////////////////
 
 		/**
 		 * Save this PackageContribution
@@ -804,6 +826,10 @@
 
 					// Update Identity column and return its value
 					$mixToReturn = $this->intId = $objDatabase->InsertId('package_contribution', 'id');
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('INSERT');
+
 				} else {
 					// Perform an UPDATE query
 
@@ -822,6 +848,9 @@
 						WHERE
 							`id` = ' . $objDatabase->SqlVariable($this->intId) . '
 					');
+
+					// Journaling
+					if ($objDatabase->JournalingDatabase) $this->Journal('UPDATE');
 				}
 
 			} catch (QCallerException $objExc) {
@@ -855,6 +884,9 @@
 					`package_contribution`
 				WHERE
 					`id` = ' . $objDatabase->SqlVariable($this->intId) . '');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) $this->Journal('DELETE');
 		}
 
 		/**
@@ -903,6 +935,64 @@
 			$this->dttCurrentPostDate = $objReloaded->dttCurrentPostDate;
 			$this->intDownloadCount = $objReloaded->intDownloadCount;
 		}
+
+		/**
+		 * Journals the current object into the Log database.
+		 * Used internally as a helper method.
+		 * @param string $strJournalCommand
+		 */
+		public function Journal($strJournalCommand) {
+			$objDatabase = PackageContribution::GetDatabase()->JournalingDatabase;
+
+			$objDatabase->NonQuery('
+				INSERT INTO `package_contribution` (
+					`id`,
+					`package_id`,
+					`person_id`,
+					`current_package_version_id`,
+					`current_post_date`,
+					`download_count`,
+					__sys_login_id,
+					__sys_action,
+					__sys_date
+				) VALUES (
+					' . $objDatabase->SqlVariable($this->intId) . ',
+					' . $objDatabase->SqlVariable($this->intPackageId) . ',
+					' . $objDatabase->SqlVariable($this->intPersonId) . ',
+					' . $objDatabase->SqlVariable($this->intCurrentPackageVersionId) . ',
+					' . $objDatabase->SqlVariable($this->dttCurrentPostDate) . ',
+					' . $objDatabase->SqlVariable($this->intDownloadCount) . ',
+					' . (($objDatabase->JournaledById) ? $objDatabase->JournaledById : 'NULL') . ',
+					' . $objDatabase->SqlVariable($strJournalCommand) . ',
+					NOW()
+				);
+			');
+		}
+
+		/**
+		 * Gets the historical journal for an object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @param integer intId
+		 * @return PackageContribution[]
+		 */
+		public static function GetJournalForId($intId) {
+			$objDatabase = PackageContribution::GetDatabase()->JournalingDatabase;
+
+			$objResult = $objDatabase->Query('SELECT * FROM package_contribution WHERE id = ' .
+				$objDatabase->SqlVariable($intId) . ' ORDER BY __sys_date');
+
+			return PackageContribution::InstantiateDbResult($objResult);
+		}
+
+		/**
+		 * Gets the historical journal for this object from the log database.
+		 * Objects will have VirtualAttributes available to lookup login, date, and action information from the journal object.
+		 * @return PackageContribution[]
+		 */
+		public function GetJournal() {
+			return PackageContribution::GetJournalForId($this->intId);
+		}
+
 
 
 
@@ -1272,6 +1362,12 @@
 				WHERE
 					`id` = ' . $objDatabase->SqlVariable($objPackageVersion->Id) . '
 			');
+
+			// Journaling (if applicable)
+			if ($objDatabase->JournalingDatabase) {
+				$objPackageVersion->PackageContributionId = $this->intId;
+				$objPackageVersion->Journal('UPDATE');
+			}
 		}
 
 		/**
@@ -1298,6 +1394,12 @@
 					`id` = ' . $objDatabase->SqlVariable($objPackageVersion->Id) . ' AND
 					`package_contribution_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 			');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				$objPackageVersion->PackageContributionId = null;
+				$objPackageVersion->Journal('UPDATE');
+			}
 		}
 
 		/**
@@ -1310,6 +1412,14 @@
 
 			// Get the Database Object for this Class
 			$objDatabase = PackageContribution::GetDatabase();
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				foreach (PackageVersion::LoadArrayByPackageContributionId($this->intId) as $objPackageVersion) {
+					$objPackageVersion->PackageContributionId = null;
+					$objPackageVersion->Journal('UPDATE');
+				}
+			}
 
 			// Perform the SQL Query
 			$objDatabase->NonQuery('
@@ -1344,6 +1454,11 @@
 					`id` = ' . $objDatabase->SqlVariable($objPackageVersion->Id) . ' AND
 					`package_contribution_id` = ' . $objDatabase->SqlVariable($this->intId) . '
 			');
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				$objPackageVersion->Journal('DELETE');
+			}
 		}
 
 		/**
@@ -1356,6 +1471,13 @@
 
 			// Get the Database Object for this Class
 			$objDatabase = PackageContribution::GetDatabase();
+
+			// Journaling
+			if ($objDatabase->JournalingDatabase) {
+				foreach (PackageVersion::LoadArrayByPackageContributionId($this->intId) as $objPackageVersion) {
+					$objPackageVersion->Journal('DELETE');
+				}
+			}
 
 			// Perform the SQL Query
 			$objDatabase->NonQuery('
@@ -1468,6 +1590,18 @@
 	// ADDITIONAL CLASSES for QCODO QUERY
 	/////////////////////////////////////
 
+	/**
+	 * @property-read QQNode $Id
+	 * @property-read QQNode $PackageId
+	 * @property-read QQNodePackage $Package
+	 * @property-read QQNode $PersonId
+	 * @property-read QQNodePerson $Person
+	 * @property-read QQNode $CurrentPackageVersionId
+	 * @property-read QQNodePackageVersion $CurrentPackageVersion
+	 * @property-read QQNode $CurrentPostDate
+	 * @property-read QQNode $DownloadCount
+	 * @property-read QQReverseReferenceNodePackageVersion $PackageVersion
+	 */
 	class QQNodePackageContribution extends QQNode {
 		protected $strTableName = 'package_contribution';
 		protected $strPrimaryKey = 'id';
@@ -1507,7 +1641,20 @@
 			}
 		}
 	}
-
+	
+	/**
+	 * @property-read QQNode $Id
+	 * @property-read QQNode $PackageId
+	 * @property-read QQNodePackage $Package
+	 * @property-read QQNode $PersonId
+	 * @property-read QQNodePerson $Person
+	 * @property-read QQNode $CurrentPackageVersionId
+	 * @property-read QQNodePackageVersion $CurrentPackageVersion
+	 * @property-read QQNode $CurrentPostDate
+	 * @property-read QQNode $DownloadCount
+	 * @property-read QQReverseReferenceNodePackageVersion $PackageVersion
+	 * @property-read QQNode $_PrimaryKeyNode
+	 */
 	class QQReverseReferenceNodePackageContribution extends QQReverseReferenceNode {
 		protected $strTableName = 'package_contribution';
 		protected $strPrimaryKey = 'id';

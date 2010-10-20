@@ -50,12 +50,12 @@
 that focuses on freeing developers from unnecessary tedious, mundane coding.</p>
 
 <p>
-	Qcodo <a href="/showcase/">powers</a> some the most highly trafficked websites and data intensive applications for
+	Qcodo enables some the most highly trafficked websites and data intensive applications for
 	companies like <strong>Lockheed Martin</strong> and <strong>Hewlett-Packard</strong>, large
 	organizations like <strong>Stanford School of Medicine</strong>, <strong>Academy of Country Music</strong>
 	and <strong>NASA</strong>, and startups like <strong>Chess.com</strong> and <strong>Uloop</strong>.
 	<br/><br/>
-	Qcodo-powered websites deliver over <strong>100 Million Page Views</strong> every month.
+	<a href="/showcase/">Qcodo-powered websites</a> generate over <strong>100 million page views</strong> every month.
 </p>
 
 <p style="margin-top: 32px; padding-top: 32px; border-top: 1px dashed #999; width: 720px;">
