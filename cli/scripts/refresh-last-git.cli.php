@@ -8,8 +8,8 @@
 		
 		$strMessage = trim((string) $objMostRecentCommit->message);
 		$strDate = $dttCommit->__toString('DDDD, MMMM D, YYYY');
-		$strUrl = (string)  $objMostRecentCommit->url;
-		
+		$strUrl = 'https://github.com' . (string)  $objMostRecentCommit->url;
+
 		// Cleanup Message
 		if (($intPosition = strpos($strMessage, "\n")) !== false) {
 			$strMessage = trim(substr($strMessage, 0, $intPosition));

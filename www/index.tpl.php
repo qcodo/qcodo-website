@@ -28,7 +28,7 @@
 	<br/>
 	<h1>Qcodo Development Information</h1>
 	<div class="sbContent">
-		<p>The most updated development and check-in information at <a href="http://www.github.com/qcodo">GitHub.com</a>:
+		<p>The most updated development and check-in information at <a href="https://github.com/qcodo">GitHub.com</a>:
 		<p>
 			<strong>Qcodo Framework</strong><br/>
 			<a href="<?php _p(Registry::GetValue('gitinfo_qcodo_url')); ?>" style="font-style: italic;"><?php _p(Registry::GetValue('gitinfo_qcodo_message')); ?></a><br/>
