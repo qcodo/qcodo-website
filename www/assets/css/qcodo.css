@@ -14,7 +14,7 @@
 
 	h4 { color: #444; font-size: 16px; }
 
-	textarea { font-family: 'Lucida Console', 'Courier New', 'Courier', monospaced; font-size: 11px; } 
+	textarea { font-family: "Lucida Console", "Courier New", "Courier", monospaced; font-size: 11px; } 
 
 	.instructions { font-style: italic; color: #666; }
 	.hint { font-size: 11px; color: #777; margin: 4px 0;}
@@ -32,10 +32,10 @@
 		div.renderForForm div.required { font-weight: bold; }
 
 		div.renderForForm div.right { float: left; }
-		div.renderForForm div.right span.error { margin-left: 15px; font: 10px 'Arial', 'Helvetica'; color: #966; font-style: italic; }
+		div.renderForForm div.right span.error { margin-left: 15px; font: 10px "Arial", "Helvetica"; color: #966; font-style: italic; }
 		
 		div.renderForForm input { padding: 0; margin: 0; }
-		div.renderForForm div.right span.instructions { font: 10px 'Arial', 'Helvetica'; color: #666; font-style: italic; text-transform: none;}
+		div.renderForForm div.right span.instructions { font: 10px "Arial", "Helvetica"; color: #666; font-style: italic; text-transform: none;}
 		div.renderForForm span.forCheckbox { position: relative; top: -2px; font-style: normal; }
 
 	div.renderForDialog { margin-bottom: 12px; }
@@ -43,13 +43,13 @@
 		div.renderForDialog div.required { font-weight: bold; text-transform: uppercase; }
 
 		div.renderForDialog div.control { }
-		div.renderForDialog div.control span.error { font: 10px 'Arial', 'Helvetica'; color: #966; font-style: italic; }
+		div.renderForDialog div.control span.error { font: 10px "Arial", "Helvetica"; color: #966; font-style: italic; }
 		
 		div.renderForDialog input { padding: 0; margin: 0; }
-		div.renderForDialog div.control span.instructions { font: 10px 'Arial', 'Helvetica'; color: #666; font-style: italic; text-transform: none;}
+		div.renderForDialog div.control span.instructions { font: 10px "Arial", "Helvetica"; color: #666; font-style: italic; text-transform: none;}
 		div.renderForDialog span.forCheckbox { position: relative; top: -2px; font-style: normal; }
 
-	div.renderForDialog span.warning { font: 10px 'Arial', 'Helvetica'; color: #966; font-style: italic; }
+	div.renderForDialog span.warning { font: 10px "Arial", "Helvetica"; color: #966; font-style: italic; }
 
 	div#navbar { height: 55px; background-color: #333333; border-bottom: 1px solid #161616; font: 12px verdana, arial, helvetica, sans-serif; }
 		div#navbar div.line { float: right; width: 1px; overflow: hidden; }
@@ -127,7 +127,7 @@
 	div.pnlVotes div div.roundedLink a { width: 90px; text-align: center; font-size: 10px; }
 	
 	div.dlgZoom { width: 660px; }
-	div.pnlZoomCode { overflow: auto; width: 640px; height: 400px; border: 1px solid #000; margin: 14px 0; padding: 0 8px; font-family: 'Lucida Console', 'Courier New', 'Courier', monospaced; font-size: 11px; }
+	div.pnlZoomCode { overflow: auto; width: 640px; height: 400px; border: 1px solid #000; margin: 14px 0; padding: 0 8px; font-family: "Lucida Console", "Courier New", "Courier", monospaced; font-size: 11px; }
 
 /* FORUMS */
 		div.searchBar { background-color: #393939; -moz-border-radius: 8px 8px 0 0; -webkit-border-top-left-radius: 8px; -webkit-border-top-right-radius: 8px; height: 22px; padding: 4px 14px 0 14px; border: 1px solid #222; }
@@ -155,7 +155,7 @@
 	div.forum { margin: 10px 20px 10px 20px; float: left; width: 400px; border: 1px solid #485; background-color: #dfd; }
 		div.forum div.name { font-weight: bold; padding: 2px 0 2px 4px; font-size: 12px; background-color: #8b8; }
 		div.forum p.description { padding: 5px;  margin: 0; font-size: 12px; height: 36px; }
-		div.forum div.stats { padding: 1px 5px 2px 5px; font: 10px 'arial','helvetica'; color: #555; overflow: auto; border-top: 1px solid #485; }
+		div.forum div.stats { padding: 1px 5px 2px 5px; font: 10px "arial","helvetica"; color: #555; overflow: auto; border-top: 1px solid #485; }
 			div.forum div.left {float: left;}
 			div.forum div.right {float: right;}
 			div.forum div.stats span { margin-left: 20px; }
@@ -223,8 +223,8 @@
 
 
 		input.forumTopicName { background-color: #efe; width: 400px; border: 1px solid #aba; padding: 2px;}
-		textarea.forumMessage { background-color:#efe; font-family: 'Lucida Console' 'Courier New' 'Courier' 'monospaced'; font-size: 11px; width: 600px; height: 320px; border: 1px solid #aba; }
-		.forum_code { background-color: #ddddff; padding: 10px; margin-left: 20px; font-family: 'Lucida Console' 'Courier New' 'Courier' 'monospaced'; font-size: 11px; line-height: 13px; overflow: auto; width: auto;}
+		textarea.forumMessage { background-color:#efe; font-family: "Lucida Console", "Courier New", "Courier", "monospaced"; font-size: 11px; width: 600px; height: 320px; border: 1px solid #aba; }
+		.forum_code { background-color: #ddddff; padding: 10px; margin-left: 20px; font-family: "Lucida Console", "Courier New", "Courier", "monospaced"; font-size: 11px; line-height: 13px; overflow: auto; width: auto;}
 
 		div#dtrMessages { }
 
