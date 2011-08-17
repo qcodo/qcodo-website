@@ -684,7 +684,9 @@
 		 */
 		public static function Redirect($strLocation) {
 			// Clear the output buffer (if any)
-			ob_clean();
+			while (count(ob_list_handlers())) {
+				ob_end_clean();
+			}
 
 			if ((QApplication::$RequestMode == QRequestMode::Ajax) ||
 				(array_key_exists('Qform__FormCallType', $_POST) &&
