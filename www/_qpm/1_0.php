@@ -1,6 +1,7 @@
 <?php
 	require(dirname(__FILE__) . '/../../includes/prepend.inc.php');
-	
+	ini_set('memory_limit', '256M');
+
 	class QpmService extends QSoapService {
 		/**
 		 * Returns the current Qcodo version, for stable or development
