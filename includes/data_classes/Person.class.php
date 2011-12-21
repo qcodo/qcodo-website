@@ -110,6 +110,14 @@
 		}
 
 		/**
+		 * Specifies whether the person has Admin privileges on the website
+		 * @return boolean
+		 */
+		public function IsAdmin() {
+			return $this->intPersonTypeId == PersonType::Administrator;
+		}
+
+		/**
 		 * Actually performs the encryption of the password, itself
 		 * @param string $strPassword the password to encrypt
 		 * @return string the encrypted password

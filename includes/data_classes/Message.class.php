@@ -31,6 +31,30 @@
 			$this->strCompiledHtml = QTextStyle::DisplayAsHtml($this->strMessage);
 		}
 
+		public function Delete() {
+			$objTopic = $this->Topic;
+			$objTopicLink = $this->TopicLink;
+			
+			try {
+				parent::Delete();
+			} catch (QCallerException $objExc) {
+				$objExc->IncrementOffset();
+				throw $objExc;
+				return;
+			}
+			
+			$objTopic->RefreshStats();
+			$objTopicLink->RefreshStats();
+			
+			// Delete the Topic if this is a Forum topic and has no messages!
+			if ($objTopic->MessageCount == 0) {
+				$objTopic->UnassociateAllPeopleAsEmail();
+				$objTopic->UnassociateAllPeopleAsRead();
+				$objTopic->UnassociateAllPeopleAsReadOnce();
+				$objTopic->Delete();
+			}
+		}
+
 		/**
 		 * For subscribers of this message topic, send out an alert to them given this new message
 		 * @return void

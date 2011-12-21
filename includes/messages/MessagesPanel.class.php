@@ -20,6 +20,7 @@
 
 		public $dlgMessage;
 		public $pxyEditMessage;
+		public $pxyDeleteMessage;
 
 		protected $strCallbackMethodOnNewPost;
 		protected $objCallbackMethodOnNewPost;
@@ -83,7 +84,7 @@
 
 			$this->dlgMessage = new MessageEditDialogBox($this, 'dlgEditMessage');
 			$this->pxyEditMessage = new QControlProxy($this);
-
+			
 			// Add Control actions
 			$this->btnRespond1->AddAction(new QClickEvent(), new QAjaxControlAction($this, 'btnRespond_Click'));
 			$this->btnRespond1->AddAction(new QClickEvent(), new QTerminateAction());
@@ -103,6 +104,14 @@
 			$this->pxyEditMessage->AddAction(new QClickEvent(), new QAjaxControlAction($this, 'pxyEditMessage_Click'));
 			$this->pxyEditMessage->AddAction(new QClickEvent(), new QTerminateAction());
 
+			// Add "Delete" Functionality for Admin
+			if (QApplication::IsLoginAdmin()) {
+				$this->pxyDeleteMessage = new QControlProxy($this);
+				$this->pxyDeleteMessage->AddAction(new QClickEvent(), new QConfirmAction('Are you SURE you want to PERMANENTLY DELETE this message?'));
+				$this->pxyDeleteMessage->AddAction(new QClickEvent(), new QAjaxControlAction($this, 'pxyDeleteMessage_Click'));
+				$this->pxyDeleteMessage->AddAction(new QClickEvent(), new QTerminateAction());
+			}
+
 			// HIde all buttons until a Topic is properly selected
 			$this->btnRespond1->Visible = false;
 			$this->btnRespond2->Visible = false;
@@ -110,6 +119,12 @@
 			$this->btnMarkAsViewed2->Visible = false;
 			$this->btnNotify1->Visible = false;
 			$this->btnNotify2->Visible = false;
+		}
+
+		public function pxyDeleteMessage_Click($strFormId, $strControlId, $strParameter) {
+			$objMessage = Message::Load($strParameter);
+			$objMessage->Delete();
+			QApplication::DisplayAlert('This message has now been deleted.  Refresh your browser when ready.');
 		}
 
 		/**

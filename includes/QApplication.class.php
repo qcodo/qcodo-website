@@ -193,6 +193,18 @@
 		}
 
 		/**
+		 * Checks to see if we have a valid login, and returns whether or not
+		 * the login has Admin privileges.
+		 * 
+		 * This will return false if not or if there is no current login.
+		 * @return boolean
+		 */
+		public static function IsLoginAdmin() {
+			if (!QApplication::$Person) return false;
+			return QApplication::$Person->IsAdmin();
+		}
+
+		/**
 		 * Clears out the Viewed Topic array
 		 * @return void
 		 */

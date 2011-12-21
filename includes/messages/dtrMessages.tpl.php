@@ -15,6 +15,9 @@
 	<?php _p(($_ITEM->Person) ? $_ITEM->Person->DisplayForForums : '&lsaquo;&lsaquo; Qcodo System Message &rsaquo;&rsaquo;', false); ?>
 	</div>
 	<div class="date">
+	<?php if ($_CONTROL->ParentControl->pxyDeleteMessage) { ?>
+		<a style="margin-right: 25px;" href="#" <?php $_CONTROL->ParentControl->pxyDeleteMessage->RenderAsEvents($_ITEM->Id); ?>>Delete</a>
+	<?php } ?>
 	<?php _p($dttLocalize->__toString('DDDD, MMMM D, YYYY, h:mm zz')); ?>
 	<?php QApplication::DisplayTimezoneLink($dttLocalize); ?>
 	</div>
