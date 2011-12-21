@@ -19,6 +19,8 @@
 		protected $btnEditAccount;
 		protected $btnEdit;
 		protected $btnPassword;
+		
+		protected $btnNullPassword;
 
 		protected function Form_Create() {
 			parent::Form_Create();
@@ -87,7 +89,7 @@
 				$this->lblOptInFlag = $this->mctPerson->lblOptInFlag_Create();
 				
 			// Otherwise, if is administrator
-			} else if (QApplication::$Person && (QApplication::$Person->PersonTypeId == PersonType::Administrator)) {
+			} else if (QApplication::IsLoginAdmin()) {
 				$this->btnEdit = new RoundedLinkButton($this);
 				$this->btnEdit->Text = 'Edit User\'s Profile';
 				$this->btnEdit->LinkUrl = '/profile/edit.php/' . $this->mctPerson->Person->Username;
@@ -97,7 +99,21 @@
 				$this->btnEditAccount->Text = 'Edit User\'s Account';
 				$this->btnEditAccount->LinkUrl = '/profile/account.php/' . $this->mctPerson->Person->Username;
 				$this->btnEditAccount->AddCssClass('roundedLinkGray');
+
+				$this->btnNullPassword = new RoundedLinkButton($this);
+				$this->btnNullPassword->Text = 'Null User\'s Password';
+				$this->btnNullPassword->LinkUrl = '#';
+				$this->btnNullPassword->AddCssClass('roundedLinkGray');
+				$this->btnNullPassword->AddAction(new QClickEvent(), new QConfirmAction('Are you SURE you want to NULL OUT this User\'s Password?'));
+				$this->btnNullPassword->AddAction(new QClickEvent(), new QAjaxAction('btnNullPassword_Click'));
+				$this->btnNullPassword->AddAction(new QClickEvent(), new QTerminateAction());
 			}
+		}
+
+		public function btnNullPassword_Click() {
+			$this->mctPerson->Person->Password = null;
+			$this->mctPerson->Person->Save();
+			QApplication::DisplayAlert('This user\'s password has been nulled out.');
 		}
 
 		public function IsOwner() {

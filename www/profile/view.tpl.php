@@ -16,12 +16,26 @@
 		<?php $this->lblLocation->RenderForForm('Name=Location','Required=true'); ?>
 		<?php $this->lblRegistrationDate->RenderForForm(); ?>
 
-<?php if ($this->lblTimezone) { ?>
-		<div class="subsection">
-			<?php $this->lblTimezone->RenderForForm(); ?>			
-			<?php $this->lblOptInFlag->RenderForForm('Name=Opt-In to Emails'); ?>
-		</div>
-<?php } ?>
+		<?php if (QApplication::IsLoginAdmin()) { ?>
+			<div class="renderForForm">
+				<div class="left required">Messages Posted</div>
+				<div class="right"><?php _p($this->mctPerson->Person->CountMessages()); ?></div>
+			</div>
+			
+			<?php if (!$this->mctPerson->Person->Password) { ?>
+				<div class="renderForForm">
+					<div class="left required">Password Status</div>
+					<div class="right">Password has been nulled out.</div>
+				</div>
+			<?php } ?>
+		<?php } ?>
+
+		<?php if ($this->lblTimezone) { ?>
+			<div class="subsection">
+				<?php $this->lblTimezone->RenderForForm(); ?>			
+				<?php $this->lblOptInFlag->RenderForForm('Name=Opt-In to Emails'); ?>
+			</div>
+		<?php } ?>
 	</div>
 
 <?php if ($this->btnEdit) { ?>
@@ -37,6 +51,12 @@
 			<br/><br/>
 			<p class="hint">Worried about Identity Theft?</p>
 			<?php $this->btnPassword->Render(); ?>
+		<?php } ?>
+
+		<?php if ($this->btnNullPassword) { ?>
+			<br/><br/>
+			<p class="hint">Is this person spamming?</p>
+			<?php $this->btnNullPassword->Render(); ?>
 		<?php } ?>
 	</div>
 <?php } ?>
