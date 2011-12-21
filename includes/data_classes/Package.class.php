@@ -125,7 +125,7 @@
 			$intChangedFileCount = count($objQpmXml->package->changedFiles->children());
 
 			if ($strPackageName != $this->Token) throw new Exception('Invalid QPM Package Name: ' . $strPackageName);
-			if ($strPackageUsername != $objPerson->Username) throw new Exception('Invalid QPM Package User: ' . $strPackageUsername);
+			if (trim(strtolower($strPackageUsername)) != trim(strtolower($objPerson->Username))) throw new Exception('Invalid QPM Package User: ' . $strPackageUsername);
 			if ($objContribution) {
 				if ($intVersionNumber != ($objContribution->CountPackageVersions() + 1)) throw new Exception('Invalid QPM Package Version: ' . $intVersionNumber);
 			} else {
