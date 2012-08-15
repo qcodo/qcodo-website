@@ -1,14 +1,13 @@
 <?php
 	function RefreshGitData($strRepository, $strRegistryName) {
-		$strXml = file_get_contents('http://github.com/api/v2/xml/commits/list/qcodo/' . $strRepository . '/master');
+		$strXml = file_get_contents('https://github.com/qcodo/' . $strRepository . '/commits/master.atom');
 		$objXml = new SimpleXMLElement($strXml);
-		$objMostRecentCommit = $objXml->commit[0];
-		$strNodeName = 'committed-date';
-		$dttCommit = new QDateTime((string) $objMostRecentCommit->$strNodeName);
-		
-		$strMessage = trim((string) $objMostRecentCommit->message);
+		$objMostRecentCommit = $objXml->entry[0];
+		$dttCommit = new QDateTime((string) $objMostRecentCommit->updated);
+
+		$strMessage = trim((string) $objMostRecentCommit->title);
 		$strDate = $dttCommit->__toString('DDDD, MMMM D, YYYY');
-		$strUrl = 'https://github.com' . (string)  $objMostRecentCommit->url;
+		$strUrl = (string)($objMostRecentCommit->link['href']);
 
 		// Cleanup Message
 		if (($intPosition = strpos($strMessage, "\n")) !== false) {
